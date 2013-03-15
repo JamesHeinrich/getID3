@@ -18,6 +18,9 @@ Version History
 ===============
 
 1.9.6: [2013-??-??] James Heinrich
+    * Bugfix: (#1550) Quicktime video track sample description parsed
+      incorrectly
+    * Bugfix: (#1550) Quicktime matrix U/V/W values calculated incorrectly
     * [demo.browse] disable edit-tag and delete-file links by default
     * Bugfix: option_max_2gb_check should issue warning not error on >2GB
 
