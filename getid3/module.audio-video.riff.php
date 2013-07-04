@@ -58,7 +58,7 @@ class getid3_riff extends getid3_handler
 		switch ($RIFFtype) {
 
 			case 'FORM':  // AIFF, AIFC
-				$info['fileformat']   = 'aiff';
+				//$info['fileformat']   = 'aiff';
 				$thisfile_riff['header_size'] = $this->EitherEndian2Int($RIFFsize);
 				$thisfile_riff[$RIFFsubtype]  = $this->ParseRIFF($offset, ($offset + $thisfile_riff['header_size'] - 4));
 				break;
@@ -66,7 +66,7 @@ class getid3_riff extends getid3_handler
 			case 'RIFF':  // AVI, WAV, etc
 			case 'SDSS':  // SDSS is identical to RIFF, just renamed. Used by SmartSound QuickTracks (www.smartsound.com)
 			case 'RMP3':  // RMP3 is identical to RIFF, just renamed. Used by [unknown program] when creating RIFF-MP3s
-				$info['fileformat']   = 'riff';
+				//$info['fileformat']   = 'riff';
 				$thisfile_riff['header_size'] = $this->EitherEndian2Int($RIFFsize);
 				if ($RIFFsubtype == 'RMP3') {
 					// RMP3 is identical to WAVE, just renamed. Used by [unknown program] when creating RIFF-MP3s
@@ -152,13 +152,15 @@ class getid3_riff extends getid3_handler
 
 			default:
 				$this->error('Cannot parse RIFF (this is maybe not a RIFF / WAV / AVI file?) - expecting "FORM|RIFF|SDSS|RMP3" found "'.$RIFFsubtype.'" instead');
-				unset($info['fileformat']);
+				//unset($info['fileformat']);
 				return false;
 		}
 
 		$streamindex = 0;
 		switch ($RIFFsubtype) {
 			case 'WAVE':
+				$info['fileformat'] = 'wav';
+			
 				if (empty($thisfile_audio['bitrate_mode'])) {
 					$thisfile_audio['bitrate_mode'] = 'cbr';
 				}
@@ -589,9 +591,11 @@ class getid3_riff extends getid3_handler
 				break;
 
 			case 'AVI ':
+				$info['fileformat'] = 'avi';
+				$info['mime_type']  = 'video/avi';
+			
 				$thisfile_video['bitrate_mode'] = 'vbr'; // maybe not, but probably
 				$thisfile_video['dataformat']   = 'avi';
-				$info['mime_type']      = 'video/avi';
 
 				if (isset($thisfile_riff[$RIFFsubtype]['movi']['offset'])) {
 					$info['avdataoffset'] = $thisfile_riff[$RIFFsubtype]['movi']['offset'] + 8;
@@ -876,11 +880,11 @@ class getid3_riff extends getid3_handler
 				break;
 
 			case 'CDDA':
-				$thisfile_audio['bitrate_mode'] = 'cbr';
+				$info['fileformat'] = 'cda';
+			    unset($info['mime_type']);
+				
 				$thisfile_audio_dataformat      = 'cda';
-				$thisfile_audio['lossless']     = true;
-				unset($info['mime_type']);
-
+				
 				$info['avdataoffset'] = 44;
 
 				if (isset($thisfile_riff['CDDA']['fmt '][0]['data'])) {
@@ -901,6 +905,7 @@ class getid3_riff extends getid3_handler
 					$info['playtime_seconds']                 = $thisfile_riff_CDDA_fmt_0['playtime_seconds'];
 
 					// hardcoded data for CD-audio
+					$thisfile_audio['lossless']        = true;
 					$thisfile_audio['sample_rate']     = 44100;
 					$thisfile_audio['channels']        = 2;
 					$thisfile_audio['bits_per_sample'] = 16;
@@ -912,10 +917,12 @@ class getid3_riff extends getid3_handler
 
 			case 'AIFF':
 			case 'AIFC':
+				$info['fileformat'] = 'aiff';
+				$info['mime_type']  = 'audio/x-aiff';
+			
 				$thisfile_audio['bitrate_mode'] = 'cbr';
 				$thisfile_audio_dataformat      = 'aiff';
 				$thisfile_audio['lossless']     = true;
-				$info['mime_type']      = 'audio/x-aiff';
 
 				if (isset($thisfile_riff[$RIFFsubtype]['SSND'][0]['offset'])) {
 					$info['avdataoffset'] = $thisfile_riff[$RIFFsubtype]['SSND'][0]['offset'] + 8;
@@ -1029,11 +1036,13 @@ class getid3_riff extends getid3_handler
 				break;
 
 			case '8SVX':
+				$info['fileformat'] = '8svx';
+				$info['mime_type']  = 'audio/8svx';
+			
 				$thisfile_audio['bitrate_mode']    = 'cbr';
 				$thisfile_audio_dataformat         = '8svx';
 				$thisfile_audio['bits_per_sample'] = 8;
 				$thisfile_audio['channels']        = 1; // overridden below, if need be
-				$info['mime_type']                = 'audio/x-aiff';
 
 				if (isset($thisfile_riff[$RIFFsubtype]['BODY'][0]['offset'])) {
 					$info['avdataoffset'] = $thisfile_riff[$RIFFsubtype]['BODY'][0]['offset'] + 8;
@@ -1108,9 +1117,10 @@ class getid3_riff extends getid3_handler
 				}
 				break;
 
-
 			case 'CDXA':
+				$info['fileformat'] = 'vcd'; // Asume Video CD
 				$info['mime_type'] = 'video/mpeg';
+				
 				if (!empty($thisfile_riff['CDXA']['data'][0]['size'])) {
 					if (getid3_lib::IncludeDependency(GETID3_INCLUDEPATH.'module.audio-video.mpeg.php', __FILE__, false)) {
 						$getid3_temp = new getID3();
@@ -1131,8 +1141,7 @@ class getid3_riff extends getid3_handler
 
 			default:
 				$info['error'][] = 'Unknown RIFF type: expecting one of (WAVE|RMP3|AVI |CDDA|AIFF|AIFC|8SVX|CDXA), found "'.$RIFFsubtype.'" instead';
-				unset($info['fileformat']);
-				break;
+				//unset($info['fileformat']);
 		}
 
 		switch ($RIFFsubtype) {

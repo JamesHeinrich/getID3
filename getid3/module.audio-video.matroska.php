@@ -515,7 +515,6 @@ class getid3_matroska extends getid3_handler
 			switch ($top_element['id']) {
 
 				case EBML_ID_EBML:
-					$info['fileformat'] = 'matroska';
 					$info['matroska']['header']['offset'] = $top_element['offset'];
 					$info['matroska']['header']['length'] = $top_element['length'];
 
@@ -534,6 +533,7 @@ class getid3_matroska extends getid3_handler
 							case EBML_ID_DOCTYPE:
 								$element_data['data'] = getid3_lib::trimNullByte($element_data['data']);
 								$info['matroska']['doctype'] = $element_data['data'];
+								$info['fileformat'] = $element_data['data'];
 								break;
 
 							default:
