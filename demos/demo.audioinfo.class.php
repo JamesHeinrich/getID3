@@ -24,7 +24,7 @@
 // |   $au = new AudioInfo();                                             |
 // |   print_r($au->Info('file.flac');                                    |
 // +----------------------------------------------------------------------+
-// | Authors: Allan Hansen <ahØartemis*dk>                                |
+// | Authors: Allan Hansen <ahÃ˜artemis*dk>                                |
 // +----------------------------------------------------------------------+
 //
 

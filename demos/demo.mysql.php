@@ -54,8 +54,8 @@ $getID3->setOption(array(
 
 
 function RemoveAccents($string) {
-	// Revised version by markstewardØhotmail*com
-	return strtr(strtr($string, 'ŠŽšžŸÀÁÂÃÄÅÇÈÉÊËÌÍÎÏÑÒÓÔÕÖØÙÚÛÜÝàáâãäåçèéêëìíîïñòóôõöøùúûüýÿ', 'SZszYAAAAAACEEEEIIIINOOOOOOUUUUYaaaaaaceeeeiiiinoooooouuuuyy'), array('Þ' => 'TH', 'þ' => 'th', 'Ð' => 'DH', 'ð' => 'dh', 'ß' => 'ss', 'Œ' => 'OE', 'œ' => 'oe', 'Æ' => 'AE', 'æ' => 'ae', 'µ' => 'u'));
+	// Revised version by markstewardÃ˜hotmail*com
+	return strtr(strtr($string, 'ÂŠÂŽÂšÂžÂŸÃ€ÃÃ‚ÃƒÃ„Ã…Ã‡ÃˆÃ‰ÃŠÃ‹ÃŒÃÃŽÃÃ‘Ã’Ã“Ã”Ã•Ã–Ã˜Ã™ÃšÃ›ÃœÃÃ Ã¡Ã¢Ã£Ã¤Ã¥Ã§Ã¨Ã©ÃªÃ«Ã¬Ã­Ã®Ã¯Ã±Ã²Ã³Ã´ÃµÃ¶Ã¸Ã¹ÃºÃ»Ã¼Ã½Ã¿', 'SZszYAAAAAACEEEEIIIINOOOOOOUUUUYaaaaaaceeeeiiiinoooooouuuuyy'), array('Ãž' => 'TH', 'Ã¾' => 'th', 'Ã' => 'DH', 'Ã°' => 'dh', 'ÃŸ' => 'ss', 'ÂŒ' => 'OE', 'Âœ' => 'oe', 'Ã†' => 'AE', 'Ã¦' => 'ae', 'Âµ' => 'u'));
 }
 
 function BitrateColor($bitrate, $BitrateMaxScale=768) {
@@ -1355,7 +1355,7 @@ if (!empty($_REQUEST['scan']) || !empty($_REQUEST['newscan']) || !empty($_REQUES
 		$PatternFilename = '';
 		for ($i = 0; $i < $PatternLength; $i++) {
 			if (isset($patterns[$Pattern{$i}])) {
-				$PatternFilename .= trim(strtr($row[$patterns[$Pattern{$i}]], ':\\*<>|', ';-¤«»¦'), ' ');
+				$PatternFilename .= trim(strtr($row[$patterns[$Pattern{$i}]], ':\\*<>|', ';-Â¤Â«Â»Â¦'), ' ');
 			} else {
 				$PatternFilename .= $Pattern{$i};
 			}
@@ -1365,14 +1365,14 @@ if (!empty($_REQUEST['scan']) || !empty($_REQUEST['newscan']) || !empty($_REQUES
 		// "/" has been replaced with "~" above which is good for multi-song medley dividers,
 		// but for things like 24/7, 7/8ths, etc it looks better if it's 24-7, 7-8ths, etc.
 		$PatternFilename = preg_replace('#([ a-z]+)/([ a-z]+)#i', '\\1~\\2', $PatternFilename);
-		$PatternFilename = str_replace('/',  '×',  $PatternFilename);
+		$PatternFilename = str_replace('/',  'Ã—',  $PatternFilename);
 
-		$PatternFilename = str_replace('?',  '¿',  $PatternFilename);
-		$PatternFilename = str_replace(' "', ' “', $PatternFilename);
-		$PatternFilename = str_replace('("', '(“', $PatternFilename);
-		$PatternFilename = str_replace('-"', '-“', $PatternFilename);
-		$PatternFilename = str_replace('" ', '” ', $PatternFilename.' ');
-		$PatternFilename = str_replace('"',  '”',  $PatternFilename);
+		$PatternFilename = str_replace('?',  'Â¿',  $PatternFilename);
+		$PatternFilename = str_replace(' "', ' Â“', $PatternFilename);
+		$PatternFilename = str_replace('("', '(Â“', $PatternFilename);
+		$PatternFilename = str_replace('-"', '-Â“', $PatternFilename);
+		$PatternFilename = str_replace('" ', 'Â” ', $PatternFilename.' ');
+		$PatternFilename = str_replace('"',  'Â”',  $PatternFilename);
 		$PatternFilename = str_replace('  ', ' ',  $PatternFilename);
 
 
@@ -1409,7 +1409,7 @@ if (!empty($_REQUEST['scan']) || !empty($_REQUEST['newscan']) || !empty($_REQUES
 			if (strtolower($ActualFilename) === strtolower($PatternFilename)) {
 				$NotMatchedReasons .= 'Aa ';
 			} elseif (RemoveAccents($ActualFilename) === RemoveAccents($PatternFilename)) {
-				$NotMatchedReasons .= 'ée ';
+				$NotMatchedReasons .= 'Ã©e ';
 			}
 
 
@@ -2083,8 +2083,8 @@ function CleanUpFileName($filename) {
 	$BaseFilename = str_replace('( ', '(', $BaseFilename);
 	$BaseFilename = str_replace(')', ') ', $BaseFilename);
 	$BaseFilename = str_replace(' )', ')', $BaseFilename);
-	$BaseFilename = str_replace(' \'\'', ' “', $BaseFilename);
-	$BaseFilename = str_replace('\'\' ', '” ', $BaseFilename);
+	$BaseFilename = str_replace(' \'\'', ' Â“', $BaseFilename);
+	$BaseFilename = str_replace('\'\' ', 'Â” ', $BaseFilename);
 	$BaseFilename = str_replace(' vs ', ' vs. ', $BaseFilename);
 	while (strstr($BaseFilename, '  ') !== false) {
 		$BaseFilename = str_replace('  ', ' ', $BaseFilename);
@@ -2102,7 +2102,7 @@ function BetterUCwords($string) {
 		if (($string{$i - 1} == '\'') && ($i > 1) && (($string{$i - 2} == 'O') || ($string{$i - 2} == ' '))) {
 			// O'Clock, 'Em
 			$string{$i} = strtoupper($string{$i});
-		} elseif (preg_match('#^[\'A-Za-z0-9À-ÿ]$#', $string{$i - 1})) {
+		} elseif (preg_match('#^[\'A-Za-z0-9Ã€-Ã¿]$#', $string{$i - 1})) {
 			$string{$i} = strtolower($string{$i});
 		} else {
 			$string{$i} = strtoupper($string{$i});
@@ -2127,7 +2127,7 @@ function BetterUCwords($string) {
 		$OutputListOfWords[] = $ThisWord;
 	}
 	$UCstring = implode(' ', $OutputListOfWords);
-	$UCstring = str_replace(' From “', ' from “', $UCstring);
+	$UCstring = str_replace(' From Â“', ' from Â“', $UCstring);
 	$UCstring = str_replace(' \'n\' ', ' \'N\' ', $UCstring);
 
 	return $UCstring;

@@ -9,7 +9,7 @@
 //                                                                            ///
 /////////////////////////////////////////////////////////////////////////////////
 ///                                                                            //
-//  Directory Scanning and Caching CLI tool by Karl G. Holz <newaeonØmac*com>  //
+//  Directory Scanning and Caching CLI tool by Karl G. Holz <newaeonÃ˜mac*com>  //
 //                                                                            ///
 /////////////////////////////////////////////////////////////////////////////////
 /**
