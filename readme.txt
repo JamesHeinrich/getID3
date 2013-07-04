@@ -3,23 +3,34 @@
 //  available at http://getid3.sourceforge.net                 //
 //            or http://www.getid3.org                         //
 /////////////////////////////////////////////////////////////////
-//                                                             //
-// changelog.txt - part of getID3()                            //
-// See readme.txt for more details                             //
-//                                                            ///
-/////////////////////////////////////////////////////////////////
 
-        This code is released under the GNU GPL:
-          http://www.gnu.org/copyleft/gpl.html
+*****************************************************************
+*****************************************************************
 
-     +---------------------------------------------+
-     | If you do use this code somewhere, send me  |
-     | an email and tell me how/where you used it. |
-     |                                             |
-     | If you want to donate, there is a link on   |
-     | http://www.getid3.org for PayPal donations. |
-     +---------------------------------------------+
+   getID3() is released under multiple licenses. You may choose
+   from the following licenses, and use getID3 according to the
+   terms of the license most suitable to your project.
 
+GNU GPL: https://gnu.org/licenses/gpl.html                   (v3)
+         https://gnu.org/licenses/old-licenses/gpl-2.0.html  (v2)
+         https://gnu.org/licenses/old-licenses/gpl-1.0.html  (v1)
+
+GNU LGPL: https://gnu.org/licenses/lgpl.html                 (v3)
+
+Mozilla MPL: http://www.mozilla.org/MPL/2.0/                 (v2)
+
+getID3 Commercial License: http://getid3.org/#gCL (payment required)
+
+*****************************************************************
+*****************************************************************
+Copies of each of the above licenses are included in the 'licenses'
+directory of the getID3 distribution.
+
+
+       +---------------------------------------------+
+       | If you want to donate, there is a link on   |
+       | http://www.getid3.org for PayPal donations. |
+       +---------------------------------------------+
 
 
 Quick Start
