@@ -23,8 +23,7 @@ $temp_dir = ini_get('upload_tmp_dir');
 if ($temp_dir && (!is_dir($temp_dir) || !is_readable($temp_dir))) {
 	$temp_dir = '';
 }
-if (!$temp_dir && function_exists('sys_get_temp_dir')) {
-	// PHP v5.2.1+
+if (!$temp_dir) {
 	// sys_get_temp_dir() may give inaccessible temp dir, e.g. with open_basedir on virtual hosts
 	$temp_dir = sys_get_temp_dir();
 }
@@ -57,7 +56,9 @@ if (!$temp_dir) {
 	$temp_dir = '*'; // invalid directory name should force tempnam() to use system default temp dir
 }
 // $temp_dir = '/something/else/';  // feel free to override temp dir here if it works better for your system
-define('GETID3_TEMP_DIR', $temp_dir);
+if (!defined('GETID3_TEMP_DIR')) {
+	define('GETID3_TEMP_DIR', $temp_dir);
+}
 unset($open_basedir, $temp_dir);
 
 // End: Defines
@@ -103,7 +104,7 @@ class getID3
 	protected $startup_warning = '';
 	protected $memory_limit    = 0;
 
-	const VERSION           = '1.9.6-20130603';
+	const VERSION           = '1.10.0-unknown';
 	const FREAD_BUFFER_SIZE = 32768;
 
 	const ATTACHMENTS_NONE   = false;
@@ -113,7 +114,7 @@ class getID3
 	public function __construct() {
 
 		// Check for PHP version
-		$required_php_version = '5.0.5';
+		$required_php_version = '5.3.0';
 		if (version_compare(PHP_VERSION, $required_php_version, '<')) {
 			$this->startup_error .= 'getID3() requires PHP v'.$required_php_version.' or higher - you are running v'.PHP_VERSION;
 			return false;

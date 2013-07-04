@@ -108,19 +108,13 @@ class getid3_jpg extends getid3_handler
 				$computed_time[3] = (isset($explodedGPSDateStamp[1]) ? $explodedGPSDateStamp[1] : '');
 				$computed_time[4] = (isset($explodedGPSDateStamp[2]) ? $explodedGPSDateStamp[2] : '');
 
-				if (function_exists('date_default_timezone_set')) {
-					date_default_timezone_set('UTC');
-				} else {
-					ini_set('date.timezone', 'UTC');
-				}
-
 				$computed_time = array(0=>0, 1=>0, 2=>0, 3=>0, 4=>0, 5=>0);
 				if (isset($info['jpg']['exif']['GPS']['GPSTimeStamp']) && is_array($info['jpg']['exif']['GPS']['GPSTimeStamp'])) {
 					foreach ($info['jpg']['exif']['GPS']['GPSTimeStamp'] as $key => $value) {
 						$computed_time[$key] = getid3_lib::DecimalizeFraction($value);
 					}
 				}
-				$info['jpg']['exif']['GPS']['computed']['timestamp'] = mktime($computed_time[0], $computed_time[1], $computed_time[2], $computed_time[3], $computed_time[4], $computed_time[5]);
+				$info['jpg']['exif']['GPS']['computed']['timestamp'] = gmmktime($computed_time[0], $computed_time[1], $computed_time[2], $computed_time[3], $computed_time[4], $computed_time[5]);
 			}
 
 			if (isset($info['jpg']['exif']['GPS']['GPSLatitude']) && is_array($info['jpg']['exif']['GPS']['GPSLatitude'])) {
