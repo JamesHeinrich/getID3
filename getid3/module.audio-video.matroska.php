@@ -385,10 +385,6 @@ class getid3_matroska extends getid3_handler
 								}
 								if (!empty($getid3_temp->info['warning'])) {
 									foreach ($getid3_temp->info['warning'] as $newerror) {
-										if ($track_info['dataformat'] == 'mp3' && preg_match('/^Probable truncated file: expecting \d+ bytes of audio data, only found \d+ \(short by \d+ bytes\)$/', $newerror)) {
-											// LAME/Xing header is probably set, but audio data is chunked into Matroska file and near-impossible to verify if audio stream is complete, so ignore useless warning
-											continue;
-										}
 										$this->warning($class.'() says: ['.$newerror.']');
 									}
 								}
@@ -400,7 +396,7 @@ class getid3_matroska extends getid3_handler
 							case 'A_AAC/MPEG2/LC/SBR':
 							case 'A_AAC/MPEG4/LC':
 							case 'A_AAC/MPEG4/LC/SBR':
-							    $this->warning($trackarray['CodecID'].' audio data contains no header, audio/video bitrates can\'t be calculated');
+								$this->warning($trackarray['CodecID'].' audio data contains no header, audio/video bitrates can\'t be calculated');
 								break;
 
 							case 'A_VORBIS':
@@ -1526,8 +1522,8 @@ class getid3_matroska extends getid3_handler
 			$CodecIDlist['V_MPEG4/ISO/AVC']  = 'h264';
 			$CodecIDlist['V_MPEG4/ISO/SP']   = 'mpeg4';
 			$CodecIDlist['V_VP8']            = 'vp8';
-			$CodecIDlist['V_MS/VFW/FOURCC']  = 'riff';
-			$CodecIDlist['A_MS/ACM']         = 'riff';
+			$CodecIDlist['V_MS/VFW/FOURCC']  = 'vcm'; // Microsoft (TM) Video Codec Manager (VCM)
+			$CodecIDlist['A_MS/ACM']         = 'acm'; // Microsoft (TM) Audio Codec Manager (ACM)
 		}
 		return (isset($CodecIDlist[$codecid]) ? $CodecIDlist[$codecid] : $codecid);
 	}

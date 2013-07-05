@@ -242,7 +242,7 @@ class getid3_wavpack extends getid3_handler
 							$getid3_temp = new getID3();
 							$getid3_temp->openfile($this->getid3->filename);
 							$getid3_temp->info['avdataend']  = $info['avdataend'];
-							$getid3_temp->info['fileformat'] = 'riff';
+							//$getid3_temp->info['fileformat'] = 'riff';
 							$getid3_riff = new getid3_riff($getid3_temp);
 							$metablock['riff'] = $getid3_riff->ParseRIFF($startoffset, $startoffset + $metablock['size']);
 

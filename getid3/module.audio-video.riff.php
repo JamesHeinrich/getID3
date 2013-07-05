@@ -26,9 +26,10 @@ getid3_lib::IncludeDependency(GETID3_INCLUDEPATH.'module.audio.mp3.php', __FILE_
 getid3_lib::IncludeDependency(GETID3_INCLUDEPATH.'module.audio.ac3.php', __FILE__, true);
 getid3_lib::IncludeDependency(GETID3_INCLUDEPATH.'module.audio.dts.php', __FILE__, true);
 
-class getid3_riff extends getid3_handler
-{
+class getid3_riff extends getid3_handler {
 
+	protected $container = 'riff'; // default
+	
 	public function Analyze() {
 		$info = &$this->getid3->info;
 
@@ -59,6 +60,7 @@ class getid3_riff extends getid3_handler
 
 			case 'FORM':  // AIFF, AIFC
 				//$info['fileformat']   = 'aiff';
+				$this->container = 'aiff';
 				$thisfile_riff['header_size'] = $this->EitherEndian2Int($RIFFsize);
 				$thisfile_riff[$RIFFsubtype]  = $this->ParseRIFF($offset, ($offset + $thisfile_riff['header_size'] - 4));
 				break;
@@ -67,6 +69,7 @@ class getid3_riff extends getid3_handler
 			case 'SDSS':  // SDSS is identical to RIFF, just renamed. Used by SmartSound QuickTracks (www.smartsound.com)
 			case 'RMP3':  // RMP3 is identical to RIFF, just renamed. Used by [unknown program] when creating RIFF-MP3s
 				//$info['fileformat']   = 'riff';
+				$this->container = 'riff';
 				$thisfile_riff['header_size'] = $this->EitherEndian2Int($RIFFsize);
 				if ($RIFFsubtype == 'RMP3') {
 					// RMP3 is identical to WAVE, just renamed. Used by [unknown program] when creating RIFF-MP3s
@@ -158,6 +161,8 @@ class getid3_riff extends getid3_handler
 
 		$streamindex = 0;
 		switch ($RIFFsubtype) {
+			
+			// http://en.wikipedia.org/wiki/Wav
 			case 'WAVE':
 				$info['fileformat'] = 'wav';
 			
@@ -590,6 +595,7 @@ class getid3_riff extends getid3_handler
 				}
 				break;
 
+			// http://en.wikipedia.org/wiki/Audio_Video_Interleave	
 			case 'AVI ':
 				$info['fileformat'] = 'avi';
 				$info['mime_type']  = 'video/avi';
@@ -829,7 +835,7 @@ class getid3_riff extends getid3_handler
 
 											switch ($strhfccType) {
 												case 'vids':
-													$thisfile_riff_raw_strf_strhfccType_streamindex = self::ParseBITMAPINFOHEADER(substr($strfData, 0, 40), ($info['fileformat'] == 'riff'));
+													$thisfile_riff_raw_strf_strhfccType_streamindex = self::ParseBITMAPINFOHEADER(substr($strfData, 0, 40), ($this->container == 'riff'));
 													$thisfile_video['bits_per_sample'] = $thisfile_riff_raw_strf_strhfccType_streamindex['biBitCount'];
 
 													if ($thisfile_riff_video_current['codec'] == 'DV') {
@@ -879,6 +885,7 @@ class getid3_riff extends getid3_handler
 				}
 				break;
 
+			// http://en.wikipedia.org/wiki/CD-DA	
 			case 'CDDA':
 				$info['fileformat'] = 'cda';
 			    unset($info['mime_type']);
@@ -914,7 +921,7 @@ class getid3_riff extends getid3_handler
 				}
 				break;
 
-
+            // http://en.wikipedia.org/wiki/AIFF
 			case 'AIFF':
 			case 'AIFC':
 				$info['fileformat'] = 'aiff';
@@ -1035,6 +1042,7 @@ class getid3_riff extends getid3_handler
 */
 				break;
 
+			// http://en.wikipedia.org/wiki/8SVX	
 			case '8SVX':
 				$info['fileformat'] = '8svx';
 				$info['mime_type']  = 'audio/8svx';
@@ -1119,7 +1127,7 @@ class getid3_riff extends getid3_handler
 
 			case 'CDXA':
 				$info['fileformat'] = 'vcd'; // Asume Video CD
-				$info['mime_type'] = 'video/mpeg';
+				$info['mime_type']  = 'video/mpeg';
 				
 				if (!empty($thisfile_riff['CDXA']['data'][0]['size'])) {
 					if (getid3_lib::IncludeDependency(GETID3_INCLUDEPATH.'module.audio-video.mpeg.php', __FILE__, false)) {
@@ -1338,7 +1346,7 @@ class getid3_riff extends getid3_handler
 											$getid3_temp->openfile($this->getid3->filename);
 											$getid3_temp->info['avdataoffset'] = $this->ftell() - 4;
 											$getid3_temp->info['avdataend']    = $this->ftell() + $AudioChunkSize;
-											$getid3_mp3 = new getid3_mp3($getid3_temp);
+											$getid3_mp3 = new getid3_mp3($getid3_temp, __CLASS__);
 											$getid3_mp3->getOnlyMPEGaudioInfo($getid3_temp->info['avdataoffset'], false);
 											if (isset($getid3_temp->info['mpeg']['audio'])) {
 												$info['mpeg']['audio']         = $getid3_temp->info['mpeg']['audio'];
@@ -1421,7 +1429,7 @@ class getid3_riff extends getid3_handler
 										$getid3_temp->openfile($this->getid3->filename);
 										$getid3_temp->info['avdataoffset'] = $info['avdataoffset'];
 										$getid3_temp->info['avdataend']    = $info['avdataend'];
-										$getid3_mp3 = new getid3_mp3($getid3_temp);
+										$getid3_mp3 = new getid3_mp3($getid3_temp, __CLASS__);
 										$getid3_mp3->getOnlyMPEGaudioInfo($info['avdataoffset'], false);
 										if (empty($getid3_temp->info['error'])) {
 											$info['audio'] = $getid3_temp->info['audio'];
@@ -2435,7 +2443,7 @@ class getid3_riff extends getid3_handler
 	}
 
 	private function EitherEndian2Int($byteword, $signed=false) {
-		if ($this->getid3->info['fileformat'] == 'riff') {
+		if ($this->container == 'riff') {
 			return getid3_lib::LittleEndian2Int($byteword, $signed);
 		}
 		return getid3_lib::BigEndian2Int($byteword, false, $signed);
