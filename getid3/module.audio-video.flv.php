@@ -67,28 +67,28 @@ define('H264_PROFILE_HIGH422',            122);
 define('H264_PROFILE_HIGH444',            144);
 define('H264_PROFILE_HIGH444_PREDICTIVE', 244);
 
-class getid3_flv extends getid3_handler
-{
+class getid3_flv extends getid3_handler {
+	
+	const magic = 'FLV';
+	
 	public $max_frames = 100000; // break out of the loop if too many frames have been scanned; only scan this many if meta frame does not contain useful duration
 
 	public function Analyze() {
 		$info = &$this->getid3->info;
 
-		fseek($this->getid3->fp, $info['avdataoffset'], SEEK_SET);
+		$this->fseek($info['avdataoffset']);
 
 		$FLVdataLength = $info['avdataend'] - $info['avdataoffset'];
-		$FLVheader = fread($this->getid3->fp, 5);
+		$FLVheader = $this->fread(5);
 
 		$info['fileformat'] = 'flv';
 		$info['flv']['header']['signature'] =                           substr($FLVheader, 0, 3);
 		$info['flv']['header']['version']   = getid3_lib::BigEndian2Int(substr($FLVheader, 3, 1));
 		$TypeFlags                          = getid3_lib::BigEndian2Int(substr($FLVheader, 4, 1));
 
-		$magic = 'FLV';
-		if ($info['flv']['header']['signature'] != $magic) {
-			$info['error'][] = 'Expecting "'.getid3_lib::PrintHexBytes($magic).'" at offset '.$info['avdataoffset'].', found "'.getid3_lib::PrintHexBytes($info['flv']['header']['signature']).'"';
-			unset($info['flv']);
-			unset($info['fileformat']);
+		if ($info['flv']['header']['signature'] != self::magic) {
+			$info['error'][] = 'Expecting "'.getid3_lib::PrintHexBytes(self::magic).'" at offset '.$info['avdataoffset'].', found "'.getid3_lib::PrintHexBytes($info['flv']['header']['signature']).'"';
+			unset($info['flv'], $info['fileformat']);
 			return false;
 		}
 
@@ -374,7 +374,7 @@ class AMFStream {
 	public $bytes;
 	public $pos;
 
-	public function AMFStream(&$bytes) {
+	public function __construct(&$bytes) {
 		$this->bytes =& $bytes;
 		$this->pos = 0;
 	}
@@ -457,7 +457,7 @@ class AMFStream {
 class AMFReader {
 	public $stream;
 
-	public function AMFReader(&$stream) {
+	public function __construct(&$stream) {
 		$this->stream =& $stream;
 	}
 
@@ -619,7 +619,7 @@ class AVCSequenceParameterSetReader {
 	public $width;
 	public $height;
 
-	public function AVCSequenceParameterSetReader($sps) {
+	public function __construct($sps) {
 		$this->sps = $sps;
 	}
 

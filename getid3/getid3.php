@@ -104,7 +104,7 @@ class getID3
 	protected $startup_warning = '';
 	protected $memory_limit    = 0;
 
-	const VERSION           = '1.10.0-unknown';
+	const VERSION           = '1.10.0';
 	const FREAD_BUFFER_SIZE = 32768;
 
 	const ATTACHMENTS_NONE   = false;

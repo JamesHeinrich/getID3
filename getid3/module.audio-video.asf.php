@@ -15,8 +15,7 @@
 
 getid3_lib::IncludeDependency(GETID3_INCLUDEPATH.'module.audio-video.riff.php', __FILE__, true);
 
-class getid3_asf extends getid3_handler
-{
+class getid3_asf extends getid3_handler {
 
 	public function __construct(getID3 $getid3) {
 		parent::__construct($getid3);  // extends getid3_handler::__construct()
@@ -332,7 +331,7 @@ class getid3_asf extends getid3_handler
 
 						$thisfile_asf_codeclistobject_codecentries_current['type_raw'] = getid3_lib::LittleEndian2Int(substr($ASFHeaderData, $offset, 2));
 						$offset += 2;
-						$thisfile_asf_codeclistobject_codecentries_current['type'] = $this->ASFCodecListObjectTypeLookup($thisfile_asf_codeclistobject_codecentries_current['type_raw']);
+						$thisfile_asf_codeclistobject_codecentries_current['type'] = self::codecListObjectTypeLookup($thisfile_asf_codeclistobject_codecentries_current['type_raw']);
 
 						$CodecNameLength = getid3_lib::LittleEndian2Int(substr($ASFHeaderData, $offset, 2)) * 2; // 2 bytes per character
 						$offset += 2;
@@ -860,7 +859,7 @@ class getid3_asf extends getid3_handler
 								$wm_picture_offset = 0;
 								$thisfile_asf_extendedcontentdescriptionobject_contentdescriptor_current['image_type_id'] = getid3_lib::LittleEndian2Int(substr($thisfile_asf_extendedcontentdescriptionobject_contentdescriptor_current['value'], $wm_picture_offset, 1));
 								$wm_picture_offset += 1;
-								$thisfile_asf_extendedcontentdescriptionobject_contentdescriptor_current['image_type']    = $this->WMpictureTypeLookup($thisfile_asf_extendedcontentdescriptionobject_contentdescriptor_current['image_type_id']);
+								$thisfile_asf_extendedcontentdescriptionobject_contentdescriptor_current['image_type']    = self::WMpictureTypeLookup($thisfile_asf_extendedcontentdescriptionobject_contentdescriptor_current['image_type_id']);
 								$thisfile_asf_extendedcontentdescriptionobject_contentdescriptor_current['image_size']    = getid3_lib::LittleEndian2Int(substr($thisfile_asf_extendedcontentdescriptionobject_contentdescriptor_current['value'], $wm_picture_offset, 4));
 								$wm_picture_offset += 4;
 
@@ -1451,15 +1450,14 @@ class getid3_asf extends getid3_handler
 		return true;
 	}
 
-	public static function ASFCodecListObjectTypeLookup($CodecListType) {
-		static $ASFCodecListObjectTypeLookup = array();
-		if (empty($ASFCodecListObjectTypeLookup)) {
-			$ASFCodecListObjectTypeLookup[0x0001] = 'Video Codec';
-			$ASFCodecListObjectTypeLookup[0x0002] = 'Audio Codec';
-			$ASFCodecListObjectTypeLookup[0xFFFF] = 'Unknown Codec';
-		}
+	public static function codecListObjectTypeLookup($CodecListType) {
+		static $lookup = array(
+			0x0001 => 'Video Codec',
+			0x0002 => 'Audio Codec',
+			0xFFFF => 'Unknown Codec'
+		);
 
-		return (isset($ASFCodecListObjectTypeLookup[$CodecListType]) ? $ASFCodecListObjectTypeLookup[$CodecListType] : 'Invalid Codec Type');
+		return (isset($lookup[$CodecListType]) ? $lookup[$CodecListType] : 'Invalid Codec Type');
 	}
 
 	public static function KnownGUIDs() {
@@ -1666,28 +1664,34 @@ class getid3_asf extends getid3_handler
 	}
 
 	public static function WMpictureTypeLookup($WMpictureType) {
-		static $WMpictureTypeLookup = array();
-		if (empty($WMpictureTypeLookup)) {
-			$WMpictureTypeLookup[0x03] = getid3_lib::iconv_fallback('ISO-8859-1', 'UTF-16LE', 'Front Cover');
-			$WMpictureTypeLookup[0x04] = getid3_lib::iconv_fallback('ISO-8859-1', 'UTF-16LE', 'Back Cover');
-			$WMpictureTypeLookup[0x00] = getid3_lib::iconv_fallback('ISO-8859-1', 'UTF-16LE', 'User Defined');
-			$WMpictureTypeLookup[0x05] = getid3_lib::iconv_fallback('ISO-8859-1', 'UTF-16LE', 'Leaflet Page');
-			$WMpictureTypeLookup[0x06] = getid3_lib::iconv_fallback('ISO-8859-1', 'UTF-16LE', 'Media Label');
-			$WMpictureTypeLookup[0x07] = getid3_lib::iconv_fallback('ISO-8859-1', 'UTF-16LE', 'Lead Artist');
-			$WMpictureTypeLookup[0x08] = getid3_lib::iconv_fallback('ISO-8859-1', 'UTF-16LE', 'Artist');
-			$WMpictureTypeLookup[0x09] = getid3_lib::iconv_fallback('ISO-8859-1', 'UTF-16LE', 'Conductor');
-			$WMpictureTypeLookup[0x0A] = getid3_lib::iconv_fallback('ISO-8859-1', 'UTF-16LE', 'Band');
-			$WMpictureTypeLookup[0x0B] = getid3_lib::iconv_fallback('ISO-8859-1', 'UTF-16LE', 'Composer');
-			$WMpictureTypeLookup[0x0C] = getid3_lib::iconv_fallback('ISO-8859-1', 'UTF-16LE', 'Lyricist');
-			$WMpictureTypeLookup[0x0D] = getid3_lib::iconv_fallback('ISO-8859-1', 'UTF-16LE', 'Recording Location');
-			$WMpictureTypeLookup[0x0E] = getid3_lib::iconv_fallback('ISO-8859-1', 'UTF-16LE', 'During Recording');
-			$WMpictureTypeLookup[0x0F] = getid3_lib::iconv_fallback('ISO-8859-1', 'UTF-16LE', 'During Performance');
-			$WMpictureTypeLookup[0x10] = getid3_lib::iconv_fallback('ISO-8859-1', 'UTF-16LE', 'Video Screen Capture');
-			$WMpictureTypeLookup[0x12] = getid3_lib::iconv_fallback('ISO-8859-1', 'UTF-16LE', 'Illustration');
-			$WMpictureTypeLookup[0x13] = getid3_lib::iconv_fallback('ISO-8859-1', 'UTF-16LE', 'Band Logotype');
-			$WMpictureTypeLookup[0x14] = getid3_lib::iconv_fallback('ISO-8859-1', 'UTF-16LE', 'Publisher Logotype');
+		static $lookup = null;
+		if ($lookup === null) {
+			$lookup = array(
+				0x03 => 'Front Cover',
+				0x04 => 'Back Cover',
+				0x00 => 'User Defined',
+				0x05 => 'Leaflet Page',
+				0x06 => 'Media Label',
+				0x07 => 'Lead Artist',
+				0x08 => 'Artist',
+				0x09 => 'Conductor',
+				0x0A => 'Band',
+				0x0B => 'Composer',
+				0x0C => 'Lyricist',
+				0x0D => 'Recording Location',
+				0x0E => 'During Recording',
+				0x0F => 'During Performance',
+				0x10 => 'Video Screen Capture',
+				0x12 => 'Illustration',
+				0x13 => 'Band Logotype',
+				0x14 => 'Publisher Logotype'
+			);
+			$lookup = array_map(function($str) {
+				return getid3_lib::iconv_fallback('UTF-8', 'UTF-16LE', $str);
+			}, $lookup);
 		}
-		return (isset($WMpictureTypeLookup[$WMpictureType]) ? $WMpictureTypeLookup[$WMpictureType] : '');
+		
+		return (isset($lookup[$WMpictureType]) ? $lookup[$WMpictureType] : '');
 	}
 
 	public function ASF_HeaderExtensionObjectDataParse(&$asf_header_extension_object_data, &$unhandled_sections) {
@@ -1825,7 +1829,7 @@ class getid3_asf extends getid3_handler
 
 						$descriptionRecord['data_type']          = getid3_lib::LittleEndian2Int(substr($asf_header_extension_object_data, $offset,  2));
 						$offset += 2;
-						$descriptionRecord['data_type_text'] = $this->ASFmetadataLibraryObjectDataTypeLookup($descriptionRecord['data_type']);
+						$descriptionRecord['data_type_text'] = self::metadataLibraryObjectDataTypeLookup($descriptionRecord['data_type']);
 
 						$descriptionRecord['data_length']        = getid3_lib::LittleEndian2Int(substr($asf_header_extension_object_data, $offset,  4));
 						$offset += 4;
@@ -1897,7 +1901,7 @@ class getid3_asf extends getid3_handler
 
 						$descriptionRecord['data_type']           = getid3_lib::LittleEndian2Int(substr($asf_header_extension_object_data, $offset,  2));
 						$offset += 2;
-						$descriptionRecord['data_type_text'] = $this->ASFmetadataLibraryObjectDataTypeLookup($descriptionRecord['data_type']);
+						$descriptionRecord['data_type_text'] = self::metadataLibraryObjectDataTypeLookup($descriptionRecord['data_type']);
 
 						$descriptionRecord['data_length']         = getid3_lib::LittleEndian2Int(substr($asf_header_extension_object_data, $offset,  4));
 						$offset += 4;
@@ -1937,8 +1941,8 @@ class getid3_asf extends getid3_handler
 	}
 
 
-	public static function ASFmetadataLibraryObjectDataTypeLookup($id) {
-		static $ASFmetadataLibraryObjectDataTypeLookup = array(
+	public static function metadataLibraryObjectDataTypeLookup($id) {
+		static $lookup = array(
 			0x0000 => 'Unicode string', // The data consists of a sequence of Unicode characters
 			0x0001 => 'BYTE array',     // The type of the data is implementation-specific
 			0x0002 => 'BOOL',           // The data is 2 bytes long and should be interpreted as a 16-bit unsigned integer. Only 0x0000 or 0x0001 are permitted values
@@ -1947,7 +1951,7 @@ class getid3_asf extends getid3_handler
 			0x0005 => 'WORD',           // The data is 2 bytes long and should be interpreted as a 16-bit unsigned integer
 			0x0006 => 'GUID',           // The data is 16 bytes long and should be interpreted as a 128-bit GUID
 		);
-		return (isset($ASFmetadataLibraryObjectDataTypeLookup[$id]) ? $ASFmetadataLibraryObjectDataTypeLookup[$id] : 'invalid');
+		return (isset($lookup[$id]) ? $lookup[$id] : 'invalid');
 	}
 
 	public function ASF_WMpicture(&$data) {
@@ -1964,7 +1968,7 @@ class getid3_asf extends getid3_handler
 		$offset = 0;
 		$WMpicture['image_type_id'] = getid3_lib::LittleEndian2Int(substr($data, $offset, 1));
 		$offset += 1;
-		$WMpicture['image_type']    = $this->WMpictureTypeLookup($WMpicture['image_type_id']);
+		$WMpicture['image_type']    = self::WMpictureTypeLookup($WMpicture['image_type_id']);
 		$WMpicture['image_size']    = getid3_lib::LittleEndian2Int(substr($data, $offset, 4));
 		$offset += 4;
 
