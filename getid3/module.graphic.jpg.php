@@ -143,17 +143,16 @@ class getid3_jpg extends getid3_handler
 		}
 
 
-		if (getid3_lib::IncludeDependency(GETID3_INCLUDEPATH.'module.tag.xmp.php', __FILE__, false)) {
-			if (isset($info['filenamepath'])) {
-				$image_xmp = new Image_XMP($info['filenamepath']);
-				$xmp_raw = $image_xmp->getAllTags();
-				foreach ($xmp_raw as $key => $value) {
-					if (strpos($key, ':')) {
-						list($subsection, $tagname) = explode(':', $key);
-						$info['xmp'][$subsection][$tagname] = $this->CastAsAppropriate($value);
-					} else {
-						$info['warning'][] = 'XMP: expecting "<subsection>:<tagname>", found "'.$key.'"';
-					}
+		getid3_lib::IncludeDependency(GETID3_INCLUDEPATH.'module.tag.xmp.php', __FILE__, true);
+		if (isset($info['filenamepath'])) {
+			$image_xmp = new Image_XMP($info['filenamepath']);
+			$xmp_raw = $image_xmp->getAllTags();
+			foreach ($xmp_raw as $key => $value) {
+				if (strpos($key, ':')) {
+					list($subsection, $tagname) = explode(':', $key);
+					$info['xmp'][$subsection][$tagname] = $this->CastAsAppropriate($value);
+				} else {
+					$info['warning'][] = 'XMP: expecting "<subsection>:<tagname>", found "'.$key.'"';
 				}
 			}
 		}

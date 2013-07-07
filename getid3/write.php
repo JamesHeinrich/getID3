@@ -178,9 +178,7 @@ class getid3_writetags
 			switch ($tagformat) {
 				case 'ape':
 					$GETID3_ERRORARRAY = &$this->errors;
-					if (!getid3_lib::IncludeDependency(GETID3_INCLUDEPATH.'write.apetag.php', __FILE__, false)) {
-						return false;
-					}
+					getid3_lib::IncludeDependency(GETID3_INCLUDEPATH.'write.apetag.php', __FILE__, true);
 					break;
 
 				case 'id3v1':
@@ -189,9 +187,7 @@ class getid3_writetags
 				case 'metaflac':
 				case 'real':
 					$GETID3_ERRORARRAY = &$this->errors;
-					if (!getid3_lib::IncludeDependency(GETID3_INCLUDEPATH.'write.'.$tagformat.'.php', __FILE__, false)) {
-						return false;
-					}
+					getid3_lib::IncludeDependency(GETID3_INCLUDEPATH.'write.'.$tagformat.'.php', __FILE__, true);
 					break;
 
 				case 'id3v2.2':
@@ -199,9 +195,7 @@ class getid3_writetags
 				case 'id3v2.4':
 				case 'id3v2':
 					$GETID3_ERRORARRAY = &$this->errors;
-					if (!getid3_lib::IncludeDependency(GETID3_INCLUDEPATH.'write.id3v2.php', __FILE__, false)) {
-						return false;
-					}
+					getid3_lib::IncludeDependency(GETID3_INCLUDEPATH.'write.id3v2.php', __FILE__, true);
 					break;
 
 				default:
