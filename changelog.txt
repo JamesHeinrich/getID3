@@ -17,11 +17,12 @@
 Version History
 ===============
 
-1.9.7: [2013-??-??] James Heinrich
+1.9.7: [2013-07-05] James Heinrich
     * Bugfix: [module.audio-video.quicktime.php] track languages set
       with 15-bit-encoded ISO639-2 language codes not parsed correctly
     * Bugfix: (#1717) QuickTime atom hierarchy broken
     * Bugfix: (#1716) truncate MIDI file could cause infinite loop
+    * Bugfix: all source files converted to UTF-8
 
 1.9.6: [2013-06-03] James Heinrich
     » getID3() is now licensed under GPL / LGPL / MozillaPL / gCL
