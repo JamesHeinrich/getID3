@@ -95,10 +95,10 @@ class getid3_flv extends getid3_handler {
 		$info['flv']['header']['hasAudio'] = (bool) ($TypeFlags & 0x04);
 		$info['flv']['header']['hasVideo'] = (bool) ($TypeFlags & 0x01);
 
-		$FrameSizeDataLength = getid3_lib::BigEndian2Int(fread($this->getid3->fp, 4));
+		$FrameSizeDataLength = getid3_lib::BigEndian2Int($this->fread(4));
 		$FLVheaderFrameLength = 9;
 		if ($FrameSizeDataLength > $FLVheaderFrameLength) {
-			fseek($this->getid3->fp, $FrameSizeDataLength - $FLVheaderFrameLength, SEEK_CUR);
+			$this->fseek($FrameSizeDataLength - $FLVheaderFrameLength, SEEK_CUR);
 		}
 		$Duration = 0;
 		$found_video = false;
@@ -108,15 +108,15 @@ class getid3_flv extends getid3_handler {
 		$tagParseCount = 0;
 		$info['flv']['framecount'] = array('total'=>0, 'audio'=>0, 'video'=>0);
 		$flv_framecount = &$info['flv']['framecount'];
-		while (((ftell($this->getid3->fp) + 16) < $info['avdataend']) && (($tagParseCount++ <= $this->max_frames) || !$found_valid_meta_playtime))  {
-			$ThisTagHeader = fread($this->getid3->fp, 16);
+		while ((($this->ftell() + 16) < $info['avdataend']) && (($tagParseCount++ <= $this->max_frames) || !$found_valid_meta_playtime))  {
+			$ThisTagHeader = $this->fread(16);
 
 			$PreviousTagLength = getid3_lib::BigEndian2Int(substr($ThisTagHeader,  0, 4));
 			$TagType           = getid3_lib::BigEndian2Int(substr($ThisTagHeader,  4, 1));
 			$DataLength        = getid3_lib::BigEndian2Int(substr($ThisTagHeader,  5, 3));
 			$Timestamp         = getid3_lib::BigEndian2Int(substr($ThisTagHeader,  8, 3));
 			$LastHeaderByte    = getid3_lib::BigEndian2Int(substr($ThisTagHeader, 15, 1));
-			$NextOffset = ftell($this->getid3->fp) - 1 + $DataLength;
+			$NextOffset = $this->ftell() - 1 + $DataLength;
 			if ($Timestamp > $Duration) {
 				$Duration = $Timestamp;
 			}
@@ -140,7 +140,7 @@ class getid3_flv extends getid3_handler {
 						$found_video = true;
 						$info['flv']['video']['videoCodec'] = $LastHeaderByte & 0x07;
 
-						$FLVvideoHeader = fread($this->getid3->fp, 11);
+						$FLVvideoHeader = $this->fread(11);
 
 						if ($info['flv']['video']['videoCodec'] == GETID3_FLV_VIDEO_H264) {
 							// this code block contributed by: moysevichØgmail*com
@@ -160,7 +160,7 @@ class getid3_flv extends getid3_handler {
 									//$spsSize = getid3_lib::BigEndian2Int(substr($FLVvideoHeader, 9, 2));
 									$spsSize = getid3_lib::LittleEndian2Int(substr($FLVvideoHeader, 9, 2));
 									//	read the first SequenceParameterSet
-									$sps = fread($this->getid3->fp, $spsSize);
+									$sps = $this->fread($spsSize);
 									if (strlen($sps) == $spsSize) {	//	make sure that whole SequenceParameterSet was red
 										$spsReader = new AVCSequenceParameterSetReader($sps);
 										$spsReader->readData();
@@ -242,8 +242,8 @@ class getid3_flv extends getid3_handler {
 				case GETID3_FLV_TAG_META:
 					if (!$found_meta) {
 						$found_meta = true;
-						fseek($this->getid3->fp, -1, SEEK_CUR);
-						$datachunk = fread($this->getid3->fp, $DataLength);
+						$this->fseek(-1, SEEK_CUR);
+						$datachunk = $this->fread($DataLength);
 						$AMFstream = new AMFStream($datachunk);
 						$reader = new AMFReader($AMFstream);
 						$eventName = $reader->readData();
@@ -279,7 +279,7 @@ class getid3_flv extends getid3_handler {
 					// noop
 					break;
 			}
-			fseek($this->getid3->fp, $NextOffset, SEEK_SET);
+			$this->fseek($NextOffset);
 		}
 
 		$info['playtime_seconds'] = $Duration / 1000;
@@ -288,16 +288,16 @@ class getid3_flv extends getid3_handler {
 		}
 
 		if ($info['flv']['header']['hasAudio']) {
-			$info['audio']['codec']           =   $this->FLVaudioFormat($info['flv']['audio']['audioFormat']);
-			$info['audio']['sample_rate']     =     $this->FLVaudioRate($info['flv']['audio']['audioRate']);
-			$info['audio']['bits_per_sample'] = $this->FLVaudioBitDepth($info['flv']['audio']['audioSampleSize']);
+			$info['audio']['codec']           =   self::audioFormatLookup($info['flv']['audio']['audioFormat']);
+			$info['audio']['sample_rate']     =     self::audioRateLookup($info['flv']['audio']['audioRate']);
+			$info['audio']['bits_per_sample'] = self::audioBitDepthLookup($info['flv']['audio']['audioSampleSize']);
 
 			$info['audio']['channels']   =  $info['flv']['audio']['audioType'] + 1; // 0=mono,1=stereo
 			$info['audio']['lossless']   = ($info['flv']['audio']['audioFormat'] ? false : true); // 0=uncompressed
 			$info['audio']['dataformat'] = 'flv';
 		}
 		if (!empty($info['flv']['header']['hasVideo'])) {
-			$info['video']['codec']      = $this->FLVvideoCodec($info['flv']['video']['videoCodec']);
+			$info['video']['codec']      = self::videoCodecLookup($info['flv']['video']['videoCodec']);
 			$info['video']['dataformat'] = 'flv';
 			$info['video']['lossless']   = false;
 		}
@@ -308,17 +308,17 @@ class getid3_flv extends getid3_handler {
 			$info['bitrate'] = (($info['avdataend'] - $info['avdataoffset']) * 8) / $info['playtime_seconds'];
 		}
 		if (isset($info['flv']['meta']['onMetaData']['audiocodecid'])) {
-			$info['audio']['codec'] = $this->FLVaudioFormat($info['flv']['meta']['onMetaData']['audiocodecid']);
+			$info['audio']['codec'] = self::audioFormatLookup($info['flv']['meta']['onMetaData']['audiocodecid']);
 		}
 		if (isset($info['flv']['meta']['onMetaData']['videocodecid'])) {
-			$info['video']['codec'] = $this->FLVvideoCodec($info['flv']['meta']['onMetaData']['videocodecid']);
+			$info['video']['codec'] = self::videoCodecLookup($info['flv']['meta']['onMetaData']['videocodecid']);
 		}
 		return true;
 	}
 
 
-	public function FLVaudioFormat($id) {
-		$FLVaudioFormat = array(
+	public static function audioFormatLookup($id) {
+		static $lookup = array(
 			0  => 'Linear PCM, platform endian',
 			1  => 'ADPCM',
 			2  => 'mp3',
@@ -336,29 +336,29 @@ class getid3_flv extends getid3_handler {
 			14 => 'mp3 8kHz',
 			15 => 'Device-specific sound',
 		);
-		return (isset($FLVaudioFormat[$id]) ? $FLVaudioFormat[$id] : false);
+		return (isset($lookup[$id]) ? $lookup[$id] : false);
 	}
 
-	public function FLVaudioRate($id) {
-		$FLVaudioRate = array(
+	public static function audioRateLookup($id) {
+		static $lookup = array(
 			0 =>  5500,
 			1 => 11025,
 			2 => 22050,
 			3 => 44100,
 		);
-		return (isset($FLVaudioRate[$id]) ? $FLVaudioRate[$id] : false);
+		return (isset($lookup[$id]) ? $lookup[$id] : false);
 	}
 
-	public function FLVaudioBitDepth($id) {
-		$FLVaudioBitDepth = array(
+	public static function audioBitDepthLookup($id) {
+		static $lookup = array(
 			0 =>  8,
 			1 => 16,
 		);
-		return (isset($FLVaudioBitDepth[$id]) ? $FLVaudioBitDepth[$id] : false);
+		return (isset($lookup[$id]) ? $lookup[$id] : false);
 	}
 
-	public function FLVvideoCodec($id) {
-		$FLVvideoCodec = array(
+	public static function videoCodecLookup($id) {
+		static $lookup = array(
 			GETID3_FLV_VIDEO_H263         => 'Sorenson H.263',
 			GETID3_FLV_VIDEO_SCREEN       => 'Screen video',
 			GETID3_FLV_VIDEO_VP6FLV       => 'On2 VP6',
@@ -366,7 +366,7 @@ class getid3_flv extends getid3_handler {
 			GETID3_FLV_VIDEO_SCREENV2     => 'Screen video v2',
 			GETID3_FLV_VIDEO_H264         => 'Sorenson H.264',
 		);
-		return (isset($FLVvideoCodec[$id]) ? $FLVvideoCodec[$id] : false);
+		return (isset($lookup[$id]) ? $lookup[$id] : false);
 	}
 }
 

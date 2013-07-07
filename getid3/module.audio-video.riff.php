@@ -1130,19 +1130,19 @@ class getid3_riff extends getid3_handler {
 				$info['mime_type']  = 'video/mpeg';
 				
 				if (!empty($thisfile_riff['CDXA']['data'][0]['size'])) {
-					if (getid3_lib::IncludeDependency(GETID3_INCLUDEPATH.'module.audio-video.mpeg.php', __FILE__, false)) {
-						$getid3_temp = new getID3();
-						$getid3_temp->openfile($this->getid3->filename);
-						$getid3_mpeg = new getid3_mpeg($getid3_temp);
-						$getid3_mpeg->Analyze();
-						if (empty($getid3_temp->info['error'])) {
-							$info['audio']   = $getid3_temp->info['audio'];
-							$info['video']   = $getid3_temp->info['video'];
-							$info['mpeg']    = $getid3_temp->info['mpeg'];
-							$info['warning'] = $getid3_temp->info['warning'];
-						}
-						unset($getid3_temp, $getid3_mpeg);
+					getid3_lib::IncludeDependency(GETID3_INCLUDEPATH.'module.audio-video.mpeg.php', __FILE__, true);
+					
+					$getid3_temp = new getID3();
+					$getid3_temp->openfile($this->getid3->filename);
+					$getid3_mpeg = new getid3_mpeg($getid3_temp);
+					$getid3_mpeg->Analyze();
+					if (empty($getid3_temp->info['error'])) {
+						$info['audio']   = $getid3_temp->info['audio'];
+						$info['video']   = $getid3_temp->info['video'];
+						$info['mpeg']    = $getid3_temp->info['mpeg'];
+						$info['warning'] = $getid3_temp->info['warning'];
 					}
+					unset($getid3_temp, $getid3_mpeg);
 				}
 				break;
 
@@ -1167,6 +1167,7 @@ class getid3_riff extends getid3_handler {
 
 				if (isset($thisfile_riff[$RIFFsubtype]['id3 '])) {
 					getid3_lib::IncludeDependency(GETID3_INCLUDEPATH.'module.tag.id3v2.php', __FILE__, true);
+					
 					$getid3_temp = new getID3();
 					$getid3_temp->openfile($this->getid3->filename);
 					$getid3_id3v2 = new getid3_id3v2($getid3_temp);
