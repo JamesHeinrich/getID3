@@ -91,7 +91,7 @@ class getid3_write_id3v2
 
 								rewind($fp_source);
 								if (!empty($OldThisFileInfo['avdataoffset'])) {
-									fseek($fp_source, $OldThisFileInfo['avdataoffset'], SEEK_SET);
+									fseek($fp_source, $OldThisFileInfo['avdataoffset']);
 								}
 
 								while ($buffer = fread($fp_source, $this->fread_buffer_size)) {
@@ -152,7 +152,7 @@ class getid3_write_id3v2
 				}
 				rewind($fp_source);
 				if ($OldThisFileInfo['avdataoffset'] !== false) {
-					fseek($fp_source, $OldThisFileInfo['avdataoffset'], SEEK_SET);
+					fseek($fp_source, $OldThisFileInfo['avdataoffset']);
 				}
 				if (is_writable($this->filename) && is_file($this->filename) && ($fp_temp = fopen($this->filename.'getid3tmp', 'w+b'))) {
 					while ($buffer = fread($fp_source, $this->fread_buffer_size)) {
@@ -187,7 +187,7 @@ class getid3_write_id3v2
 				}
 				rewind($fp_source);
 				if ($OldThisFileInfo['avdataoffset'] !== false) {
-					fseek($fp_source, $OldThisFileInfo['avdataoffset'], SEEK_SET);
+					fseek($fp_source, $OldThisFileInfo['avdataoffset']);
 				}
 				if ($fp_temp = tmpfile()) {
 					while ($buffer = fread($fp_source, $this->fread_buffer_size)) {

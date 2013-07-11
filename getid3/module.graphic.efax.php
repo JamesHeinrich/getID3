@@ -20,8 +20,8 @@ class getid3_efax extends getid3_handler
 	public function Analyze() {
 		$info = &$this->getid3->info;
 
-		fseek($this->getid3->fp, $info['avdataoffset'], SEEK_SET);
-		$efaxheader = fread($this->getid3->fp, 1024);
+		$this->fseek($info['avdataoffset']);
+		$efaxheader = $this->fread(1024);
 
 		$info['efax']['header']['magic'] = substr($efaxheader, 0, 2);
 		if ($info['efax']['header']['magic'] != "\xDC\xFE") {

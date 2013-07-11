@@ -21,9 +21,9 @@ class getid3_svg extends getid3_handler
 	public function Analyze() {
 		$info = &$this->getid3->info;
 
-		fseek($this->getid3->fp, $info['avdataoffset'], SEEK_SET);
+		$this->fseek($info['avdataoffset']);
 
-		$SVGheader = fread($this->getid3->fp, 4096);
+		$SVGheader = $this->fread(4096);
 		if (preg_match('#\<\?xml([^\>]+)\?\>#i', $SVGheader, $matches)) {
 			$info['svg']['xml']['raw'] = $matches;
 		}

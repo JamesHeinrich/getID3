@@ -30,7 +30,7 @@ class getid3_quicktime extends getid3_handler
 		$info['quicktime']['hinting']    = false;
 		$info['quicktime']['controller'] = 'standard'; // may be overridden if 'ctyp' atom is present
 
-		fseek($this->getid3->fp, $info['avdataoffset'], SEEK_SET);
+		$this->fseek($info['avdataoffset']);
 
 		$offset      = 0;
 		$atomcounter = 0;
@@ -40,15 +40,15 @@ class getid3_quicktime extends getid3_handler
 				$info['error'][] = 'Unable to parse atom at offset '.$offset.' because beyond '.round(PHP_INT_MAX / 1073741824).'GB limit of PHP filesystem functions';
 				break;
 			}
-			fseek($this->getid3->fp, $offset, SEEK_SET);
-			$AtomHeader = fread($this->getid3->fp, 8);
+			$this->fseek($offset);
+			$AtomHeader = $this->fread(8);
 
 			$atomsize = getid3_lib::BigEndian2Int(substr($AtomHeader, 0, 4));
 			$atomname = substr($AtomHeader, 4, 4);
 
 			// 64-bit MOV patch by jlegateØktnc*com
 			if ($atomsize == 1) {
-				$atomsize = getid3_lib::BigEndian2Int(fread($this->getid3->fp, 8));
+				$atomsize = getid3_lib::BigEndian2Int($this->fread(8));
 			}
 
 			$info['quicktime'][$atomname]['name']   = $atomname;
@@ -80,7 +80,7 @@ class getid3_quicktime extends getid3_handler
 						$getid3_temp->info['avdataoffset'] = $info['avdataoffset'];
 						$getid3_temp->info['avdataend']    = $info['avdataend'];
 						$getid3_mp3 = new getid3_mp3($getid3_temp);
-						if ($getid3_mp3->MPEGaudioHeaderValid($getid3_mp3->MPEGaudioHeaderDecode(fread($this->getid3->fp, 4)))) {
+						if ($getid3_mp3->MPEGaudioHeaderValid($getid3_mp3->MPEGaudioHeaderDecode($this->fread(4)))) {
 							$getid3_mp3->getOnlyMPEGaudioInfo($getid3_temp->info['avdataoffset'], false);
 							if (!empty($getid3_temp->info['warning'])) {
 								foreach ($getid3_temp->info['warning'] as $value) {
@@ -115,7 +115,7 @@ class getid3_quicktime extends getid3_handler
 
 				default:
 					$atomHierarchy = array();
-					$info['quicktime'][$atomname] = $this->QuicktimeParseAtom($atomname, $atomsize, fread($this->getid3->fp, $atomsize), $offset, $atomHierarchy, $this->ParseAllPossibleAtoms);
+					$info['quicktime'][$atomname] = $this->QuicktimeParseAtom($atomname, $atomsize, $this->fread($atomsize), $offset, $atomHierarchy, $this->ParseAllPossibleAtoms);
 					break;
 			}
 

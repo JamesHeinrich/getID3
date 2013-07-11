@@ -40,7 +40,7 @@ class getid3_write_lyrics3
 				flock($fp, LOCK_EX);
 				$oldignoreuserabort = ignore_user_abort(true);
 
-				fseek($fp, $ThisFileInfo['lyrics3']['tag_offset_end'], SEEK_SET);
+				fseek($fp, $ThisFileInfo['lyrics3']['tag_offset_end']);
 				$DataAfterLyrics3 = '';
 				if ($ThisFileInfo['filesize'] > $ThisFileInfo['lyrics3']['tag_offset_end']) {
 					$DataAfterLyrics3 = fread($fp, $ThisFileInfo['filesize'] - $ThisFileInfo['lyrics3']['tag_offset_end']);
@@ -49,7 +49,7 @@ class getid3_write_lyrics3
 				ftruncate($fp, $ThisFileInfo['lyrics3']['tag_offset_start']);
 
 				if (!empty($DataAfterLyrics3)) {
-					fseek($fp, $ThisFileInfo['lyrics3']['tag_offset_start'], SEEK_SET);
+					fseek($fp, $ThisFileInfo['lyrics3']['tag_offset_start']);
 					fwrite($fp, $DataAfterLyrics3, strlen($DataAfterLyrics3));
 				}
 

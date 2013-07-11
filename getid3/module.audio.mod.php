@@ -19,8 +19,8 @@ class getid3_mod extends getid3_handler
 
 	public function Analyze() {
 		$info = &$this->getid3->info;
-		fseek($this->getid3->fp, $info['avdataoffset'], SEEK_SET);
-		$fileheader = fread($this->getid3->fp, 1088);
+		$this->fseek($info['avdataoffset']);
+		$fileheader = $this->fread(1088);
 		if (preg_match('#^IMPM#', $fileheader)) {
 			return $this->getITheaderFilepointer();
 		} elseif (preg_match('#^Extended Module#', $fileheader)) {
@@ -37,8 +37,8 @@ class getid3_mod extends getid3_handler
 
 	public function getMODheaderFilepointer() {
 		$info = &$this->getid3->info;
-		fseek($this->getid3->fp, $info['avdataoffset'] + 1080);
-		$FormatID = fread($this->getid3->fp, 4);
+		$this->fseek($info['avdataoffset'] + 1080);
+		$FormatID = $this->fread(4);
 		if (!preg_match('#^(M.K.|[5-9]CHN|[1-3][0-9]CH)$#', $FormatID)) {
 			$info['error'][] = 'This is not a known type of MOD file';
 			return false;
@@ -52,8 +52,8 @@ class getid3_mod extends getid3_handler
 
 	public function getXMheaderFilepointer() {
 		$info = &$this->getid3->info;
-		fseek($this->getid3->fp, $info['avdataoffset']);
-		$FormatID = fread($this->getid3->fp, 15);
+		$this->fseek($info['avdataoffset']);
+		$FormatID = $this->fread(15);
 		if (!preg_match('#^Extended Module$#', $FormatID)) {
 			$info['error'][] = 'This is not a known type of XM-MOD file';
 			return false;
@@ -67,8 +67,8 @@ class getid3_mod extends getid3_handler
 
 	public function getS3MheaderFilepointer() {
 		$info = &$this->getid3->info;
-		fseek($this->getid3->fp, $info['avdataoffset'] + 44);
-		$FormatID = fread($this->getid3->fp, 4);
+		$this->fseek($info['avdataoffset'] + 44);
+		$FormatID = $this->fread(4);
 		if (!preg_match('#^SCRM$#', $FormatID)) {
 			$info['error'][] = 'This is not a ScreamTracker MOD file';
 			return false;
@@ -82,8 +82,8 @@ class getid3_mod extends getid3_handler
 
 	public function getITheaderFilepointer() {
 		$info = &$this->getid3->info;
-		fseek($this->getid3->fp, $info['avdataoffset']);
-		$FormatID = fread($this->getid3->fp, 4);
+		$this->fseek($info['avdataoffset']);
+		$FormatID = $this->fread(4);
 		if (!preg_match('#^IMPM$#', $FormatID)) {
 			$info['error'][] = 'This is not an ImpulseTracker MOD file';
 			return false;

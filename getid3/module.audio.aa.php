@@ -20,8 +20,8 @@ class getid3_aa extends getid3_handler
 	public function Analyze() {
 		$info = &$this->getid3->info;
 
-		fseek($this->getid3->fp, $info['avdataoffset'], SEEK_SET);
-		$AAheader  = fread($this->getid3->fp, 8);
+		$this->fseek($info['avdataoffset']);
+		$AAheader  = $this->fread(8);
 
 		$magic = "\x57\x90\x75\x36";
 		if (substr($AAheader, 4, 4) != $magic) {

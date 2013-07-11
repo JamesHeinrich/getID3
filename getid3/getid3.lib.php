@@ -634,7 +634,7 @@ class getid3_lib
 		}
 		if (is_readable($filename_source) && is_file($filename_source) && ($fp_src = fopen($filename_source, 'rb'))) {
 			if (($fp_dest = fopen($filename_dest, 'wb'))) {
-				if (fseek($fp_src, $offset, SEEK_SET) == 0) {
+				if (fseek($fp_src, $offset) == 0) {
 					$byteslefttowrite = $length;
 					while (($byteslefttowrite > 0) && ($buffer = fread($fp_src, min($byteslefttowrite, getID3::FREAD_BUFFER_SIZE)))) {
 						$byteswritten = fwrite($fp_dest, $buffer, $byteslefttowrite);

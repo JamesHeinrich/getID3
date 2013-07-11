@@ -21,8 +21,8 @@ class getid3_lpac extends getid3_handler
 	public function Analyze() {
 		$info = &$this->getid3->info;
 
-		fseek($this->getid3->fp, $info['avdataoffset'], SEEK_SET);
-		$LPACheader = fread($this->getid3->fp, 14);
+		$this->fseek($info['avdataoffset']);
+		$LPACheader = $this->fread(14);
 		if (substr($LPACheader, 0, 4) != 'LPAC') {
 			$info['error'][] = 'Expected "LPAC" at offset '.$info['avdataoffset'].', found "'.$StreamMarker.'"';
 			return false;

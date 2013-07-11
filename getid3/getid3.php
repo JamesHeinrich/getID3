@@ -353,7 +353,7 @@ class getID3
 
 			// ID3v2 detection (NOT parsing), even if ($this->option_tag_id3v2 == false) done to make fileformat easier
 			if (!$this->option_tag_id3v2) {
-				fseek($this->fp, 0, SEEK_SET);
+				fseek($this->fp, 0);
 				$header = fread($this->fp, 10);
 				if ((substr($header, 0, 3) == 'ID3') && (strlen($header) == 10)) {
 					$this->info['id3v2']['header']        = true;
@@ -364,7 +364,7 @@ class getID3
 			}
 
 			// read 32 kb file data
-			fseek($this->fp, $this->info['avdataoffset'], SEEK_SET);
+			fseek($this->fp, $this->info['avdataoffset']);
 			$formattest = fread($this->fp, 32774);
 
 			// determine format
@@ -1566,8 +1566,11 @@ class getID3
 }
 
 
-abstract class getid3_handler
-{
+abstract class getid3_handler {
+	
+	/**
+	* @var getID3
+	*/
 	protected $getid3;                       // pointer
 
 	protected $data_string_flag     = false; // analyzing filepointer or string
@@ -1594,7 +1597,7 @@ abstract class getid3_handler
 	// Analyze from string instead
 	public function AnalyzeString($string) {
 		// Enter string mode
-	    $this->setStringMode($string);
+		$this->setStringMode($string);
 
 		// Save info
 		$saved_avdataoffset = $this->getid3->info['avdataoffset'];
@@ -1635,10 +1638,10 @@ abstract class getid3_handler
 			$this->data_string_position += $bytes;
 			return substr($this->data_string, $this->data_string_position - $bytes, $bytes);
 		}
-	    $pos = $this->ftell() + $bytes;
-	    if (!getid3_lib::intValueSupported($pos)) {
+		$pos = $this->ftell() + $bytes;
+		if (!getid3_lib::intValueSupported($pos)) {
 			throw new getid3_exception('cannot fread('.$bytes.' from '.$this->ftell().') because beyond PHP filesystem limit', 10);
-	    }
+		}
 		return fread($this->getid3->fp, $bytes);
 	}
 
@@ -1658,14 +1661,14 @@ abstract class getid3_handler
 					break;
 			}
 			return 0;
-	    } else {
-	    	$pos = $bytes;
-	    	if ($whence == SEEK_CUR) {
+		} else {
+			$pos = $bytes;
+			if ($whence == SEEK_CUR) {
 				$pos = $this->ftell() + $bytes;
-	    	} elseif ($whence == SEEK_END) {
-				$pos = $this->info['filesize'] + $bytes;
-	    	}
-	    	if (!getid3_lib::intValueSupported($pos)) {
+			} elseif ($whence == SEEK_END) {
+				$pos = $this->getid3->info['filesize'] + $bytes;
+			}
+			if (!getid3_lib::intValueSupported($pos)) {
 				throw new getid3_exception('cannot fseek('.$pos.') because beyond PHP filesystem limit', 10);
 			}
 		}
@@ -1683,20 +1686,17 @@ abstract class getid3_handler
 		return $this->dependency_to == $module;
 	}
 
-	protected function error($text)
-	{
+	protected function error($text) {
 		$this->getid3->info['error'][] = $text;
 
 		return false;
 	}
 
-	protected function warning($text)
-	{
+	protected function warning($text) {
 		return $this->getid3->warning($text);
 	}
 
-	protected function notice($text)
-	{
+	protected function notice($text) {
 		// does nothing for now
 	}
 

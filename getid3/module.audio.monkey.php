@@ -32,8 +32,8 @@ class getid3_monkey extends getid3_handler
 		$thisfile_monkeysaudio                = &$info['monkeys_audio'];
 		$thisfile_monkeysaudio_raw            = &$thisfile_monkeysaudio['raw'];
 
-		fseek($this->getid3->fp, $info['avdataoffset'], SEEK_SET);
-		$MACheaderData = fread($this->getid3->fp, 74);
+		$this->fseek($info['avdataoffset']);
+		$MACheaderData = $this->fread(74);
 
 		$thisfile_monkeysaudio_raw['magic'] = substr($MACheaderData, 0, 4);
 		$magic = 'MAC ';

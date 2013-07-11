@@ -26,9 +26,9 @@ class getid3_swf extends getid3_handler
 
 		// http://www.openswf.org/spec/SWFfileformat.html
 
-		fseek($this->getid3->fp, $info['avdataoffset'], SEEK_SET);
+		$this->fseek($info['avdataoffset']);
 
-		$SWFfileData = fread($this->getid3->fp, $info['avdataend'] - $info['avdataoffset']); // 8 + 2 + 2 + max(9) bytes NOT including Frame_Size RECT data
+		$SWFfileData = $this->fread($info['avdataend'] - $info['avdataoffset']); // 8 + 2 + 2 + max(9) bytes NOT including Frame_Size RECT data
 
 		$info['swf']['header']['signature']  = substr($SWFfileData, 0, 3);
 		switch ($info['swf']['header']['signature']) {

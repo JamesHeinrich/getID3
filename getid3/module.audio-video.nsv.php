@@ -20,8 +20,8 @@ class getid3_nsv extends getid3_handler
 	public function Analyze() {
 		$info = &$this->getid3->info;
 
-		fseek($this->getid3->fp, $info['avdataoffset'], SEEK_SET);
-		$NSVheader = fread($this->getid3->fp, 4);
+		$this->fseek($info['avdataoffset']);
+		$NSVheader = $this->fread(4);
 
 		switch ($NSVheader) {
 			case 'NSVs':
@@ -60,8 +60,8 @@ class getid3_nsv extends getid3_handler
 
 	public function getNSVsHeaderFilepointer($fileoffset) {
 		$info = &$this->getid3->info;
-		fseek($this->getid3->fp, $fileoffset, SEEK_SET);
-		$NSVsheader = fread($this->getid3->fp, 28);
+		$this->fseek($fileoffset);
+		$NSVsheader = $this->fread(28);
 		$offset = 0;
 
 		$info['nsv']['NSVs']['identifier']      =                  substr($NSVsheader, $offset, 4);
@@ -133,8 +133,8 @@ class getid3_nsv extends getid3_handler
 
 	public function getNSVfHeaderFilepointer($fileoffset, $getTOCoffsets=false) {
 		$info = &$this->getid3->info;
-		fseek($this->getid3->fp, $fileoffset, SEEK_SET);
-		$NSVfheader = fread($this->getid3->fp, 28);
+		$this->fseek($fileoffset);
+		$NSVfheader = $this->fread(28);
 		$offset = 0;
 
 		$info['nsv']['NSVf']['identifier']    =                  substr($NSVfheader, $offset, 4);
@@ -171,7 +171,7 @@ class getid3_nsv extends getid3_handler
 			return false;
 		}
 
-		$NSVfheader .= fread($this->getid3->fp, $info['nsv']['NSVf']['meta_size'] + (4 * $info['nsv']['NSVf']['TOC_entries_1']) + (4 * $info['nsv']['NSVf']['TOC_entries_2']));
+		$NSVfheader .= $this->fread($info['nsv']['NSVf']['meta_size'] + (4 * $info['nsv']['NSVf']['TOC_entries_1']) + (4 * $info['nsv']['NSVf']['TOC_entries_2']));
 		$NSVfheaderlength = strlen($NSVfheader);
 		$info['nsv']['NSVf']['metadata']      =                  substr($NSVfheader, $offset, $info['nsv']['NSVf']['meta_size']);
 		$offset += $info['nsv']['NSVf']['meta_size'];
