@@ -282,7 +282,6 @@ class getid3_lib
 				}
 			} else {
 				throw new Exception('ERROR: Cannot have signed integers larger than '.(8 * PHP_INT_SIZE).'-bits ('.strlen($byteword).') in self::BigEndian2Int()');
-				break;
 			}
 		}
 		return self::CastAsInt($intvalue);
