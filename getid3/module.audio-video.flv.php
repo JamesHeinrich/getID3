@@ -38,6 +38,11 @@
 //  * version 0.6.1 (30 May 2011)                              //
 //    prevent infinite loops in expGolombUe()                  //
 //                                                             //
+//  * version 0.7.0 (16 Jul 2013)                              //
+//  handle GETID3_FLV_VIDEO_VP6FLV_ALPHA                       //
+//  improved AVCSequenceParameterSetReader::readData()         //
+//    by Xander Schouwerwou <schouwerwouØgmail*com>            //
+//                                                             //
 /////////////////////////////////////////////////////////////////
 //                                                             //
 // module.audio-video.flv.php                                  //
@@ -68,9 +73,9 @@ define('H264_PROFILE_HIGH444',            144);
 define('H264_PROFILE_HIGH444_PREDICTIVE', 244);
 
 class getid3_flv extends getid3_handler {
-	
+
 	const magic = 'FLV';
-	
+
 	public $max_frames = 100000; // break out of the loop if too many frames have been scanned; only scan this many if meta frame does not contain useful duration
 
 	public function Analyze() {
@@ -185,19 +190,15 @@ class getid3_flv extends getid3_handler {
 									//$PictureSizeEnc <<= 1;
 									//$info['video']['resolution_y'] = ($PictureSizeEnc & 0xFF00) >> 8;
 
-									$PictureSizeEnc['x'] = getid3_lib::BigEndian2Int(substr($FLVvideoHeader, 4, 2));
-									$PictureSizeEnc['y'] = getid3_lib::BigEndian2Int(substr($FLVvideoHeader, 5, 2));
-									$PictureSizeEnc['x'] >>= 7;
-									$PictureSizeEnc['y'] >>= 7;
+									$PictureSizeEnc['x'] = getid3_lib::BigEndian2Int(substr($FLVvideoHeader, 4, 2)) >> 7;
+									$PictureSizeEnc['y'] = getid3_lib::BigEndian2Int(substr($FLVvideoHeader, 5, 2)) >> 7;
 									$info['video']['resolution_x'] = $PictureSizeEnc['x'] & 0xFF;
 									$info['video']['resolution_y'] = $PictureSizeEnc['y'] & 0xFF;
 									break;
 
 								case 1:
-									$PictureSizeEnc['x'] = getid3_lib::BigEndian2Int(substr($FLVvideoHeader, 4, 3));
-									$PictureSizeEnc['y'] = getid3_lib::BigEndian2Int(substr($FLVvideoHeader, 6, 3));
-									$PictureSizeEnc['x'] >>= 7;
-									$PictureSizeEnc['y'] >>= 7;
+									$PictureSizeEnc['x'] = getid3_lib::BigEndian2Int(substr($FLVvideoHeader, 4, 3)) >> 7;
+									$PictureSizeEnc['y'] = getid3_lib::BigEndian2Int(substr($FLVvideoHeader, 6, 3)) >> 7;
 									$info['video']['resolution_x'] = $PictureSizeEnc['x'] & 0xFFFF;
 									$info['video']['resolution_y'] = $PictureSizeEnc['y'] & 0xFFFF;
 									break;
@@ -233,6 +234,16 @@ class getid3_flv extends getid3_handler {
 									break;
 
 							}
+
+						} elseif ($info['flv']['video']['videoCodec'] ==  GETID3_FLV_VIDEO_VP6FLV_ALPHA) {
+
+							/* contributed by schouwerwouØgmail*com */
+							$PictureSizeEnc['x'] = getid3_lib::BigEndian2Int(substr($FLVvideoHeader, 6, 2)) >> 7;
+							$PictureSizeEnc['y'] = getid3_lib::BigEndian2Int(substr($FLVvideoHeader, 7, 2)) >> 7;
+							$info['video']['resolution_x'] = $PictureSizeEnc['x'] << 3;
+							$info['video']['resolution_y'] = $PictureSizeEnc['y'] << 3;
+							/* end schouwerwouØgmail*com */
+
 						}
 						$info['video']['pixel_aspect_ratio'] = $info['video']['resolution_x'] / $info['video']['resolution_y'];
 					}
@@ -626,53 +637,52 @@ class AVCSequenceParameterSetReader {
 	public function readData() {
 		$this->skipBits(8);
 		$this->skipBits(8);
-		$profile = $this->getBits(8);	//	read profile
-		$this->skipBits(16);
-		$this->expGolombUe();	//	read sps id
-		if (in_array($profile, array(H264_PROFILE_HIGH, H264_PROFILE_HIGH10, H264_PROFILE_HIGH422, H264_PROFILE_HIGH444, H264_PROFILE_HIGH444_PREDICTIVE))) {
-			if ($this->expGolombUe() == 3) {
-				$this->skipBits(1);
-			}
-			$this->expGolombUe();
-			$this->expGolombUe();
-			$this->skipBits(1);
-			if ($this->getBit()) {
-				for ($i = 0; $i < 8; $i++) {
-					if ($this->getBit()) {
-						$size = $i < 6 ? 16 : 64;
-						$lastScale = 8;
-						$nextScale = 8;
-						for ($j = 0; $j < $size; $j++) {
-							if ($nextScale != 0) {
-								$deltaScale = $this->expGolombUe();
-								$nextScale = ($lastScale + $deltaScale + 256) % 256;
-							}
-							if ($nextScale != 0) {
-								$lastScale = $nextScale;
-							}
-						}
-					}
-				}
+		$profile = $this->getBits(8);                           // read profile
+		$this->skipBits(8);
+		$level_idc = $this->getBits(8);                         // level_idc
+		$this->expGolombUe();                                   // seq_parameter_set_id // sps
+		$this->expGolombUe();                                   // log2_max_frame_num_minus4
+		$picOrderType = $this->expGolombUe();
+		if ($picOrderType == 0) {
+			$this->expGolombUe();                               // log2_max_pic_order_cnt_lsb_minus4
+		} elseif ($picOrderType == 1) {
+			$this->skipBits(1);                                 // delta_pic_order_always_zero_flag
+			$this->expGolombSe();                               // offset_for_non_ref_pic
+			$this->expGolombSe();                               // offset_for_top_to_bottom_field
+			$num_ref_frames_in_pic_order_cnt_cycle = $this->expGolombUe(); // num_ref_frames_in_pic_order_cnt_cycle
+			for ($i = 0; $i < $num_ref_frames_in_pic_order_cnt_cycle; $i++) {
+				$this->expGolombSe();                           // offset_for_ref_frame[ i ]
 			}
 		}
-		$this->expGolombUe();
-		$pocType = $this->expGolombUe();
-		if ($pocType == 0) {
-			$this->expGolombUe();
-		} elseif ($pocType == 1) {
-			$this->skipBits(1);
-			$this->expGolombSe();
-			$this->expGolombSe();
-			$pocCycleLength = $this->expGolombUe();
-			for ($i = 0; $i < $pocCycleLength; $i++) {
-				$this->expGolombSe();
-			}
+		$this->expGolombUe();                                   // num_ref_frames
+		$this->skipBits(1);                                     // gaps_in_frame_num_value_allowed_flag
+		$pic_width_in_mbs_minus1 = $this->expGolombUe();        // pic_width_in_mbs_minus1
+		$pic_height_in_map_units_minus1 = $this->expGolombUe(); // pic_height_in_map_units_minus1
+
+		$frame_mbs_only_flag = $this->getBits(1);               // frame_mbs_only_flag
+		if ($frame_mbs_only_flag) {
+			$this->skipBits(1);                                 // mb_adaptive_frame_field_flag
 		}
-		$this->expGolombUe();
-		$this->skipBits(1);
-		$this->width = ($this->expGolombUe() + 1) * 16;
-		$heightMap = $this->expGolombUe() + 1;
-		$this->height = (2 - $this->getBit()) * $heightMap * 16;
+		$this->skipBits(1);                                     // direct_8x8_inference_flag
+		$frame_cropping_flag = $this->getBits(1);               // frame_cropping_flag
+
+		$frame_crop_left_offset   = 0;
+		$frame_crop_right_offset  = 0;
+		$frame_crop_top_offset    = 0;
+		$frame_crop_bottom_offset = 0;
+
+		if ($frame_cropping_flag) {
+			$frame_crop_left_offset   = $this->expGolombUe();   // frame_crop_left_offset
+			$frame_crop_right_offset  = $this->expGolombUe();   // frame_crop_right_offset
+			$frame_crop_top_offset    = $this->expGolombUe();   // frame_crop_top_offset
+			$frame_crop_bottom_offset = $this->expGolombUe();   // frame_crop_bottom_offset
+		}
+		$this->skipBits(1);                                     // vui_parameters_present_flag
+		// etc
+
+		$this->width  = (($pic_width_in_mbs_minus1 + 1) * 16) - ($frame_crop_left_offset * 2) - ($frame_crop_right_offset * 2);
+		$this->height = ((2 - $frame_mbs_only_flag) * ($pic_height_in_map_units_minus1 + 1) * 16) - ($frame_crop_top_offset * 2) - ($frame_crop_bottom_offset * 2);
+
 	}
 
 	public function skipBits($bits) {
