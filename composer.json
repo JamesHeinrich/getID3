@@ -1,0 +1,36 @@
+{
+    "name": "james-heinrich/getID3",
+    "type": "library",
+    "description": "getID3 is a PHP library that extracts useful information from many multimedia file formats.",
+    "keywords": ["getid3", "tags", "metadata"],
+    "homepage": "http://www.getid3.org",
+    "support": {
+        "forum": "http://support.getid3.org/"
+    },
+    "license": [
+        "GPL",
+        "LGPL",
+        "Mozilla MPL",
+        "gCL"
+    ],
+    "authors": [
+        {
+            "name": "James Heinrich",
+            "email": "info@getid3.org"
+        }
+    ],
+    "require": {
+        "php": ">=5.0.5"
+    },
+    "suggest": {
+        "ext-rar": "RAR extension is required for RAR archive module.",
+        "ext-exif": "EXIF extension is required for graphic modules."
+    },
+    "autoload": {
+        "files": ["getid3/getid3.php"]
+    },
+    "target-dir": "JamesHeinrich/getID3",
+    "config": {
+        "bin-dir": "helperapps/"
+    }
+}
