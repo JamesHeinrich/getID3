@@ -238,10 +238,12 @@ class getid3_flv extends getid3_handler {
 						} elseif ($info['flv']['video']['videoCodec'] ==  GETID3_FLV_VIDEO_VP6FLV_ALPHA) {
 
 							/* contributed by schouwerwouØgmail*com */
-							$PictureSizeEnc['x'] = getid3_lib::BigEndian2Int(substr($FLVvideoHeader, 6, 2)) >> 7;
-							$PictureSizeEnc['y'] = getid3_lib::BigEndian2Int(substr($FLVvideoHeader, 7, 2)) >> 7;
-							$info['video']['resolution_x'] = $PictureSizeEnc['x'] << 3;
-							$info['video']['resolution_y'] = $PictureSizeEnc['y'] << 3;
+							if (!isset($info['video']['resolution_x'])) { // only when meta data isn't set
+								$PictureSizeEnc['x'] = getid3_lib::BigEndian2Int(substr($FLVvideoHeader, 6, 2));
+								$PictureSizeEnc['y'] = getid3_lib::BigEndian2Int(substr($FLVvideoHeader, 7, 2));
+								$info['video']['resolution_x'] = ($PictureSizeEnc['x'] & 0xFF) << 3;
+								$info['video']['resolution_y'] = ($PictureSizeEnc['y'] & 0xFF) << 3;
+							}
 							/* end schouwerwouØgmail*com */
 
 						}
@@ -341,7 +343,7 @@ class getid3_flv extends getid3_handler {
 			8  => 'G.711 mu-law logarithmic PCM',
 			9  => 'reserved',
 			10 => 'AAC',
-			11 => false, // unknown?
+			11 => 'Speex',
 			12 => false, // unknown?
 			13 => false, // unknown?
 			14 => 'mp3 8kHz',
@@ -637,52 +639,53 @@ class AVCSequenceParameterSetReader {
 	public function readData() {
 		$this->skipBits(8);
 		$this->skipBits(8);
-		$profile = $this->getBits(8);                           // read profile
-		$this->skipBits(8);
-		$level_idc = $this->getBits(8);                         // level_idc
-		$this->expGolombUe();                                   // seq_parameter_set_id // sps
-		$this->expGolombUe();                                   // log2_max_frame_num_minus4
-		$picOrderType = $this->expGolombUe();
-		if ($picOrderType == 0) {
-			$this->expGolombUe();                               // log2_max_pic_order_cnt_lsb_minus4
-		} elseif ($picOrderType == 1) {
-			$this->skipBits(1);                                 // delta_pic_order_always_zero_flag
-			$this->expGolombSe();                               // offset_for_non_ref_pic
-			$this->expGolombSe();                               // offset_for_top_to_bottom_field
-			$num_ref_frames_in_pic_order_cnt_cycle = $this->expGolombUe(); // num_ref_frames_in_pic_order_cnt_cycle
-			for ($i = 0; $i < $num_ref_frames_in_pic_order_cnt_cycle; $i++) {
-				$this->expGolombSe();                           // offset_for_ref_frame[ i ]
+		$profile = $this->getBits(8);                               // read profile
+		if ($profile > 0) {
+			$this->skipBits(8);
+			$level_idc = $this->getBits(8);                         // level_idc
+			$this->expGolombUe();                                   // seq_parameter_set_id // sps
+			$this->expGolombUe();                                   // log2_max_frame_num_minus4
+			$picOrderType = $this->expGolombUe();                   // pic_order_cnt_type
+			if ($picOrderType == 0) {
+				$this->expGolombUe();                               // log2_max_pic_order_cnt_lsb_minus4
+			} elseif ($picOrderType == 1) {
+				$this->skipBits(1);                                 // delta_pic_order_always_zero_flag
+				$this->expGolombSe();                               // offset_for_non_ref_pic
+				$this->expGolombSe();                               // offset_for_top_to_bottom_field
+				$num_ref_frames_in_pic_order_cnt_cycle = $this->expGolombUe(); // num_ref_frames_in_pic_order_cnt_cycle
+				for ($i = 0; $i < $num_ref_frames_in_pic_order_cnt_cycle; $i++) {
+					$this->expGolombSe();                           // offset_for_ref_frame[ i ]
+				}
 			}
+			$this->expGolombUe();                                   // num_ref_frames
+			$this->skipBits(1);                                     // gaps_in_frame_num_value_allowed_flag
+			$pic_width_in_mbs_minus1 = $this->expGolombUe();        // pic_width_in_mbs_minus1
+			$pic_height_in_map_units_minus1 = $this->expGolombUe(); // pic_height_in_map_units_minus1
+
+			$frame_mbs_only_flag = $this->getBits(1);               // frame_mbs_only_flag
+			if ($frame_mbs_only_flag == 0) {
+				$this->skipBits(1);                                 // mb_adaptive_frame_field_flag
+			}
+			$this->skipBits(1);                                     // direct_8x8_inference_flag
+			$frame_cropping_flag = $this->getBits(1);               // frame_cropping_flag
+
+			$frame_crop_left_offset   = 0;
+			$frame_crop_right_offset  = 0;
+			$frame_crop_top_offset    = 0;
+			$frame_crop_bottom_offset = 0;
+
+			if ($frame_cropping_flag) {
+				$frame_crop_left_offset   = $this->expGolombUe();   // frame_crop_left_offset
+				$frame_crop_right_offset  = $this->expGolombUe();   // frame_crop_right_offset
+				$frame_crop_top_offset    = $this->expGolombUe();   // frame_crop_top_offset
+				$frame_crop_bottom_offset = $this->expGolombUe();   // frame_crop_bottom_offset
+			}
+			$this->skipBits(1);                                     // vui_parameters_present_flag
+			// etc
+
+			$this->width  = (($pic_width_in_mbs_minus1 + 1) * 16) - ($frame_crop_left_offset * 2) - ($frame_crop_right_offset * 2);
+			$this->height = ((2 - $frame_mbs_only_flag) * ($pic_height_in_map_units_minus1 + 1) * 16) - ($frame_crop_top_offset * 2) - ($frame_crop_bottom_offset * 2);
 		}
-		$this->expGolombUe();                                   // num_ref_frames
-		$this->skipBits(1);                                     // gaps_in_frame_num_value_allowed_flag
-		$pic_width_in_mbs_minus1 = $this->expGolombUe();        // pic_width_in_mbs_minus1
-		$pic_height_in_map_units_minus1 = $this->expGolombUe(); // pic_height_in_map_units_minus1
-
-		$frame_mbs_only_flag = $this->getBits(1);               // frame_mbs_only_flag
-		if ($frame_mbs_only_flag) {
-			$this->skipBits(1);                                 // mb_adaptive_frame_field_flag
-		}
-		$this->skipBits(1);                                     // direct_8x8_inference_flag
-		$frame_cropping_flag = $this->getBits(1);               // frame_cropping_flag
-
-		$frame_crop_left_offset   = 0;
-		$frame_crop_right_offset  = 0;
-		$frame_crop_top_offset    = 0;
-		$frame_crop_bottom_offset = 0;
-
-		if ($frame_cropping_flag) {
-			$frame_crop_left_offset   = $this->expGolombUe();   // frame_crop_left_offset
-			$frame_crop_right_offset  = $this->expGolombUe();   // frame_crop_right_offset
-			$frame_crop_top_offset    = $this->expGolombUe();   // frame_crop_top_offset
-			$frame_crop_bottom_offset = $this->expGolombUe();   // frame_crop_bottom_offset
-		}
-		$this->skipBits(1);                                     // vui_parameters_present_flag
-		// etc
-
-		$this->width  = (($pic_width_in_mbs_minus1 + 1) * 16) - ($frame_crop_left_offset * 2) - ($frame_crop_right_offset * 2);
-		$this->height = ((2 - $frame_mbs_only_flag) * ($pic_height_in_map_units_minus1 + 1) * 16) - ($frame_crop_top_offset * 2) - ($frame_crop_bottom_offset * 2);
-
 	}
 
 	public function skipBits($bits) {
