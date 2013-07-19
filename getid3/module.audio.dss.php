@@ -21,7 +21,7 @@ class getid3_dss extends getid3_handler
 		$info = &$this->getid3->info;
 
 		$this->fseek($info['avdataoffset']);
-		$DSSheader  = $this->fread(1256);
+		$DSSheader  = $this->fread(1540);
 
 		if (!preg_match('#^(\x02|\x03)ds[s2]#', $DSSheader)) {
 			$info['error'][] = 'Expecting "[02-03] 64 73 [73|32]" at offset '.$info['avdataoffset'].', found "'.getid3_lib::PrintHexBytes(substr($DSSheader, 0, 4)).'"';
@@ -37,20 +37,21 @@ class getid3_dss extends getid3_handler
 		$info['audio']['dataformat']   =            substr($DSSheader, 1, 3); //         "dss" or         "ds2"
 		$info['audio']['bitrate_mode'] = 'cbr';
 
-		$info['dss']['version']       =                            ord(substr($DSSheader,   0,   1));
-		$info['dss']['hardware']      =                           trim(substr($DSSheader,  12,  16)); // identification string for hardware used to create the file, e.g. "DPM 9600", "DS2400"
-		$info['dss']['unknown1']      =   getid3_lib::LittleEndian2Int(substr($DSSheader,  28,   4));
+		$info['dss']['version']           =                            ord(substr($DSSheader,    0,   1));
+		$info['dss']['hardware']          =                           trim(substr($DSSheader,   12,  16)); // identification string for hardware used to create the file, e.g. "DPM 9600", "DS2400"
+		$info['dss']['unknown1']          =   getid3_lib::LittleEndian2Int(substr($DSSheader,   28,   4));
 		// 32-37 = "FE FF FE FF F7 FF" in all the sample files I've seen
-		$info['dss']['date_create']   = $this->DSSdateStringToUnixDate(substr($DSSheader,  38,  12));
-		$info['dss']['date_complete'] = $this->DSSdateStringToUnixDate(substr($DSSheader,  50,  12));
-		$info['dss']['playtime_sec']  = intval((substr($DSSheader,  62, 2) * 3600) + (substr($DSSheader,  64, 2) * 60) + substr($DSSheader,  66, 2)); // approximate file playtime in HHMMSS
-		$info['dss']['playtime_ms']   =   getid3_lib::LittleEndian2Int(substr($DSSheader, 512,   4)); // exact file playtime in milliseconds. Has also been observed at offset 530 in one sample file, with something else (unknown) at offset 512
-		$info['dss']['priority']      =                            ord(substr($DSSheader, 793,   1));
-		$info['dss']['comments']      =                           trim(substr($DSSheader, 798, 100));
+		$info['dss']['date_create']       = $this->DSSdateStringToUnixDate(substr($DSSheader,   38,  12));
+		$info['dss']['date_complete']     = $this->DSSdateStringToUnixDate(substr($DSSheader,   50,  12));
+		$info['dss']['playtime_sec']      = intval((substr($DSSheader,  62, 2) * 3600) + (substr($DSSheader,  64, 2) * 60) + substr($DSSheader,  66, 2)); // approximate file playtime in HHMMSS
+		$info['dss']['playtime_ms']       =   getid3_lib::LittleEndian2Int(substr($DSSheader,  512,   4)); // exact file playtime in milliseconds. Has also been observed at offset 530 in one sample file, with something else (unknown) at offset 512
+		$info['dss']['priority']          =                            ord(substr($DSSheader,  793,   1));
+		$info['dss']['comments']          =                           trim(substr($DSSheader,  798, 100));
+		$info['dss']['sample_rate_index'] =                            ord(substr($DSSheader, 1538,   1));  // this isn't certain, this may or may not be where the sample rate info is stored, but it seems consistent on my small selection of sample files
 
-		//$info['audio']['bits_per_sample']  = ?;
-		//$info['audio']['sample_rate']      = ?;
-		$info['audio']['channels']     = 1;
+		$info['audio']['bits_per_sample']  = 16; // maybe, maybe not -- most compressed audio formats don't have a fixed bits-per-sample value, but this is a reasonable approximation
+		$info['audio']['sample_rate']      = $this->DSSsampleRateLookup($info['dss']['sample_rate_index']);
+		$info['audio']['channels']         = 1;
 
 		$info['playtime_seconds'] = $info['dss']['playtime_ms'] / 1000;
 		if (floor($info['dss']['playtime_ms'] / 1000) != $info['dss']['playtime_sec']) {
@@ -72,6 +73,15 @@ class getid3_dss extends getid3_handler
 		$s = substr($datestring, 10, 2);
 		$y += (($y < 95) ? 2000 : 1900);
 		return mktime($h, $i, $s, $m, $d, $y);
+	}
+
+	public function DSSsampleRateLookup($sample_rate_index) {
+		static $dssSampleRateLookup = array(
+			10 => 16000,
+			12 => 11025,
+			13 => 12000,
+		);
+		return (isset($dssSampleRateLookup[$sample_rate_index]) ? $dssSampleRateLookup[$sample_rate_index] : 'unknown index '.$sample_rate_index);
 	}
 
 }
