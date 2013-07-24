@@ -77,9 +77,9 @@ class getid3_dss extends getid3_handler
 
 	public function DSSsampleRateLookup($sample_rate_index) {
 		static $dssSampleRateLookup = array(
-			10 => 16000,
-			12 => 11025,
-			13 => 12000,
+			0x0A => 16000,
+			0x0C => 11025,
+			0x0D => 12000,
 		);
 		return (isset($dssSampleRateLookup[$sample_rate_index]) ? $dssSampleRateLookup[$sample_rate_index] : 'unknown index '.$sample_rate_index);
 	}
