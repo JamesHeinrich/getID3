@@ -80,8 +80,13 @@ class getid3_dss extends getid3_handler
 			0x0A => 16000,
 			0x0C => 11025,
 			0x0D => 12000,
+			0x15 =>  8000,
 		);
-		return (isset($dssSampleRateLookup[$sample_rate_index]) ? $dssSampleRateLookup[$sample_rate_index] : 'unknown index '.$sample_rate_index);
+		if (!array_key_exists($sample_rate_index, $dssSampleRateLookup)) {
+			$this->getid3->warning('unknown sample_rate_index: '.$sample_rate_index);
+			return false;
+		}
+		return $dssSampleRateLookup[$sample_rate_index];
 	}
 
 }
