@@ -112,7 +112,7 @@ class getID3_cached_mysql extends getID3
 			$this->clear_cache();
 		}
 
-		parent::getID3();
+		parent::__construct();
 	}
 
 
