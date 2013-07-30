@@ -172,25 +172,28 @@ To analyze remote files over HTTP or FTP you need to copy the file
 locally first before running getID3(). Your code would look something
 like this:
 
-    ```php
-    // Copy remote file locally to scan with getID3()
-    $remotefilename = 'http://www.example.com/filename.mp3';
-    if ($fp_remote = fopen($remotefilename, 'rb')) {
-        $localtempfilename = tempnam('/tmp', 'getID3');
-        if ($fp_local = fopen($localtempfilename, 'wb')) {
-            while ($buffer = fread($fp_remote, 8192)) {
-                fwrite($fp_local, $buffer);
-            }
-            fclose($fp_local);
-	    // Initialize getID3 engine
-	    $getID3 = new getID3;
-	    $ThisFileInfo = $getID3->analyze($filename);
-            // Delete temporary file
-            unlink($localtempfilename);
+``` php
+<?php
+
+// Copy remote file locally to scan with getID3()
+$remotefilename = 'http://www.example.com/filename.mp3';
+if ($fp_remote = fopen($remotefilename, 'rb')) {
+    $localtempfilename = tempnam('/tmp', 'getID3');
+    if ($fp_local = fopen($localtempfilename, 'wb')) {
+        while ($buffer = fread($fp_remote, 8192)) {
+            fwrite($fp_local, $buffer);
         }
-        fclose($fp_remote);
+        fclose($fp_local);
+        // Initialize getID3 engine
+        $getID3 = new getID3;
+        $ThisFileInfo = $getID3->analyze($filename);
+        // Delete temporary file
+        unlink($localtempfilename);
     }
-    ```
+    fclose($fp_remote);
+}
+
+```
 
 
 **See /demos/demo.write.php for how to write tags.**
@@ -283,7 +286,10 @@ Why is it called "getID3()" if it does so much more than just that?
 v0.1 did in fact just do that. I don't have a copy of code that old, but I
 could essentially write it today with a one-line function:
 
-    `function getID3($filename) { return unpack('a3TAG/a30title/a30artist/a30album/a4year/a28comment/c1track/c1genreid', substr(file_get_contents($filename), -128)); }`
+``` php
+function getID3($filename) { return unpack('a3TAG/a30title/a30artist/a30album/a4year/a28comment/c1track/c1genreid', substr(file_get_contents($filename), -128)); }
+    
+```
 
 
 Future Plans
