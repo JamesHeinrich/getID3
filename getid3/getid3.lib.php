@@ -1208,16 +1208,21 @@ class getid3_lib
 								$newvaluelength = strlen(trim($value));
 								foreach ($ThisFileInfo['comments'][$tagname] as $existingkey => $existingvalue) {
 									$oldvaluelength = strlen(trim($existingvalue));
-									if (($newvaluelength > $oldvaluelength) && (substr(trim($value), 0, strlen($existingvalue)) == $existingvalue)) {
+									if ((strlen($existingvalue) > 10) && ($newvaluelength > $oldvaluelength) && (substr(trim($value), 0, strlen($existingvalue)) == $existingvalue)) {
 										$ThisFileInfo['comments'][$tagname][$existingkey] = trim($value);
-										break 2;
+										//break 2;
+										break;
 									}
 								}
 
 							}
 							if (is_array($value) || empty($ThisFileInfo['comments'][$tagname]) || !in_array(trim($value), $ThisFileInfo['comments'][$tagname])) {
 								$value = (is_string($value) ? trim($value) : $value);
-								$ThisFileInfo['comments'][$tagname][] = $value;
+								if (!is_numeric($key)) {
+									$ThisFileInfo['comments'][$tagname][$key] = $value;
+								} else {
+									$ThisFileInfo['comments'][$tagname][]     = $value;
+								}
 							}
 						}
 					}

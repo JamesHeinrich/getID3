@@ -1196,7 +1196,11 @@ class getID3
 							$value = trim($value, " \r\n\t"); // do not trim nulls from $value!! Unicode characters will get mangled if trailing nulls are removed!
 						}
 						if ($value) {
-							$this->info['tags'][trim($tag_name)][trim($tag_key)][] = $value;
+							if (!is_numeric($key)) {
+								$this->info['tags'][trim($tag_name)][trim($tag_key)][$key] = $value;
+							} else {
+								$this->info['tags'][trim($tag_name)][trim($tag_key)][]     = $value;
+							}
 						}
 					}
 					if ($tag_key == 'picture') {
@@ -1581,7 +1585,7 @@ class getID3
 
 
 abstract class getid3_handler {
-	
+
 	/**
 	* @var getID3
 	*/
