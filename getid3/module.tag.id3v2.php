@@ -1895,7 +1895,7 @@ class getid3_id3v2 extends getid3_handler
 			$frame_offset += 2;
 			$parsedFrame['bitsperpoint'] = ord(substr($parsedFrame['data'], $frame_offset++, 1));
 			$frame_bytesperpoint = ceil($parsedFrame['bitsperpoint'] / 8);
-			for ($i = 0; $i < $frame_indexpoints; $i++) {
+			for ($i = 0; $i < $parsedFrame['indexpoints']; $i++) {
 				$parsedFrame['indexes'][$i] = getid3_lib::BigEndian2Int(substr($parsedFrame['data'], $frame_offset, $frame_bytesperpoint));
 				$frame_offset += $frame_bytesperpoint;
 			}
