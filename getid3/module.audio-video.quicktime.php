@@ -308,46 +308,46 @@ class getid3_quicktime extends getid3_handler
 			case 'geID':
 			case 'plID':
 			case 'sfID': // iTunes store country
-			case '©alb': // ALBum
-			case '©art': // ARTist
-			case '©ART':
-			case '©aut':
-			case '©cmt': // CoMmenT
-			case '©com': // COMposer
-			case '©cpy':
-			case '©day': // content created year
-			case '©dir':
-			case '©ed1':
-			case '©ed2':
-			case '©ed3':
-			case '©ed4':
-			case '©ed5':
-			case '©ed6':
-			case '©ed7':
-			case '©ed8':
-			case '©ed9':
-			case '©enc':
-			case '©fmt':
-			case '©gen': // GENre
-			case '©grp': // GRouPing
-			case '©hst':
-			case '©inf':
-			case '©lyr': // LYRics
-			case '©mak':
-			case '©mod':
-			case '©nam': // full NAMe
-			case '©ope':
-			case '©PRD':
-			case '©prd':
-			case '©prf':
-			case '©req':
-			case '©src':
-			case '©swr':
-			case '©too': // encoder
-			case '©trk': // TRacK
-			case '©url':
-			case '©wrn':
-			case '©wrt': // WRiTer
+			case "\xA9".'alb': // ALBum
+			case "\xA9".'art': // ARTist
+			case "\xA9".'ART':
+			case "\xA9".'aut':
+			case "\xA9".'cmt': // CoMmenT
+			case "\xA9".'com': // COMposer
+			case "\xA9".'cpy':
+			case "\xA9".'day': // content created year
+			case "\xA9".'dir':
+			case "\xA9".'ed1':
+			case "\xA9".'ed2':
+			case "\xA9".'ed3':
+			case "\xA9".'ed4':
+			case "\xA9".'ed5':
+			case "\xA9".'ed6':
+			case "\xA9".'ed7':
+			case "\xA9".'ed8':
+			case "\xA9".'ed9':
+			case "\xA9".'enc':
+			case "\xA9".'fmt':
+			case "\xA9".'gen': // GENre
+			case "\xA9".'grp': // GRouPing
+			case "\xA9".'hst':
+			case "\xA9".'inf':
+			case "\xA9".'lyr': // LYRics
+			case "\xA9".'mak':
+			case "\xA9".'mod':
+			case "\xA9".'nam': // full NAMe
+			case "\xA9".'ope':
+			case "\xA9".'PRD':
+			case "\xA9".'prd':
+			case "\xA9".'prf':
+			case "\xA9".'req':
+			case "\xA9".'src':
+			case "\xA9".'swr':
+			case "\xA9".'too': // encoder
+			case "\xA9".'trk': // TRacK
+			case "\xA9".'url':
+			case "\xA9".'wrn':
+			case "\xA9".'wrt': // WRiTer
 			case '----': // itunes specific
 				if ($atom_parent == 'udta') {
 					// User data atom handler
@@ -1329,7 +1329,7 @@ if (!empty($atom_structure['sample_description_table'][$i]['width']) && !empty($
 				//$atom_structure['data'] = $atom_data;
 				break;
 
-			case '©xyz':  // GPS latitude+longitude+altitude
+			case "\xA9".'xyz':  // GPS latitude+longitude+altitude
 				$atom_structure['data'] = $atom_data;
 				if (preg_match('#([\\+\\-][0-9\\.]+)([\\+\\-][0-9\\.]+)([\\+\\-][0-9\\.]+)?/$#i', $atom_data, $matches)) {
 					@list($all, $latitude, $longitude, $altitude) = $matches;
@@ -2082,58 +2082,58 @@ echo 'QuicktimeParseNikonNCTG()::unknown $data_size_type: '.$data_size_type.'<br
 	public function CopyToAppropriateCommentsSection($keyname, $data, $boxname='') {
 		static $handyatomtranslatorarray = array();
 		if (empty($handyatomtranslatorarray)) {
-			$handyatomtranslatorarray['©cpy'] = 'copyright';
-			$handyatomtranslatorarray['©day'] = 'creation_date';    // iTunes 4.0
-			$handyatomtranslatorarray['©dir'] = 'director';
-			$handyatomtranslatorarray['©ed1'] = 'edit1';
-			$handyatomtranslatorarray['©ed2'] = 'edit2';
-			$handyatomtranslatorarray['©ed3'] = 'edit3';
-			$handyatomtranslatorarray['©ed4'] = 'edit4';
-			$handyatomtranslatorarray['©ed5'] = 'edit5';
-			$handyatomtranslatorarray['©ed6'] = 'edit6';
-			$handyatomtranslatorarray['©ed7'] = 'edit7';
-			$handyatomtranslatorarray['©ed8'] = 'edit8';
-			$handyatomtranslatorarray['©ed9'] = 'edit9';
-			$handyatomtranslatorarray['©fmt'] = 'format';
-			$handyatomtranslatorarray['©inf'] = 'information';
-			$handyatomtranslatorarray['©prd'] = 'producer';
-			$handyatomtranslatorarray['©prf'] = 'performers';
-			$handyatomtranslatorarray['©req'] = 'system_requirements';
-			$handyatomtranslatorarray['©src'] = 'source_credit';
-			$handyatomtranslatorarray['©wrt'] = 'writer';
+			$handyatomtranslatorarray["\xA9".'cpy'] = 'copyright';
+			$handyatomtranslatorarray["\xA9".'day'] = 'creation_date';    // iTunes 4.0
+			$handyatomtranslatorarray["\xA9".'dir'] = 'director';
+			$handyatomtranslatorarray["\xA9".'ed1'] = 'edit1';
+			$handyatomtranslatorarray["\xA9".'ed2'] = 'edit2';
+			$handyatomtranslatorarray["\xA9".'ed3'] = 'edit3';
+			$handyatomtranslatorarray["\xA9".'ed4'] = 'edit4';
+			$handyatomtranslatorarray["\xA9".'ed5'] = 'edit5';
+			$handyatomtranslatorarray["\xA9".'ed6'] = 'edit6';
+			$handyatomtranslatorarray["\xA9".'ed7'] = 'edit7';
+			$handyatomtranslatorarray["\xA9".'ed8'] = 'edit8';
+			$handyatomtranslatorarray["\xA9".'ed9'] = 'edit9';
+			$handyatomtranslatorarray["\xA9".'fmt'] = 'format';
+			$handyatomtranslatorarray["\xA9".'inf'] = 'information';
+			$handyatomtranslatorarray["\xA9".'prd'] = 'producer';
+			$handyatomtranslatorarray["\xA9".'prf'] = 'performers';
+			$handyatomtranslatorarray["\xA9".'req'] = 'system_requirements';
+			$handyatomtranslatorarray["\xA9".'src'] = 'source_credit';
+			$handyatomtranslatorarray["\xA9".'wrt'] = 'writer';
 
 			// http://www.geocities.com/xhelmboyx/quicktime/formats/qtm-layout.txt
-			$handyatomtranslatorarray['©nam'] = 'title';           // iTunes 4.0
-			$handyatomtranslatorarray['©cmt'] = 'comment';         // iTunes 4.0
-			$handyatomtranslatorarray['©wrn'] = 'warning';
-			$handyatomtranslatorarray['©hst'] = 'host_computer';
-			$handyatomtranslatorarray['©mak'] = 'make';
-			$handyatomtranslatorarray['©mod'] = 'model';
-			$handyatomtranslatorarray['©PRD'] = 'product';
-			$handyatomtranslatorarray['©swr'] = 'software';
-			$handyatomtranslatorarray['©aut'] = 'author';
-			$handyatomtranslatorarray['©ART'] = 'artist';
-			$handyatomtranslatorarray['©trk'] = 'track';
-			$handyatomtranslatorarray['©alb'] = 'album';           // iTunes 4.0
-			$handyatomtranslatorarray['©com'] = 'comment';
-			$handyatomtranslatorarray['©gen'] = 'genre';           // iTunes 4.0
-			$handyatomtranslatorarray['©ope'] = 'composer';
-			$handyatomtranslatorarray['©url'] = 'url';
-			$handyatomtranslatorarray['©enc'] = 'encoder';
+			$handyatomtranslatorarray["\xA9".'nam'] = 'title';           // iTunes 4.0
+			$handyatomtranslatorarray["\xA9".'cmt'] = 'comment';         // iTunes 4.0
+			$handyatomtranslatorarray["\xA9".'wrn'] = 'warning';
+			$handyatomtranslatorarray["\xA9".'hst'] = 'host_computer';
+			$handyatomtranslatorarray["\xA9".'mak'] = 'make';
+			$handyatomtranslatorarray["\xA9".'mod'] = 'model';
+			$handyatomtranslatorarray["\xA9".'PRD'] = 'product';
+			$handyatomtranslatorarray["\xA9".'swr'] = 'software';
+			$handyatomtranslatorarray["\xA9".'aut'] = 'author';
+			$handyatomtranslatorarray["\xA9".'ART'] = 'artist';
+			$handyatomtranslatorarray["\xA9".'trk'] = 'track';
+			$handyatomtranslatorarray["\xA9".'alb'] = 'album';           // iTunes 4.0
+			$handyatomtranslatorarray["\xA9".'com'] = 'comment';
+			$handyatomtranslatorarray["\xA9".'gen'] = 'genre';           // iTunes 4.0
+			$handyatomtranslatorarray["\xA9".'ope'] = 'composer';
+			$handyatomtranslatorarray["\xA9".'url'] = 'url';
+			$handyatomtranslatorarray["\xA9".'enc'] = 'encoder';
 
 			// http://atomicparsley.sourceforge.net/mpeg-4files.html
-			$handyatomtranslatorarray['©art'] = 'artist';           // iTunes 4.0
+			$handyatomtranslatorarray["\xA9".'art'] = 'artist';           // iTunes 4.0
 			$handyatomtranslatorarray['aART'] = 'album_artist';
 			$handyatomtranslatorarray['trkn'] = 'track_number';     // iTunes 4.0
 			$handyatomtranslatorarray['disk'] = 'disc_number';      // iTunes 4.0
 			$handyatomtranslatorarray['gnre'] = 'genre';            // iTunes 4.0
-			$handyatomtranslatorarray['©too'] = 'encoder';          // iTunes 4.0
+			$handyatomtranslatorarray["\xA9".'too'] = 'encoder';          // iTunes 4.0
 			$handyatomtranslatorarray['tmpo'] = 'bpm';              // iTunes 4.0
 			$handyatomtranslatorarray['cprt'] = 'copyright';        // iTunes 4.0?
 			$handyatomtranslatorarray['cpil'] = 'compilation';      // iTunes 4.0
 			$handyatomtranslatorarray['covr'] = 'picture';          // iTunes 4.0
 			$handyatomtranslatorarray['rtng'] = 'rating';           // iTunes 4.0
-			$handyatomtranslatorarray['©grp'] = 'grouping';         // iTunes 4.2
+			$handyatomtranslatorarray["\xA9".'grp'] = 'grouping';         // iTunes 4.2
 			$handyatomtranslatorarray['stik'] = 'stik';             // iTunes 4.9
 			$handyatomtranslatorarray['pcst'] = 'podcast';          // iTunes 4.9
 			$handyatomtranslatorarray['catg'] = 'category';         // iTunes 4.9
@@ -2141,7 +2141,7 @@ echo 'QuicktimeParseNikonNCTG()::unknown $data_size_type: '.$data_size_type.'<br
 			$handyatomtranslatorarray['purl'] = 'podcast_url';      // iTunes 4.9
 			$handyatomtranslatorarray['egid'] = 'episode_guid';     // iTunes 4.9
 			$handyatomtranslatorarray['desc'] = 'description';      // iTunes 5.0
-			$handyatomtranslatorarray['©lyr'] = 'lyrics';           // iTunes 5.0
+			$handyatomtranslatorarray["\xA9".'lyr'] = 'lyrics';           // iTunes 5.0
 			$handyatomtranslatorarray['tvnn'] = 'tv_network_name';  // iTunes 6.0
 			$handyatomtranslatorarray['tvsh'] = 'tv_show_name';     // iTunes 6.0
 			$handyatomtranslatorarray['tvsn'] = 'tv_season';        // iTunes 6.0
