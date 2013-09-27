@@ -1086,8 +1086,8 @@ if (!empty($atom_structure['sample_description_table'][$i]['width']) && !empty($
 			case 'sync': // SYNChronization atom
 			case 'scpt': // tranSCriPT atom
 			case 'ssrc': // non-primary SouRCe atom
-				for ($i = 0; $i < (strlen($atom_data) % 4); $i++) {
-					$atom_structure['track_id'][$i] = getid3_lib::BigEndian2Int(substr($atom_data, $i * 4, 4));
+				for ($i = 0; $i < strlen($atom_data); $i += 4) {
+					@$atom_structure['track_id'][] = getid3_lib::BigEndian2Int(substr($atom_data, $i, 4));
 				}
 				break;
 
