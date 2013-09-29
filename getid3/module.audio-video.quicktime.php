@@ -409,7 +409,7 @@ class getid3_quicktime extends getid3_handler
 									$atom_structure['version']   = getid3_lib::BigEndian2Int(substr($boxdata,  0, 1));
 									$atom_structure['flags_raw'] = getid3_lib::BigEndian2Int(substr($boxdata,  1, 3));
 									switch ($atom_structure['flags_raw']) {
-										case 0:  // data flag
+										case  0: // data flag
 										case 21: // tmpo/cpil flag
 											switch ($atomname) {
 												case 'cpil':
@@ -460,10 +460,20 @@ class getid3_quicktime extends getid3_handler
 											}
 											break;
 
-										case 1:  // text flag
+										case  1: // text flag
 										case 13: // image flag
 										default:
 											$atom_structure['data'] = substr($boxdata, 8);
+											if ($atomname == 'covr') {
+												// not a foolproof check, but better than nothing
+												if (preg_match('#^\xFF\xD8\xFF#', $atom_structure['data'])) {
+													$atom_structure['image_mime'] = 'image/jpeg';
+												} elseif (preg_match('#^\x89\x50\x4E\x47\x0D\x0A\x1A\x0A#', $atom_structure['data'])) {
+													$atom_structure['image_mime'] = 'image/png';
+												} elseif (preg_match('#^GIF#', $atom_structure['data'])) {
+													$atom_structure['image_mime'] = 'image/gif';
+												}
+											}
 											break;
 
 									}
@@ -1260,10 +1270,13 @@ if (!empty($atom_structure['sample_description_table'][$i]['width']) && !empty($
 				break;
 
 			case 'mdat': // Media DATa atom
+				// 'mdat' data is too big to deal with, contains no useful metadata... except may contain chapter titles
+				$atom_structure['data'] = substr($atom_data,  0, 1024);
+				break;
+
 			case 'free': // FREE space atom
 			case 'skip': // SKIP atom
 			case 'wide': // 64-bit expansion placeholder atom
-				// 'mdat' data is too big to deal with, contains no useful metadata
 				// 'free', 'skip' and 'wide' are just padding, contains no useful data at all
 
 				// When writing QuickTime files, it is sometimes necessary to update an atom's size.
