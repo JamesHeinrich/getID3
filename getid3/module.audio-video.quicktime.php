@@ -66,58 +66,8 @@ class getid3_quicktime extends getid3_handler
 				// to read user data atoms, you should allow for the terminating 0.
 				break;
 			}
-			switch ($atomname) {
-				case 'mdat': // Media DATa atom
-					// 'mdat' contains the actual data for the audio/video
-					if (($atomsize > 8) && (!isset($info['avdataend_tmp']) || ($info['quicktime'][$atomname]['size'] > ($info['avdataend_tmp'] - $info['avdataoffset'])))) {
-
-						$info['avdataoffset'] = $info['quicktime'][$atomname]['offset'] + 8;
-						$OldAVDataEnd         = $info['avdataend'];
-						$info['avdataend']    = $info['quicktime'][$atomname]['offset'] + $info['quicktime'][$atomname]['size'];
-
-						$getid3_temp = new getID3();
-						$getid3_temp->openfile($this->getid3->filename);
-						$getid3_temp->info['avdataoffset'] = $info['avdataoffset'];
-						$getid3_temp->info['avdataend']    = $info['avdataend'];
-						$getid3_mp3 = new getid3_mp3($getid3_temp);
-						if ($getid3_mp3->MPEGaudioHeaderValid($getid3_mp3->MPEGaudioHeaderDecode($this->fread(4)))) {
-							$getid3_mp3->getOnlyMPEGaudioInfo($getid3_temp->info['avdataoffset'], false);
-							if (!empty($getid3_temp->info['warning'])) {
-								foreach ($getid3_temp->info['warning'] as $value) {
-									$info['warning'][] = $value;
-								}
-							}
-							if (!empty($getid3_temp->info['mpeg'])) {
-								$info['mpeg'] = $getid3_temp->info['mpeg'];
-								if (isset($info['mpeg']['audio'])) {
-									$info['audio']['dataformat']   = 'mp3';
-									$info['audio']['codec']        = (!empty($info['mpeg']['audio']['encoder']) ? $info['mpeg']['audio']['encoder'] : (!empty($info['mpeg']['audio']['codec']) ? $info['mpeg']['audio']['codec'] : (!empty($info['mpeg']['audio']['LAME']) ? 'LAME' :'mp3')));
-									$info['audio']['sample_rate']  = $info['mpeg']['audio']['sample_rate'];
-									$info['audio']['channels']     = $info['mpeg']['audio']['channels'];
-									$info['audio']['bitrate']      = $info['mpeg']['audio']['bitrate'];
-									$info['audio']['bitrate_mode'] = strtolower($info['mpeg']['audio']['bitrate_mode']);
-									$info['bitrate']               = $info['audio']['bitrate'];
-								}
-							}
-						}
-						unset($getid3_mp3, $getid3_temp);
-						$info['avdataend'] = $OldAVDataEnd;
-						unset($OldAVDataEnd);
-
-					}
-					break;
-
-				case 'free': // FREE space atom
-				case 'skip': // SKIP atom
-				case 'wide': // 64-bit expansion placeholder atom
-					// 'free', 'skip' and 'wide' are just padding, contains no useful data at all
-					break;
-
-				default:
-					$atomHierarchy = array();
-					$info['quicktime'][$atomname] = $this->QuicktimeParseAtom($atomname, $atomsize, $this->fread($atomsize), $offset, $atomHierarchy, $this->ParseAllPossibleAtoms);
-					break;
-			}
+			$atomHierarchy = array();
+			$info['quicktime'][$atomname] = $this->QuicktimeParseAtom($atomname, $atomsize, $this->fread($atomsize), $offset, $atomHierarchy, $this->ParseAllPossibleAtoms);
 
 			$offset += $atomsize;
 			$atomcounter++;
@@ -172,15 +122,12 @@ class getid3_quicktime extends getid3_handler
 
 		$info = &$this->getid3->info;
 
-		//$atom_parent = array_pop($atomHierarchy);
-		$atom_parent = end($atomHierarchy); // http://www.getid3.org/phpBB3/viewtopic.php?t=1717
+		$atom_parent = end($atomHierarchy); // not array_pop($atomHierarchy); see http://www.getid3.org/phpBB3/viewtopic.php?t=1717
 		array_push($atomHierarchy, $atomname);
 		$atom_structure['hierarchy'] = implode(' ', $atomHierarchy);
 		$atom_structure['name']      = $atomname;
 		$atom_structure['size']      = $atomsize;
 		$atom_structure['offset']    = $baseoffset;
-//echo getid3_lib::PrintHexBytes(substr($atom_data, 0, 8)).'<br>';
-//echo getid3_lib::PrintHexBytes(substr($atom_data, 0, 8), false).'<br><br>';
 		switch ($atomname) {
 			case 'moov': // MOVie container atom
 			case 'trak': // TRAcK container atom
@@ -1270,8 +1217,71 @@ if (!empty($atom_structure['sample_description_table'][$i]['width']) && !empty($
 				break;
 
 			case 'mdat': // Media DATa atom
-				// 'mdat' data is too big to deal with, contains no useful metadata... except may contain chapter titles
-				$atom_structure['data'] = substr($atom_data,  0, 1024);
+				// 'mdat' contains the actual data for the audio/video, possibly also subtitles
+
+/* due to lack of known documentation, this is a kludge implementation. If you know of documentation on how mdat is properly structed, please send it to info@getid3.org */
+
+				// first, skip any 'wide' padding, and second 'mdat' header (with specified size of zero?)
+				$mdat_offset = 0;
+				while (true) {
+					if (substr($atom_data, $mdat_offset, 8) == "\x00\x00\x00\x08".'wide') {
+						$mdat_offset += 8;
+					} elseif (substr($atom_data, $mdat_offset, 8) == "\x00\x00\x00\x00".'mdat') {
+						$mdat_offset += 8;
+					} else {
+						break;
+					}
+				}
+
+				// check to see if it looks like chapter titles, in the form of unterminated strings with a leading 16-bit size field
+				while  (($chapter_string_length = getid3_lib::BigEndian2Int(substr($atom_data, $mdat_offset, 2)))
+					&& ($chapter_string_length < 1000)
+					&& ($chapter_string_length <= (strlen($atom_data) - $mdat_offset - 2))
+					&& preg_match('#^[\x20-\xFF]+$#', substr($atom_data, $mdat_offset + 2, $chapter_string_length), $chapter_matches)) {
+						$mdat_offset += (2 + $chapter_string_length);
+						@$info['quicktime']['comments']['chapters'][] = $chapter_matches[0];
+				}
+
+
+
+				if (($atomsize > 8) && (!isset($info['avdataend_tmp']) || ($info['quicktime'][$atomname]['size'] > ($info['avdataend_tmp'] - $info['avdataoffset'])))) {
+
+					$info['avdataoffset'] = $atom_structure['offset'] + 8;                       // $info['quicktime'][$atomname]['offset'] + 8;
+					$OldAVDataEnd         = $info['avdataend'];
+					$info['avdataend']    = $atom_structure['offset'] + $atom_structure['size']; // $info['quicktime'][$atomname]['offset'] + $info['quicktime'][$atomname]['size'];
+
+					$getid3_temp = new getID3();
+					$getid3_temp->openfile($this->getid3->filename);
+					$getid3_temp->info['avdataoffset'] = $info['avdataoffset'];
+					$getid3_temp->info['avdataend']    = $info['avdataend'];
+					$getid3_mp3 = new getid3_mp3($getid3_temp);
+					if ($getid3_mp3->MPEGaudioHeaderValid($getid3_mp3->MPEGaudioHeaderDecode($this->fread(4)))) {
+						$getid3_mp3->getOnlyMPEGaudioInfo($getid3_temp->info['avdataoffset'], false);
+						if (!empty($getid3_temp->info['warning'])) {
+							foreach ($getid3_temp->info['warning'] as $value) {
+								$info['warning'][] = $value;
+							}
+						}
+						if (!empty($getid3_temp->info['mpeg'])) {
+							$info['mpeg'] = $getid3_temp->info['mpeg'];
+							if (isset($info['mpeg']['audio'])) {
+								$info['audio']['dataformat']   = 'mp3';
+								$info['audio']['codec']        = (!empty($info['mpeg']['audio']['encoder']) ? $info['mpeg']['audio']['encoder'] : (!empty($info['mpeg']['audio']['codec']) ? $info['mpeg']['audio']['codec'] : (!empty($info['mpeg']['audio']['LAME']) ? 'LAME' :'mp3')));
+								$info['audio']['sample_rate']  = $info['mpeg']['audio']['sample_rate'];
+								$info['audio']['channels']     = $info['mpeg']['audio']['channels'];
+								$info['audio']['bitrate']      = $info['mpeg']['audio']['bitrate'];
+								$info['audio']['bitrate_mode'] = strtolower($info['mpeg']['audio']['bitrate_mode']);
+								$info['bitrate']               = $info['audio']['bitrate'];
+							}
+						}
+					}
+					unset($getid3_mp3, $getid3_temp);
+					$info['avdataend'] = $OldAVDataEnd;
+					unset($OldAVDataEnd);
+
+				}
+
+				unset($mdat_offset, $chapter_string_length, $chapter_matches);
 				break;
 
 			case 'free': // FREE space atom
