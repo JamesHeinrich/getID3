@@ -1,9 +1,9 @@
 {
-    "name": "james-heinrich/getID3",
+    "name": "james-heinrich/getid3",
     "type": "library",
     "description": "getID3 is a PHP library that extracts useful information from many multimedia file formats.",
     "keywords": ["getid3", "tags", "metadata"],
-    "homepage": "http://www.getid3.org",
+    "homepage": "http://www.getid3.org/",
     "support": {
         "forum": "http://support.getid3.org/"
     },
