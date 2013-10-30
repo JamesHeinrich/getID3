@@ -147,27 +147,27 @@ class getid3_quicktime extends getid3_handler
 				break;
 
 			case 'ilst': // Item LiST container atom
-				$atom_structure['subatoms'] = $this->QuicktimeParseContainerAtom($atom_data, $baseoffset + 8, $atomHierarchy, $ParseAllPossibleAtoms);
-
-				// some "ilst" atoms contain data atoms that have a numeric name, and the data is far more accessible if the returned array is compacted
-				$allnumericnames = true;
-				foreach ($atom_structure['subatoms'] as $subatomarray) {
-					if (!is_integer($subatomarray['name']) || (count($subatomarray['subatoms']) != 1)) {
-						$allnumericnames = false;
-						break;
-					}
-				}
-				if ($allnumericnames) {
-					$newData = array();
+				if ($atom_structure['subatoms'] = $this->QuicktimeParseContainerAtom($atom_data, $baseoffset + 8, $atomHierarchy, $ParseAllPossibleAtoms)) {
+					// some "ilst" atoms contain data atoms that have a numeric name, and the data is far more accessible if the returned array is compacted
+					$allnumericnames = true;
 					foreach ($atom_structure['subatoms'] as $subatomarray) {
-						foreach ($subatomarray['subatoms'] as $newData_subatomarray) {
-							unset($newData_subatomarray['hierarchy'], $newData_subatomarray['name']);
-							$newData[$subatomarray['name']] = $newData_subatomarray;
+						if (!is_integer($subatomarray['name']) || (count($subatomarray['subatoms']) != 1)) {
+							$allnumericnames = false;
 							break;
 						}
 					}
-					$atom_structure['data'] = $newData;
-					unset($atom_structure['subatoms']);
+					if ($allnumericnames) {
+						$newData = array();
+						foreach ($atom_structure['subatoms'] as $subatomarray) {
+							foreach ($subatomarray['subatoms'] as $newData_subatomarray) {
+								unset($newData_subatomarray['hierarchy'], $newData_subatomarray['name']);
+								$newData[$subatomarray['name']] = $newData_subatomarray;
+								break;
+							}
+						}
+						$atom_structure['data'] = $newData;
+						unset($atom_structure['subatoms']);
+					}
 				}
 				break;
 
