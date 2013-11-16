@@ -3,6 +3,7 @@
 /// getID3() by James Heinrich <info@getid3.org>               //
 //  available at http://getid3.sourceforge.net                 //
 //            or http://www.getid3.org                         //
+//          also https://github.com/JamesHeinrich/getID3       //
 /////////////////////////////////////////////////////////////////
 // See readme.txt for more details                             //
 /////////////////////////////////////////////////////////////////
@@ -823,11 +824,11 @@ class getid3_asf extends getid3_handler {
 
 							case 'id3':
 								$this->getid3->include_module('tag.id3v2');
-								
+
 								$getid3_id3v2 = new getid3_id3v2($this->getid3);
 								$getid3_id3v2->AnalyzeString($thisfile_asf_extendedcontentdescriptionobject_contentdescriptor_current['value']);
 								unset($getid3_id3v2);
-								
+
 								if ($thisfile_asf_extendedcontentdescriptionobject_contentdescriptor_current['value_length'] > 1024) {
 									$thisfile_asf_extendedcontentdescriptionobject_contentdescriptor_current['value'] = '<value too large to display>';
 								}
@@ -1679,7 +1680,7 @@ class getid3_asf extends getid3_handler {
 				return getid3_lib::iconv_fallback('UTF-8', 'UTF-16LE', $str);
 			}, $lookup);
 		}
-		
+
 		return (isset($lookup[$WMpictureType]) ? $lookup[$WMpictureType] : '');
 	}
 

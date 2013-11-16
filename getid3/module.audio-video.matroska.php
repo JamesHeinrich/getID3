@@ -3,6 +3,7 @@
 /// getID3() by James Heinrich <info@getid3.org>               //
 //  available at http://getid3.sourceforge.net                 //
 //            or http://www.getid3.org                         //
+//          also https://github.com/JamesHeinrich/getID3       //
 /////////////////////////////////////////////////////////////////
 // See readme.txt for more details                             //
 /////////////////////////////////////////////////////////////////
@@ -282,7 +283,7 @@ class getid3_matroska extends getid3_handler
 						switch ($trackarray['CodecID']) {
 							case 'V_MS/VFW/FOURCC':
 								getid3_lib::IncludeDependency(GETID3_INCLUDEPATH.'module.audio-video.riff.php', __FILE__, true);
-								
+
 								$parsed = getid3_riff::ParseBITMAPINFOHEADER($trackarray['CodecPrivate']);
 								$track_info['codec'] = getid3_riff::fourccLookup($parsed['fourcc']);
 								$info['matroska']['track_codec_parsed'][$trackarray['TrackNumber']] = $parsed;
@@ -524,7 +525,7 @@ class getid3_matroska extends getid3_handler
 							default:
 								$this->unhandledElement('header', __LINE__, $element_data);
 						}
-						
+
 						unset($element_data['offset'], $element_data['end']);
 						$info['matroska']['header']['elements'][] = $element_data;
 					}
