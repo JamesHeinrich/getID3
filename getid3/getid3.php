@@ -1774,7 +1774,6 @@ abstract class getid3_handler
 
 }
 
-
 class getid3_exception extends Exception
 {
 	public $message;
