@@ -1344,4 +1344,14 @@ class getid3_lib
 		return $filesize;
 	}
 
+        /**
+        * Workaround for Bug #37268 (https://bugs.php.net/bug.php?id=37268)
+        * @param string $path A path.
+        * @param string $suffix If the name component ends in suffix this will also be cut off.
+        * @return string
+        */
+        public static function mb_basename($path, $suffix = null) {
+            $splited = preg_split('/\//', rtrim($path, '/ '));
+            return substr(basename('X' . $splited[count($splited) - 1], $suffix), 1);
+        }
 }
