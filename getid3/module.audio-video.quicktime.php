@@ -318,7 +318,7 @@ class getid3_quicktime extends getid3_handler
 							$boxsmalltype =                           substr($atom_data, $atomoffset + 2, 2);
 							$boxsmalldata =                           substr($atom_data, $atomoffset + 4, $boxsmallsize);
 							if ($boxsmallsize <= 1) {
-								$info['warning'][] = 'Invalid QuickTime atom smallbox size "'.$boxsmallsize.'" in atom "'.$atomname.'" at offset: '.($atom_structure['offset'] + $atomoffset);
+								$info['warning'][] = 'Invalid QuickTime atom smallbox size "'.$boxsmallsize.'" in atom "'.preg_replace('#[^a-zA-Z0-9 _\\-]#', '?', $atomname).'" at offset: '.($atom_structure['offset'] + $atomoffset);
 								$atom_structure['data'] = null;
 								$atomoffset = strlen($atom_data);
 								break;
@@ -328,7 +328,7 @@ class getid3_quicktime extends getid3_handler
 									$atom_structure['data'] = $boxsmalldata;
 									break;
 								default:
-									$info['warning'][] = 'Unknown QuickTime smallbox type: "'.getid3_lib::PrintHexBytes($boxsmalltype).'" at offset '.$baseoffset;
+									$info['warning'][] = 'Unknown QuickTime smallbox type: "'.preg_replace('#[^a-zA-Z0-9 _\\-]#', '?', $boxsmalltype).'" ('.trim(getid3_lib::PrintHexBytes($boxsmalltype)).') at offset '.$baseoffset;
 									$atom_structure['data'] = $atom_data;
 									break;
 							}
@@ -340,7 +340,7 @@ class getid3_quicktime extends getid3_handler
 							$boxtype =                           substr($atom_data, $atomoffset + 4, 4);
 							$boxdata =                           substr($atom_data, $atomoffset + 8, $boxsize - 8);
 							if ($boxsize <= 1) {
-								$info['warning'][] = 'Invalid QuickTime atom box size "'.$boxsize.'" in atom "'.$atomname.'" at offset: '.($atom_structure['offset'] + $atomoffset);
+								$info['warning'][] = 'Invalid QuickTime atom box size "'.$boxsize.'" in atom "'.preg_replace('#[^a-zA-Z0-9 _\\-]#', '?', $atomname).'" at offset: '.($atom_structure['offset'] + $atomoffset);
 								$atom_structure['data'] = null;
 								$atomoffset = strlen($atom_data);
 								break;
@@ -428,7 +428,7 @@ class getid3_quicktime extends getid3_handler
 									break;
 
 								default:
-									$info['warning'][] = 'Unknown QuickTime box type: "'.getid3_lib::PrintHexBytes($boxtype).'" at offset '.$baseoffset;
+									$info['warning'][] = 'Unknown QuickTime box type: "'.preg_replace('#[^a-zA-Z0-9 _\\-]#', '?', $boxtype).'" ('.trim(getid3_lib::PrintHexBytes($boxtype)).') at offset '.$baseoffset;
 									$atom_structure['data'] = $atom_data;
 
 							}
@@ -1411,7 +1411,7 @@ if (!empty($atom_structure['sample_description_table'][$i]['width']) && !empty($
 				break;
 
 			default:
-				$info['warning'][] = 'Unknown QuickTime atom type: "'.$atomname.'" ('.trim(getid3_lib::PrintHexBytes($atomname)).') at offset '.$baseoffset;
+				$info['warning'][] = 'Unknown QuickTime atom type: "'.preg_replace('#[^a-zA-Z0-9 _\\-]#', '?', $atomname).'" ('.trim(getid3_lib::PrintHexBytes($atomname)).') at offset '.$baseoffset;
 				$atom_structure['data'] = $atom_data;
 				break;
 		}
