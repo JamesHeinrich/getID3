@@ -3,6 +3,7 @@
 /// getID3() by James Heinrich <info@getid3.org>               //
 //  available at http://getid3.sourceforge.net                 //
 //            or http://www.getid3.org                         //
+//          also https://github.com/JamesHeinrich/getID3       //
 /////////////////////////////////////////////////////////////////
 //                                                             //
 // /demo/demo.browse.php - part of getID3()                     //
@@ -12,7 +13,7 @@
 //                                                            ///
 /////////////////////////////////////////////////////////////////
 
-die('For security reasons, this demo has been disabled. It can be enabled by removing line '.__LINE__.' in demos/'.basename(__FILE__));
+//die('For security reasons, this demo has been disabled. It can be enabled by removing line '.__LINE__.' in demos/'.basename(__FILE__));
 define('GETID3_DEMO_BROWSE_ALLOW_EDIT_LINK',   false);
 define('GETID3_DEMO_BROWSE_ALLOW_DELETE_LINK', false);
 define('GETID3_DEMO_BROWSE_ALLOW_MD5_LINK',    false);
