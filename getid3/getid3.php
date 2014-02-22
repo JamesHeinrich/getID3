@@ -103,13 +103,13 @@ class getID3
 	public $fp;                               // Filepointer to file being analysed.
 	public $info;                             // Result array.
 	public $tempdir = GETID3_TEMP_DIR;
+	public $memory_limit = 0;
 
 	// Protected variables
 	protected $startup_error   = '';
 	protected $startup_warning = '';
-	protected $memory_limit    = 0;
 
-	const VERSION           = '1.10.0';
+	const VERSION           = '1.10.0-20140221';
 	const FREAD_BUFFER_SIZE = 32768;
 
 	const ATTACHMENTS_NONE   = false;

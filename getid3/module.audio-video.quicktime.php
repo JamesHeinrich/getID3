@@ -68,7 +68,7 @@ class getid3_quicktime extends getid3_handler
 				break;
 			}
 			$atomHierarchy = array();
-			$info['quicktime'][$atomname] = $this->QuicktimeParseAtom($atomname, $atomsize, $this->fread($atomsize), $offset, $atomHierarchy, $this->ParseAllPossibleAtoms);
+			$info['quicktime'][$atomname] = $this->QuicktimeParseAtom($atomname, $atomsize, $this->fread(min($atomsize, round($this->getid3->memory_limit / 2))), $offset, $atomHierarchy, $this->ParseAllPossibleAtoms);
 
 			$offset += $atomsize;
 			$atomcounter++;
@@ -798,7 +798,12 @@ if (!empty($atom_structure['sample_description_table'][$i]['width']) && !empty($
 				$sttsEntriesDataOffset = 8;
 				//$FrameRateCalculatorArray = array();
 				$frames_count = 0;
-				for ($i = 0; $i < $atom_structure['number_entries']; $i++) {
+
+				$max_stts_entries_to_scan = min(floor($this->getid3->memory_limit / 10000), $atom_structure['number_entries']);
+				if ($max_stts_entries_to_scan < $atom_structure['number_entries']) {
+					$info['warning'][] = 'QuickTime atom "stts" has '.$atom_structure['number_entries'].' but only scanning the first '.$max_stts_entries_to_scan.' entries due to limited PHP memory available ('.floor($this->getid3->memory_limit / 1048576).'MB).';
+				}
+				for ($i = 0; $i < $max_stts_entries_to_scan; $i++) {
 					$atom_structure['time_to_sample_table'][$i]['sample_count']    = getid3_lib::BigEndian2Int(substr($atom_data, $sttsEntriesDataOffset, 4));
 					$sttsEntriesDataOffset += 4;
 					$atom_structure['time_to_sample_table'][$i]['sample_duration'] = getid3_lib::BigEndian2Int(substr($atom_data, $sttsEntriesDataOffset, 4));
