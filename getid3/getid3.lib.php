@@ -521,6 +521,10 @@ class getid3_lib
 	public static function XML2array($XMLstring) {
 		if (function_exists('simplexml_load_string')) {
 			if (function_exists('get_object_vars')) {
+				if (function_exists('libxml_disable_entity_loader')) { // (PHP 5 >= 5.2.11)
+					// http://websec.io/2012/08/27/Preventing-XEE-in-PHP.html
+					libxml_disable_entity_loader(true);
+				}
 				$XMLobject = simplexml_load_string($XMLstring);
 				return self::SimpleXMLelement2array($XMLobject);
 			}
