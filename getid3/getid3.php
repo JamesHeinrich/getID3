@@ -32,9 +32,7 @@ if (!$temp_dir) {
 	// sys_get_temp_dir() may give inaccessible temp dir, e.g. with open_basedir on virtual hosts
 	$temp_dir = sys_get_temp_dir();
 }
-if (!preg_match('#(1|ON)#i', ini_get('safe_mode'))) {
-	$temp_dir = realpath($temp_dir);
-}
+$temp_dir = @realpath($temp_dir); // see https://github.com/JamesHeinrich/getID3/pull/10
 $open_basedir = ini_get('open_basedir');
 if ($open_basedir) {
 	// e.g. "/var/www/vhosts/getid3.org/httpdocs/:/tmp/"
