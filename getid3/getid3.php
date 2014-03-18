@@ -109,7 +109,7 @@ class getID3
 	protected $startup_error   = '';
 	protected $startup_warning = '';
 
-	const VERSION           = '1.10.0-20140221';
+	const VERSION           = '1.10.0-20140318';
 	const FREAD_BUFFER_SIZE = 32768;
 
 	const ATTACHMENTS_NONE   = false;
@@ -1191,6 +1191,7 @@ class getID3
 				'matroska'  => array('matroska'      , 'UTF-8'),
 				'flac'      => array('vorbiscomment' , 'UTF-8'),
 				'divxtag'   => array('divx'          , 'ISO-8859-1'),
+				'iptc'      => array('iptc'          , 'ISO-8859-1'),
 			);
 		}
 
