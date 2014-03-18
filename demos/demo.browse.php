@@ -156,7 +156,6 @@ if (isset($_REQUEST['filename'])) {
 		$FilesWithErrors           = 0;
 
 		while ($file = readdir($handle)) {
-echo htmlentities($file, ENT_QUOTES, $PageEncoding).'<br>';
 			$currentfilename = $listdirectory.'/'.$file;
 			set_time_limit(30); // allocate another 30 seconds to process this file - should go much quicker than this unless intense processing (like bitrate histogram analysis) is enabled
 			echo ' .'; // progress indicator dot
