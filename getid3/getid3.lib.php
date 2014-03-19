@@ -989,6 +989,19 @@ class getid3_lib
 		throw new Exception('PHP does not have iconv() support - cannot convert from '.$in_charset.' to '.$out_charset);
 	}
 
+	public static function recursiveMultiByteCharString2HTML($data, $charset='ISO-8859-1') {
+		if (is_string($data)) {
+			return self::MultiByteCharString2HTML($data, $charset);
+		} elseif (is_array($data)) {
+			$return_data = array();
+			foreach ($data as $key => $value) {
+				$return_data[$key] = self::recursiveMultiByteCharString2HTML($value, $charset);
+			}
+			return $return_data;
+		}
+		// integer, float, objects, resources, etc
+		return $data;
+	}
 
 	public static function MultiByteCharString2HTML($string, $charset='ISO-8859-1') {
 		$string = (string) $string; // in case trying to pass a numeric (float, int) string, would otherwise return an empty string
