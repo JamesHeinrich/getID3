@@ -1,5 +1,5 @@
 {
-    "name": "jamesheinrich/getid3",
+    "name": "james-heinrich/getid3",
     "description": "PHP script that extracts useful information from popular multimedia file formats",
     "homepage": "http://www.getid3.org/",
     "keywords": ["php","tags","codecs"],
