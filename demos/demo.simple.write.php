@@ -31,8 +31,8 @@ $tagwriter->filename = 'c:/file.mp3';
 $tagwriter->tagformats = array('id3v2.3');
 
 // set various options (optional)
-$tagwriter->overwrite_tags = true;
-$tagwriter->overwrite_tags = false;
+$tagwriter->overwrite_tags    = true;  // if true will erase existing tag data and write only passed data; if false will merge passed data with existing tag data (experimental)
+$tagwriter->remove_other_tags = false; // if true removes other tag formats (e.g. ID3v1, ID3v2, APE, Lyrics3, etc) that may be present in the file and only write the specified tag format(s). If false leaves any unspecified tag formats as-is.
 $tagwriter->tag_encoding = $TextEncoding;
 $tagwriter->remove_other_tags = true;
 
