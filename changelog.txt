@@ -18,6 +18,9 @@
 Version History
 ===============
 
+1.9.9: [2014-??-??] James Heinrich
+    * Bugfix: (#1845) Quicktime parsing with no PHP memory_limit
+
 1.9.8: [2014-05-11] James Heinrich
     » Add support for AMR (Adaptive Multi-Rate audio codec)
       new file: module.audio.amr.php
