@@ -33,7 +33,7 @@ echo '<table border="1" cellspacing="0" cellpadding="3">';
 echo '<tr><th>Filename</th><th>Artist</th><th>Title</th><th>Bitrate</th><th>Playtime</th></tr>';
 while (($file = readdir($dir)) !== false) {
 	$FullFileName = realpath($DirectoryToScan.'/'.$file);
-	if ((substr($FullFileName, 0, 1) != '.') && is_file($FullFileName)) {
+	if ((substr($file, 0, 1) != '.') && is_file($FullFileName)) {
 		set_time_limit(30);
 
 		$ThisFileInfo = $getID3->analyze($FullFileName);
