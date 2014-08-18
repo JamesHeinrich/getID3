@@ -77,7 +77,7 @@ Reads & parses (to varying degrees):
 + audio-lossy:
   * MP3/MP2/MP1
   * MPC / Musepack
-  * Ogg (Vorbis, OggFLAC, Speex)
+  * Ogg (Vorbis, OggFLAC, Speex, Opus)
   * AAC / MP4
   * AC3
   * DTS
