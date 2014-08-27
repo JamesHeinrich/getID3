@@ -581,7 +581,7 @@ $info['warning'][] = 'Ogg Theora (v3) not fully supported in this version of get
 			if ($i >= 10000) {
 				// https://github.com/owncloud/music/issues/212#issuecomment-43082336
 				$info['warning'][] = 'Unexpectedly large number ('.$CommentsCount.') of Ogg comments - breaking after reading '.$i.' comments';
-				break 2;
+				break;
 			}
 
 			$ThisFileInfo_ogg_comments_raw[$i]['dataoffset'] = $CommentStartOffset + $commentdataoffset;
