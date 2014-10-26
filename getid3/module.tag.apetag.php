@@ -138,11 +138,12 @@ class getid3_apetag extends getid3_handler
 			$thisfile_ape_items_current['flags'] = $this->parseAPEtagFlags($item_flags);
 			switch ($thisfile_ape_items_current['flags']['item_contents_raw']) {
 				case 0: // UTF-8
-				case 3: // Locator (URL, filename, etc), UTF-8 encoded
-					$thisfile_ape_items_current['data'] = explode("\x00", trim($thisfile_ape_items_current['data']));
+				case 2: // Locator (URL, filename, etc), UTF-8 encoded
+					$thisfile_ape_items_current['data'] = explode("\x00", $thisfile_ape_items_current['data']);
 					break;
 
-				default: // binary data
+				case 1:  // binary data
+				default:
 					break;
 			}
 
@@ -251,6 +252,10 @@ class getid3_apetag extends getid3_handler
 				case 'cover art (recording)':
 				case 'cover art (studio)':
 					// list of possible cover arts from http://taglib-sharp.sourcearchive.com/documentation/2.0.3.0-2/Ape_2Tag_8cs-source.html
+					if (is_array($thisfile_ape_items_current['data'])) {
+						$info['warning'][] = 'APEtag "'.$item_key.'" should be flagged as Binary data, but was incorrectly flagged as UTF-8';
+						$thisfile_ape_items_current['data'] = implode("\x00", $thisfile_ape_items_current['data']);
+					}
 					list($thisfile_ape_items_current['filename'], $thisfile_ape_items_current['data']) = explode("\x00", $thisfile_ape_items_current['data'], 2);
 					$thisfile_ape_items_current['data_offset'] = $thisfile_ape_items_current['offset'] + strlen($thisfile_ape_items_current['filename']."\x00");
 					$thisfile_ape_items_current['data_length'] = strlen($thisfile_ape_items_current['data']);
@@ -346,7 +351,7 @@ class getid3_apetag extends getid3_handler
 	public function parseAPEtagFlags($rawflagint) {
 		// "Note: APE Tags 1.0 do not use any of the APE Tag flags.
 		// All are set to zero on creation and ignored on reading."
-		// http://www.uni-jena.de/~pfk/mpp/sv8/apetagflags.html
+		// http://wiki.hydrogenaud.io/index.php?title=Ape_Tags_Flags
 		$flags['header']            = (bool) ($rawflagint & 0x80000000);
 		$flags['footer']            = (bool) ($rawflagint & 0x40000000);
 		$flags['this_is_header']    = (bool) ($rawflagint & 0x20000000);
