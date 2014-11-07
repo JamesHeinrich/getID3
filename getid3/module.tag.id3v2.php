@@ -1454,7 +1454,14 @@ class getid3_id3v2 extends getid3_handler
 							if (!isset($info['id3v2']['comments']['picture'])) {
 								$info['id3v2']['comments']['picture'] = array();
 							}
-							$info['id3v2']['comments']['picture'][] = array('data'=>$parsedFrame['data'], 'image_mime'=>$parsedFrame['image_mime']);
+							$comments_picture_data = array();
+							foreach (array('data', 'image_mime', 'image_width', 'image_height', 'imagetype', 'picturetype', 'description', 'datalength') as $picture_key) {
+								if (isset($parsedFrame[$picture_key])) {
+									$comments_picture_data[$picture_key] = $parsedFrame[$picture_key];
+								}
+							}
+							$info['id3v2']['comments']['picture'][] = $comments_picture_data;
+							unset($comments_picture_data);
 						}
 					}
 				} while (false);

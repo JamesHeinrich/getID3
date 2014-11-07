@@ -303,7 +303,14 @@ class getid3_apetag extends getid3_handler
 							if (!isset($info['ape']['comments']['picture'])) {
 								$info['ape']['comments']['picture'] = array();
 							}
-							$info['ape']['comments']['picture'][] = array('data'=>$thisfile_ape_items_current['data'], 'image_mime'=>$thisfile_ape_items_current['image_mime']);
+							$comments_picture_data = array();
+							foreach (array('data', 'image_mime', 'image_width', 'image_height', 'imagetype', 'picturetype', 'description', 'datalength') as $picture_key) {
+								if (isset($thisfile_ape_items_current[$picture_key])) {
+									$comments_picture_data[$picture_key] = $thisfile_ape_items_current[$picture_key];
+								}
+							}
+							$info['ape']['comments']['picture'][] = $comments_picture_data;
+							unset($comments_picture_data);
 						}
 					} while (false);
 					break;
