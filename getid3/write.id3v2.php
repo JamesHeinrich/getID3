@@ -1544,7 +1544,7 @@ class getid3_write_id3v2
 						$frame_data = false;
 						if ($this->ID3v2FrameIsAllowed($frame_name, $source_data_array)) {
 							if(array_key_exists('description', $source_data_array) && array_key_exists('encodingid', $source_data_array) && array_key_exists('encoding', $this->tag_data)) {
-								$source_data_array['description'] = trim(getid3_lib::iconv_fallback($this->tag_data['encoding'], $source_data_array['encoding'], $source_data_array['description']));
+								$source_data_array['description'] = getid3_lib::iconv_fallback($this->tag_data['encoding'], $source_data_array['encoding'], $source_data_array['description']);
 							}
 							if ($frame_data = $this->GenerateID3v2FrameData($frame_name, $source_data_array)) {
 								$FrameUnsynchronisation = false;
