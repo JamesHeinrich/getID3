@@ -15,7 +15,6 @@ use JamesHeinrich\GetID3\Utils;
 //                                                             //
 // module.audio.tta.php                                        //
 // module for analyzing TTA Audio files                        //
-// dependencies: NONE                                          //
 //                                                            ///
 /////////////////////////////////////////////////////////////////
 

@@ -16,16 +16,12 @@ use JamesHeinrich\GetID3\Utils;
 //                                                             //
 // module.audio.flac.php                                       //
 // module for analyzing FLAC and OggFLAC audio files           //
-// dependencies: module.audio.ogg.php                          //
 //                                                            ///
 /////////////////////////////////////////////////////////////////
 
-
-Utils::IncludeDependency(GETID3_INCLUDEPATH.'module.audio.ogg.php', __FILE__, true);
-
 /**
-* @tutorial http://flac.sourceforge.net/format.html
-*/
+ * @tutorial http://flac.sourceforge.net/format.html
+ */
 class Flac extends \JamesHeinrich\GetID3\Module\Handler
 {
 	const syncword = 'fLaC';

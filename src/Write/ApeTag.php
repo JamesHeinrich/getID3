@@ -16,12 +16,8 @@ use JamesHeinrich\GetID3\Utils;
 //                                                             //
 // write.apetag.php                                            //
 // module for writing APE tags                                 //
-// dependencies: module.tag.apetag.php                         //
 //                                                            ///
 /////////////////////////////////////////////////////////////////
-
-
-Utils::IncludeDependency(GETID3_INCLUDEPATH.'module.tag.apetag.php', __FILE__, true);
 
 class ApeTag
 {

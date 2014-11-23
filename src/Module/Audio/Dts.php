@@ -15,7 +15,6 @@ use JamesHeinrich\GetID3\Utils;
 //                                                             //
 // module.audio.dts.php                                        //
 // module for analyzing DTS Audio files                        //
-// dependencies: NONE                                          //
 //                                                             //
 /////////////////////////////////////////////////////////////////
 

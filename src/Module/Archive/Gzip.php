@@ -16,7 +16,6 @@ use JamesHeinrich\GetID3\Utils;
 //                                                             //
 // module.archive.gzip.php                                     //
 // module for analyzing GZIP files                             //
-// dependencies: NONE                                          //
 //                                                            ///
 /////////////////////////////////////////////////////////////////
 //                                                             //

@@ -13,7 +13,6 @@ namespace JamesHeinrich\GetID3\Module\Misc;
 //                                                             //
 // module.misc.par2.php                                        //
 // module for analyzing PAR2 files                             //
-// dependencies: NONE                                          //
 //                                                            ///
 /////////////////////////////////////////////////////////////////
 

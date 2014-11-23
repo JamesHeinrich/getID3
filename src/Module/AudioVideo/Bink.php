@@ -15,7 +15,6 @@ use JamesHeinrich\GetID3\Utils;
 //                                                             //
 // module.audio.bink.php                                       //
 // module for analyzing Bink or Smacker audio-video files      //
-// dependencies: NONE                                          //
 //                                                            ///
 /////////////////////////////////////////////////////////////////
 

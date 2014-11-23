@@ -15,11 +15,8 @@ use JamesHeinrich\GetID3\Utils;
 ///                                                            //
 // module.tag.id3v2.php                                        //
 // module for analyzing ID3v2 tags                             //
-// dependencies: module.tag.id3v1.php                          //
 //                                                            ///
 /////////////////////////////////////////////////////////////////
-
-Utils::IncludeDependency(GETID3_INCLUDEPATH.'module.tag.id3v1.php', __FILE__, true);
 
 class ID3v2 extends \JamesHeinrich\GetID3\Module\Handler
 {

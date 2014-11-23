@@ -15,7 +15,6 @@ use JamesHeinrich\GetID3\Utils;
 //                                                             //
 // module.archive.szip.php                                     //
 // module for analyzing SZIP compressed files                  //
-// dependencies: NONE                                          //
 //                                                            ///
 /////////////////////////////////////////////////////////////////
 

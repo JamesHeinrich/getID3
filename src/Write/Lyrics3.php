@@ -15,7 +15,6 @@ use JamesHeinrich\GetID3\GetID3;
 //                                                             //
 // write.lyrics3.php                                           //
 // module for writing Lyrics3 tags                             //
-// dependencies: module.tag.lyrics3.php                        //
 //                                                            ///
 /////////////////////////////////////////////////////////////////
 

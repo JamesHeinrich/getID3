@@ -13,7 +13,6 @@ namespace JamesHeinrich\GetID3\Write;
 //                                                             //
 // write.vorbiscomment.php                                     //
 // module for writing VorbisComment tags                       //
-// dependencies: /helperapps/vorbiscomment.exe                 //
 //                                                            ///
 /////////////////////////////////////////////////////////////////
 

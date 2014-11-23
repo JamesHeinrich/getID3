@@ -15,11 +15,8 @@ use JamesHeinrich\GetID3\Utils;
 //                                                             //
 // module.audio.ogg.php                                        //
 // module for analyzing Ogg Vorbis, OggFLAC and Speex files    //
-// dependencies: module.audio.flac.php                         //
 //                                                            ///
 /////////////////////////////////////////////////////////////////
-
-Utils::IncludeDependency(GETID3_INCLUDEPATH.'module.audio.flac.php', __FILE__, true);
 
 class Ogg extends \JamesHeinrich\GetID3\Module\Handler
 {

@@ -15,7 +15,6 @@ use JamesHeinrich\GetID3\Utils;
 //                                                             //
 // module.archive.zip.php                                      //
 // module for analyzing pkZip files                            //
-// dependencies: NONE                                          //
 //                                                            ///
 /////////////////////////////////////////////////////////////////
 

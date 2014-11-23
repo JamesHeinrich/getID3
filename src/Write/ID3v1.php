@@ -17,11 +17,8 @@ use JamesHeinrich\GetID3\Utils;
 //                                                             //
 // write.id3v1.php                                             //
 // module for writing ID3v1 tags                               //
-// dependencies: module.tag.id3v1.php                          //
 //                                                            ///
 /////////////////////////////////////////////////////////////////
-
-Utils::IncludeDependency(GETID3_INCLUDEPATH.'module.tag.id3v1.php', __FILE__, true);
 
 class ID3v1
 {
