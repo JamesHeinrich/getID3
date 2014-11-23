@@ -1,0 +1,18 @@
+language: php
+
+php:
+  - 5.4
+  - 5.5
+  - 5.6
+  - hhvm
+
+install:
+  - composer self-update
+  - composer update
+
+script:
+  - phpunit tests
+  - ./tests/lint.sh
+
+git:
+  depth: 5
