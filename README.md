@@ -34,6 +34,7 @@ Documentation
 * [What does getID3() do?](docs/Features.md)
 * [What does the returned data structure look like?](docs/Structure.md)
 * [Requirements](docs/Requirements.md)
+* [Upgrading](docs/Upgrading.md)
 * [License](LICENSE.md)
 * [References](docs/References.md)
 * [Known Bugs/Issues in other programs](docs/External-Issues.md)
