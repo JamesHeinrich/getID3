@@ -25,4 +25,5 @@
 .gitignore          export-ignore
 /phpunit.xml        export-ignore
 /tests              export-ignore
+/.travis.yml        export-ignore
 /demos              export-ignore
