@@ -216,27 +216,24 @@ class Gzip extends \JamesHeinrich\GetID3\Module\Handler
 					$determined_format['module'] = (isset($determined_format['module']) ? $determined_format['module'] : '');
 					switch ($determined_format['module']) {
 						case 'tar':
-							// view TAR-file info
-							if (file_exists(GETID3_INCLUDEPATH.$determined_format['include']) && include_once(GETID3_INCLUDEPATH.$determined_format['include'])) {
-								if (($temp_tar_filename = tempnam(GETID3_TEMP_DIR, 'getID3')) === false) {
-									// can't find anywhere to create a temp file, abort
-									$info['error'][] = 'Unable to create temp file to parse TAR inside GZIP file';
-									break;
-								}
-								if ($fp_temp_tar = fopen($temp_tar_filename, 'w+b')) {
-									fwrite($fp_temp_tar, $inflated);
-									fclose($fp_temp_tar);
-									$getid3_temp = new GetID3;
-									$getid3_temp->openfile($temp_tar_filename);
-									$getid3_tar = new getid3_tar($getid3_temp);
-									$getid3_tar->Analyze();
-									$info['gzip']['member_header'][$idx]['tar'] = $getid3_temp->info['tar'];
-									unset($getid3_temp, $getid3_tar);
-									unlink($temp_tar_filename);
-								} else {
-									$info['error'][] = 'Unable to fopen() temp file to parse TAR inside GZIP file';
-									break;
-								}
+							if (($temp_tar_filename = tempnam(GETID3_TEMP_DIR, 'getID3')) === false) {
+								// can't find anywhere to create a temp file, abort
+								$info['error'][] = 'Unable to create temp file to parse TAR inside GZIP file';
+								break;
+							}
+							if ($fp_temp_tar = fopen($temp_tar_filename, 'w+b')) {
+								fwrite($fp_temp_tar, $inflated);
+								fclose($fp_temp_tar);
+								$getid3_temp = new GetID3;
+								$getid3_temp->openfile($temp_tar_filename);
+								$getid3_tar = new getid3_tar($getid3_temp);
+								$getid3_tar->Analyze();
+								$info['gzip']['member_header'][$idx]['tar'] = $getid3_temp->info['tar'];
+								unset($getid3_temp, $getid3_tar);
+								unlink($temp_tar_filename);
+							} else {
+								$info['error'][] = 'Unable to fopen() temp file to parse TAR inside GZIP file';
+								break;
 							}
 							break;
 

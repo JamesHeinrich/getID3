@@ -31,16 +31,6 @@ use JamesHeinrich\GetID3;
 //
 
 
-
-/**
-* getID3() settings
-*/
-
-require_once('../getid3/getid3.php');
-
-
-
-
 /**
 * Class for extracting information from audio files with getID3().
 */
