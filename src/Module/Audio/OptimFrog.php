@@ -17,11 +17,8 @@ use JamesHeinrich\GetID3\Utils;
 //                                                             //
 // module.audio.optimfrog.php                                  //
 // module for analyzing OptimFROG audio files                  //
-// dependencies: module.audio.riff.php                         //
 //                                                            ///
 /////////////////////////////////////////////////////////////////
-
-Utils::IncludeDependency(GETID3_INCLUDEPATH.'module.audio-video.riff.php', __FILE__, true);
 
 class OptimFrog extends \JamesHeinrich\GetID3\Module\Handler
 {

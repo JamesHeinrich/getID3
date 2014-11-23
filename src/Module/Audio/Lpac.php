@@ -17,11 +17,8 @@ use JamesHeinrich\GetID3\Utils;
 //                                                             //
 // module.audio.lpac.php                                       //
 // module for analyzing LPAC Audio files                       //
-// dependencies: module.audio-video.riff.php                   //
 //                                                            ///
 /////////////////////////////////////////////////////////////////
-
-Utils::IncludeDependency(GETID3_INCLUDEPATH.'module.audio-video.riff.php', __FILE__, true);
 
 class Lpac extends \JamesHeinrich\GetID3\Module\Handler
 {

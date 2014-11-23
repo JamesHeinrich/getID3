@@ -29,8 +29,6 @@ echo '<html><head><title>getID3() - Sample tag writer</title></head><style type=
 $getID3 = new GetID3\GetID3;
 $getID3->setOption(array('encoding'=>$TaggingFormat));
 
-GetID3\Utils::IncludeDependency(GETID3_INCLUDEPATH.'write.php', __FILE__, true);
-
 $browsescriptfilename = 'demo.browse.php';
 
 $Filename = (isset($_REQUEST['Filename']) ? $_REQUEST['Filename'] : '');

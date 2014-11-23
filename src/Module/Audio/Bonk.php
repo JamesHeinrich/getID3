@@ -17,7 +17,6 @@ use JamesHeinrich\GetID3\Utils;
 //                                                             //
 // module.audio.la.php                                         //
 // module for analyzing BONK audio files                       //
-// dependencies: module.tag.id3v2.php (optional)               //
 //                                                            ///
 /////////////////////////////////////////////////////////////////
 

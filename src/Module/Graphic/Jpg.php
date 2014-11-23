@@ -16,8 +16,6 @@ use JamesHeinrich\GetID3\Utils;
 //                                                             //
 // module.graphic.jpg.php                                      //
 // module for analyzing JPEG Image files                       //
-// dependencies: PHP compiled with --enable-exif (optional)    //
-//               module.tag.xmp.php (optional)                 //
 //                                                            ///
 /////////////////////////////////////////////////////////////////
 
@@ -148,8 +146,6 @@ class Jpg extends \JamesHeinrich\GetID3\Module\Handler
 
 		}
 
-
-		Utils::IncludeDependency(GETID3_INCLUDEPATH.'module.tag.xmp.php', __FILE__, true);
 		if (isset($info['filenamepath'])) {
 			$image_xmp = new Xmp($info['filenamepath']);
 			$xmp_raw = $image_xmp->getAllTags();

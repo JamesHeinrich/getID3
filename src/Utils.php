@@ -1336,26 +1336,6 @@ class Utils
 		return (isset($cache[$file][$name][$key]) ? $cache[$file][$name][$key] : '');
 	}
 
-	public static function IncludeDependency($filename, $sourcefile, $DieOnFailure=false) {
-		global $GETID3_ERRORARRAY;
-
-		if (file_exists($filename)) {
-			if (include_once($filename)) {
-				return true;
-			} else {
-				$diemessage = basename($sourcefile).' depends on '.$filename.', which has errors';
-			}
-		} else {
-			$diemessage = basename($sourcefile).' depends on '.$filename.', which is missing';
-		}
-		if ($DieOnFailure) {
-			throw new \Exception($diemessage);
-		} else {
-			$GETID3_ERRORARRAY[] = $diemessage;
-		}
-		return false;
-	}
-
 	public static function trimNullByte($string) {
 		return trim($string, "\x00");
 	}

@@ -19,13 +19,8 @@ use JamesHeinrich\GetID3\Utils;
 //                                                             //
 // module.audio-video.quicktime.php                            //
 // module for analyzing Quicktime and MP3-in-MP4 files         //
-// dependencies: module.audio.mp3.php                          //
-// dependencies: module.tag.id3v2.php                          //
 //                                                            ///
 /////////////////////////////////////////////////////////////////
-
-Utils::IncludeDependency(GETID3_INCLUDEPATH.'module.audio.mp3.php', __FILE__, true);
-Utils::IncludeDependency(GETID3_INCLUDEPATH.'module.tag.id3v2.php', __FILE__, true); // needed for ISO 639-2 language code lookup
 
 class QuickTime extends \JamesHeinrich\GetID3\Module\Handler
 {

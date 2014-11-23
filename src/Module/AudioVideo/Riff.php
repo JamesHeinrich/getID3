@@ -23,21 +23,13 @@ use JamesHeinrich\GetID3\Utils;
 // module for analyzing RIFF files                             //
 // multiple formats supported by this module:                  //
 //    Wave, AVI, AIFF/AIFC, (MP3,AC3)/RIFF, Wavpack v3, 8SVX   //
-// dependencies: module.audio.mp3.php                          //
-//               module.audio.ac3.php                          //
-//               module.audio.dts.php                          //
 //                                                            ///
 /////////////////////////////////////////////////////////////////
 
 /**
-* @todo Parse AC-3/DTS audio inside WAVE correctly
-* @todo Rewrite RIFF parser totally
+ * @todo Parse AC-3/DTS audio inside WAVE correctly
+ * @todo Rewrite RIFF parser totally
 */
-
-Utils::IncludeDependency(GETID3_INCLUDEPATH.'module.audio.mp3.php', __FILE__, true);
-Utils::IncludeDependency(GETID3_INCLUDEPATH.'module.audio.ac3.php', __FILE__, true);
-Utils::IncludeDependency(GETID3_INCLUDEPATH.'module.audio.dts.php', __FILE__, true);
-
 class Riff extends \JamesHeinrich\GetID3\Module\Handler
 {
 
@@ -1065,7 +1057,6 @@ class Riff extends \JamesHeinrich\GetID3\Module\Handler
 				}
 /*
 				if (isset($thisfile_riff[$RIFFsubtype]['ID3 '])) {
-					Utils::IncludeDependency(GETID3_INCLUDEPATH.'module.tag.id3v2.php', __FILE__, true);
 					$getid3_temp = new GetID3;
 					$getid3_temp->openfile($this->getid3->filename);
 					$getid3_id3v2 = new ID3v2($getid3_temp);
@@ -1166,8 +1157,6 @@ class Riff extends \JamesHeinrich\GetID3\Module\Handler
 				$info['mime_type']  = 'video/mpeg';
 
 				if (!empty($thisfile_riff['CDXA']['data'][0]['size'])) {
-					Utils::IncludeDependency(GETID3_INCLUDEPATH.'module.audio-video.mpeg.php', __FILE__, true);
-
 					$getid3_temp = new GetID3;
 					$getid3_temp->openfile($this->getid3->filename);
 					$getid3_mpeg = new Mpeg($getid3_temp);
@@ -1202,8 +1191,6 @@ class Riff extends \JamesHeinrich\GetID3\Module\Handler
 				}
 
 				if (isset($thisfile_riff[$RIFFsubtype]['id3 '])) {
-					Utils::IncludeDependency(GETID3_INCLUDEPATH.'module.tag.id3v2.php', __FILE__, true);
-
 					$getid3_temp = new GetID3;
 					$getid3_temp->openfile($this->getid3->filename);
 					$getid3_id3v2 = new ID3v2($getid3_temp);

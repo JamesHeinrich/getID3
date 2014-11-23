@@ -53,7 +53,6 @@ use JamesHeinrich\GetID3\Utils;
 //                                                             //
 // module.audio-video.flv.php                                  //
 // module for analyzing Shockwave Flash Video files            //
-// dependencies: NONE                                          //
 //                                                            ///
 /////////////////////////////////////////////////////////////////
 

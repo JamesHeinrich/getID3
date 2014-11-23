@@ -3,6 +3,7 @@
 namespace JamesHeinrich\GetID3\Module\Tag;
 
 use JamesHeinrich\GetID3\GetID3;
+use JamesHeinrich\GetID3\Module\Tag\ApeTag;
 use JamesHeinrich\GetID3\Utils;
 
 /////////////////////////////////////////////////////////////////
@@ -16,7 +17,6 @@ use JamesHeinrich\GetID3\Utils;
 ///                                                            //
 // module.tag.lyrics3.php                                      //
 // module for analyzing Lyrics3 tags                           //
-// dependencies: module.tag.apetag.php (optional)              //
 //                                                            ///
 /////////////////////////////////////////////////////////////////
 
@@ -108,7 +108,6 @@ class Lyrics3 extends \JamesHeinrich\GetID3\Module\Handler
 			if (!isset($info['ape'])) {
 				if (isset($info['lyrics3']['tag_offset_start'])) {
 					$GETID3_ERRORARRAY = &$info['warning'];
-					Utils::IncludeDependency(GETID3_INCLUDEPATH.'module.tag.apetag.php', __FILE__, true);
 					$getid3_temp = new GetID3();
 					$getid3_temp->openfile($this->getid3->filename);
 					$getid3_apetag = new ApeTag($getid3_temp);

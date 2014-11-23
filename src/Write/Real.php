@@ -16,7 +16,6 @@ use JamesHeinrich\GetID3\Utils;
 //                                                             //
 // write.real.php                                              //
 // module for writing RealAudio/RealVideo tags                 //
-// dependencies: module.tag.real.php                           //
 //                                                            ///
 /////////////////////////////////////////////////////////////////
 

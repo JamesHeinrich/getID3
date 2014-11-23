@@ -13,23 +13,8 @@ namespace JamesHeinrich\GetID3;
 ///                                                            //
 // write.php                                                   //
 // module for writing tags (APEv2, ID3v1, ID3v2)               //
-// dependencies: getid3.lib.php                                //
-//               write.apetag.php (optional)                   //
-//               write.id3v1.php (optional)                    //
-//               write.id3v2.php (optional)                    //
-//               write.vorbiscomment.php (optional)            //
-//               write.metaflac.php (optional)                 //
-//               write.lyrics3.php (optional)                  //
 //                                                            ///
 /////////////////////////////////////////////////////////////////
-
-if (!defined('GETID3_INCLUDEPATH')) {
-	throw new \Exception('getid3.php MUST be included before calling getid3_writetags');
-}
-if (!include_once(GETID3_INCLUDEPATH.'getid3.lib.php')) {
-	throw new \Exception('write.php depends on getid3.lib.php, which is missing.');
-}
-
 
 // NOTES:
 //
@@ -177,7 +162,6 @@ class WriteTags
 			switch ($tagformat) {
 				case 'ape':
 					$GETID3_ERRORARRAY = &$this->errors;
-					Utils::IncludeDependency(GETID3_INCLUDEPATH.'write.apetag.php', __FILE__, true);
 					break;
 
 				case 'id3v1':
@@ -186,7 +170,6 @@ class WriteTags
 				case 'metaflac':
 				case 'real':
 					$GETID3_ERRORARRAY = &$this->errors;
-					Utils::IncludeDependency(GETID3_INCLUDEPATH.'write.'.$tagformat.'.php', __FILE__, true);
 					break;
 
 				case 'id3v2.2':
@@ -194,7 +177,6 @@ class WriteTags
 				case 'id3v2.4':
 				case 'id3v2':
 					$GETID3_ERRORARRAY = &$this->errors;
-					Utils::IncludeDependency(GETID3_INCLUDEPATH.'write.id3v2.php', __FILE__, true);
 					break;
 
 				default:

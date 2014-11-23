@@ -17,11 +17,8 @@ use JamesHeinrich\GetID3\Utils;
 //                                                             //
 // module.audio.la.php                                         //
 // module for analyzing LA (LosslessAudio) audio files         //
-// dependencies: module.audio.riff.php                         //
 //                                                            ///
 /////////////////////////////////////////////////////////////////
-
-Utils::IncludeDependency(GETID3_INCLUDEPATH.'module.audio-video.riff.php', __FILE__, true);
 
 class La extends \JamesHeinrich\GetID3\Module\Handler
 {

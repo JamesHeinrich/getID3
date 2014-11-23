@@ -16,7 +16,6 @@ use JamesHeinrich\GetID3\Utils;
 //                                                             //
 // module.audio.shorten.php                                    //
 // module for analyzing Shorten Audio files                    //
-// dependencies: NONE                                          //
 //                                                            ///
 /////////////////////////////////////////////////////////////////
 
@@ -152,9 +151,6 @@ class Shorten extends \JamesHeinrich\GetID3\Module\Handler
 		$output = `$commandline`;
 
 		if (!empty($output) && (substr($output, 12, 4) == 'fmt ')) {
-
-			Utils::IncludeDependency(GETID3_INCLUDEPATH.'module.audio-video.riff.php', __FILE__, true);
-
 			$fmt_size = Utils::LittleEndian2Int(substr($output, 16, 4));
 			$DecodedWAVFORMATEX = Riff::parseWAVEFORMATex(substr($output, 20, $fmt_size));
 			$info['audio']['channels']        = $DecodedWAVFORMATEX['channels'];

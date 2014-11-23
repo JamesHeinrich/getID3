@@ -17,7 +17,6 @@ use JamesHeinrich\GetID3\Utils;
 //                                                             //
 // module.audio.wavpack.php                                    //
 // module for analyzing WavPack v4.0+ Audio files              //
-// dependencies: NONE                                          //
 //                                                            ///
 /////////////////////////////////////////////////////////////////
 
@@ -221,7 +220,6 @@ class WavPack extends \JamesHeinrich\GetID3\Module\Handler
 
 					switch ($metablock['function_id']) {
 						case 0x21: // ID_RIFF_HEADER
-							Utils::IncludeDependency(GETID3_INCLUDEPATH.'module.audio-video.riff.php', __FILE__, true);
 							$original_wav_filesize = Utils::LittleEndian2Int(substr($metablock['data'], 4, 4));
 
 							$getid3_temp = new GetID3;
@@ -243,7 +241,6 @@ class WavPack extends \JamesHeinrich\GetID3\Module\Handler
 
 						case 0x22: // ID_RIFF_TRAILER
 							$metablockRIFFfooter = $metablockRIFFheader.$metablock['data'];
-							Utils::IncludeDependency(GETID3_INCLUDEPATH.'module.audio-video.riff.php', __FILE__, true);
 
 							$startoffset = $metablock['offset'] + ($metablock['large_block'] ? 4 : 2);
 							$getid3_temp = new GetID3;

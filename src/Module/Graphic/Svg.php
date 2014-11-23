@@ -13,7 +13,6 @@ namespace JamesHeinrich\GetID3\Module\Graphic;
 //                                                             //
 // module.graphic.svg.php                                      //
 // module for analyzing SVG Image files                        //
-// dependencies: NONE                                          //
 //                                                            ///
 /////////////////////////////////////////////////////////////////
 
