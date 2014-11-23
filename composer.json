@@ -1,15 +1,30 @@
 {
     "name": "james-heinrich/getid3",
-    "description": "PHP script that extracts useful information from popular multimedia file formats",
-    "homepage": "http://www.getid3.org/",
-    "keywords": ["php","tags","codecs"],
     "type": "library",
+    "description": "Extract and write useful information to/from popular multimedia file formats",
+    "keywords": ["id3", "tags", "codecs", "audio", "video", "metadata"],
+    "homepage": "http://www.getid3.org/",
     "license": "GPL",
+    "authors": [{
+        "name": "James Heinrich",
+        "email": "info@getid3.org",
+        "homepage": "https://github.com/JamesHeinrich",
+        "role": "Developer"
+    },{
+        "name": "Craig Duncan",
+        "email": "git@duncanc.co.uk",
+        "homepage": "https://github.com/duncan3dc",
+        "role": "Developer"
+    }],
     "require":
     {
         "php": ">=5.3.0"
     },
+    "suggest": {
+        "ext-rar": "RAR extension is required for RAR archive module.",
+        "ext-exif": "EXIF extension is required for graphic modules."
+    },
     "autoload": {
-        "classmap": ["getid3/getid3.php"]
+        "psr-4": {"JamesHeinrich\\GetID3\\": "src/"}
     }
 }
