@@ -23,19 +23,6 @@ define('GETID3_DEMO_BROWSE_ALLOW_EDIT_LINK',   false);
 define('GETID3_DEMO_BROWSE_ALLOW_DELETE_LINK', false);
 define('GETID3_DEMO_BROWSE_ALLOW_MD5_LINK',    false);
 
-/////////////////////////////////////////////////////////////////
-// die if magic_quotes_runtime or magic_quotes_gpc are set
-if (function_exists('get_magic_quotes_runtime') && get_magic_quotes_runtime()) {
-	die('magic_quotes_runtime is enabled, getID3 will not run.');
-}
-if (function_exists('get_magic_quotes_gpc') && get_magic_quotes_gpc()) {
-	die('magic_quotes_gpc is enabled, getID3 will not run.');
-}
-if (!defined('ENT_SUBSTITUTE')) { // defined in PHP v5.4.0
-	define('ENT_SUBSTITUTE', ENT_QUOTES);
-}
-/////////////////////////////////////////////////////////////////
-
 $PageEncoding = 'UTF-8';
 
 $writescriptfilename = 'demo.write.php';
