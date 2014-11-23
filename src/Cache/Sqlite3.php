@@ -91,7 +91,7 @@ use JamesHeinrich\GetID3\GetID3;
 *
 *
 */
-class Sqlite3 extends getID3 {
+class Sqlite3 extends GetID3 {
 
 	/**
 	* __construct()

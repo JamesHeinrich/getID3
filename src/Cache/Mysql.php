@@ -72,7 +72,7 @@ use JamesHeinrich\GetID3\GetID3;
 *   Frequent updates                    mysql
 */
 
-class Mysql extends getID3
+class Mysql extends GetID3
 {
 
 	// private vars

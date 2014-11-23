@@ -72,7 +72,7 @@ use JamesHeinrich\GetID3\GetID3;
 */
 
 
-class Dbm extends getID3
+class Dbm extends GetID3
 {
 
 	// public: constructor - see top of this file for cache type and cache_options
