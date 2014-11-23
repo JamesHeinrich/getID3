@@ -71,10 +71,6 @@ $database['table']    = '';
 */
 
 /**
-* id3 tags class file
-*/
-require_once(dirname(__FILE__).'/getid3.php');
-/**
 * dirscan scans all directories for files that match your selected filetypes into the cache database
 * this is useful for a lot of media files
 *

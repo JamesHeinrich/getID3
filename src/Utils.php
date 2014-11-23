@@ -622,10 +622,7 @@ class Utils
 
 		if (empty($tempdir)) {
 			// yes this is ugly, feel free to suggest a better way
-			require_once(dirname(__FILE__).'/getid3.php');
-			$getid3_temp = new GetID3;
-			$tempdir = $getid3_temp->tempdir;
-			unset($getid3_temp);
+			$tempdir = (new GetID3)->tempdir;
 		}
 		// try to create a temporary file in the system temp directory - invalid dirname should force to system temp dir
 		if (($data_filename = tempnam($tempdir, 'gI3')) === false) {
@@ -1170,10 +1167,7 @@ class Utils
 		static $tempdir = '';
 		if (empty($tempdir)) {
 			// yes this is ugly, feel free to suggest a better way
-			require_once(dirname(__FILE__).'/getid3.php');
-			$getid3_temp = new GetID3;
-			$tempdir = $getid3_temp->tempdir;
-			unset($getid3_temp);
+			$tempdir = (new GetID3)->tempdir;
 		}
 		$GetDataImageSize = false;
 		if ($tempfilename = tempnam($tempdir, 'gI3')) {

@@ -827,8 +827,6 @@ class Asf extends \JamesHeinrich\GetID3\Module\Handler
 								break;
 
 							case 'id3':
-								$this->getid3->include_module('tag.id3v2');
-
 								$getid3_id3v2 = new ID3v2($this->getid3);
 								$getid3_id3v2->AnalyzeString($thisfile_asf_extendedcontentdescriptionobject_contentdescriptor_current['value']);
 								unset($getid3_id3v2);
