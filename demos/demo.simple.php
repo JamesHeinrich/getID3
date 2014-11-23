@@ -1,4 +1,7 @@
 <?php
+
+use JamesHeinrich\GetID3;
+
 /////////////////////////////////////////////////////////////////
 /// getID3() by James Heinrich <info@getid3.org>               //
 //  available at http://getid3.sourceforge.net                 //
@@ -20,12 +23,8 @@ echo '<title>getID3() - /demo/demo.simple.php (sample script)</title>';
 echo '<style type="text/css">BODY,TD,TH { font-family: sans-serif; font-size: 9pt; }</style>';
 echo '</head><body>';
 
-
-// include getID3() library (can be in a different directory if full path is specified)
-require_once('../getid3/getid3.php');
-
 // Initialize getID3 engine
-$getID3 = new getID3;
+$getID3 = new GetID3\GetID3;
 
 $DirectoryToScan = '/change/to/directory/you/want/to/scan'; // change to whatever directory you want to scan
 $dir = opendir($DirectoryToScan);
@@ -38,7 +37,7 @@ while (($file = readdir($dir)) !== false) {
 
 		$ThisFileInfo = $getID3->analyze($FullFileName);
 
-		getid3_lib::CopyTagsToComments($ThisFileInfo);
+		GetID3\Utils::CopyTagsToComments($ThisFileInfo);
 
 		// output desired information in whatever format you want
 		echo '<tr>';

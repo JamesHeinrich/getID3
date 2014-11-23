@@ -1,4 +1,7 @@
 <?php
+
+use JamesHeinrich\GetID3;
+
 /////////////////////////////////////////////////////////////////
 /// getID3() by James Heinrich <info@getid3.org>               //
 //  available at http://getid3.sourceforge.net                 //
@@ -15,11 +18,8 @@
 die('Due to a security issue, this demo has been disabled. It can be enabled by removing line '.__LINE__.' in '.$_SERVER['PHP_SELF']);
 
 
-// include getID3() library (can be in a different directory if full path is specified)
-require_once('../getid3/getid3.php');
-
 // Initialize getID3 engine
-$getID3 = new getID3;
+$getID3 = new GetID3\GetID3;
 
 // Analyze file and store returned data in $ThisFileInfo
 $ThisFileInfo = $getID3->analyze($filename);
@@ -29,7 +29,7 @@ $ThisFileInfo = $getID3->analyze($filename);
  metadata is all available in one location for all tag formats
  metainformation is always available under [tags] even if this is not called
 */
-getid3_lib::CopyTagsToComments($ThisFileInfo);
+GetID3\Utils::CopyTagsToComments($ThisFileInfo);
 
 /*
  Output desired information in whatever format you want

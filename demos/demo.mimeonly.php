@@ -1,4 +1,7 @@
 <?php
+
+use JamesHeinrich\GetID3;
+
 /////////////////////////////////////////////////////////////////
 /// getID3() by James Heinrich <info@getid3.org>               //
 //  available at http://getid3.sourceforge.net                 //
@@ -40,10 +43,8 @@ function GetMIMEtype($filename) {
 		return '';
 	}
 
-	// include getID3() library (can be in a different directory if full path is specified)
-	require_once('../getid3/getid3.php');
 	// Initialize getID3 engine
-	$getID3 = new getID3;
+	$getID3 = new GetID3\GetID3;
 
 	$DeterminedMIMEtype = '';
 	if ($fp = fopen($filename, 'rb')) {
@@ -51,8 +52,8 @@ function GetMIMEtype($filename) {
 		if (empty($getID3->info['error'])) {
 
 			// ID3v2 is the only tag format that might be prepended in front of files, and it's non-trivial to skip, easier just to parse it and know where to skip to
-			getid3_lib::IncludeDependency(GETID3_INCLUDEPATH.'module.tag.id3v2.php', __FILE__, true);
-			$getid3_id3v2 = new getid3_id3v2($getID3);
+			GetID3\Utils::IncludeDependency(GETID3_INCLUDEPATH.'module.tag.id3v2.php', __FILE__, true);
+			$getid3_id3v2 = new GetID3\Module\Tag\ID3v2($getID3);
 			$getid3_id3v2->Analyze();
 
 			fseek($fp, $getID3->info['avdataoffset'], SEEK_SET);
