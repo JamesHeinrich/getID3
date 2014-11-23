@@ -38,7 +38,7 @@ you wish to use if the output is not HTML.
 
 If you want to merge all available tags (for example, ID3v2 + ID3v1)
 into one array, you can call
-getid3_lib::CopyTagsToComments($ThisFileInfo)
+\JamesHeinrich\GetID3\Utils::CopyTagsToComments($ThisFileInfo)
 and you'll then have ['comments'] and ['comments_html'] which are
 identical to ['tags'] and ['tags_html'] except the array is one
 dimension shorter (no tag type array keys). For example, artist is:

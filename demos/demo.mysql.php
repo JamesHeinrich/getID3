@@ -1,4 +1,7 @@
 <?php
+
+use JamesHeinrich\GetID3;
+
 /////////////////////////////////////////////////////////////////
 /// getID3() by James Heinrich <info@getid3.org>               //
 //  available at http://getid3.sourceforge.net                 //
@@ -47,7 +50,7 @@ if (!file_exists($getid3PHP_filename) || !include_once($getid3PHP_filename)) {
 	die('Cannot open '.$getid3PHP_filename);
 }
 // Initialize getID3 engine
-$getID3 = new getID3;
+$getID3 = new GetID3\GetID3;
 $getID3->setOption(array(
 	'option_md5_data' => $getid3_demo_mysql_md5_data,
 	'encoding'        => $getid3_demo_mysql_encoding,
@@ -291,7 +294,7 @@ function SynchronizeAllTags($filename, $synchronizefrom='all', $synchronizeto='A
 	set_time_limit(30);
 
 	$ThisFileInfo = $getID3->analyze($filename);
-	getid3_lib::CopyTagsToComments($ThisFileInfo);
+	GetID3\Utils::CopyTagsToComments($ThisFileInfo);
 
 	if ($synchronizefrom == 'all') {
 		$SourceArray = (!empty($ThisFileInfo['comments']) ? $ThisFileInfo['comments'] : array());
@@ -320,8 +323,8 @@ function SynchronizeAllTags($filename, $synchronizefrom='all', $synchronizeto='A
 		$TagFormatsToWrite[] = 'id3v1';
 	}
 
-	getid3_lib::IncludeDependency(GETID3_INCLUDEPATH.'write.php', __FILE__, true);
-	$tagwriter = new getid3_writetags;
+	GetID3\Utils::IncludeDependency(GETID3_INCLUDEPATH.'write.php', __FILE__, true);
+	$tagwriter = new GetID3\WriteTags;
 	$tagwriter->filename       = $filename;
 	$tagwriter->tagformats     = $TagFormatsToWrite;
 	$tagwriter->overwrite_tags = true;
@@ -459,7 +462,7 @@ if (!empty($_REQUEST['scan']) || !empty($_REQUEST['newscan']) || !empty($_REQUES
 		echo '<br>'.date('H:i:s').' ['.number_format(++$rowcounter).' / '.number_format($totaltoprocess).'] '.str_replace('\\', '/', $filename);
 
 		$ThisFileInfo = $getID3->analyze($filename);
-		getid3_lib::CopyTagsToComments($ThisFileInfo);
+		GetID3\Utils::CopyTagsToComments($ThisFileInfo);
 
 		if (file_exists($filename)) {
 			$ThisFileInfo['file_modified_time'] = filemtime($filename);
@@ -780,7 +783,7 @@ if (!empty($_REQUEST['scan']) || !empty($_REQUEST['newscan']) || !empty($_REQUES
 
 } elseif (!empty($_REQUEST['audiobitrates'])) {
 
-	getid3_lib::IncludeDependency(GETID3_INCLUDEPATH.'module.audio.mp3.php', __FILE__, true);
+	GetID3\Utils::IncludeDependency(GETID3_INCLUDEPATH.'module.audio.mp3.php', __FILE__, true);
 	$BitrateDistribution = array();
 	$SQLquery  = 'SELECT ROUND(audio_bitrate / 1000) AS `RoundBitrate`, COUNT(*) AS `num`';
 	$SQLquery .= ' FROM `'.mysql_real_escape_string(GETID3_DB_TABLE).'`';
@@ -788,7 +791,7 @@ if (!empty($_REQUEST['scan']) || !empty($_REQUEST['newscan']) || !empty($_REQUES
 	$SQLquery .= ' GROUP BY `RoundBitrate`';
 	$result = mysql_query_safe($SQLquery);
 	while ($row = mysql_fetch_array($result)) {
-		$this_bitrate = getid3_mp3::ClosestStandardMP3Bitrate($row['RoundBitrate'] * 1000);
+		$this_bitrate = GetID3\Module\Audio\Mp3::ClosestStandardMP3Bitrate($row['RoundBitrate'] * 1000);
 		if (isset($BitrateDistribution[$this_bitrate])) {
 			$BitrateDistribution[$this_bitrate] += $row['num'];
 		} else {
@@ -1122,8 +1125,8 @@ if (!empty($_REQUEST['scan']) || !empty($_REQUEST['newscan']) || !empty($_REQUES
 
 					if ($tagtype == 'id3v1') {
 
-						getid3_lib::IncludeDependency(GETID3_INCLUDEPATH.'module.tag.id3v1.php', __FILE__, true);
-						if (($fieldname == 'genre') && !empty($Comments['all'][$fieldname][0]) && !getid3_id3v1::LookupGenreID($Comments['all'][$fieldname][0])) {
+						GetID3\Utils::IncludeDependency(GETID3_INCLUDEPATH.'module.tag.id3v1.php', __FILE__, true);
+						if (($fieldname == 'genre') && !empty($Comments['all'][$fieldname][0]) && !GetID3\Module\Tag\ID3v1::LookupGenreID($Comments['all'][$fieldname][0])) {
 
 							// non-standard genres can never match, so just ignore
 							$tagvalues .= $fieldname.' = '.(isset($Comments[$tagtype][$fieldname][0]) ? $Comments[$tagtype][$fieldname][0] : '')."\n";
@@ -1700,7 +1703,7 @@ if (!empty($_REQUEST['scan']) || !empty($_REQUEST['newscan']) || !empty($_REQUES
 				} else {
 					$bitrates[]  = BitrateText($row2['audio_bitrate'] / 1000);
 				}
-				$playtimes[] = getid3_lib::PlaytimeString($row2['playtime_seconds']);
+				$playtimes[] = GetID3\Utils::PlaytimeString($row2['playtime_seconds']);
 			}
 
 			echo '<tr>';
@@ -1773,13 +1776,13 @@ if (!empty($_REQUEST['scan']) || !empty($_REQUEST['newscan']) || !empty($_REQUES
 
 	} elseif (!empty($_REQUEST['autofix'])) {
 
-		getid3_lib::IncludeDependency(GETID3_INCLUDEPATH.'module.tag.id3v1.php', __FILE__, true);
-		getid3_lib::IncludeDependency(GETID3_INCLUDEPATH.'module.tag.id3v2.php', __FILE__, true);
+		GetID3\Utils::IncludeDependency(GETID3_INCLUDEPATH.'module.tag.id3v1.php', __FILE__, true);
+		GetID3\Utils::IncludeDependency(GETID3_INCLUDEPATH.'module.tag.id3v2.php', __FILE__, true);
 
 		while ($row = mysql_fetch_array($result)) {
 			set_time_limit(30);
 			$ThisFileInfo = $getID3->analyze($filename);
-			getid3_lib::CopyTagsToComments($ThisFileInfo);
+			GetID3\Utils::CopyTagsToComments($ThisFileInfo);
 
 			if (!empty($ThisFileInfo['tags'])) {
 
@@ -1888,11 +1891,11 @@ if (!empty($_REQUEST['scan']) || !empty($_REQUEST['newscan']) || !empty($_REQUES
 			$SQLquery .= ' GROUP BY `genre`';
 			$SQLquery .= ' ORDER BY `num` DESC';
 			$result = mysql_query_safe($SQLquery);
-			getid3_lib::IncludeDependency(GETID3_INCLUDEPATH.'module.tag.id3v1.php', __FILE__, true);
+			GetID3\Utils::IncludeDependency(GETID3_INCLUDEPATH.'module.tag.id3v1.php', __FILE__, true);
 			echo '<table border="1" cellspacing="0" cellpadding="4">';
 			echo '<tr><th>Count</th><th>Genre</th><th>m3u</th></tr>';
 			while ($row = mysql_fetch_array($result)) {
-				$GenreID = getid3_id3v1::LookupGenreID($row['genre']);
+				$GenreID = GetID3\Module\Tag\ID3v1::LookupGenreID($row['genre']);
 				if (is_numeric($GenreID)) {
 					echo '<tr bgcolor="#00FF00;">';
 				} else {
@@ -1982,8 +1985,8 @@ if (!empty($_REQUEST['scan']) || !empty($_REQUEST['newscan']) || !empty($_REQUES
 
 } elseif (!empty($_REQUEST['fixid3v1padding'])) {
 
-	getid3_lib::IncludeDependency(GETID3_INCLUDEPATH.'write.id3v1.php', __FILE__, true);
-	$id3v1_writer = new getid3_write_id3v1;
+	GetID3\Utils::IncludeDependency(GETID3_INCLUDEPATH.'write.id3v1.php', __FILE__, true);
+	$id3v1_writer = new GetID3\Write\ID3v1;
 
 	$SQLquery  = 'SELECT `filename`, `error`, `warning`';
 	$SQLquery .= ' FROM `'.mysql_real_escape_string(GETID3_DB_TABLE).'`';
@@ -2187,7 +2190,7 @@ if ($row = mysql_fetch_array($result)) {
 	echo '<tr><th align="left">Total Filesize</th><td>'.number_format($row['TotalFilesize'] / 1048576).' MB</td></tr>';
 	echo '<tr><th align="left">Total Playtime</th><td>'.number_format($row['TotalPlaytime'] / 3600, 1).' hours</td></tr>';
 	echo '<tr><th align="left">Average Filesize</th><td>'.number_format($row['AvgFilesize'] / 1048576, 1).' MB</td></tr>';
-	echo '<tr><th align="left">Average Playtime</th><td>'.getid3_lib::PlaytimeString($row['AvgPlaytime']).'</td></tr>';
+	echo '<tr><th align="left">Average Playtime</th><td>'.GetID3\Utils::PlaytimeString($row['AvgPlaytime']).'</td></tr>';
 	echo '<tr><th align="left">Average Bitrate</th><td>'.BitrateText($row['AvgBitrate'] / 1000, 1).'</td></tr>';
 	echo '</table>';
 	echo '<br clear="all">';

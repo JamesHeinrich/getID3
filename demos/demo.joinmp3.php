@@ -1,4 +1,7 @@
 <?php
+
+use JamesHeinrich\GetID3;
+
 /////////////////////////////////////////////////////////////////
 /// getID3() by James Heinrich <info@getid3.org>               //
 //  available at http://getid3.sourceforge.net                 //
@@ -45,7 +48,7 @@ function CombineMultipleMP3sTo($FilenameOut, $FilenamesIn) {
 
 		ob_end_clean();
 		// Initialize getID3 engine
-		$getID3 = new getID3;
+		$getID3 = new GetID3\GetID3;
 		foreach ($FilenamesIn as $nextinputfilename) {
 
 			$CurrentFileInfo = $getID3->analyze($nextinputfilename);

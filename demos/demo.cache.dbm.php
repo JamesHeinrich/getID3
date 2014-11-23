@@ -1,4 +1,7 @@
 <?php
+
+use JamesHeinrich\GetID3;
+
 /////////////////////////////////////////////////////////////////
 /// getID3() by James Heinrich <info@getid3.org>               //
 //  available at http://getid3.sourceforge.net                 //
@@ -15,11 +18,7 @@
 
 die('Due to a security issue, this demo has been disabled. It can be enabled by removing line '.__LINE__.' in '.$_SERVER['PHP_SELF']);
 
-
-require_once('../getid3/getid3.php');
-getid3_lib::IncludeDependency(GETID3_INCLUDEPATH.'extension.cache.dbm.php', __FILE__, true);
-
-$getID3 = new getID3_cached_dbm('db3', '/zimweb/test/test.dbm', '/zimweb/test/test.lock');
+$getID3 = new GetID3\Cache\Dbm('db3', '/zimweb/test/test.dbm', '/zimweb/test/test.lock');
 
 $r = $getID3->analyze('/path/to/files/filename.mp3');
 

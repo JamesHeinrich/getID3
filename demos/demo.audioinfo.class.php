@@ -1,5 +1,7 @@
 <?php
 
+use JamesHeinrich\GetID3;
+
 // +----------------------------------------------------------------------+
 // | PHP version 4.1.0                                                    |
 // +----------------------------------------------------------------------+
@@ -61,7 +63,7 @@ class AudioInfo {
 	function AudioInfo() {
 
 		// Initialize getID3 engine
-		$this->getID3 = new getID3;
+		$this->getID3 = new GetID3\GetID3;
 		$this->getID3->option_md5_data        = true;
 		$this->getID3->option_md5_data_source = true;
 		$this->getID3->encoding               = 'UTF-8';

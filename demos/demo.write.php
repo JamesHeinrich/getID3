@@ -1,4 +1,7 @@
 <?php
+
+use JamesHeinrich\GetID3;
+
 /////////////////////////////////////////////////////////////////
 /// getID3() by James Heinrich <info@getid3.org>               //
 //  available at http://getid3.sourceforge.net                 //
@@ -22,12 +25,11 @@ header('Content-Type: text/html; charset='.$TaggingFormat);
 echo '<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN" "http://www.w3.org/TR/html4/loose.dtd">';
 echo '<html><head><title>getID3() - Sample tag writer</title></head><style type="text/css">BODY,TD,TH { font-family: sans-serif; font-size: 9pt;" }</style><body>';
 
-require_once('../getid3/getid3.php');
 // Initialize getID3 engine
-$getID3 = new getID3;
+$getID3 = new GetID3\GetID3;
 $getID3->setOption(array('encoding'=>$TaggingFormat));
 
-getid3_lib::IncludeDependency(GETID3_INCLUDEPATH.'write.php', __FILE__, true);
+GetID3\Utils::IncludeDependency(GETID3_INCLUDEPATH.'write.php', __FILE__, true);
 
 $browsescriptfilename = 'demo.browse.php';
 
@@ -41,7 +43,7 @@ if (isset($_POST['WriteTags'])) {
 	if (!empty($TagFormatsToWrite)) {
 		echo 'starting to write tag(s)<BR>';
 
-		$tagwriter = new getid3_writetags;
+		$tagwriter = new GetID3\WriteTags;
 		$tagwriter->filename       = $Filename;
 		$tagwriter->tagformats     = $TagFormatsToWrite;
 		$tagwriter->overwrite_tags = false;
@@ -130,9 +132,9 @@ if (!empty($Filename)) {
 	if (file_exists($Filename)) {
 
 		// Initialize getID3 engine
-		$getID3 = new getID3;
+		$getID3 = new GetID3\GetID3;
 		$OldThisFileInfo = $getID3->analyze($Filename);
-		getid3_lib::CopyTagsToComments($OldThisFileInfo);
+		GetID3\Utils::CopyTagsToComments($OldThisFileInfo);
 
 		switch ($OldThisFileInfo['fileformat']) {
 			case 'mp3':
@@ -192,7 +194,7 @@ if (!empty($Filename)) {
 		}
 		echo '<tr><td align="right"><b>Track</b></td><td><input type="text" size="2" name="Track" value="'.htmlentities($TrackNumber, ENT_QUOTES).'"> of <input type="text" size="2" name="TracksTotal" value="'.htmlentities($TracksTotal, ENT_QUOTES).'"></TD></TR>';
 
-		$ArrayOfGenresTemp = getid3_id3v1::ArrayOfGenres();   // get the array of genres
+		$ArrayOfGenresTemp = GetID3\Module\Tag\ID3v1::ArrayOfGenres();   // get the array of genres
 		foreach ($ArrayOfGenresTemp as $key => $value) {      // change keys to match displayed value
 			$ArrayOfGenres[$value] = $value;
 		}
@@ -250,7 +252,7 @@ if (!empty($Filename)) {
 
 		echo '<tr><td align="right"><b>Picture</b><br>(ID3v2 only)</td><td><input type="file" name="userfile" accept="image/jpeg, image/gif, image/png"><br>';
 		echo '<select name="APICpictureType">';
-		$APICtypes = getid3_id3v2::APICPictureTypeLookup('', true);
+		$APICtypes = GetID3\Module\Tag\ID3v2::APICPictureTypeLookup('', true);
 		foreach ($APICtypes as $key => $value) {
 			echo '<option value="'.htmlentities($key, ENT_QUOTES).'">'.htmlentities($value).'</option>';
 		}
