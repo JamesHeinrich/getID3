@@ -28,11 +28,6 @@ class VorbisComment
 
 	public function WriteVorbisComment() {
 
-		if (preg_match('#(1|ON)#i', ini_get('safe_mode'))) {
-			$this->errors[] = 'PHP running in Safe Mode (backtick operator not available) - cannot call vorbiscomment, tags not written';
-			return false;
-		}
-
 		// Create file with new comments
 		$tempcommentsfilename = tempnam(Utils::getTempDirectory(), 'getID3');
 		if (is_writable($tempcommentsfilename) && is_file($tempcommentsfilename) && ($fpcomments = fopen($tempcommentsfilename, 'wb'))) {

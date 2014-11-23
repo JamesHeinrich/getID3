@@ -28,11 +28,6 @@ class MetaFlac
 
 	public function WriteMetaFLAC() {
 
-		if (preg_match('#(1|ON)#i', ini_get('safe_mode'))) {
-			$this->errors[] = 'PHP running in Safe Mode (backtick operator not available) - cannot call metaflac, tags not written';
-			return false;
-		}
-
 		// Create file with new comments
 		$tempcommentsfilename = tempnam(Utils::getTempDirectory(), 'getID3');
 		if (is_writable($tempcommentsfilename) && is_file($tempcommentsfilename) && ($fpcomments = fopen($tempcommentsfilename, 'wb'))) {
@@ -101,11 +96,6 @@ class MetaFlac
 
 
 	public function DeleteMetaFLAC() {
-
-		if (preg_match('#(1|ON)#i', ini_get('safe_mode'))) {
-			$this->errors[] = 'PHP running in Safe Mode (backtick operator not available) - cannot call metaflac, tags not deleted';
-			return false;
-		}
 
 		$oldignoreuserabort = ignore_user_abort(true);
 		if (Utils::isWindows()) {

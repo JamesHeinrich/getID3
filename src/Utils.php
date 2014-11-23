@@ -768,10 +768,6 @@ class Utils
 				$commandline .= $unix_call;
 
 			}
-			if (preg_match('#(1|ON)#i', ini_get('safe_mode'))) {
-				//throw new Exception('PHP running in Safe Mode - backtick operator not available, using slower non-system-call '.$algorithm.' algorithm');
-				break;
-			}
 			return substr(`$commandline`, 0, $hash_length);
 		}
 

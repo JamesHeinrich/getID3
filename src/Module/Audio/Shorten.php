@@ -117,11 +117,6 @@ class Shorten extends \JamesHeinrich\GetID3\Module\Handler
 
 		}
 
-		if (preg_match('#(1|ON)#i', ini_get('safe_mode'))) {
-			$info['error'][] = 'PHP running in Safe Mode - backtick operator not available, cannot run shntool to analyze Shorten files';
-			return false;
-		}
-
 		if (Utils::isWindows()) {
 
 			$RequiredFiles = array('shorten.exe', 'cygwin1.dll', 'head.exe');
