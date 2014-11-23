@@ -1,0 +1,96 @@
+Reference material
+==================
+
+[www.id3.org](http://www.id3.org) material is mirrored at <http://id3lib.sourceforge.net/id3/>
+
+* http://www.id3.org/id3v2.4.0-structure.txt
+* http://www.id3.org/id3v2.4.0-frames.txt
+* http://www.id3.org/id3v2.4.0-changes.txt
+* http://www.id3.org/id3v2.3.0.txt
+* http://www.id3.org/id3v2-00.txt
+* http://www.id3.org/mp3frame.html
+* http://minnie.tuhs.org/pipermail/mp3encoder/2001-January/001800.html <mathewhendry@hotmail.com>
+* http://www.dv.co.yu/mpgscript/mpeghdr.htm
+* http://www.mp3-tech.org/programmer/frame_header.html
+* http://users.belgacom.net/gc247244/extra/tag.html
+* http://gabriel.mp3-tech.org/mp3infotag.html
+* http://www.id3.org/iso4217.html
+* http://www.unicode.org/Public/MAPPINGS/ISO8859/8859-1.TXT
+* http://www.xiph.org/ogg/vorbis/doc/framing.html
+* http://www.xiph.org/ogg/vorbis/doc/v-comment.html
+* http://leknor.com/code/php/class.ogg.php.txt
+* http://www.id3.org/iso639-2.html
+* http://www.id3.org/lyrics3.html
+* http://www.id3.org/lyrics3200.html
+* http://www.psc.edu/general/software/packages/ieee/ieee.html
+* http://www.scri.fsu.edu/~jac/MAD3401/Backgrnd/ieee-expl.html
+* http://www.scri.fsu.edu/~jac/MAD3401/Backgrnd/binary.html
+* http://www.jmcgowan.com/avi.html
+* http://www.wotsit.org/
+* http://www.herdsoft.com/ti/davincie/davp3xo2.htm
+* http://www.mathdogs.com/vorbis-illuminated/bitstream-appendix.html
+* "Standard MIDI File Format" by Dustin Caldwell (from www.wotsit.org)
+* http://midistudio.com/Help/GMSpecs_Patches.htm
+* http://www.xiph.org/archives/vorbis/200109/0459.html
+* http://www.replaygain.org/
+* http://www.lossless-audio.com/
+* http://download.microsoft.com/download/winmediatech40/Doc/1.0/WIN98MeXP/EN-US/ASF_Specification_v.1.0.exe
+* http://mediaxw.sourceforge.net/files/doc/Active%20Streaming%20Format%20(ASF)%201.0%20Specification.pdf
+* http://www.uni-jena.de/~pfk/mpp/sv8/ (archived at http://www.hydrogenaudio.org/musepack/klemm/www.personal.uni-jena.de/~pfk/mpp/sv8/)
+* http://jfaul.de/atl/
+* http://www.uni-jena.de/~pfk/mpp/ (archived at http://www.hydrogenaudio.org/musepack/klemm/www.personal.uni-jena.de/~pfk/mpp/)
+* http://www.libpng.org/pub/png/spec/png-1.2-pdg.html
+* http://www.real.com/devzone/library/creating/rmsdk/doc/rmff.htm
+* http://www.fastgraph.com/help/bmp_os2_header_format.html
+* http://netghost.narod.ru/gff/graphics/summary/os2bmp.htm
+* http://flac.sourceforge.net/format.html
+* http://www.research.att.com/projects/mpegaudio/mpeg2.html
+* http://www.audiocoding.com/wiki/index.php?page=AAC
+* http://libmpeg.org/mpeg4/doc/w2203tfs.pdf
+* http://www.geocities.com/xhelmboyx/quicktime/formats/qtm-layout.txt
+* http://developer.apple.com/techpubs/quicktime/qtdevdocs/RM/frameset.htm
+* http://www.nullsoft.com/nsv/
+* http://www.wotsit.org/download.asp?f=iso9660
+* http://sandbox.mc.edu/~bennet/cs110/tc/tctod.html
+* http://www.cdroller.com/htm/readdata.html
+* http://www.speex.org/manual/node10.html
+* http://www.harmony-central.com/Computer/Programming/aiff-file-format.doc
+* http://www.faqs.org/rfcs/rfc2361.html
+* http://ghido.shelter.ro/
+* http://www.ebu.ch/tech_t3285.pdf
+* http://www.sr.se/utveckling/tu/bwf
+* http://ftp.aessc.org/pub/aes46-2002.pdf
+* http://cartchunk.org:8080/
+* http://www.broadcastpapers.com/radio/cartchunk01.htm
+* http://www.hr/josip/DSP/AudioFile2.html
+* http://home.attbi.com/~chris.bagwell/AudioFormats-11.html
+* http://www.pure-mac.com/extkey.html
+* http://cesnet.dl.sourceforge.net/sourceforge/bonkenc/bonk-binary-format-0.9.txt
+* http://www.headbands.com/gspot/
+* http://www.openswf.org/spec/SWFfileformat.html
+* http://j-faul.virtualave.net/
+* http://www.btinternet.com/~AnthonyJ/Atari/programming/avr_format.html
+* http://cui.unige.ch/OSG/info/AudioFormats/ap11.html
+* http://sswf.sourceforge.net/SWFalexref.html
+* http://www.geocities.com/xhelmboyx/quicktime/formats/qti-layout.txt
+* http://www-lehre.informatik.uni-osnabrueck.de/~fbstark/diplom/docs/swf/Flash_Uncovered.htm
+* http://developer.apple.com/quicktime/icefloe/dispatch012.html
+* http://www.csdn.net/Dev/Format/graphics/PCD.htm
+* http://tta.iszf.irk.ru/
+* http://www.atsc.org/standards/a_52a.pdf
+* http://www.alanwood.net/unicode/
+* http://www.freelists.org/archives/matroska-devel/07-2003/msg00010.html
+* http://www.its.msstate.edu/net/real/reports/config/tags.stats
+* http://homepages.slingshot.co.nz/~helmboy/quicktime/formats/qtm-layout.txt
+* http://brennan.young.net/Comp/LiveStage/things.html
+* http://www.multiweb.cz/twoinches/MP3inside.htm
+* http://www.geocities.co.jp/SiliconValley-Oakland/3664/alittle.html#GenreExtended
+* http://www.mactech.com/articles/mactech/Vol.06/06.01/SANENormalized/
+* http://www.unicode.org/unicode/faq/utf_bom.html
+* http://tta.corecodec.org/?menu=format
+* http://www.scvi.net/nsvformat.htm
+* http://pda.etsi.org/pda/queryform.asp
+* http://cpansearch.perl.org/src/RGIBSON/Audio-DSS-0.02/lib/Audio/DSS.pm
+* http://trac.musepack.net/trac/wiki/SV8Specification
+* http://wyday.com/cuesharp/specification.php
+* http://www.sno.phy.queensu.ca/~phil/exiftool/TagNames/Nikon.html

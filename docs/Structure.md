@@ -1,17 +1,13 @@
-/////////////////////////////////////////////////////////////////
-/// getID3() by James Heinrich <info@getid3.org>               //
-//  available at http://getid3.sourceforge.net                 //
-//            or http://www.getid3.org                         //
-//          also https://github.com/JamesHeinrich/getID3       //
-/////////////////////////////////////////////////////////////////
-//                                                             //
-// changelog.txt - part of getID3()                            //
-// See readme.txt for more details                             //
-//                                                            ///
-/////////////////////////////////////////////////////////////////
-
 What does the returned data structure look like?
 ================================================
+
+It is recommended that you look at the output of
+/demos/demo.browse.php scanning the file(s) you're interested in to
+confirm what data is actually returned for any particular filetype in
+general, and your files in particular, as the actual data returned
+may vary considerably depending on what information is available in
+the file itself.
+
 
 Hint: If you take a look at the nicely-formatted output of
 /demos/demo.browse.php you can generally see where the data you want
