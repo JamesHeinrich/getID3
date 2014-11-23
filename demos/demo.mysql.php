@@ -45,10 +45,6 @@ if (!mysql_select_db(GETID3_DB_DB)) {
 }
 ob_end_clean();
 
-$getid3PHP_filename = realpath('../getid3/getid3.php');
-if (!file_exists($getid3PHP_filename) || !include_once($getid3PHP_filename)) {
-	die('Cannot open '.$getid3PHP_filename);
-}
 // Initialize getID3 engine
 $getID3 = new GetID3\GetID3;
 $getID3->setOption(array(

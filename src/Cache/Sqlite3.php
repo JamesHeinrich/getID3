@@ -27,7 +27,6 @@ use JamesHeinrich\GetID3\GetID3;
 *
 *    Normal getID3 usage (example):
 *
-*       require_once 'getid3/getid3.php';
 *       $getID3 = new GetID3;
 *       $getID3->encoding = 'UTF-8';
 *       $info1 = $getID3->analyze('file1.flac');
@@ -35,8 +34,6 @@ use JamesHeinrich\GetID3\GetID3;
 *
 *    getID3_cached usage:
 *
-*       require_once 'getid3/getid3.php';
-*       require_once 'getid3/extension.cache.sqlite3.php';
 *       // all parameters are optional, defaults are:
 *       $getID3 = new \JamesHeinrich\GetID3\Cache\Sqlite3($table='getid3_cache', $hide=FALSE);
 *       $getID3->encoding = 'UTF-8';

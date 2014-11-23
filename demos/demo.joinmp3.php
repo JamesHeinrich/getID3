@@ -42,7 +42,6 @@ function CombineMultipleMP3sTo($FilenameOut, $FilenamesIn) {
 		return false;
 	}
 
-	require_once('../getid3/getid3.php');
 	ob_start();
 	if ($fp_output = fopen($FilenameOut, 'wb')) {
 

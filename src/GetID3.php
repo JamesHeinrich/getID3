@@ -17,10 +17,6 @@ namespace JamesHeinrich\GetID3;
 if (!defined('GETID3_OS_ISWINDOWS')) {
 	define('GETID3_OS_ISWINDOWS', (stripos(PHP_OS, 'WIN') === 0));
 }
-// Get base path of getID3() - ONCE
-if (!defined('GETID3_INCLUDEPATH')) {
-	define('GETID3_INCLUDEPATH', dirname(__FILE__).DIRECTORY_SEPARATOR);
-}
 // Workaround Bug #39923 (https://bugs.php.net/bug.php?id=39923)
 if (!defined('IMG_JPG') && defined('IMAGETYPE_JPEG')) {
 	define('IMG_JPG', IMAGETYPE_JPEG);
@@ -168,11 +164,6 @@ class GetID3
 			}
 		}
 
-		// Load support library
-		if (!include_once(GETID3_INCLUDEPATH.'getid3.lib.php')) {
-			$this->startup_error .= 'getid3.lib.php is missing or corrupt';
-		}
-
 		if ($this->option_max_2gb_check === null) {
 			$this->option_max_2gb_check = (PHP_INT_MAX <= 2147483647);
 		}
@@ -186,7 +177,7 @@ class GetID3
 		// IMPORTANT: This path must include the trailing slash
 		if (GETID3_OS_ISWINDOWS && !defined('GETID3_HELPERAPPSDIR')) {
 
-			$helperappsdir = GETID3_INCLUDEPATH.'..'.DIRECTORY_SEPARATOR.'helperapps'; // must not have any space in this path
+			$helperappsdir = __DIR__ . \DIRECTORY_SEPARATOR . ".." . \DIRECTORY_SEPARATOR . "helperapps";
 
 			if (!is_dir($helperappsdir)) {
 				$this->startup_warning .= '"'.$helperappsdir.'" cannot be defined as GETID3_HELPERAPPSDIR because it does not exist';
@@ -355,7 +346,6 @@ class GetID3
 			foreach (array('id3v2'=>'id3v2', 'id3v1'=>'id3v1', 'apetag'=>'ape', 'lyrics3'=>'lyrics3') as $tag_name => $tag_key) {
 				$option_tag = 'option_tag_'.$tag_name;
 				if ($this->$option_tag) {
-					$this->include_module('tag.'.$tag_name);
 					try {
 						$tag_class = 'getid3_'.$tag_name;
 						$tag = new $tag_class($this);
@@ -423,12 +413,6 @@ class GetID3
 			// set mime type
 			$this->info['mime_type'] = $determined_format['mime_type'];
 
-			// supported format signature pattern detected, but module deleted
-			if (!file_exists(GETID3_INCLUDEPATH.$determined_format['include'])) {
-				fclose($this->fp);
-				return $this->error('Format not supported, module "'.$determined_format['include'].'" was removed.');
-			}
-
 			// module requires iconv support
 			// Check encoding/iconv support
 			if (!empty($determined_format['iconv_req']) && !function_exists('iconv') && !in_array($this->encoding, array('ISO-8859-1', 'UTF-8', 'UTF-16LE', 'UTF-16BE', 'UTF-16'))) {
@@ -440,9 +424,6 @@ class GetID3
 				}
 				return $this->error($errormessage);
 			}
-
-			// include module
-			include_once(GETID3_INCLUDEPATH.$determined_format['include']);
 
 			// instantiate module class
 			$class_name = 'getid3_'.$determined_format['module'];
@@ -1582,14 +1563,4 @@ class GetID3
 	public function getid3_tempnam() {
 		return tempnam($this->tempdir, 'gI3');
 	}
-
-	public function include_module($name) {
-		//if (!file_exists($this->include_path.'module.'.$name.'.php')) {
-		if (!file_exists(GETID3_INCLUDEPATH.'module.'.$name.'.php')) {
-			throw new Exception('Required module.'.$name.'.php is missing.');
-		}
-		include_once(GETID3_INCLUDEPATH.'module.'.$name.'.php');
-		return true;
-	}
-
 }

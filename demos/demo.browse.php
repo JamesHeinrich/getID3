@@ -38,8 +38,6 @@ $PageEncoding = 'UTF-8';
 
 $writescriptfilename = 'demo.write.php';
 
-require_once('../getid3/getid3.php');
-
 // Needed for windows only. Leave commented-out to auto-detect, only define here if auto-detection does not work properly
 //define('GETID3_HELPERAPPSDIR', 'C:\\helperapps\\');
 
