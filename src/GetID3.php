@@ -343,11 +343,11 @@ class GetID3
 			}
 
 			// Handle tags
-			foreach (array('id3v2'=>'id3v2', 'id3v1'=>'id3v1', 'apetag'=>'ape', 'lyrics3'=>'lyrics3') as $tag_name => $tag_key) {
+			foreach (array('id3v2'=>'ID3v2', 'id3v1'=>'ID3v1', 'apetag'=>'ApeTag', 'lyrics3'=>'Lyrics3') as $tag_name => $tag_class_name) {
 				$option_tag = 'option_tag_'.$tag_name;
 				if ($this->$option_tag) {
 					try {
-						$tag_class = 'getid3_'.$tag_name;
+						$tag_class = __NAMESPACE__ . "\\Module\\Tag\\" . $tag_class_name;
 						$tag = new $tag_class($this);
 						$tag->Analyze();
 					}
@@ -426,10 +426,7 @@ class GetID3
 			}
 
 			// instantiate module class
-			$class_name = 'getid3_'.$determined_format['module'];
-			if (!class_exists($class_name)) {
-				return $this->error('Format not supported, module "'.$determined_format['include'].'" is corrupt.');
-			}
+			$class_name = __NAMESPACE__ . "\\Module\\" . $determined_format['module'];
 			$class = new $class_name($this);
 			$class->Analyze();
 			unset($class);
@@ -553,16 +550,14 @@ class GetID3
 				// AC-3   - audio      - Dolby AC-3 / Dolby Digital
 				'ac3'  => array(
 							'pattern'   => '^\x0B\x77',
-							'group'     => 'audio',
-							'module'    => 'ac3',
+							'module'    => 'Audio\\Ac3',
 							'mime_type' => 'audio/ac3',
 						),
 
 				// AAC  - audio       - Advanced Audio Coding (AAC) - ADIF format
 				'adif' => array(
 							'pattern'   => '^ADIF',
-							'group'     => 'audio',
-							'module'    => 'aac',
+							'module'    => 'Audio\\Aac',
 							'mime_type' => 'application/octet-stream',
 							'fail_ape'  => 'WARNING',
 						),
@@ -571,16 +566,14 @@ class GetID3
 				// AA   - audio       - Audible Audiobook
 				'aa'   => array(
 							'pattern'   => '^.{4}\x57\x90\x75\x36',
-							'group'     => 'audio',
-							'module'    => 'aa',
+							'module'    => 'Audio\\Aa',
 							'mime_type' => 'audio/audible',
 						),
 */
 				// AAC  - audio       - Advanced Audio Coding (AAC) - ADTS format (very similar to MP3)
 				'adts' => array(
 							'pattern'   => '^\xFF[\xF0-\xF1\xF8-\xF9]',
-							'group'     => 'audio',
-							'module'    => 'aac',
+							'module'    => 'Audio\\Aac',
 							'mime_type' => 'application/octet-stream',
 							'fail_ape'  => 'WARNING',
 						),
@@ -589,88 +582,77 @@ class GetID3
 				// AU   - audio       - NeXT/Sun AUdio (AU)
 				'au'   => array(
 							'pattern'   => '^\.snd',
-							'group'     => 'audio',
-							'module'    => 'au',
+							'module'    => 'Audio\\Au',
 							'mime_type' => 'audio/basic',
 						),
 
 				// AMR  - audio       - Adaptive Multi Rate
 				'amr'  => array(
 							'pattern'   => '^\x23\x21AMR\x0A', // #!AMR[0A]
-							'group'     => 'audio',
-							'module'    => 'amr',
+							'module'    => 'Audio\\Amr',
 							'mime_type' => 'audio/amr',
 						),
 
 				// AVR  - audio       - Audio Visual Research
 				'avr'  => array(
 							'pattern'   => '^2BIT',
-							'group'     => 'audio',
-							'module'    => 'avr',
+							'module'    => 'Audio\\Avr',
 							'mime_type' => 'application/octet-stream',
 						),
 
 				// BONK - audio       - Bonk v0.9+
 				'bonk' => array(
 							'pattern'   => '^\x00(BONK|INFO|META| ID3)',
-							'group'     => 'audio',
-							'module'    => 'bonk',
+							'module'    => 'Audio\\Bonk',
 							'mime_type' => 'audio/xmms-bonk',
 						),
 
 				// DSS  - audio       - Digital Speech Standard
 				'dss'  => array(
 							'pattern'   => '^[\x02-\x03]ds[s2]',
-							'group'     => 'audio',
-							'module'    => 'dss',
+							'module'    => 'Audio\\Dss',
 							'mime_type' => 'application/octet-stream',
 						),
 
 				// DTS  - audio       - Dolby Theatre System
 				'dts'  => array(
 							'pattern'   => '^\x7F\xFE\x80\x01',
-							'group'     => 'audio',
-							'module'    => 'dts',
+							'module'    => 'Audio\\Dts',
 							'mime_type' => 'audio/dts',
 						),
 
 				// FLAC - audio       - Free Lossless Audio Codec
 				'flac' => array(
 							'pattern'   => '^fLaC',
-							'group'     => 'audio',
-							'module'    => 'flac',
+							'module'    => 'Audio\\Flac',
 							'mime_type' => 'audio/x-flac',
 						),
 
 				// LA   - audio       - Lossless Audio (LA)
 				'la'   => array(
 							'pattern'   => '^LA0[2-4]',
-							'group'     => 'audio',
-							'module'    => 'la',
+							'module'    => 'Audio\\La',
 							'mime_type' => 'application/octet-stream',
 						),
 
 				// LPAC - audio       - Lossless Predictive Audio Compression (LPAC)
 				'lpac' => array(
 							'pattern'   => '^LPAC',
-							'group'     => 'audio',
-							'module'    => 'lpac',
+							'module'    => 'Audio\\Lpac',
 							'mime_type' => 'application/octet-stream',
 						),
 
 				// MIDI - audio       - MIDI (Musical Instrument Digital Interface)
 				'midi' => array(
 							'pattern'   => '^MThd',
-							'group'     => 'audio',
-							'module'    => 'midi',
+							'module'    => 'Audio\\Midi',
 							'mime_type' => 'audio/midi',
 						),
 
 				// MAC  - audio       - Monkey's Audio Compressor
 				'mac'  => array(
 							'pattern'   => '^MAC ',
-							'group'     => 'audio',
-							'module'    => 'monkey',
+							'module'    => 'Audio\\Monkey',
 							'mime_type' => 'application/octet-stream',
 						),
 
@@ -678,8 +660,7 @@ class GetID3
 //				// MOD  - audio       - MODule (assorted sub-formats)
 //				'mod'  => array(
 //							'pattern'   => '^.{1080}(M\\.K\\.|M!K!|FLT4|FLT8|[5-9]CHN|[1-3][0-9]CH)',
-//							'group'     => 'audio',
-//							'module'    => 'mod',
+//							'module'    => 'Audio\\Mod',
 //							'option'    => 'mod',
 //							'mime_type' => 'audio/mod',
 //						),
@@ -687,8 +668,7 @@ class GetID3
 				// MOD  - audio       - MODule (Impulse Tracker)
 				'it'   => array(
 							'pattern'   => '^IMPM',
-							'group'     => 'audio',
-							'module'    => 'mod',
+							'module'    => 'Audio\\Mod',
 							//'option'    => 'it',
 							'mime_type' => 'audio/it',
 						),
@@ -696,8 +676,7 @@ class GetID3
 				// MOD  - audio       - MODule (eXtended Module, various sub-formats)
 				'xm'   => array(
 							'pattern'   => '^Extended Module',
-							'group'     => 'audio',
-							'module'    => 'mod',
+							'module'    => 'Audio\\Mod',
 							//'option'    => 'xm',
 							'mime_type' => 'audio/xm',
 						),
@@ -705,8 +684,7 @@ class GetID3
 				// MOD  - audio       - MODule (ScreamTracker)
 				's3m'  => array(
 							'pattern'   => '^.{44}SCRM',
-							'group'     => 'audio',
-							'module'    => 'mod',
+							'module'    => 'Audio\\Mod',
 							//'option'    => 's3m',
 							'mime_type' => 'audio/s3m',
 						),
@@ -714,40 +692,35 @@ class GetID3
 				// MPC  - audio       - Musepack / MPEGplus
 				'mpc'  => array(
 							'pattern'   => '^(MPCK|MP\+|[\x00\x01\x10\x11\x40\x41\x50\x51\x80\x81\x90\x91\xC0\xC1\xD0\xD1][\x20-37][\x00\x20\x40\x60\x80\xA0\xC0\xE0])',
-							'group'     => 'audio',
-							'module'    => 'mpc',
+							'module'    => 'Audio\\Mpc',
 							'mime_type' => 'audio/x-musepack',
 						),
 
 				// MP3  - audio       - MPEG-audio Layer 3 (very similar to AAC-ADTS)
 				'mp3'  => array(
 							'pattern'   => '^\xFF[\xE2-\xE7\xF2-\xF7\xFA-\xFF][\x00-\x0B\x10-\x1B\x20-\x2B\x30-\x3B\x40-\x4B\x50-\x5B\x60-\x6B\x70-\x7B\x80-\x8B\x90-\x9B\xA0-\xAB\xB0-\xBB\xC0-\xCB\xD0-\xDB\xE0-\xEB\xF0-\xFB]',
-							'group'     => 'audio',
-							'module'    => 'mp3',
+							'module'    => 'Audio\\Mp3',
 							'mime_type' => 'audio/mpeg',
 						),
 
 				// OFR  - audio       - OptimFROG
 				'ofr'  => array(
 							'pattern'   => '^(\*RIFF|OFR)',
-							'group'     => 'audio',
-							'module'    => 'optimfrog',
+							'module'    => 'Audio\\OptimFrog',
 							'mime_type' => 'application/octet-stream',
 						),
 
 				// RKAU - audio       - RKive AUdio compressor
 				'rkau' => array(
 							'pattern'   => '^RKA',
-							'group'     => 'audio',
-							'module'    => 'rkau',
+							'module'    => 'Audio\\Rkau',
 							'mime_type' => 'application/octet-stream',
 						),
 
 				// SHN  - audio       - Shorten
 				'shn'  => array(
 							'pattern'   => '^ajkg',
-							'group'     => 'audio',
-							'module'    => 'shorten',
+							'module'    => 'Audio\\Shorten',
 							'mime_type' => 'audio/xmms-shn',
 							'fail_id3'  => 'ERROR',
 							'fail_ape'  => 'ERROR',
@@ -756,32 +729,28 @@ class GetID3
 				// TTA  - audio       - TTA Lossless Audio Compressor (http://tta.corecodec.org)
 				'tta'  => array(
 							'pattern'   => '^TTA',  // could also be '^TTA(\x01|\x02|\x03|2|1)'
-							'group'     => 'audio',
-							'module'    => 'tta',
+							'module'    => 'Audio\\Tta',
 							'mime_type' => 'application/octet-stream',
 						),
 
 				// VOC  - audio       - Creative Voice (VOC)
 				'voc'  => array(
 							'pattern'   => '^Creative Voice File',
-							'group'     => 'audio',
-							'module'    => 'voc',
+							'module'    => 'Audio\\Voc',
 							'mime_type' => 'audio/voc',
 						),
 
 				// VQF  - audio       - transform-domain weighted interleave Vector Quantization Format (VQF)
 				'vqf'  => array(
 							'pattern'   => '^TWIN',
-							'group'     => 'audio',
-							'module'    => 'vqf',
+							'module'    => 'Audio\\Vqf',
 							'mime_type' => 'application/octet-stream',
 						),
 
 				// WV  - audio        - WavPack (v4.0+)
 				'wv'   => array(
 							'pattern'   => '^wvpk',
-							'group'     => 'audio',
-							'module'    => 'wavpack',
+							'module'    => 'Audio\\WavPack',
 							'mime_type' => 'application/octet-stream',
 						),
 
@@ -791,8 +760,7 @@ class GetID3
 				// ASF  - audio/video - Advanced Streaming Format, Windows Media Video, Windows Media Audio
 				'asf'  => array(
 							'pattern'   => '^\x30\x26\xB2\x75\x8E\x66\xCF\x11\xA6\xD9\x00\xAA\x00\x62\xCE\x6C',
-							'group'     => 'audio-video',
-							'module'    => 'asf',
+							'module'    => 'AudioVideo\\Asf',
 							'mime_type' => 'video/x-ms-asf',
 							'iconv_req' => false,
 						),
@@ -800,48 +768,42 @@ class GetID3
 				// BINK - audio/video - Bink / Smacker
 				'bink' => array(
 							'pattern'   => '^(BIK|SMK)',
-							'group'     => 'audio-video',
-							'module'    => 'bink',
+							'module'    => 'AudioVideo\\Bink',
 							'mime_type' => 'application/octet-stream',
 						),
 
 				// FLV  - audio/video - FLash Video
 				'flv' => array(
 							'pattern'   => '^FLV\x01',
-							'group'     => 'audio-video',
-							'module'    => 'flv',
+							'module'    => 'AudioVideo\\Flv',
 							'mime_type' => 'video/x-flv',
 						),
 
 				// MKAV - audio/video - Mastroka
 				'matroska' => array(
 							'pattern'   => '^\x1A\x45\xDF\xA3',
-							'group'     => 'audio-video',
-							'module'    => 'matroska',
+							'module'    => 'AudioVideo\\Matroska',
 							'mime_type' => 'video/x-matroska', // may also be audio/x-matroska
 						),
 
 				// MPEG - audio/video - MPEG (Moving Pictures Experts Group)
 				'mpeg' => array(
 							'pattern'   => '^\x00\x00\x01(\xBA|\xB3)',
-							'group'     => 'audio-video',
-							'module'    => 'mpeg',
+							'module'    => 'AudioVideo\\Mpeg',
 							'mime_type' => 'video/mpeg',
 						),
 
 				// NSV  - audio/video - Nullsoft Streaming Video (NSV)
 				'nsv'  => array(
 							'pattern'   => '^NSV[sf]',
-							'group'     => 'audio-video',
-							'module'    => 'nsv',
+							'module'    => 'AudioVideo\\Nsv',
 							'mime_type' => 'application/octet-stream',
 						),
 
 				// Ogg  - audio/video - Ogg (Ogg-Vorbis, Ogg-FLAC, Speex, Ogg-Theora(*), Ogg-Tarkin(*))
 				'ogg'  => array(
 							'pattern'   => '^OggS',
-							'group'     => 'audio',
-							'module'    => 'ogg',
+							'module'    => 'Audio\\Ogg',
 							'mime_type' => 'application/ogg',
 							'fail_id3'  => 'WARNING',
 							'fail_ape'  => 'WARNING',
@@ -850,16 +812,14 @@ class GetID3
 				// QT   - audio/video - Quicktime
 				'quicktime' => array(
 							'pattern'   => '^.{4}(cmov|free|ftyp|mdat|moov|pnot|skip|wide)',
-							'group'     => 'audio-video',
-							'module'    => 'quicktime',
+							'module'    => 'AudioVideo\\QuickTime',
 							'mime_type' => 'video/quicktime',
 						),
 
 				// RIFF - audio/video - Resource Interchange File Format (RIFF) / WAV / AVI / CD-audio / SDSS = renamed variant used by SmartSound QuickTracks (www.smartsound.com) / FORM = Audio Interchange File Format (AIFF)
 				'riff' => array(
 							'pattern'   => '^(RIFF|SDSS|FORM)',
-							'group'     => 'audio-video',
-							'module'    => 'riff',
+							'module'    => 'AudioVideo\\Riff',
 							'mime_type' => 'audio/x-wave',
 							'fail_ape'  => 'WARNING',
 						),
@@ -867,24 +827,21 @@ class GetID3
 				// Real - audio/video - RealAudio, RealVideo
 				'real' => array(
 							'pattern'   => '^(\\.RMF|\\.ra)',
-							'group'     => 'audio-video',
-							'module'    => 'real',
+							'module'    => 'AudioVideo\\Real',
 							'mime_type' => 'audio/x-realaudio',
 						),
 
 				// SWF - audio/video - ShockWave Flash
 				'swf' => array(
 							'pattern'   => '^(F|C)WS',
-							'group'     => 'audio-video',
-							'module'    => 'swf',
+							'module'    => 'AudioVideo\\Swf',
 							'mime_type' => 'application/x-shockwave-flash',
 						),
 
 				// TS - audio/video - MPEG-2 Transport Stream
 				'ts' => array(
 							'pattern'   => '^(\x47.{187}){10,}', // packets are 188 bytes long and start with 0x47 "G".  Check for at least 10 packets matching this pattern
-							'group'     => 'audio-video',
-							'module'    => 'ts',
+							'module'    => 'AudioVideo\\Ts',
 							'mime_type' => 'video/MP2T',
 						),
 
@@ -894,8 +851,7 @@ class GetID3
 				// BMP  - still image - Bitmap (Windows, OS/2; uncompressed, RLE8, RLE4)
 				'bmp'  => array(
 							'pattern'   => '^BM',
-							'group'     => 'graphic',
-							'module'    => 'bmp',
+							'module'    => 'Graphic\\Bmp',
 							'mime_type' => 'image/bmp',
 							'fail_id3'  => 'ERROR',
 							'fail_ape'  => 'ERROR',
@@ -904,8 +860,7 @@ class GetID3
 				// GIF  - still image - Graphics Interchange Format
 				'gif'  => array(
 							'pattern'   => '^GIF',
-							'group'     => 'graphic',
-							'module'    => 'gif',
+							'module'    => 'Graphic\\Gif',
 							'mime_type' => 'image/gif',
 							'fail_id3'  => 'ERROR',
 							'fail_ape'  => 'ERROR',
@@ -914,8 +869,7 @@ class GetID3
 				// JPEG - still image - Joint Photographic Experts Group (JPEG)
 				'jpg'  => array(
 							'pattern'   => '^\xFF\xD8\xFF',
-							'group'     => 'graphic',
-							'module'    => 'jpg',
+							'module'    => 'Graphic\\Jpg',
 							'mime_type' => 'image/jpeg',
 							'fail_id3'  => 'ERROR',
 							'fail_ape'  => 'ERROR',
@@ -924,8 +878,7 @@ class GetID3
 				// PCD  - still image - Kodak Photo CD
 				'pcd'  => array(
 							'pattern'   => '^.{2048}PCD_IPI\x00',
-							'group'     => 'graphic',
-							'module'    => 'pcd',
+							'module'    => 'Graphic\\Pcd',
 							'mime_type' => 'image/x-photo-cd',
 							'fail_id3'  => 'ERROR',
 							'fail_ape'  => 'ERROR',
@@ -935,8 +888,7 @@ class GetID3
 				// PNG  - still image - Portable Network Graphics (PNG)
 				'png'  => array(
 							'pattern'   => '^\x89\x50\x4E\x47\x0D\x0A\x1A\x0A',
-							'group'     => 'graphic',
-							'module'    => 'png',
+							'module'    => 'Graphic\\Png',
 							'mime_type' => 'image/png',
 							'fail_id3'  => 'ERROR',
 							'fail_ape'  => 'ERROR',
@@ -946,8 +898,7 @@ class GetID3
 				// SVG  - still image - Scalable Vector Graphics (SVG)
 				'svg'  => array(
 							'pattern'   => '(<!DOCTYPE svg PUBLIC |xmlns="http:\/\/www\.w3\.org\/2000\/svg")',
-							'group'     => 'graphic',
-							'module'    => 'svg',
+							'module'    => 'Graphic\\Svg',
 							'mime_type' => 'image/svg+xml',
 							'fail_id3'  => 'ERROR',
 							'fail_ape'  => 'ERROR',
@@ -957,8 +908,7 @@ class GetID3
 				// TIFF - still image - Tagged Information File Format (TIFF)
 				'tiff' => array(
 							'pattern'   => '^(II\x2A\x00|MM\x00\x2A)',
-							'group'     => 'graphic',
-							'module'    => 'tiff',
+							'module'    => 'Graphic\\Tiff',
 							'mime_type' => 'image/tiff',
 							'fail_id3'  => 'ERROR',
 							'fail_ape'  => 'ERROR',
@@ -968,8 +918,7 @@ class GetID3
 				// EFAX - still image - eFax (TIFF derivative)
 				'efax'  => array(
 							'pattern'   => '^\xDC\xFE',
-							'group'     => 'graphic',
-							'module'    => 'efax',
+							'module'    => 'Graphic\\Efax',
 							'mime_type' => 'image/efax',
 							'fail_id3'  => 'ERROR',
 							'fail_ape'  => 'ERROR',
@@ -981,8 +930,7 @@ class GetID3
 				// ISO  - data        - International Standards Organization (ISO) CD-ROM Image
 				'iso'  => array(
 							'pattern'   => '^.{32769}CD001',
-							'group'     => 'misc',
-							'module'    => 'iso',
+							'module'    => 'Misc\\Iso',
 							'mime_type' => 'application/octet-stream',
 							'fail_id3'  => 'ERROR',
 							'fail_ape'  => 'ERROR',
@@ -992,8 +940,7 @@ class GetID3
 				// RAR  - data        - RAR compressed data
 				'rar'  => array(
 							'pattern'   => '^Rar\!',
-							'group'     => 'archive',
-							'module'    => 'rar',
+							'module'    => 'Archive\\Rar',
 							'mime_type' => 'application/octet-stream',
 							'fail_id3'  => 'ERROR',
 							'fail_ape'  => 'ERROR',
@@ -1002,8 +949,7 @@ class GetID3
 				// SZIP - audio/data  - SZIP compressed data
 				'szip' => array(
 							'pattern'   => '^SZ\x0A\x04',
-							'group'     => 'archive',
-							'module'    => 'szip',
+							'module'    => 'Archive\\Szip',
 							'mime_type' => 'application/octet-stream',
 							'fail_id3'  => 'ERROR',
 							'fail_ape'  => 'ERROR',
@@ -1012,8 +958,7 @@ class GetID3
 				// TAR  - data        - TAR compressed data
 				'tar'  => array(
 							'pattern'   => '^.{100}[0-9\x20]{7}\x00[0-9\x20]{7}\x00[0-9\x20]{7}\x00[0-9\x20\x00]{12}[0-9\x20\x00]{12}',
-							'group'     => 'archive',
-							'module'    => 'tar',
+							'module'    => 'Archive\\Tar',
 							'mime_type' => 'application/x-tar',
 							'fail_id3'  => 'ERROR',
 							'fail_ape'  => 'ERROR',
@@ -1022,8 +967,7 @@ class GetID3
 				// GZIP  - data        - GZIP compressed data
 				'gz'  => array(
 							'pattern'   => '^\x1F\x8B\x08',
-							'group'     => 'archive',
-							'module'    => 'gzip',
+							'module'    => 'Archive\\Gzip',
 							'mime_type' => 'application/x-gzip',
 							'fail_id3'  => 'ERROR',
 							'fail_ape'  => 'ERROR',
@@ -1032,8 +976,7 @@ class GetID3
 				// ZIP  - data         - ZIP compressed data
 				'zip'  => array(
 							'pattern'   => '^PK\x03\x04',
-							'group'     => 'archive',
-							'module'    => 'zip',
+							'module'    => 'Archive\\Zip',
 							'mime_type' => 'application/zip',
 							'fail_id3'  => 'ERROR',
 							'fail_ape'  => 'ERROR',
@@ -1045,8 +988,7 @@ class GetID3
 				// PAR2 - data        - Parity Volume Set Specification 2.0
 				'par2' => array (
 							'pattern'   => '^PAR2\x00PKT',
-							'group'     => 'misc',
-							'module'    => 'par2',
+							'module'    => 'Misc\\Par2',
 							'mime_type' => 'application/octet-stream',
 							'fail_id3'  => 'ERROR',
 							'fail_ape'  => 'ERROR',
@@ -1055,8 +997,7 @@ class GetID3
 				// PDF  - data        - Portable Document Format
 				'pdf'  => array(
 							'pattern'   => '^\x25PDF',
-							'group'     => 'misc',
-							'module'    => 'pdf',
+							'module'    => 'Misc\\Pdf',
 							'mime_type' => 'application/pdf',
 							'fail_id3'  => 'ERROR',
 							'fail_ape'  => 'ERROR',
@@ -1065,8 +1006,7 @@ class GetID3
 				// MSOFFICE  - data   - ZIP compressed data
 				'msoffice' => array(
 							'pattern'   => '^\xD0\xCF\x11\xE0\xA1\xB1\x1A\xE1', // D0CF11E == DOCFILE == Microsoft Office Document
-							'group'     => 'misc',
-							'module'    => 'msoffice',
+							'module'    => 'Misc\\MsOffice',
 							'mime_type' => 'application/octet-stream',
 							'fail_id3'  => 'ERROR',
 							'fail_ape'  => 'ERROR',
@@ -1075,8 +1015,7 @@ class GetID3
 				 // CUE  - data       - CUEsheet (index to single-file disc images)
 				 'cue' => array(
 							'pattern'   => '', // empty pattern means cannot be automatically detected, will fall through all other formats and match based on filename and very basic file contents
-							'group'     => 'misc',
-							'module'    => 'cue',
+							'module'    => 'Misc\\Cue',
 							'mime_type' => 'application/octet-stream',
 						   ),
 
@@ -1099,7 +1038,6 @@ class GetID3
 			// The /s switch on preg_match() forces preg_match() NOT to treat
 			// newline (0x0A) characters as special chars but do a binary match
 			if (!empty($info['pattern']) && preg_match('#'.$info['pattern'].'#s', $filedata)) {
-				$info['include'] = 'module.'.$info['group'].'.'.$info['module'].'.php';
 				return $info;
 			}
 		}
@@ -1110,7 +1048,6 @@ class GetID3
 			// use assume format on these if format detection failed
 			$GetFileFormatArray = $this->GetFileFormatArray();
 			$info = $GetFileFormatArray['mp3'];
-			$info['include'] = 'module.'.$info['group'].'.'.$info['module'].'.php';
 			return $info;
 		} elseif (preg_match('/\.cue$/i', $filename) && preg_match('#FILE "[^"]+" (BINARY|MOTOROLA|AIFF|WAVE|MP3)#', $filedata)) {
 			// there's not really a useful consistent "magic" at the beginning of .cue files to identify them
@@ -1118,7 +1055,6 @@ class GetID3
 			// and verify there's at least one instance of "TRACK xx AUDIO" in the file
 			$GetFileFormatArray = $this->GetFileFormatArray();
 			$info = $GetFileFormatArray['cue'];
-			$info['include']   = 'module.'.$info['group'].'.'.$info['module'].'.php';
 			return $info;
 		}
 
