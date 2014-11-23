@@ -1,4 +1,7 @@
 <?php
+
+use JamesHeinrich\GetID3;
+
 /////////////////////////////////////////////////////////////////
 /// getID3() by James Heinrich <info@getid3.org>               //
 //  available at http://getid3.sourceforge.net                 //
@@ -41,7 +44,7 @@ require_once('../getid3/getid3.php');
 //define('GETID3_HELPERAPPSDIR', 'C:\\helperapps\\');
 
 // Initialize getID3 engine
-$getID3 = new getID3;
+$getID3 = new GetID3\GetID3;
 $getID3->setOption(array('encoding' => $PageEncoding));
 
 $getID3checkColor_Head           = 'CCCCDD';
@@ -85,7 +88,7 @@ if (isset($_REQUEST['deletefile'])) {
 if (isset($_REQUEST['filename'])) {
 
 	if (!file_exists($_REQUEST['filename']) || !is_file($_REQUEST['filename'])) {
-		die(getid3_lib::iconv_fallback('ISO-8859-1', $PageEncoding, $_REQUEST['filename'].' does not exist'));
+		die(GetID3\Utils::iconv_fallback('ISO-8859-1', $PageEncoding, $_REQUEST['filename'].' does not exist'));
 	}
 	$starttime = microtime(true);
 
@@ -102,7 +105,7 @@ if (isset($_REQUEST['filename'])) {
 	}
 
 
-	getid3_lib::CopyTagsToComments($ThisFileInfo);
+	GetID3\Utils::CopyTagsToComments($ThisFileInfo);
 
 	$listdirectory = dirname($_REQUEST['filename']);
 	$listdirectory = realpath($listdirectory); // get rid of /../../ references
@@ -116,10 +119,10 @@ if (isset($_REQUEST['filename'])) {
 	if (strstr($_REQUEST['filename'], 'http://') || strstr($_REQUEST['filename'], 'ftp://')) {
 		echo '<i>Cannot browse remote filesystems</i><br>';
 	} else {
-		echo 'Browse: <a href="'.htmlentities($_SERVER['PHP_SELF'].'?listdirectory='.urlencode($listdirectory), ENT_QUOTES | ENT_SUBSTITUTE, $PageEncoding).'">'.getid3_lib::iconv_fallback('ISO-8859-1', $PageEncoding, $listdirectory).'</a><br>';
+		echo 'Browse: <a href="'.htmlentities($_SERVER['PHP_SELF'].'?listdirectory='.urlencode($listdirectory), ENT_QUOTES | ENT_SUBSTITUTE, $PageEncoding).'">' . GetID3\Utils::iconv_fallback('ISO-8859-1', $PageEncoding, $listdirectory) . '</a><br>';
 	}
 
-	getid3_lib::ksort_recursive($ThisFileInfo);
+	GetID3\Utils::ksort_recursive($ThisFileInfo);
 	echo table_var_dump($ThisFileInfo, false, $PageEncoding);
 	$endtime = microtime(true);
 	echo 'File parsed in '.number_format($endtime - $starttime, 3).' seconds.<br>';
@@ -189,7 +192,7 @@ if (isset($_REQUEST['filename'])) {
 				$getID3->setOption(array('option_md5_data' => (isset($_REQUEST['ShowMD5']) && GETID3_DEMO_BROWSE_ALLOW_MD5_LINK)));
 				$fileinformation = $getID3->analyze($currentfilename);
 
-				getid3_lib::CopyTagsToComments($fileinformation);
+				GetID3\Utils::CopyTagsToComments($fileinformation);
 
 				$TotalScannedFilesize += (isset($fileinformation['filesize']) ? $fileinformation['filesize'] : 0);
 
@@ -224,7 +227,7 @@ if (isset($_REQUEST['filename'])) {
 		$columnsintable = 14;
 		echo '<table class="table" cellspacing="0" cellpadding="3">';
 
-		echo '<tr bgcolor="#'.$getID3checkColor_Head.'"><th colspan="'.$columnsintable.'">Files in '.getid3_lib::iconv_fallback('ISO-8859-1', $PageEncoding, $currentfulldir).'</th></tr>';
+		echo '<tr bgcolor="#'.$getID3checkColor_Head.'"><th colspan="'.$columnsintable.'">Files in ' . GetID3\Utils::iconv_fallback('ISO-8859-1', $PageEncoding, $currentfulldir) . '</th></tr>';
 		$rowcounter = 0;
 		foreach ($DirectoryContents as $dirname => $val) {
 			if (isset($DirectoryContents[$dirname]['dir']) && is_array($DirectoryContents[$dirname]['dir'])) {
@@ -379,7 +382,7 @@ if (isset($_REQUEST['filename'])) {
 			echo '<td><b>Average:</b></td>';
 			echo '<td align="right">'.number_format($TotalScannedFilesize / max($TotalScannedKnownFiles, 1)).'</td>';
 			echo '<td>&nbsp;</td>';
-			echo '<td align="right">'.getid3_lib::PlaytimeString($TotalScannedPlaytime / max($TotalScannedPlaytimeFiles, 1)).'</td>';
+			echo '<td align="right">' . GetID3\Utils::PlaytimeString($TotalScannedPlaytime / max($TotalScannedPlaytimeFiles, 1)) . '</td>';
 			echo '<td align="right">'.BitrateText(round(($TotalScannedBitrate / 1000) / max($TotalScannedBitrateFiles, 1))).'</td>';
 			echo '<td rowspan="2" colspan="'.($columnsintable - 5).'"><table class="table" border="0" cellspacing="0" cellpadding="2"><tr><th align="right">Identified Files:</th><td align="right">'.number_format($TotalScannedKnownFiles).'</td><td>&nbsp;&nbsp;&nbsp;</td><th align="right">Errors:</th><td align="right">'.number_format($FilesWithErrors).'</td></tr><tr><th align="right">Unknown Files:</th><td align="right">'.number_format($TotalScannedUnknownFiles).'</td><td>&nbsp;&nbsp;&nbsp;</td><th align="right">Warnings:</th><td align="right">'.number_format($FilesWithWarnings).'</td></tr></table>';
 			echo '</tr>';
@@ -387,7 +390,7 @@ if (isset($_REQUEST['filename'])) {
 			echo '<td><b>Total:</b></td>';
 			echo '<td align="right">'.number_format($TotalScannedFilesize).'</td>';
 			echo '<td>&nbsp;</td>';
-			echo '<td align="right">'.getid3_lib::PlaytimeString($TotalScannedPlaytime).'</td>';
+			echo '<td align="right">' . GetID3\Utils::PlaytimeString($TotalScannedPlaytime) . '</td>';
 			echo '<td>&nbsp;</td>';
 			echo '</tr>';
 		}
@@ -480,7 +483,7 @@ function table_var_dump($variable, $wrap_in_td=false, $encoding='ISO-8859-1') {
 				//if (($key == 'data') && isset($variable['image_mime']) && isset($variable['dataoffset'])) {
 				if (($key == 'data') && isset($variable['image_mime'])) {
 					$imageinfo = array();
-					if ($imagechunkcheck = getid3_lib::GetDataImageSize($value, $imageinfo)) {
+					if ($imagechunkcheck = GetID3\Utils::GetDataImageSize($value, $imageinfo)) {
 						$returnstring .= '</td>'."\n".'<td><img src="data:'.$variable['image_mime'].';base64,'.base64_encode($value).'" width="'.$imagechunkcheck[0].'" height="'.$imagechunkcheck[1].'"></td></tr>'."\n";
 					} else {
 						$returnstring .= '</td>'."\n".'<td><i>invalid image data</i></td></tr>'."\n";
@@ -518,10 +521,10 @@ function table_var_dump($variable, $wrap_in_td=false, $encoding='ISO-8859-1') {
 
 		default:
 			$imageinfo = array();
-			if (($imagechunkcheck = getid3_lib::GetDataImageSize($variable, $imageinfo)) && ($imagechunkcheck[2] >= 1) && ($imagechunkcheck[2] <= 3)) {
+			if (($imagechunkcheck = GetID3\Utils::GetDataImageSize($variable, $imageinfo)) && ($imagechunkcheck[2] >= 1) && ($imagechunkcheck[2] <= 3)) {
 				$returnstring .= ($wrap_in_td ? '<td>' : '');
 				$returnstring .= '<table class="dump" cellspacing="0" cellpadding="2">';
-				$returnstring .= '<tr><td><b>type</b></td><td>'.getid3_lib::ImageTypesLookup($imagechunkcheck[2]).'</td></tr>'."\n";
+				$returnstring .= '<tr><td><b>type</b></td><td>'.GetID3\Utils::ImageTypesLookup($imagechunkcheck[2]).'</td></tr>'."\n";
 				$returnstring .= '<tr><td><b>width</b></td><td>'.number_format($imagechunkcheck[0]).' px</td></tr>'."\n";
 				$returnstring .= '<tr><td><b>height</b></td><td>'.number_format($imagechunkcheck[1]).' px</td></tr>'."\n";
 				$returnstring .= '<tr><td><b>size</b></td><td>'.number_format(strlen($variable)).' bytes</td></tr></table>'."\n";

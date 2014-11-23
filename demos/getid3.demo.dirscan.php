@@ -1,4 +1,7 @@
 <?php
+
+use JamesHeinrich\GetID3;
+
 /////////////////////////////////////////////////////////////////////////////////
 /// getID3() by James Heinrich <info@getid3.org>                               //
 //  available at http://getid3.sourceforge.net                                 //
@@ -185,22 +188,13 @@ class dirscan {
 		$Start = self::getTime();
 		switch ($cache) { // load the caching module
 			case 'sqlite3':
-				if (!class_exists('getID3_cached_sqlite3')) {
-					require_once(dirname(__FILE__)).'/extension.cache.sqlite3.php';
-				}
-				$id3 = new getID3_cached_sqlite3($opt['table'], $opt['hide']);
+				$id3 = new GetID3\Cache\Sqlite3($opt['table'], $opt['hide']);
 				break;
 			case 'mysql':
-				if (!class_exists('getID3_cached_mysql')) {
-					require_once(dirname(__FILE__)).'/extension.cache.mysql.php';
-				}
-				$id3 = new getID3_cached_mysql($opt['host'], $opt['database'], $opt['username'], $opt['password'], $opt['table']);
+				$id3 = new GetID3\Cache\Mysql($opt['host'], $opt['database'], $opt['username'], $opt['password'], $opt['table']);
 				break;
 		// I'll leave this for some one else
 			//case 'dbm':
-			//	if (!class_exists('getID3_cached_dbm')) {
-			//		require_once(dirname(__FILE__)).'/extension.cache.dbm.php';
-			//	}
 			//	die(' This has not be implemented, sorry for the inconvenience');
 			//	break;
 			default:

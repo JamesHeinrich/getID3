@@ -1,4 +1,7 @@
 <?php
+
+use JamesHeinrich\GetID3;
+
 /////////////////////////////////////////////////////////////////
 /// getID3() by James Heinrich <info@getid3.org>               //
 //  available at http://getid3.sourceforge.net                 //
@@ -18,12 +21,12 @@ $TextEncoding = 'UTF-8';
 
 require_once('../getid3/getid3.php');
 // Initialize getID3 engine
-$getID3 = new getID3;
+$getID3 = new GetID3\GetID3;
 $getID3->setOption(array('encoding'=>$TextEncoding));
 
 require_once('../getid3/write.php');
 // Initialize getID3 tag-writing module
-$tagwriter = new getid3_writetags;
+$tagwriter = new GetID3\WriteTags;
 //$tagwriter->filename = '/path/to/file.mp3';
 $tagwriter->filename = 'c:/file.mp3';
 

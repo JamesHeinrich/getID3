@@ -1,4 +1,7 @@
 <?php
+
+use JamesHeinrich\GetID3;
+
 /////////////////////////////////////////////////////////////////
 /// getID3() by James Heinrich <info@getid3.org>               //
 //  available at http://getid3.sourceforge.net                 //
@@ -19,12 +22,12 @@ function UnzipFileContents($filename, &$errors) {
 	if (!class_exists('getID3')) {
 		$errors[] = 'class getID3 not defined, please include getid3.php';
 	} elseif (include_once('module.archive.zip.php')) {
-		$getid3 = new getID3();
+		$getid3 = new GetID3\GetID3;
 		$getid3->info['filesize'] = filesize($filename);
 		ob_start();
 		if ($getid3->fp = fopen($filename, 'rb')) {
 			ob_end_clean();
-			$getid3_zip = new getid3_zip($getid3);
+			$getid3_zip = new GetID3\Module\Archive\Zip($getid3);
 			$getid3_zip->analyze($filename);
 			if (($getid3->info['fileformat'] == 'zip') && !empty($getid3->info['zip']['files'])) {
 				if (!empty($getid3->info['zip']['central_directory'])) {
