@@ -17,11 +17,8 @@ use JamesHeinrich\GetID3\Utils;
 //                                                             //
 // module.audio-video.mpeg.php                                 //
 // module for analyzing MPEG files                             //
-// dependencies: module.audio.mp3.php                          //
 //                                                            ///
 /////////////////////////////////////////////////////////////////
-
-Utils::IncludeDependency(GETID3_INCLUDEPATH.'module.audio.mp3.php', __FILE__, true);
 
 class Mpeg extends \JamesHeinrich\GetID3\Module\Handler
 {

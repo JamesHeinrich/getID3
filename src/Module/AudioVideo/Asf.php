@@ -16,11 +16,8 @@ use JamesHeinrich\GetID3\Module\Tag\ID3v2;
 //                                                             //
 // module.audio-video.asf.php                                  //
 // module for analyzing ASF, WMA and WMV files                 //
-// dependencies: module.audio-video.riff.php                   //
 //                                                            ///
 /////////////////////////////////////////////////////////////////
-
-Utils::IncludeDependency(GETID3_INCLUDEPATH.'module.audio-video.riff.php', __FILE__, true);
 
 class Asf extends \JamesHeinrich\GetID3\Module\Handler
 {

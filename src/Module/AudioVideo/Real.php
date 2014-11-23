@@ -15,11 +15,8 @@ use JamesHeinrich\GetID3\Utils;
 //                                                             //
 // module.audio-video.real.php                                 //
 // module for analyzing Real Audio/Video files                 //
-// dependencies: module.audio-video.riff.php                   //
 //                                                            ///
 /////////////////////////////////////////////////////////////////
-
-Utils::IncludeDependency(GETID3_INCLUDEPATH.'module.audio-video.riff.php', __FILE__, true);
 
 class Real extends \JamesHeinrich\GetID3\Module\Handler
 {

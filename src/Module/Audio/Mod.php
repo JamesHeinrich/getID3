@@ -13,7 +13,6 @@ namespace JamesHeinrich\GetID3\Module\Audio;
 //                                                             //
 // module.audio.mod.php                                        //
 // module for analyzing MOD Audio files                        //
-// dependencies: NONE                                          //
 //                                                            ///
 /////////////////////////////////////////////////////////////////
 

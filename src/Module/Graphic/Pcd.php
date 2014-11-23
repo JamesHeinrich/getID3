@@ -15,7 +15,6 @@ use JamesHeinrich\GetID3\Utils;
 //                                                             //
 // module.graphic.pcd.php                                      //
 // module for analyzing PhotoCD (PCD) Image files              //
-// dependencies: NONE                                          //
 //                                                            ///
 /////////////////////////////////////////////////////////////////
 
@@ -87,7 +86,6 @@ class Pcd extends \JamesHeinrich\GetID3\Module\Handler
 			}
 
 			// Example for plotting extracted data
-			//Utils::IncludeDependency(GETID3_INCLUDEPATH.'module.audio.ac3.php', __FILE__, true);
 			//if ($PCDisVertical) {
 			//	$BMPinfo['resolution_x'] = $PCD_height;
 			//	$BMPinfo['resolution_y'] = $PCD_width;

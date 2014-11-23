@@ -13,7 +13,6 @@ namespace JamesHeinrich\GetID3\Module\Tag;
 //                                                             //
 // module.tag.xmp.php                                          //
 // module for analyzing XMP metadata (e.g. in JPEG files)      //
-// dependencies: NONE                                          //
 //                                                             //
 /////////////////////////////////////////////////////////////////
 //                                                             //

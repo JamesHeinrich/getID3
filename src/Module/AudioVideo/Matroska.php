@@ -18,10 +18,8 @@ use JamesHeinrich\GetID3\Utils;
 //                                                             //
 // module.audio-video.matriska.php                             //
 // module for analyzing Matroska containers                    //
-// dependencies: NONE                                          //
 //                                                            ///
 /////////////////////////////////////////////////////////////////
-
 
 define('EBML_ID_CHAPTERS',                  0x0043A770); // [10][43][A7][70] -- A system to define basic menus and partition data. For more detailed information, look at the Chapters Explanation.
 define('EBML_ID_SEEKHEAD',                  0x014D9B74); // [11][4D][9B][74] -- Contains the position of other level 1 elements.
@@ -290,8 +288,6 @@ class Matroska extends \JamesHeinrich\GetID3\Module\Handler
 
 						switch ($trackarray['CodecID']) {
 							case 'V_MS/VFW/FOURCC':
-								Utils::IncludeDependency(GETID3_INCLUDEPATH.'module.audio-video.riff.php', __FILE__, true);
-
 								$parsed = Riff::ParseBITMAPINFOHEADER($trackarray['CodecPrivate']);
 								$track_info['codec'] = Riff::fourccLookup($parsed['fourcc']);
 								$info['matroska']['track_codec_parsed'][$trackarray['TrackNumber']] = $parsed;
@@ -342,8 +338,6 @@ class Matroska extends \JamesHeinrich\GetID3\Module\Handler
 							case 'A_MPEG/L3':
 							case 'A_MPEG/L2':
 							case 'A_FLAC':
-								Utils::IncludeDependency(GETID3_INCLUDEPATH.'module.audio.'.($track_info['dataformat'] == 'mp2' ? 'mp3' : $track_info['dataformat']).'.php', __FILE__, true);
-
 								if (!isset($info['matroska']['track_data_offsets'][$trackarray['TrackNumber']])) {
 									$this->warning('Unable to parse audio data ['.basename(__FILE__).':'.__LINE__.'] because $info[matroska][track_data_offsets]['.$trackarray['TrackNumber'].'] not set');
 									break;
@@ -415,8 +409,6 @@ class Matroska extends \JamesHeinrich\GetID3\Module\Handler
 								}
 								$vorbis_offset -= 1;
 
-								Utils::IncludeDependency(GETID3_INCLUDEPATH.'module.audio.ogg.php', __FILE__, true);
-
 								// create temp instance
 								$getid3_temp = new GetID3;
 
@@ -452,8 +444,6 @@ class Matroska extends \JamesHeinrich\GetID3\Module\Handler
 								break;
 
 							case 'A_MS/ACM':
-								Utils::IncludeDependency(GETID3_INCLUDEPATH.'module.audio-video.riff.php', __FILE__, true);
-
 								$parsed = Riff::parseWAVEFORMATex($trackarray['CodecPrivate']);
 								foreach ($parsed as $key => $value) {
 									if ($key != 'raw') {

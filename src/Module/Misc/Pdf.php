@@ -13,7 +13,6 @@ namespace JamesHeinrich\GetID3\Module\Misc;
 //                                                             //
 // module.misc.pdf.php                                         //
 // module for analyzing PDF files                              //
-// dependencies: NONE                                          //
 //                                                            ///
 /////////////////////////////////////////////////////////////////
 

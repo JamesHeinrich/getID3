@@ -13,7 +13,6 @@ namespace JamesHeinrich\GetID3\Write;
 //                                                             //
 // write.metaflac.php                                          //
 // module for writing metaflac tags                            //
-// dependencies: /helperapps/metaflac.exe                      //
 //                                                            ///
 /////////////////////////////////////////////////////////////////
 

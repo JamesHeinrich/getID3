@@ -323,7 +323,6 @@ function SynchronizeAllTags($filename, $synchronizefrom='all', $synchronizeto='A
 		$TagFormatsToWrite[] = 'id3v1';
 	}
 
-	GetID3\Utils::IncludeDependency(GETID3_INCLUDEPATH.'write.php', __FILE__, true);
 	$tagwriter = new GetID3\WriteTags;
 	$tagwriter->filename       = $filename;
 	$tagwriter->tagformats     = $TagFormatsToWrite;
@@ -783,7 +782,6 @@ if (!empty($_REQUEST['scan']) || !empty($_REQUEST['newscan']) || !empty($_REQUES
 
 } elseif (!empty($_REQUEST['audiobitrates'])) {
 
-	GetID3\Utils::IncludeDependency(GETID3_INCLUDEPATH.'module.audio.mp3.php', __FILE__, true);
 	$BitrateDistribution = array();
 	$SQLquery  = 'SELECT ROUND(audio_bitrate / 1000) AS `RoundBitrate`, COUNT(*) AS `num`';
 	$SQLquery .= ' FROM `'.mysql_real_escape_string(GETID3_DB_TABLE).'`';
@@ -1125,7 +1123,6 @@ if (!empty($_REQUEST['scan']) || !empty($_REQUEST['newscan']) || !empty($_REQUES
 
 					if ($tagtype == 'id3v1') {
 
-						GetID3\Utils::IncludeDependency(GETID3_INCLUDEPATH.'module.tag.id3v1.php', __FILE__, true);
 						if (($fieldname == 'genre') && !empty($Comments['all'][$fieldname][0]) && !GetID3\Module\Tag\ID3v1::LookupGenreID($Comments['all'][$fieldname][0])) {
 
 							// non-standard genres can never match, so just ignore
@@ -1776,9 +1773,6 @@ if (!empty($_REQUEST['scan']) || !empty($_REQUEST['newscan']) || !empty($_REQUES
 
 	} elseif (!empty($_REQUEST['autofix'])) {
 
-		GetID3\Utils::IncludeDependency(GETID3_INCLUDEPATH.'module.tag.id3v1.php', __FILE__, true);
-		GetID3\Utils::IncludeDependency(GETID3_INCLUDEPATH.'module.tag.id3v2.php', __FILE__, true);
-
 		while ($row = mysql_fetch_array($result)) {
 			set_time_limit(30);
 			$ThisFileInfo = $getID3->analyze($filename);
@@ -1891,7 +1885,6 @@ if (!empty($_REQUEST['scan']) || !empty($_REQUEST['newscan']) || !empty($_REQUES
 			$SQLquery .= ' GROUP BY `genre`';
 			$SQLquery .= ' ORDER BY `num` DESC';
 			$result = mysql_query_safe($SQLquery);
-			GetID3\Utils::IncludeDependency(GETID3_INCLUDEPATH.'module.tag.id3v1.php', __FILE__, true);
 			echo '<table border="1" cellspacing="0" cellpadding="4">';
 			echo '<tr><th>Count</th><th>Genre</th><th>m3u</th></tr>';
 			while ($row = mysql_fetch_array($result)) {
@@ -1985,7 +1978,6 @@ if (!empty($_REQUEST['scan']) || !empty($_REQUEST['newscan']) || !empty($_REQUES
 
 } elseif (!empty($_REQUEST['fixid3v1padding'])) {
 
-	GetID3\Utils::IncludeDependency(GETID3_INCLUDEPATH.'write.id3v1.php', __FILE__, true);
 	$id3v1_writer = new GetID3\Write\ID3v1;
 
 	$SQLquery  = 'SELECT `filename`, `error`, `warning`';

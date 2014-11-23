@@ -13,7 +13,6 @@ namespace JamesHeinrich\GetID3\Module\Misc;
 //                                                             //
 // module.misc.cue.php                                         //
 // module for analyzing CUEsheet files                         //
-// dependencies: NONE                                          //
 //                                                             //
 /////////////////////////////////////////////////////////////////
 //                                                             //
@@ -32,7 +31,6 @@ namespace JamesHeinrich\GetID3\Module\Misc;
 
 /**
  * A CueSheet class used to open and parse cuesheets.
- *
  */
 class Cue extends \JamesHeinrich\GetID3\Module\Handler
 {
