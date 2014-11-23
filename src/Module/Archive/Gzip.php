@@ -226,7 +226,7 @@ class Gzip extends \JamesHeinrich\GetID3\Module\Handler
 								fclose($fp_temp_tar);
 								$getid3_temp = new GetID3;
 								$getid3_temp->openfile($temp_tar_filename);
-								$getid3_tar = new getid3_tar($getid3_temp);
+								$getid3_tar = new Tar($getid3_temp);
 								$getid3_tar->Analyze();
 								$info['gzip']['member_header'][$idx]['tar'] = $getid3_temp->info['tar'];
 								unset($getid3_temp, $getid3_tar);

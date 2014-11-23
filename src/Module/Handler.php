@@ -4,6 +4,7 @@ namespace JamesHeinrich\GetID3\Module;
 
 use JamesHeinrich\GetID3\Exception;
 use JamesHeinrich\GetID3\GetID3;
+use JamesHeinrich\GetID3\Utils;
 
 abstract class Handler {
 
