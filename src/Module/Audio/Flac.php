@@ -153,7 +153,7 @@ class Flac extends \JamesHeinrich\GetID3\Module\Handler
 		}
 
 		if (isset($info['flac']['STREAMINFO'])) {
-			if (!$this->isDependencyFor('matroska')) {
+			if (!$this->isDependencyFor('Matroska')) {
 				$info['flac']['compressed_audio_bytes'] = $info['avdataend'] - $info['avdataoffset'];
 			}
 			$info['flac']['uncompressed_audio_bytes'] = $info['flac']['STREAMINFO']['samples_stream'] * $info['flac']['STREAMINFO']['channels'] * ($info['flac']['STREAMINFO']['bits_per_sample'] / 8);
@@ -223,7 +223,7 @@ class Flac extends \JamesHeinrich\GetID3\Module\Handler
 			$info['audio']['bits_per_sample'] = $streaminfo['bits_per_sample'];
 			$info['playtime_seconds']         = $streaminfo['samples_stream'] / $streaminfo['sample_rate'];
 			if ($info['playtime_seconds'] > 0) {
-				if (!$this->isDependencyFor('matroska')) {
+				if (!$this->isDependencyFor('Matroska')) {
 					$info['audio']['bitrate'] = (($info['avdataend'] - $info['avdataoffset']) * 8) / $info['playtime_seconds'];
 				}
 				else {
@@ -281,7 +281,7 @@ class Flac extends \JamesHeinrich\GetID3\Module\Handler
 		$info = &$this->getid3->info;
 
 		$getid3_ogg = new Ogg($this->getid3);
-		if ($this->isDependencyFor('matroska')) {
+		if ($this->isDependencyFor('Matroska')) {
 			$getid3_ogg->setStringMode($this->data_string);
 		}
 		$getid3_ogg->ParseVorbisComments();

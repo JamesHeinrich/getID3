@@ -54,7 +54,7 @@ class Dts extends \JamesHeinrich\GetID3\Module\Handler
         	$info['dts']['raw']['magic'] = $sync;
 			$this->readBinDataOffset = 32;
 
-        } elseif ($this->isDependencyFor('matroska')) {
+        } elseif ($this->isDependencyFor('Matroska')) {
 
 			// Matroska contains DTS without syncword encoded as raw big-endian format
 			$encoding = 0;

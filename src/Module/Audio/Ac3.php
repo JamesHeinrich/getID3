@@ -64,7 +64,7 @@ class Ac3 extends \JamesHeinrich\GetID3\Module\Handler
 			$thisfile_ac3_raw['synchinfo']['synchword'] = self::syncword;
 			$offset = 2;
 		} else {
-			if (!$this->isDependencyFor('matroska')) {
+			if (!$this->isDependencyFor('Matroska')) {
 				unset($info['fileformat'], $info['ac3']);
 				return $this->error('Expecting "'.Utils::PrintHexBytes(self::syncword).'" at offset '.$info['avdataoffset'].', found "'.Utils::PrintHexBytes(substr($this->AC3header['syncinfo'], 0, 2)).'"');
 			}

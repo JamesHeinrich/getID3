@@ -895,7 +895,7 @@ class Mp3 extends \JamesHeinrich\GetID3\Module\Handler
 
 		if (($ExpectedNumberOfAudioBytes > 0) && ($ExpectedNumberOfAudioBytes != ($info['avdataend'] - $info['avdataoffset']))) {
 			if ($ExpectedNumberOfAudioBytes > ($info['avdataend'] - $info['avdataoffset'])) {
-				if ($this->isDependencyFor('matroska') || $this->isDependencyFor('riff')) {
+				if ($this->isDependencyFor('Matroska') || $this->isDependencyFor('Riff')) {
 					// ignore, audio data is broken into chunks so will always be data "missing"
 				}
 				elseif (($ExpectedNumberOfAudioBytes - ($info['avdataend'] - $info['avdataoffset'])) == 1) {
