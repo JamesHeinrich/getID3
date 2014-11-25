@@ -9,7 +9,7 @@ use JamesHeinrich\GetID3\Utils;
 abstract class Handler {
 
     /**
-    * @var getID3
+    * @var GetID3
     */
     protected $getid3;                       // pointer
 
@@ -21,11 +21,13 @@ abstract class Handler {
     private $dependency_to = null;
 
 
-    public function __construct(getID3 $getid3, $call_module=null) {
+    public function __construct(GetID3 $getid3, $call_module = null) {
         $this->getid3 = $getid3;
 
+        // get calling class name, without namespace
         if ($call_module) {
-            $this->dependency_to = str_replace('getid3_', '', $call_module);
+            $parts = explode('\\', $call_module);
+            $this->dependency_to = $parts[count($parts) - 1];
         }
     }
 

@@ -45,7 +45,7 @@ class Rar extends \JamesHeinrich\GetID3\Module\Handler
 				$info['error'][] = 'RAR support does not appear to be available in this PHP installation';
 			}
 		} else {
-			$info['error'][] = 'PHP-RAR processing has been disabled (set $getid3_rar->option_use_rar_extension=true to enable)';
+			$info['error'][] = 'PHP-RAR processing has been disabled (set ' . get_class($this) . '->option_use_rar_extension=true to enable)';
 		}
 		return false;
 

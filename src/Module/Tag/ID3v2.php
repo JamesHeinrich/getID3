@@ -654,7 +654,7 @@ class ID3v2 extends \JamesHeinrich\GetID3\Module\Handler
 			$parsedFrame['encodingid']  = $frame_textencoding;
 			$parsedFrame['encoding']    = $this->TextEncodingNameLookup($frame_textencoding);
 
-			$parsedFrame['description'] = trim(getid3_lib::iconv_fallback($parsedFrame['encoding'], $info['id3v2']['encoding'], $frame_description));
+			$parsedFrame['description'] = trim(Utils::iconv_fallback($parsedFrame['encoding'], $info['id3v2']['encoding'], $frame_description));
 			$parsedFrame['data'] = substr($parsedFrame['data'], $frame_terminatorpos + strlen($frame_textencoding_terminator));
 			if (!empty($parsedFrame['framenameshort']) && !empty($parsedFrame['data'])) {
 				$commentkey = ($parsedFrame['description'] ? $parsedFrame['description'] : (isset($info['id3v2']['comments'][$parsedFrame['framenameshort']]) ? count($info['id3v2']['comments'][$parsedFrame['framenameshort']]) : 0));
@@ -1668,7 +1668,7 @@ class ID3v2 extends \JamesHeinrich\GetID3\Module\Handler
 
 			$parsedFrame['additionaldata'] = (string) substr($parsedFrame['data'], $frame_offset);
 			if (!empty($parsedFrame['framenameshort']) && $parsedFrame['url']) {
-				$info['id3v2']['comments'][$parsedFrame['framenameshort']][] = getid3_lib::iconv_fallback_iso88591_utf8($parsedFrame['url']);
+				$info['id3v2']['comments'][$parsedFrame['framenameshort']][] = Utils::iconv_fallback_iso88591_utf8($parsedFrame['url']);
 			}
 			unset($parsedFrame['data']);
 
@@ -1992,18 +1992,18 @@ class ID3v2 extends \JamesHeinrich\GetID3\Module\Handler
 			$frame_offset = 0;
 			@list($parsedFrame['element_id']) = explode("\x00", $parsedFrame['data'], 2);
 			$frame_offset += strlen($parsedFrame['element_id']."\x00");
-			$parsedFrame['time_begin'] = getid3_lib::BigEndian2Int(substr($parsedFrame['data'], $frame_offset, 4));
+			$parsedFrame['time_begin'] = Utils::BigEndian2Int(substr($parsedFrame['data'], $frame_offset, 4));
 			$frame_offset += 4;
-			$parsedFrame['time_end']   = getid3_lib::BigEndian2Int(substr($parsedFrame['data'], $frame_offset, 4));
+			$parsedFrame['time_end']   = Utils::BigEndian2Int(substr($parsedFrame['data'], $frame_offset, 4));
 			$frame_offset += 4;
 			if (substr($parsedFrame['data'], $frame_offset, 4) != "\xFF\xFF\xFF\xFF") {
 				// "If these bytes are all set to 0xFF then the value should be ignored and the start time value should be utilized."
-				$parsedFrame['offset_begin'] = getid3_lib::BigEndian2Int(substr($parsedFrame['data'], $frame_offset, 4));
+				$parsedFrame['offset_begin'] = Utils::BigEndian2Int(substr($parsedFrame['data'], $frame_offset, 4));
 			}
 			$frame_offset += 4;
 			if (substr($parsedFrame['data'], $frame_offset, 4) != "\xFF\xFF\xFF\xFF") {
 				// "If these bytes are all set to 0xFF then the value should be ignored and the start time value should be utilized."
-				$parsedFrame['offset_end']   = getid3_lib::BigEndian2Int(substr($parsedFrame['data'], $frame_offset, 4));
+				$parsedFrame['offset_end']   = Utils::BigEndian2Int(substr($parsedFrame['data'], $frame_offset, 4));
 			}
 			$frame_offset += 4;
 
@@ -2014,9 +2014,9 @@ class ID3v2 extends \JamesHeinrich\GetID3\Module\Handler
 					$subframe = array();
 					$subframe['name']      =                           substr($parsedFrame['data'], $frame_offset, 4);
 					$frame_offset += 4;
-					$subframe['size']      = getid3_lib::BigEndian2Int(substr($parsedFrame['data'], $frame_offset, 4));
+					$subframe['size']      = Utils::BigEndian2Int(substr($parsedFrame['data'], $frame_offset, 4));
 					$frame_offset += 4;
-					$subframe['flags_raw'] = getid3_lib::BigEndian2Int(substr($parsedFrame['data'], $frame_offset, 2));
+					$subframe['flags_raw'] = Utils::BigEndian2Int(substr($parsedFrame['data'], $frame_offset, 2));
 					$frame_offset += 2;
 					if ($subframe['size'] > (strlen($parsedFrame['data']) - $frame_offset)) {
 						$info['warning'][] = 'CHAP subframe "'.$subframe['name'].'" at frame offset '.$frame_offset.' claims to be "'.$subframe['size'].'" bytes, which is more than the available data ('.(strlen($parsedFrame['data']) - $frame_offset).' bytes)';
@@ -2028,7 +2028,7 @@ class ID3v2 extends \JamesHeinrich\GetID3\Module\Handler
 					$subframe['encodingid'] = ord(substr($subframe_rawdata, 0, 1));
 					$subframe['text']       =     substr($subframe_rawdata, 1);
 					$subframe['encoding']   = $this->TextEncodingNameLookup($subframe['encodingid']);
-					$encoding_converted_text = trim(getid3_lib::iconv_fallback($subframe['encoding'], $info['encoding'], $subframe['text']));;
+					$encoding_converted_text = trim(Utils::iconv_fallback($subframe['encoding'], $info['encoding'], $subframe['text']));;
 					switch (substr($encoding_converted_text, 0, 2)) {
 						case "\xFF\xFE":
 						case "\xFE\xFF":
@@ -2111,9 +2111,9 @@ class ID3v2 extends \JamesHeinrich\GetID3\Module\Handler
 					$subframe = array();
 					$subframe['name']      =                           substr($parsedFrame['data'], $frame_offset, 4);
 					$frame_offset += 4;
-					$subframe['size']      = getid3_lib::BigEndian2Int(substr($parsedFrame['data'], $frame_offset, 4));
+					$subframe['size']      = Utils::BigEndian2Int(substr($parsedFrame['data'], $frame_offset, 4));
 					$frame_offset += 4;
-					$subframe['flags_raw'] = getid3_lib::BigEndian2Int(substr($parsedFrame['data'], $frame_offset, 2));
+					$subframe['flags_raw'] = Utils::BigEndian2Int(substr($parsedFrame['data'], $frame_offset, 2));
 					$frame_offset += 2;
 					if ($subframe['size'] > (strlen($parsedFrame['data']) - $frame_offset)) {
 						$info['warning'][] = 'CTOS subframe "'.$subframe['name'].'" at frame offset '.$frame_offset.' claims to be "'.$subframe['size'].'" bytes, which is more than the available data ('.(strlen($parsedFrame['data']) - $frame_offset).' bytes)';
@@ -2125,7 +2125,7 @@ class ID3v2 extends \JamesHeinrich\GetID3\Module\Handler
 					$subframe['encodingid'] = ord(substr($subframe_rawdata, 0, 1));
 					$subframe['text']       =     substr($subframe_rawdata, 1);
 					$subframe['encoding']   = $this->TextEncodingNameLookup($subframe['encodingid']);
-					$encoding_converted_text = trim(getid3_lib::iconv_fallback($subframe['encoding'], $info['encoding'], $subframe['text']));;
+					$encoding_converted_text = trim(Utils::iconv_fallback($subframe['encoding'], $info['encoding'], $subframe['text']));;
 					switch (substr($encoding_converted_text, 0, 2)) {
 						case "\xFF\xFE":
 						case "\xFE\xFF":

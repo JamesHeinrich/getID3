@@ -1599,7 +1599,7 @@ class Riff extends \JamesHeinrich\GetID3\Module\Handler
 										$info['ac3']   = $getid3_temp->info['ac3'];
 										if (!empty($getid3_temp->info['warning'])) {
 											foreach ($getid3_temp->info['warning'] as $newerror) {
-												$this->warning('getid3_ac3() says: ['.$newerror.']');
+												$this->warning(get_class($getid3_ac3) . ' says: ['.$newerror.']');
 											}
 										}
 									}
@@ -1619,7 +1619,7 @@ class Riff extends \JamesHeinrich\GetID3\Module\Handler
 										$info['playtime_seconds'] = $getid3_temp->info['playtime_seconds']; // may not match RIFF calculations since DTS-WAV often used 14/16 bit-word packing
 										if (!empty($getid3_temp->info['warning'])) {
 											foreach ($getid3_temp->info['warning'] as $newerror) {
-												$this->warning('getid3_dts() says: ['.$newerror.']');
+												$this->warning(get_class($getid3_dts) . ' says: ['.$newerror.']');
 											}
 										}
 									}

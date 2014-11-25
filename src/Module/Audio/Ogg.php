@@ -441,7 +441,7 @@ $info['warning'][] = 'Ogg Theora (v3) not fully supported in this version of get
 
 		$info['ogg']['pageheader']['opus']['opus_magic'] = substr($filedata, $filedataoffset, 8); // hard-coded to 'OpusHead'
 		$filedataoffset += 8;
-		$info['ogg']['pageheader']['opus']['version']    = getid3_lib::LittleEndian2Int(substr($filedata, $filedataoffset,  1));
+		$info['ogg']['pageheader']['opus']['version']    = Utils::LittleEndian2Int(substr($filedata, $filedataoffset,  1));
 		$filedataoffset += 1;
 
 		if ($info['ogg']['pageheader']['opus']['version'] < 1 || $info['ogg']['pageheader']['opus']['version'] > 15) {
@@ -449,7 +449,7 @@ $info['warning'][] = 'Ogg Theora (v3) not fully supported in this version of get
 			return false;
 		}
 
-		$info['ogg']['pageheader']['opus']['out_channel_count'] = getid3_lib::LittleEndian2Int(substr($filedata, $filedataoffset,  1));
+		$info['ogg']['pageheader']['opus']['out_channel_count'] = Utils::LittleEndian2Int(substr($filedata, $filedataoffset,  1));
 		$filedataoffset += 1;
 
 		if ($info['ogg']['pageheader']['opus']['out_channel_count'] == 0) {
@@ -457,16 +457,16 @@ $info['warning'][] = 'Ogg Theora (v3) not fully supported in this version of get
 			return false;
 		}
 
-		$info['ogg']['pageheader']['opus']['pre_skip'] = getid3_lib::LittleEndian2Int(substr($filedata, $filedataoffset,  2));
+		$info['ogg']['pageheader']['opus']['pre_skip'] = Utils::LittleEndian2Int(substr($filedata, $filedataoffset,  2));
 		$filedataoffset += 2;
 
-		$info['ogg']['pageheader']['opus']['sample_rate'] = getid3_lib::LittleEndian2Int(substr($filedata, $filedataoffset,  4));
+		$info['ogg']['pageheader']['opus']['sample_rate'] = Utils::LittleEndian2Int(substr($filedata, $filedataoffset,  4));
 		$filedataoffset += 4;
 
-		//$info['ogg']['pageheader']['opus']['output_gain'] = getid3_lib::LittleEndian2Int(substr($filedata, $filedataoffset,  2));
+		//$info['ogg']['pageheader']['opus']['output_gain'] = Utils::LittleEndian2Int(substr($filedata, $filedataoffset,  2));
 		//$filedataoffset += 2;
 
-		//$info['ogg']['pageheader']['opus']['channel_mapping_family'] = getid3_lib::LittleEndian2Int(substr($filedata, $filedataoffset,  1));
+		//$info['ogg']['pageheader']['opus']['channel_mapping_family'] = Utils::LittleEndian2Int(substr($filedata, $filedataoffset,  1));
 		//$filedataoffset += 1;
 
 		$info['opus']['opus_version']      = $info['ogg']['pageheader']['opus']['version'];
