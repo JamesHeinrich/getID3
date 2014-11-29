@@ -2,6 +2,8 @@
 
 namespace JamesHeinrich\GetID3\Write;
 
+use JamesHeinrich\GetID3\Utils;
+
 /////////////////////////////////////////////////////////////////
 /// getID3() by James Heinrich <info@getid3.org>               //
 //  available at http://getid3.sourceforge.net                 //
@@ -32,7 +34,7 @@ class MetaFlac
 		}
 
 		// Create file with new comments
-		$tempcommentsfilename = tempnam(GETID3_TEMP_DIR, 'getID3');
+		$tempcommentsfilename = tempnam(Utils::getTempDirectory(), 'getID3');
 		if (is_writable($tempcommentsfilename) && is_file($tempcommentsfilename) && ($fpcomments = fopen($tempcommentsfilename, 'wb'))) {
 			foreach ($this->tag_data as $key => $value) {
 				foreach ($value as $commentdata) {

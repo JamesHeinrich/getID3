@@ -84,7 +84,7 @@ class ID3v2
 
 				} else {
 
-					if ($tempfilename = tempnam(GETID3_TEMP_DIR, 'getID3')) {
+					if ($tempfilename = tempnam(Utils::getTempDirectory(), 'getID3')) {
 						if (is_readable($this->filename) && is_file($this->filename) && ($fp_source = fopen($this->filename, 'rb'))) {
 							if (is_writable($tempfilename) && is_file($tempfilename) && ($fp_temp = fopen($tempfilename, 'wb'))) {
 

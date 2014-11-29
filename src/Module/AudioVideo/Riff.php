@@ -1716,7 +1716,7 @@ class Riff extends \JamesHeinrich\GetID3\Module\Handler
 	public function ParseRIFFdata(&$RIFFdata) {
 		$info = &$this->getid3->info;
 		if ($RIFFdata) {
-			$tempfile = tempnam(GETID3_TEMP_DIR, 'getID3');
+			$tempfile = tempnam(Utils::getTempDirectory(), 'getID3');
 			$fp_temp  = fopen($tempfile, 'wb');
 			$RIFFdataLength = strlen($RIFFdata);
 			$NewLengthString = Utils::LittleEndian2String($RIFFdataLength, 4);
