@@ -111,50 +111,6 @@ class GetID3
 		if ($this->option_max_2gb_check === null) {
 			$this->option_max_2gb_check = (PHP_INT_MAX <= 2147483647);
 		}
-
-
-		// Needed for Windows only:
-		// Define locations of helper applications for Shorten, VorbisComment, MetaFLAC
-		//   as well as other helper functions such as head, tail, md5sum, etc
-		// This path cannot contain spaces, but the below code will attempt to get the
-		//   8.3-equivalent path automatically
-		// IMPORTANT: This path must include the trailing slash
-		if (Utils::isWindows() && !defined('GETID3_HELPERAPPSDIR')) {
-
-			$helperappsdir = __DIR__ . \DIRECTORY_SEPARATOR . ".." . \DIRECTORY_SEPARATOR . "helperapps";
-
-			if (!is_dir($helperappsdir)) {
-				$this->startup_warning .= '"'.$helperappsdir.'" cannot be defined as GETID3_HELPERAPPSDIR because it does not exist';
-			} elseif (strpos(realpath($helperappsdir), ' ') !== false) {
-				$DirPieces = explode(DIRECTORY_SEPARATOR, realpath($helperappsdir));
-				$path_so_far = array();
-				foreach ($DirPieces as $key => $value) {
-					if (strpos($value, ' ') !== false) {
-						if (!empty($path_so_far)) {
-							$commandline = 'dir /x '.escapeshellarg(implode(DIRECTORY_SEPARATOR, $path_so_far));
-							$dir_listing = `$commandline`;
-							$lines = explode("\n", $dir_listing);
-							foreach ($lines as $line) {
-								$line = trim($line);
-								if (preg_match('#^([0-9/]{10}) +([0-9:]{4,5}( [AP]M)?) +(<DIR>|[0-9,]+) +([^ ]{0,11}) +(.+)$#', $line, $matches)) {
-									list($dummy, $date, $time, $ampm, $filesize, $shortname, $filename) = $matches;
-									if ((strtoupper($filesize) == '<DIR>') && (strtolower($filename) == strtolower($value))) {
-										$value = $shortname;
-									}
-								}
-							}
-						} else {
-							$this->startup_warning .= 'GETID3_HELPERAPPSDIR must not have any spaces in it - use 8dot3 naming convention if neccesary. You can run "dir /x" from the commandline to see the correct 8.3-style names.';
-						}
-					}
-					$path_so_far[] = $value;
-				}
-				$helperappsdir = implode(DIRECTORY_SEPARATOR, $path_so_far);
-			}
-			define('GETID3_HELPERAPPSDIR', $helperappsdir.DIRECTORY_SEPARATOR);
-		}
-
-		return true;
 	}
 
 	public function version() {
@@ -1202,14 +1158,14 @@ class GetID3
 
 				if (Utils::isWindows()) {
 
-					if (file_exists(GETID3_HELPERAPPSDIR.'vorbiscomment.exe')) {
+					if (file_exists(Utils::getHelperAppDirectory() . 'vorbiscomment.exe')) {
 
-						$commandline = '"'.GETID3_HELPERAPPSDIR.'vorbiscomment.exe" -w -c "'.$empty.'" "'.$file.'" "'.$temp.'"';
+						$commandline = '"' . Utils::getHelperAppDirectory() . 'vorbiscomment.exe" -w -c "'.$empty.'" "'.$file.'" "'.$temp.'"';
 						$VorbisCommentError = `$commandline`;
 
 					} else {
 
-						$VorbisCommentError = 'vorbiscomment.exe not found in '.GETID3_HELPERAPPSDIR;
+						$VorbisCommentError = 'vorbiscomment.exe not found in ' . Utils::getHelperAppDirectory();
 
 					}
 

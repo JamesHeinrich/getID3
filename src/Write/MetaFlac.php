@@ -51,8 +51,8 @@ class MetaFlac
 		$oldignoreuserabort = ignore_user_abort(true);
 		if (Utils::isWindows()) {
 
-			if (file_exists(GETID3_HELPERAPPSDIR.'metaflac.exe')) {
-				//$commandline = '"'.GETID3_HELPERAPPSDIR.'metaflac.exe" --no-utf8-convert --remove-all-tags --import-tags-from="'.$tempcommentsfilename.'" "'.str_replace('/', '\\', $this->filename).'"';
+			if (file_exists(Utils::getHelperAppDirectory() . 'metaflac.exe')) {
+				//$commandline = '"' . Utils::getHelperAppDirectory() . 'metaflac.exe" --no-utf8-convert --remove-all-tags --import-tags-from="' . $tempcommentsfilename . '" "' . str_replace('/', '\\', $this->filename) . '"';
 				//  metaflac works fine if you copy-paste the above commandline into a command prompt,
 				//  but refuses to work with `backtick` if there are "doublequotes" present around BOTH
 				//  the metaflac pathname and the target filename. For whatever reason...??
@@ -64,7 +64,7 @@ class MetaFlac
 				clearstatcache();
 				$timestampbeforewriting = filemtime($this->filename);
 
-				$commandline = GETID3_HELPERAPPSDIR.'metaflac.exe --no-utf8-convert --remove-all-tags --import-tags-from='.escapeshellarg($tempcommentsfilename).' '.escapeshellarg($this->filename).' 2>&1';
+				$commandline = Utils::getHelperAppDirectory() . 'metaflac.exe --no-utf8-convert --remove-all-tags --import-tags-from=' . escapeshellarg($tempcommentsfilename) . ' ' . escapeshellarg($this->filename) . ' 2>&1';
 				$metaflacError = `$commandline`;
 
 				if (empty($metaflacError)) {
@@ -74,7 +74,7 @@ class MetaFlac
 					}
 				}
 			} else {
-				$metaflacError = 'metaflac.exe not found in '.GETID3_HELPERAPPSDIR;
+				$metaflacError = 'metaflac.exe not found in ' . Utils::getHelperAppDirectory();
 			}
 
 		} else {
@@ -110,12 +110,12 @@ class MetaFlac
 		$oldignoreuserabort = ignore_user_abort(true);
 		if (Utils::isWindows()) {
 
-			if (file_exists(GETID3_HELPERAPPSDIR.'metaflac.exe')) {
+			if (file_exists(Utils::getHelperAppDirectory() . 'metaflac.exe')) {
 				// To at least see if there was a problem, compare file modification timestamps before and after writing
 				clearstatcache();
 				$timestampbeforewriting = filemtime($this->filename);
 
-				$commandline = GETID3_HELPERAPPSDIR.'metaflac.exe --remove-all-tags "'.$this->filename.'" 2>&1';
+				$commandline = Utils::getHelperAppDirectory() . 'metaflac.exe --remove-all-tags "' . $this->filename . '" 2>&1';
 				$metaflacError = `$commandline`;
 
 				if (empty($metaflacError)) {
@@ -125,7 +125,7 @@ class MetaFlac
 					}
 				}
 			} else {
-				$metaflacError = 'metaflac.exe not found in '.GETID3_HELPERAPPSDIR;
+				$metaflacError = 'metaflac.exe not found in ' . Utils::getHelperAppDirectory();
 			}
 
 		} else {

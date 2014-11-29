@@ -27,6 +27,11 @@ class Utils
 	protected static $tmp;
 
 	/**
+	 * @var string $helpers The path to the helper binaries for windows
+	 */
+	protected static $helpers;
+
+	/**
 	 * Check if the current os is windows.
 	 *
 	 * @return boolean
@@ -106,6 +111,60 @@ class Utils
 	public static function setTempDirectory($path)
 	{
 		static::$tmp = $path;
+	}
+
+
+	/**
+	 * Get the directory the helper apps are in.
+	 *
+	 * Needed for Windows only:
+	 * Define locations of helper applications for Shorten, VorbisComment, MetaFLAC as well as other helper functions such as head, tail, md5sum, etc.
+	 * This path cannot contain spaces, but the below code will attempt to get the 8.3-equivalent path automatically.
+	 * IMPORTANT: This path must include the trailing slash
+	 *
+	 * @return string
+	 */
+	public static function getHelperAppDirectory()
+	{
+		if (static::$helpers) {
+			return static::$helpers;
+		}
+
+		$dir = __DIR__ . \DIRECTORY_SEPARATOR  . ".." . \DIRECTORY_SEPARATOR . "bin" . \DIRECTORY_SEPARATOR;
+
+		if (!static::isWindows()) {
+			return static::$helpers = $dir;
+		}
+
+		if (strpos(realpath($dir), ' ') === false) {
+			return static::$helpers = $dir;
+		}
+
+		$dirPieces = explode(\DIRECTORY_SEPARATOR, realpath($dir));
+		$pathParts = [];
+		foreach ($dirPieces as $key => $value) {
+			if (strpos($value, ' ') !== false) {
+				if (!empty($pathParts)) {
+					$commandline = 'dir /x ' . escapeshellarg(implode(\DIRECTORY_SEPARATOR, $pathParts));
+					$dir_listing = `$commandline`;
+					$lines = explode("\n", $dir_listing);
+					foreach ($lines as $line) {
+						$line = trim($line);
+						if (preg_match('#^([0-9/]{10}) +([0-9:]{4,5}( [AP]M)?) +(<DIR>|[0-9,]+) +([^ ]{0,11}) +(.+)$#', $line, $matches)) {
+							list($dummy, $date, $time, $ampm, $filesize, $shortname, $filename) = $matches;
+							if (strtoupper($filesize) === '<DIR>' && strtolower($filename) === strtolower($value)) {
+								$value = $shortname;
+							}
+						}
+					}
+				} else {
+					$this->startup_warning .= 'The path to getid3 must not have any spaces in it - use 8dot3 naming convention if neccesary. You can run "dir /x" from the commandline to see the correct 8.3-style names.';
+				}
+			}
+			$pathParts[] = $value;
+		}
+
+		return static::$helpers = implode(\DIRECTORY_SEPARATOR, $pathParts) . \DIRECTORY_SEPARATOR;
 	}
 
 
@@ -688,19 +747,17 @@ class Utils
 
 				$RequiredFiles = array('cygwin1.dll', 'head.exe', 'tail.exe', $windows_call);
 				foreach ($RequiredFiles as $required_file) {
-					if (!is_readable(GETID3_HELPERAPPSDIR.$required_file)) {
+					if (!is_readable(static::getHelperAppDirectory() . $required_file)) {
 						// helper apps not available - fall back to old method
 						break 2;
 					}
 				}
-				$commandline  = GETID3_HELPERAPPSDIR.'head.exe -c '.$end.' '.escapeshellarg(str_replace('/', DIRECTORY_SEPARATOR, $file)).' | ';
-				$commandline .= GETID3_HELPERAPPSDIR.'tail.exe -c '.$size.' | ';
-				$commandline .= GETID3_HELPERAPPSDIR.$windows_call;
-
+				$commandline  = static::getHelperAppDirectory() . 'head.exe -c ' . $end . ' ' . escapeshellarg(str_replace('/', \DIRECTORY_SEPARATOR, $file)) . ' | ';
+				$commandline .= static::getHelperAppDirectory() . 'tail.exe -c ' . $size . ' | ';
+				$commandline .= static::getHelperAppDirectory() . $windows_call;
 			} else {
-
-				$commandline  = 'head -c'.$end.' '.escapeshellarg($file).' | ';
-				$commandline .= 'tail -c'.$size.' | ';
+				$commandline  = 'head -c' . $end . ' ' . escapeshellarg($file) . ' | ';
+				$commandline .= 'tail -c' . $size . ' | ';
 				$commandline .= $unix_call;
 
 			}
