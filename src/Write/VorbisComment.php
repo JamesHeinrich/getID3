@@ -52,8 +52,8 @@ class VorbisComment
 		$oldignoreuserabort = ignore_user_abort(true);
 		if (Utils::isWindows()) {
 
-			if (file_exists(GETID3_HELPERAPPSDIR.'vorbiscomment.exe')) {
-				//$commandline = '"'.GETID3_HELPERAPPSDIR.'vorbiscomment.exe" -w --raw -c "'.$tempcommentsfilename.'" "'.str_replace('/', '\\', $this->filename).'"';
+			if (file_exists(Utils::getHelperAppDirectory() . 'vorbiscomment.exe')) {
+				//$commandline = '"'.Utils::getHelperAppDirectory().'vorbiscomment.exe" -w --raw -c "'.$tempcommentsfilename.'" "'.str_replace('/', '\\', $this->filename).'"';
 				//  vorbiscomment works fine if you copy-paste the above commandline into a command prompt,
 				//  but refuses to work with `backtick` if there are "doublequotes" present around BOTH
 				//  the metaflac pathname and the target filename. For whatever reason...??
@@ -65,7 +65,7 @@ class VorbisComment
 				clearstatcache();
 				$timestampbeforewriting = filemtime($this->filename);
 
-				$commandline = GETID3_HELPERAPPSDIR.'vorbiscomment.exe -w --raw -c "'.$tempcommentsfilename.'" "'.$this->filename.'" 2>&1';
+				$commandline = Utils::getHelperAppDirectory() . 'vorbiscomment.exe -w --raw -c "' . $tempcommentsfilename . '" "' . $this->filename . '" 2>&1';
 				$VorbiscommentError = `$commandline`;
 
 				if (empty($VorbiscommentError)) {
@@ -75,7 +75,7 @@ class VorbisComment
 					}
 				}
 			} else {
-				$VorbiscommentError = 'vorbiscomment.exe not found in '.GETID3_HELPERAPPSDIR;
+				$VorbiscommentError = 'vorbiscomment.exe not found in ' . Utils::getHelperAppDirectory();
 			}
 
 		} else {
