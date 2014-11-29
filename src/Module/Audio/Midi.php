@@ -18,11 +18,18 @@ use JamesHeinrich\GetID3\Utils;
 //                                                            ///
 /////////////////////////////////////////////////////////////////
 
-define('GETID3_MIDI_MAGIC_MTHD', 'MThd'); // MIDI file header magic
-define('GETID3_MIDI_MAGIC_MTRK', 'MTrk'); // MIDI track header magic
-
 class Midi extends \JamesHeinrich\GetID3\Module\Handler
 {
+	/**
+	 * MIDI file header magic.
+	 */
+	const MAGIC_MTHD = 'MThd';
+
+	/**
+	 * MIDI track header magic.
+	 */
+	const MAGIC_MTRK = 'MTrk';
+
 	public $scanwholefile = true;
 
 	public function Analyze() {
@@ -40,8 +47,8 @@ class Midi extends \JamesHeinrich\GetID3\Module\Handler
 		$MIDIdata = $this->fread($this->getid3->fread_buffer_size());
 		$offset = 0;
 		$MIDIheaderID = substr($MIDIdata, $offset, 4); // 'MThd'
-		if ($MIDIheaderID != GETID3_MIDI_MAGIC_MTHD) {
-			$info['error'][] = 'Expecting "'.Utils::PrintHexBytes(GETID3_MIDI_MAGIC_MTHD).'" at offset '.$info['avdataoffset'].', found "'.Utils::PrintHexBytes($MIDIheaderID).'"';
+		if ($MIDIheaderID !== self::MAGIC_MTHD) {
+			$info['error'][] = 'Expecting "' . Utils::PrintHexBytes(self::MAGIC_MTHD) . '" at offset '.$info['avdataoffset'].', found "'.Utils::PrintHexBytes($MIDIheaderID).'"';
 			unset($info['fileformat']);
 			return false;
 		}
@@ -67,14 +74,14 @@ class Midi extends \JamesHeinrich\GetID3\Module\Handler
 			}
 			$trackID = substr($MIDIdata, $offset, 4);
 			$offset += 4;
-			if ($trackID == GETID3_MIDI_MAGIC_MTRK) {
+			if ($trackID === self::MAGIC_MTRK) {
 				$tracksize = Utils::BigEndian2Int(substr($MIDIdata, $offset, 4));
 				$offset += 4;
 				//$thisfile_midi['tracks'][$i]['size'] = $tracksize;
 				$trackdataarray[$i] = substr($MIDIdata, $offset, $tracksize);
 				$offset += $tracksize;
 			} else {
-				$info['error'][] = 'Expecting "'.Utils::PrintHexBytes(GETID3_MIDI_MAGIC_MTRK).'" at '.($offset - 4).', found "'.Utils::PrintHexBytes($trackID).'" instead';
+				$info['error'][] = 'Expecting "' . Utils::PrintHexBytes(self::MAGIC_MTRK) . '" at '.($offset - 4).', found "'.Utils::PrintHexBytes($trackID).'" instead';
 				return false;
 			}
 		}

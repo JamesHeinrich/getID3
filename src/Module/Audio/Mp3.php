@@ -19,15 +19,15 @@ use JamesHeinrich\GetID3\Utils;
 /////////////////////////////////////////////////////////////////
 
 
-// number of frames to scan to determine if MPEG-audio sequence is valid
-// Lower this number to 5-20 for faster scanning
-// Increase this number to 50+ for most accurate detection of valid VBR/CBR
-// mpeg-audio streams
-define('GETID3_MP3_VALID_CHECK_FRAMES', 35);
-
-
 class Mp3 extends \JamesHeinrich\GetID3\Module\Handler
 {
+	/**
+	 * Number of frames to scan to determine if MPEG-audio sequence is valid.
+	 * Lower this number to 5-20 for faster scanning.
+	 * Increase this number to 50+ for most accurate detection of valid VBR/CBR mpeg-audio streams.
+	 */
+	const VALID_CHECK_FRAMES = 35;
+
 
 	public $allow_bruteforce = false; // forces getID3() to scan the file byte-by-byte and log all the valid audio frame headers - extremely slow, unrecommended, but may provide data from otherwise-unusuable files
 
@@ -1081,8 +1081,8 @@ class Mp3 extends \JamesHeinrich\GetID3\Module\Handler
 		$firstframetestarray = array('error'=>'', 'warning'=>'', 'avdataend'=>$info['avdataend'], 'avdataoffset'=>$info['avdataoffset']);
 		$this->decodeMPEGaudioHeader($offset, $firstframetestarray, false);
 
-		for ($i = 0; $i < GETID3_MP3_VALID_CHECK_FRAMES; $i++) {
-			// check next GETID3_MP3_VALID_CHECK_FRAMES frames for validity, to make sure we haven't run across a false synch
+		for ($i = 0; $i < self::VALID_CHECK_FRAMES; $i++) {
+			// check next self::VALID_CHECK_FRAMES frames for validity, to make sure we haven't run across a false synch
 			if (($nextframetestoffset + 4) >= $info['avdataend']) {
 				// end of file
 				return true;
@@ -1448,9 +1448,9 @@ class Mp3 extends \JamesHeinrich\GetID3\Module\Handler
 							if ($this->decodeMPEGaudioHeader($GarbageOffsetEnd, $dummy, true, true)) {
 								$info = $dummy;
 								$info['avdataoffset'] = $GarbageOffsetEnd;
-								$info['warning'][] = 'apparently-valid VBR header not used because could not find '.GETID3_MP3_VALID_CHECK_FRAMES.' consecutive MPEG-audio frames immediately after VBR header (garbage data for '.($GarbageOffsetEnd - $GarbageOffsetStart).' bytes between '.$GarbageOffsetStart.' and '.$GarbageOffsetEnd.'), but did find valid CBR stream starting at '.$GarbageOffsetEnd;
+								$info['warning'][] = 'apparently-valid VBR header not used because could not find ' . self::VALID_CHECK_FRAMES . ' consecutive MPEG-audio frames immediately after VBR header (garbage data for '.($GarbageOffsetEnd - $GarbageOffsetStart).' bytes between '.$GarbageOffsetStart.' and '.$GarbageOffsetEnd.'), but did find valid CBR stream starting at '.$GarbageOffsetEnd;
 							} else {
-								$info['warning'][] = 'using data from VBR header even though could not find '.GETID3_MP3_VALID_CHECK_FRAMES.' consecutive MPEG-audio frames immediately after VBR header (garbage data for '.($GarbageOffsetEnd - $GarbageOffsetStart).' bytes between '.$GarbageOffsetStart.' and '.$GarbageOffsetEnd.')';
+								$info['warning'][] = 'using data from VBR header even though could not find ' . self::VALID_CHECK_FRAMES . ' consecutive MPEG-audio frames immediately after VBR header (garbage data for '.($GarbageOffsetEnd - $GarbageOffsetStart).' bytes between '.$GarbageOffsetStart.' and '.$GarbageOffsetEnd.')';
 							}
 						}
 					}

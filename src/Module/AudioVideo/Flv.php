@@ -56,32 +56,35 @@ use JamesHeinrich\GetID3\Utils;
 //                                                            ///
 /////////////////////////////////////////////////////////////////
 
-define('GETID3_FLV_TAG_AUDIO',          8);
-define('GETID3_FLV_TAG_VIDEO',          9);
-define('GETID3_FLV_TAG_META',          18);
-
-define('GETID3_FLV_VIDEO_H263',         2);
-define('GETID3_FLV_VIDEO_SCREEN',       3);
-define('GETID3_FLV_VIDEO_VP6FLV',       4);
-define('GETID3_FLV_VIDEO_VP6FLV_ALPHA', 5);
-define('GETID3_FLV_VIDEO_SCREENV2',     6);
-define('GETID3_FLV_VIDEO_H264',         7);
-
-define('H264_AVC_SEQUENCE_HEADER',          0);
-define('H264_PROFILE_BASELINE',            66);
-define('H264_PROFILE_MAIN',                77);
-define('H264_PROFILE_EXTENDED',            88);
-define('H264_PROFILE_HIGH',               100);
-define('H264_PROFILE_HIGH10',             110);
-define('H264_PROFILE_HIGH422',            122);
-define('H264_PROFILE_HIGH444',            144);
-define('H264_PROFILE_HIGH444_PREDICTIVE', 244);
-
 class Flv extends \JamesHeinrich\GetID3\Module\Handler
 {
 	const magic = 'FLV';
 
-	public $max_frames = 100000; // break out of the loop if too many frames have been scanned; only scan this many if meta frame does not contain useful duration
+	const TAG_AUDIO = 8;
+	const TAG_VIDEO = 9;
+	const TAG_META = 18;
+
+	const VIDEO_H263 =  2;
+	const VIDEO_SCREEN = 3;
+	const VIDEO_VP6FLV = 4;
+	const VIDEO_VP6FLV_ALPHA = 5;
+	const VIDEO_SCREENV2 = 6;
+	const VIDEO_H264 = 7;
+
+	const H264_AVC_SEQUENCE_HEADER = 0;
+	const H264_PROFILE_BASELINE = 66;
+	const H264_PROFILE_MAIN = 77;
+	const H264_PROFILE_EXTENDED = 88;
+	const H264_PROFILE_HIGH = 100;
+	const H264_PROFILE_HIGH10 = 110;
+	const H264_PROFILE_HIGH422 =  122;
+	const H264_PROFILE_HIGH444 = 144;
+	const H264_PROFILE_HIGH444_PREDICTIVE = 244;
+
+	/**
+	 * @var int $max_frames Break out of the loop if too many frames have been scanned; only scan this many if meta frame does not contain useful duration
+	 */
+	public $max_frames = 100000;
 
 	public function Analyze() {
 		$info = &$this->getid3->info;
@@ -133,7 +136,7 @@ class Flv extends \JamesHeinrich\GetID3\Module\Handler
 
 			$flv_framecount['total']++;
 			switch ($TagType) {
-				case GETID3_FLV_TAG_AUDIO:
+				case self::TAG_AUDIO:
 					$flv_framecount['audio']++;
 					if (!$found_audio) {
 						$found_audio = true;
@@ -144,7 +147,7 @@ class Flv extends \JamesHeinrich\GetID3\Module\Handler
 					}
 					break;
 
-				case GETID3_FLV_TAG_VIDEO:
+				case self::TAG_VIDEO:
 					$flv_framecount['video']++;
 					if (!$found_video) {
 						$found_video = true;
@@ -152,7 +155,7 @@ class Flv extends \JamesHeinrich\GetID3\Module\Handler
 
 						$FLVvideoHeader = $this->fread(11);
 
-						if ($info['flv']['video']['videoCodec'] == GETID3_FLV_VIDEO_H264) {
+						if ($info['flv']['video']['videoCodec'] === self::VIDEO_H264) {
 							// this code block contributed by: moysevichØgmail*com
 
 							$AVCPacketType = Utils::BigEndian2Int(substr($FLVvideoHeader, 0, 1));
@@ -181,7 +184,7 @@ class Flv extends \JamesHeinrich\GetID3\Module\Handler
 							}
 							// end: moysevichØgmail*com
 
-						} elseif ($info['flv']['video']['videoCodec'] == GETID3_FLV_VIDEO_H263) {
+						} elseif ($info['flv']['video']['videoCodec'] === self::VIDEO_H263) {
 
 							$PictureSizeType = (Utils::BigEndian2Int(substr($FLVvideoHeader, 3, 2))) >> 7;
 							$PictureSizeType = $PictureSizeType & 0x0007;
@@ -240,7 +243,7 @@ class Flv extends \JamesHeinrich\GetID3\Module\Handler
 
 							}
 
-						} elseif ($info['flv']['video']['videoCodec'] ==  GETID3_FLV_VIDEO_VP6FLV_ALPHA) {
+						} elseif ($info['flv']['video']['videoCodec'] === self::VIDEO_VP6FLV_ALPHA) {
 
 							/* contributed by schouwerwouØgmail*com */
 							if (!isset($info['video']['resolution_x'])) { // only when meta data isn't set
@@ -259,7 +262,7 @@ class Flv extends \JamesHeinrich\GetID3\Module\Handler
 					break;
 
 				// Meta tag
-				case GETID3_FLV_TAG_META:
+				case self::TAG_META:
 					if (!$found_meta) {
 						$found_meta = true;
 						$this->fseek(-1, SEEK_CUR);
@@ -378,15 +381,15 @@ class Flv extends \JamesHeinrich\GetID3\Module\Handler
 	}
 
 	public static function videoCodecLookup($id) {
-		static $lookup = array(
-			GETID3_FLV_VIDEO_H263         => 'Sorenson H.263',
-			GETID3_FLV_VIDEO_SCREEN       => 'Screen video',
-			GETID3_FLV_VIDEO_VP6FLV       => 'On2 VP6',
-			GETID3_FLV_VIDEO_VP6FLV_ALPHA => 'On2 VP6 with alpha channel',
-			GETID3_FLV_VIDEO_SCREENV2     => 'Screen video v2',
-			GETID3_FLV_VIDEO_H264         => 'Sorenson H.264',
-		);
-		return (isset($lookup[$id]) ? $lookup[$id] : false);
+		static $lookup = [
+			self::VIDEO_H263         => 'Sorenson H.263',
+			self::VIDEO_SCREEN       => 'Screen video',
+			self::VIDEO_VP6FLV       => 'On2 VP6',
+			self::VIDEO_VP6FLV_ALPHA => 'On2 VP6 with alpha channel',
+			self::VIDEO_SCREENV2     => 'Screen video v2',
+			self::VIDEO_H264         => 'Sorenson H.264',
+		];
+		return isset($lookup[$id]) ? $lookup[$id] : false;
 	}
 }
 
