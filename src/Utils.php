@@ -16,6 +16,9 @@ namespace JamesHeinrich\GetID3;
 
 class Utils
 {
+	/**
+	 * @var boolean $windows Whether the current os is windows or not
+	 */
 	protected static $windows;
 
 	/**

@@ -13,11 +13,6 @@ namespace JamesHeinrich\GetID3;
 //                                                            ///
 /////////////////////////////////////////////////////////////////
 
-// Workaround Bug #39923 (https://bugs.php.net/bug.php?id=39923)
-if (!defined('IMG_JPG') && defined('IMAGETYPE_JPEG')) {
-	define('IMG_JPG', IMAGETYPE_JPEG);
-}
-
 // attempt to define temp dir as something flexible but reliable
 $temp_dir = ini_get('upload_tmp_dir');
 if ($temp_dir && (!is_dir($temp_dir) || !is_readable($temp_dir))) {
