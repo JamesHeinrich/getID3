@@ -16,6 +16,21 @@ namespace JamesHeinrich\GetID3;
 
 class Utils
 {
+	protected static $windows;
+
+	/**
+	 * Check if the current os is windows.
+	 *
+	 * @return boolean
+	 */
+	public static function isWindows()
+	{
+		if (static::$windows === null) {
+			static::$windows = (stripos(PHP_OS, 'WIN') === 0);
+		}
+		return static::$windows;
+	}
+
 
 	public static function PrintHexBytes($string, $hex=true, $spaces=true, $htmlencoding='UTF-8') {
 		$returnstring = '';
@@ -524,12 +539,12 @@ class Utils
 		if (function_exists('simplexml_load_string') && function_exists('libxml_disable_entity_loader')) {
 			// http://websec.io/2012/08/27/Preventing-XEE-in-PHP.html
 			// https://core.trac.wordpress.org/changeset/29378
-			$loader = libxml_disable_entity_loader(true); 
-			$XMLobject = simplexml_load_string($XMLstring, 'SimpleXMLElement', LIBXML_NOENT); 
-			$return = self::SimpleXMLelement2array($XMLobject); 
-			libxml_disable_entity_loader($loader); 
-			return $return; 
-		} 
+			$loader = libxml_disable_entity_loader(true);
+			$XMLobject = simplexml_load_string($XMLstring, 'SimpleXMLElement', LIBXML_NOENT);
+			$return = self::SimpleXMLelement2array($XMLobject);
+			libxml_disable_entity_loader($loader);
+			return $return;
+		}
 		return false;
 	}
 
@@ -573,7 +588,7 @@ class Utils
 		}
 		$size = $end - $offset;
 		while (true) {
-			if (GETID3_OS_ISWINDOWS) {
+			if (static::isWindows()) {
 
 				// It seems that sha1sum.exe for Windows only works on physical files, does not accept piped data
 				// Fall back to create-temp-file method:
@@ -1320,7 +1335,7 @@ class Utils
 	public static function getFileSizeSyscall($path) {
 		$filesize = false;
 
-		if (GETID3_OS_ISWINDOWS) {
+		if (static::isWindows()) {
 			if (class_exists('COM')) { // From PHP 5.3.15 and 5.4.5, COM and DOTNET is no longer built into the php core.you have to add COM support in php.ini:
 				$filesystem = new COM('Scripting.FileSystemObject');
 				$file = $filesystem->GetFile($path);

@@ -48,7 +48,7 @@ class VorbisComment
 		}
 
 		$oldignoreuserabort = ignore_user_abort(true);
-		if (GETID3_OS_ISWINDOWS) {
+		if (Utils::isWindows()) {
 
 			if (file_exists(GETID3_HELPERAPPSDIR.'vorbiscomment.exe')) {
 				//$commandline = '"'.GETID3_HELPERAPPSDIR.'vorbiscomment.exe" -w --raw -c "'.$tempcommentsfilename.'" "'.str_replace('/', '\\', $this->filename).'"';
