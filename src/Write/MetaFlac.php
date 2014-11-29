@@ -47,7 +47,7 @@ class MetaFlac
 		}
 
 		$oldignoreuserabort = ignore_user_abort(true);
-		if (GETID3_OS_ISWINDOWS) {
+		if (Utils::isWindows()) {
 
 			if (file_exists(GETID3_HELPERAPPSDIR.'metaflac.exe')) {
 				//$commandline = '"'.GETID3_HELPERAPPSDIR.'metaflac.exe" --no-utf8-convert --remove-all-tags --import-tags-from="'.$tempcommentsfilename.'" "'.str_replace('/', '\\', $this->filename).'"';
@@ -106,7 +106,7 @@ class MetaFlac
 		}
 
 		$oldignoreuserabort = ignore_user_abort(true);
-		if (GETID3_OS_ISWINDOWS) {
+		if (Utils::isWindows()) {
 
 			if (file_exists(GETID3_HELPERAPPSDIR.'metaflac.exe')) {
 				// To at least see if there was a problem, compare file modification timestamps before and after writing

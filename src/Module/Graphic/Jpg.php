@@ -76,7 +76,7 @@ class Jpg extends \JamesHeinrich\GetID3\Module\Handler
 							$info['warning'][] = 'exif_read_data() cannot parse non-EXIF data in APP1 (expected "Exif", found "'.substr($imageinfo['APP1'], 0, 4).'")';
 						}
 					} else {
-						$info['warning'][] = 'EXIF parsing only available when '.(GETID3_OS_ISWINDOWS ? 'php_exif.dll enabled' : 'compiled with --enable-exif');
+						$info['warning'][] = 'EXIF parsing only available when ' . (Utils::isWindows() ? 'php_exif.dll enabled' : 'compiled with --enable-exif');
 					}
 				}
 				$returnOK = true;

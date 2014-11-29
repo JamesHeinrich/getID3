@@ -13,10 +13,6 @@ namespace JamesHeinrich\GetID3;
 //                                                            ///
 /////////////////////////////////////////////////////////////////
 
-// define a constant rather than looking up every time it is needed
-if (!defined('GETID3_OS_ISWINDOWS')) {
-	define('GETID3_OS_ISWINDOWS', (stripos(PHP_OS, 'WIN') === 0));
-}
 // Workaround Bug #39923 (https://bugs.php.net/bug.php?id=39923)
 if (!defined('IMG_JPG') && defined('IMAGETYPE_JPEG')) {
 	define('IMG_JPG', IMAGETYPE_JPEG);
@@ -175,7 +171,7 @@ class GetID3
 		// This path cannot contain spaces, but the below code will attempt to get the
 		//   8.3-equivalent path automatically
 		// IMPORTANT: This path must include the trailing slash
-		if (GETID3_OS_ISWINDOWS && !defined('GETID3_HELPERAPPSDIR')) {
+		if (Utils::isWindows() && !defined('GETID3_HELPERAPPSDIR')) {
 
 			$helperappsdir = __DIR__ . \DIRECTORY_SEPARATOR . ".." . \DIRECTORY_SEPARATOR . "helperapps";
 
@@ -417,7 +413,7 @@ class GetID3
 			// Check encoding/iconv support
 			if (!empty($determined_format['iconv_req']) && !function_exists('iconv') && !in_array($this->encoding, array('ISO-8859-1', 'UTF-8', 'UTF-16LE', 'UTF-16BE', 'UTF-16'))) {
 				$errormessage = 'iconv() support is required for this module ('.$determined_format['include'].') for encodings other than ISO-8859-1, UTF-8, UTF-16LE, UTF16-BE, UTF-16. ';
-				if (GETID3_OS_ISWINDOWS) {
+				if (Utils::isWindows()) {
 					$errormessage .= 'PHP does not have iconv() support. Please enable php_iconv.dll in php.ini, and copy iconv.dll from c:/php/dlls to c:/windows/system32';
 				} else {
 					$errormessage .= 'PHP is not compiled with iconv() support. Please recompile with the --with-iconv switch';
@@ -1256,7 +1252,7 @@ class GetID3
 				$temp = tempnam(GETID3_TEMP_DIR, 'getID3');
 				$file = $this->info['filenamepath'];
 
-				if (GETID3_OS_ISWINDOWS) {
+				if (Utils::isWindows()) {
 
 					if (file_exists(GETID3_HELPERAPPSDIR.'vorbiscomment.exe')) {
 

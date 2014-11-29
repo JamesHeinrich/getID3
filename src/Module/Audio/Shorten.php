@@ -122,7 +122,7 @@ class Shorten extends \JamesHeinrich\GetID3\Module\Handler
 			return false;
 		}
 
-		if (GETID3_OS_ISWINDOWS) {
+		if (Utils::isWindows()) {
 
 			$RequiredFiles = array('shorten.exe', 'cygwin1.dll', 'head.exe');
 			foreach ($RequiredFiles as $required_file) {

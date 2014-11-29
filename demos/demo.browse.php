@@ -110,7 +110,7 @@ if (isset($_REQUEST['filename'])) {
 	$listdirectory = dirname($_REQUEST['filename']);
 	$listdirectory = realpath($listdirectory); // get rid of /../../ references
 
-	if (GETID3_OS_ISWINDOWS) {
+	if (GetID3\Utils::isWindows()) {
 		// this mostly just gives a consistant look to Windows and *nix filesystems
 		// (windows uses \ as directory seperator, *nix uses /)
 		$listdirectory = str_replace(DIRECTORY_SEPARATOR, '/', $listdirectory.'/');
@@ -133,7 +133,7 @@ if (isset($_REQUEST['filename'])) {
 	$listdirectory = realpath($listdirectory); // get rid of /../../ references
 	$currentfulldir = $listdirectory.'/';
 
-	if (GETID3_OS_ISWINDOWS) {
+	if (GetID3\Utils::isWindows()) {
 		// this mostly just gives a consistant look to Windows and *nix filesystems
 		// (windows uses \ as directory seperator, *nix uses /)
 		$currentfulldir = str_replace(DIRECTORY_SEPARATOR, '/', $listdirectory.'/');
@@ -167,7 +167,7 @@ if (isset($_REQUEST['filename'])) {
 			switch ($file) {
 				case '..':
 					$ParentDir = realpath($file.'/..').'/';
-					if (GETID3_OS_ISWINDOWS) {
+					if (GetID3\Utils::isWindows()) {
 						$ParentDir = str_replace(DIRECTORY_SEPARATOR, '/', $ParentDir);
 					}
 					$DirectoryContents[$currentfulldir]['dir'][$file]['filename'] = $ParentDir;
@@ -239,7 +239,7 @@ if (isset($_REQUEST['filename'])) {
 						echo '<form action="'.htmlentities($_SERVER['PHP_SELF'], ENT_QUOTES | ENT_SUBSTITUTE, $PageEncoding).'" method="get">';
 						echo 'Parent directory: ';
 						echo '<input type="text" name="listdirectory" size="50" style="background-color: '.$getID3checkColor_DirectoryDark.';" value="';
-						if (GETID3_OS_ISWINDOWS) {
+						if (GetID3\Utils::isWindows()) {
 							echo htmlentities(str_replace(DIRECTORY_SEPARATOR, '/', realpath($dirname.$filename)), ENT_QUOTES | ENT_SUBSTITUTE, $PageEncoding);
 						} else {
 							echo htmlentities(realpath($dirname.$filename), ENT_QUOTES | ENT_SUBSTITUTE, $PageEncoding);

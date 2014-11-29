@@ -16,6 +16,21 @@ namespace JamesHeinrich\GetID3;
 
 class Utils
 {
+	protected static $windows;
+
+	/**
+	 * Check if the current os is windows.
+	 *
+	 * @return boolean
+	 */
+	public static function isWindows()
+	{
+		if (static::$windows === null) {
+			static::$windows = (stripos(PHP_OS, 'WIN') === 0);
+		}
+		return static::$windows;
+	}
+
 
 	public static function PrintHexBytes($string, $hex=true, $spaces=true, $htmlencoding='UTF-8') {
 		$returnstring = '';
@@ -587,7 +602,7 @@ class Utils
 		}
 		$size = $end - $offset;
 		while (true) {
-			if (GETID3_OS_ISWINDOWS) {
+			if (static::isWindows()) {
 
 				// It seems that sha1sum.exe for Windows only works on physical files, does not accept piped data
 				// Fall back to create-temp-file method:
@@ -1337,7 +1352,7 @@ class Utils
 	public static function getFileSizeSyscall($path) {
 		$filesize = false;
 
-		if (GETID3_OS_ISWINDOWS) {
+		if (static::isWindows()) {
 			if (class_exists('COM')) { // From PHP 5.3.15 and 5.4.5, COM and DOTNET is no longer built into the php core.you have to add COM support in php.ini:
 				$filesystem = new COM('Scripting.FileSystemObject');
 				$file = $filesystem->GetFile($path);
