@@ -32,6 +32,11 @@ class Utils
 	protected static $helpers;
 
 	/**
+	 * @var boolean $hasINT64 Whether the current system suports 64bit integers
+	 */
+	protected static $hasINT64;
+
+	/**
 	 * Check if the current os is windows.
 	 *
 	 * @return boolean
@@ -230,21 +235,23 @@ class Utils
 		return $floatnum;
 	}
 
-	public static function intValueSupported($num) {
+
+	public static function intValueSupported($num)
+	{
 		// check if integers are 64-bit
-		static $hasINT64 = null;
-		if ($hasINT64 === null) { // 10x faster than is_null()
-			$hasINT64 = is_int(pow(2, 31)); // 32-bit int are limited to (2^31)-1
-			if (!$hasINT64 && !defined('PHP_INT_MIN')) {
-				define('PHP_INT_MIN', ~PHP_INT_MAX);
-			}
+		if (static::$hasINT64 === null) {
+			static::$hasINT64 = is_int(pow(2, 31));
 		}
 		// if integers are 64-bit - no other check required
-		if ($hasINT64 || (($num <= PHP_INT_MAX) && ($num >= PHP_INT_MIN))) {
+		if (static::$hasINT64) {
+			return true;
+		}
+		if ($num <= PHP_INT_MAX && $num >= ~PHP_INT_MAX) {
 			return true;
 		}
 		return false;
 	}
+
 
 	public static function DecimalizeFraction($fraction) {
 		list($numerator, $denominator) = explode('/', $fraction);
