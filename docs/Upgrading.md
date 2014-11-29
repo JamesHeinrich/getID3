@@ -8,7 +8,6 @@ Several breaking changes were made in version 2 to allow the project to follow m
 The most significant of these was renaming all classes to allow for autoloading.  
 All classes are now within the namespace JamesHeinrich\GetID3 and their old and new names are shown below:
 ```php
-
 Old name in root namespace          New name in JamesHeinrich\GetID3
 getID3                              GetID3
 getid3_lib                          Utils
@@ -84,3 +83,17 @@ getid3_write_lyrics3                Write\Lyrics3
 getid3_write_metaflac               Write\MetaFlac
 getid3_write_real                   Write\Real
 getid3_write_vorbiscomment          Write\VorbisComment
+```
+
+
+__Temp Directory__
+Previously the temp directory could be set by defining a global constant called GETID3_TEMP_DIR  
+This is now done by calling Utils::setTempDirectory()  
+```php
+# Old way
+define("GET_ID3_TEMP_DIR", "/tmp/custom_getid3_stuff");
+
+# New way
+use JamesHeinrich\GetID3\Utils;
+Utils::setTempDirectory("/tmp/custom_getid3_stuff");
+```

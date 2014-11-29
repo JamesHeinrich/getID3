@@ -162,7 +162,7 @@ class La extends \JamesHeinrich\GetID3\Module\Handler
 				}
 
 				if ($info['la']['footerstart'] < $info['avdataend']) {
-					if ($RIFFtempfilename = tempnam(GETID3_TEMP_DIR, 'id3')) {
+					if ($RIFFtempfilename = tempnam(Utils::getTempDirectory(), 'id3')) {
 						if ($RIFF_fp = fopen($RIFFtempfilename, 'w+b')) {
 							$RIFFdata = 'WAVE';
 							if ($info['la']['version'] == 0.2) {

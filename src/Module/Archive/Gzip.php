@@ -216,7 +216,7 @@ class Gzip extends \JamesHeinrich\GetID3\Module\Handler
 					$determined_format['module'] = (isset($determined_format['module']) ? $determined_format['module'] : '');
 					switch ($determined_format['module']) {
 						case 'tar':
-							if (($temp_tar_filename = tempnam(GETID3_TEMP_DIR, 'getID3')) === false) {
+							if (($temp_tar_filename = tempnam(Utils::getTempDirectory(), 'getID3')) === false) {
 								// can't find anywhere to create a temp file, abort
 								$info['error'][] = 'Unable to create temp file to parse TAR inside GZIP file';
 								break;

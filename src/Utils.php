@@ -22,6 +22,11 @@ class Utils
 	protected static $windows;
 
 	/**
+	 * @var string $tmp The current temp directory
+	 */
+	protected static $tmp;
+
+	/**
 	 * Check if the current os is windows.
 	 *
 	 * @return boolean
@@ -32,6 +37,75 @@ class Utils
 			static::$windows = (stripos(PHP_OS, 'WIN') === 0);
 		}
 		return static::$windows;
+	}
+
+
+	/**
+	 * Get the temp directory, if it has not been set then attempt to use something flexible but reliable.
+	 *
+	 * @return string
+	 */
+	public static function getTempDirectory()
+	{
+		if (static::$tmp) {
+			return static::$tmp;
+		}
+
+		$tmp = ini_get('upload_tmp_dir');
+		if ($tmp && (!is_dir($tmp) || !is_readable($tmp))) {
+			$tmp = '';
+		}
+		if (!$tmp) {
+			// sys_get_temp_dir() may give inaccessible temp dir, e.g. with open_basedir on virtual hosts
+			$tmp = sys_get_temp_dir();
+		}
+
+		// see https://github.com/JamesHeinrich/getID3/pull/10
+		$tmp = @realpath($tmp);
+
+		$openBasedir = ini_get('open_basedir');
+		if ($openBasedir) {
+			// e.g. "/var/www/vhosts/getid3.org/httpdocs/:/tmp/"
+			$tmp = str_replace(['/', '\\'], DIRECTORY_SEPARATOR, $tmp);
+			$openBasedir = str_replace(['/', '\\'], DIRECTORY_SEPARATOR, $openBasedir);
+			if (substr($tmp, -1, 1) !== DIRECTORY_SEPARATOR) {
+				$tmp .= DIRECTORY_SEPARATOR;
+			}
+			$found = false;
+			$openBasedirs = explode(PATH_SEPARATOR, $openBasedir);
+			foreach ($openBasedirs as $basedir) {
+				if (substr($basedir, -1, 1) !== DIRECTORY_SEPARATOR) {
+					$basedir .= DIRECTORY_SEPARATOR;
+				}
+				if (preg_match('#^' . preg_quote($basedir) . '#', $tmp)) {
+					$found = true;
+					break;
+				}
+			}
+			if (!$found) {
+				$tmp = '';
+			}
+		}
+
+		// invalid directory name should force tempnam() to use system default temp dir
+		if (!$tmp) {
+			$tmp = '*';
+		}
+
+		return static::$tmp = $tmp;
+	}
+
+
+	/**
+	 * Set the temp directory to use.
+	 *
+	 * @param string $path The full path to the directory to use
+	 *
+	 * @return void
+	 */
+	public static function setTempDirectory($path)
+	{
+		static::$tmp = $path;
 	}
 
 
@@ -580,7 +654,6 @@ class Utils
 	// Allan Hansen <ahØartemis*dk>
 	// self::md5_data() - returns md5sum for a file from startuing position to absolute end position
 	public static function hash_data($file, $offset, $end, $algorithm) {
-		static $tempdir = '';
 		if (!self::intValueSupported($end)) {
 			return false;
 		}
@@ -638,12 +711,8 @@ class Utils
 			return substr(`$commandline`, 0, $hash_length);
 		}
 
-		if (empty($tempdir)) {
-			// yes this is ugly, feel free to suggest a better way
-			$tempdir = (new GetID3)->tempdir;
-		}
 		// try to create a temporary file in the system temp directory - invalid dirname should force to system temp dir
-		if (($data_filename = tempnam($tempdir, 'gI3')) === false) {
+		if (($data_filename = tempnam(static::getTempDirectory(), 'gI3')) === false) {
 			// can't find anywhere to create a temp file, just fail
 			return false;
 		}
@@ -1182,13 +1251,8 @@ class Utils
 
 
 	public static function GetDataImageSize($imgData, &$imageinfo=array()) {
-		static $tempdir = '';
-		if (empty($tempdir)) {
-			// yes this is ugly, feel free to suggest a better way
-			$tempdir = (new GetID3)->tempdir;
-		}
 		$GetDataImageSize = false;
-		if ($tempfilename = tempnam($tempdir, 'gI3')) {
+		if ($tempfilename = tempnam(static::getTempDirectory(), 'gI3')) {
 			if (is_writable($tempfilename) && is_file($tempfilename) && ($tmp = fopen($tempfilename, 'wb'))) {
 				fwrite($tmp, $imgData);
 				fclose($tmp);

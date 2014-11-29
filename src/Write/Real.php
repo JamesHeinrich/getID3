@@ -94,7 +94,7 @@ class Real
 					$BeforeOffset = $oldChunkInfo['CONT']['offset'];
 					$AfterOffset  = $oldChunkInfo['CONT']['offset'] + $oldChunkInfo['CONT']['length'];
 				}
-				if ($tempfilename = tempnam(GETID3_TEMP_DIR, 'getID3')) {
+				if ($tempfilename = tempnam(Utils::getTempDirectory(), 'getID3')) {
 					if (is_writable($tempfilename) && is_file($tempfilename) && ($fp_temp = fopen($tempfilename, 'wb'))) {
 
 						rewind($fp_source);
@@ -242,7 +242,7 @@ class Real
 
 			$BeforeOffset = $oldChunkInfo['CONT']['offset'];
 			$AfterOffset  = $oldChunkInfo['CONT']['offset'] + $oldChunkInfo['CONT']['length'];
-			if ($tempfilename = tempnam(GETID3_TEMP_DIR, 'getID3')) {
+			if ($tempfilename = tempnam(Utils::getTempDirectory(), 'getID3')) {
 				if (is_writable($tempfilename) && is_file($tempfilename) && ($fp_temp = fopen($tempfilename, 'wb'))) {
 
 					rewind($fp_source);

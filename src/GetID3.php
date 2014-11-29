@@ -13,52 +13,6 @@ namespace JamesHeinrich\GetID3;
 //                                                            ///
 /////////////////////////////////////////////////////////////////
 
-// attempt to define temp dir as something flexible but reliable
-$temp_dir = ini_get('upload_tmp_dir');
-if ($temp_dir && (!is_dir($temp_dir) || !is_readable($temp_dir))) {
-	$temp_dir = '';
-}
-if (!$temp_dir && function_exists('sys_get_temp_dir')) { // sys_get_temp_dir added in PHP v5.2.1
-	// sys_get_temp_dir() may give inaccessible temp dir, e.g. with open_basedir on virtual hosts
-	$temp_dir = sys_get_temp_dir();
-}
-$temp_dir = @realpath($temp_dir); // see https://github.com/JamesHeinrich/getID3/pull/10
-$open_basedir = ini_get('open_basedir');
-if ($open_basedir) {
-	// e.g. "/var/www/vhosts/getid3.org/httpdocs/:/tmp/"
-	$temp_dir     = str_replace(array('/', '\\'), DIRECTORY_SEPARATOR, $temp_dir);
-	$open_basedir = str_replace(array('/', '\\'), DIRECTORY_SEPARATOR, $open_basedir);
-	if (substr($temp_dir, -1, 1) != DIRECTORY_SEPARATOR) {
-		$temp_dir .= DIRECTORY_SEPARATOR;
-	}
-	$found_valid_tempdir = false;
-	$open_basedirs = explode(PATH_SEPARATOR, $open_basedir);
-	foreach ($open_basedirs as $basedir) {
-		if (substr($basedir, -1, 1) != DIRECTORY_SEPARATOR) {
-			$basedir .= DIRECTORY_SEPARATOR;
-		}
-		if (preg_match('#^'.preg_quote($basedir).'#', $temp_dir)) {
-			$found_valid_tempdir = true;
-			break;
-		}
-	}
-	if (!$found_valid_tempdir) {
-		$temp_dir = '';
-	}
-	unset($open_basedirs, $found_valid_tempdir, $basedir);
-}
-if (!$temp_dir) {
-	$temp_dir = '*'; // invalid directory name should force tempnam() to use system default temp dir
-}
-// $temp_dir = '/something/else/';  // feel free to override temp dir here if it works better for your system
-if (!defined('GETID3_TEMP_DIR')) {
-	define('GETID3_TEMP_DIR', $temp_dir);
-}
-unset($open_basedir, $temp_dir);
-
-// End: Defines
-
-
 class GetID3
 {
 	// public: Settings
@@ -92,7 +46,6 @@ class GetID3
 	public $filename;                         // Filename of file being analysed.
 	public $fp;                               // Filepointer to file being analysed.
 	public $info;                             // Result array.
-	public $tempdir = GETID3_TEMP_DIR;
 	public $memory_limit = 0;
 
 	// Protected variables
@@ -1240,11 +1193,11 @@ class GetID3
 				$old_abort = ignore_user_abort(true);
 
 				// Create empty file
-				$empty = tempnam(GETID3_TEMP_DIR, 'getID3');
+				$empty = tempnam(Utils::getTempDirectory(), 'getID3');
 				touch($empty);
 
 				// Use vorbiscomment to make temp file without comments
-				$temp = tempnam(GETID3_TEMP_DIR, 'getID3');
+				$temp = tempnam(Utils::getTempDirectory(), 'getID3');
 				$file = $this->info['filenamepath'];
 
 				if (Utils::isWindows()) {
@@ -1485,9 +1438,5 @@ class GetID3
 			}
 		}
 		return true;
-	}
-
-	public function getid3_tempnam() {
-		return tempnam($this->tempdir, 'gI3');
 	}
 }
