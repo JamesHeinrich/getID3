@@ -18,10 +18,21 @@
 Version History
 ===============
 
-1.9.9: [2014-??-??] James Heinrich
-    * Bugfix: (#1845) Quicktime parsing with no PHP memory_limit
-    * Bugfix: improved fix for XXE security issue (CVE-2014-2053)
+1.9.9: [2014-12-18] James Heinrich
+    Â» Added basic support for OggOpus
+    Â» Add ID3v2 CHAP + CTOC support
+    * Add composer autoloader
+    * bugfix: removed non-printable ASCII in comment
+    * bugfix: possible memory leak in OggFLAC
+    * bugfix: sys_get_temp_dir undefined before PHP 5.2.1
+    * bugfix: improved fix for XXE security issue (CVE-2014-2053)
       (thanks nacinØwordpress*org)
+    * bugfix: G:25 ID3v2 LINK utf8_encode not defined
+    * bugfix: G:22 ID3v2 TXXX description encoding
+    * bugfix: #1855 - copy image height/width/etc to comments
+    * bugfix: #1855 - PHP errors in badly written APE/ID3v2 tags
+    * bugfix: #1845 - Quicktime parsing with no PHP memory_limit
+    * bugfix: #1828 - ID3v2 writing unknown frame names
 
 1.9.8: [2014-05-11] James Heinrich
     Â» Add support for AMR (Adaptive Multi-Rate audio codec)
