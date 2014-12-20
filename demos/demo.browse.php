@@ -480,8 +480,11 @@ function table_var_dump($variable, $wrap_in_td=false, $encoding='ISO-8859-1') {
 				//if (($key == 'data') && isset($variable['image_mime']) && isset($variable['dataoffset'])) {
 				if (($key == 'data') && isset($variable['image_mime'])) {
 					$imageinfo = array();
-					$imagechunkcheck = getid3_lib::GetDataImageSize($value, $imageinfo);
-					$returnstring .= '</td>'."\n".'<td><img src="data:'.$variable['image_mime'].';base64,'.base64_encode($value).'" width="'.$imagechunkcheck[0].'" height="'.$imagechunkcheck[1].'"></td></tr>'."\n";
+					if ($imagechunkcheck = getid3_lib::GetDataImageSize($value, $imageinfo)) {
+						$returnstring .= '</td>'."\n".'<td><img src="data:'.$variable['image_mime'].';base64,'.base64_encode($value).'" width="'.$imagechunkcheck[0].'" height="'.$imagechunkcheck[1].'"></td></tr>'."\n";
+					} else {
+						$returnstring .= '</td>'."\n".'<td><i>invalid image data</i></td></tr>'."\n";
+					}
 				} else {
 					$returnstring .= '</td>'."\n".table_var_dump($value, true, $encoding).'</tr>'."\n";
 				}
@@ -515,8 +518,7 @@ function table_var_dump($variable, $wrap_in_td=false, $encoding='ISO-8859-1') {
 
 		default:
 			$imageinfo = array();
-			$imagechunkcheck = getid3_lib::GetDataImageSize($variable, $imageinfo);
-			if (($imagechunkcheck[2] >= 1) && ($imagechunkcheck[2] <= 3)) {
+			if (($imagechunkcheck = getid3_lib::GetDataImageSize($variable, $imageinfo)) && ($imagechunkcheck[2] >= 1) && ($imagechunkcheck[2] <= 3)) {
 				$returnstring .= ($wrap_in_td ? '<td>' : '');
 				$returnstring .= '<table class="dump" cellspacing="0" cellpadding="2">';
 				$returnstring .= '<tr><td><b>type</b></td><td>'.getid3_lib::ImageTypesLookup($imagechunkcheck[2]).'</td></tr>'."\n";

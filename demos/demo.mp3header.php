@@ -29,10 +29,10 @@ if (!function_exists('table_var_dump')) {
 		$returnstring = '';
 		switch (gettype($variable)) {
 			case 'array':
-				$returnstring .= '<TABLE BORDER="1" CELLSPACING="0" CELLPADDING="2">';
+				$returnstring .= '<table border="1" cellspacing="0" cellpadding="2">';
 				foreach ($variable as $key => $value) {
-					$returnstring .= '<TR><TD VALIGN="TOP"><B>'.str_replace(chr(0), ' ', $key).'</B></TD>';
-					$returnstring .= '<TD VALIGN="TOP">'.gettype($value);
+					$returnstring .= '<tr><td valign="top"><b>'.str_replace(chr(0), ' ', $key).'</b></td>';
+					$returnstring .= '<td valign="top">'.gettype($value);
 					if (is_array($value)) {
 						$returnstring .= '&nbsp;('.count($value).')';
 					} elseif (is_string($value)) {
@@ -41,18 +41,21 @@ if (!function_exists('table_var_dump')) {
 					if (($key == 'data') && isset($variable['image_mime']) && isset($variable['dataoffset'])) {
 						require_once(GETID3_INCLUDEPATH.'getid3.getimagesize.php');
 						$imageinfo = array();
-						$imagechunkcheck = GetDataImageSize($value, $imageinfo);
-						$DumpedImageSRC = (!empty($_REQUEST['filename']) ? $_REQUEST['filename'] : '.getid3').'.'.$variable['dataoffset'].'.'.ImageTypesLookup($imagechunkcheck[2]);
-						if ($tempimagefile = fopen($DumpedImageSRC, 'wb')) {
-							fwrite($tempimagefile, $value);
-							fclose($tempimagefile);
+						if ($imagechunkcheck = GetDataImageSize($value, $imageinfo)) {
+							$DumpedImageSRC = (!empty($_REQUEST['filename']) ? $_REQUEST['filename'] : '.getid3').'.'.$variable['dataoffset'].'.'.ImageTypesLookup($imagechunkcheck[2]);
+							if ($tempimagefile = fopen($DumpedImageSRC, 'wb')) {
+								fwrite($tempimagefile, $value);
+								fclose($tempimagefile);
+							}
+							$returnstring .= '</td><td><img src="'.$DumpedImageSRC.'" width="'.$imagechunkcheck[0].'" height="'.$imagechunkcheck[1].'"></td></tr>';
+						} else {
+							$returnstring .= '</td><td><i>invalid image data</i></td></tr>';
 						}
-						$returnstring .= '</TD><TD><IMG SRC="'.$DumpedImageSRC.'" WIDTH="'.$imagechunkcheck[0].'" HEIGHT="'.$imagechunkcheck[1].'"></TD></TR>';
 					} else {
-						$returnstring .= '</TD><TD>'.table_var_dump($value).'</TD></TR>';
+						$returnstring .= '</td><td>'.table_var_dump($value).'</td></tr>';
 					}
 				}
-				$returnstring .= '</TABLE>';
+				$returnstring .= '</table>';
 				break;
 
 			case 'boolean':
@@ -86,9 +89,7 @@ if (!function_exists('table_var_dump')) {
 			default:
 				require_once(GETID3_INCLUDEPATH.'getid3.getimagesize.php');
 				$imageinfo = array();
-				$imagechunkcheck = GetDataImageSize(substr($variable, 0, 32768), $imageinfo);
-
-				if (($imagechunkcheck[2] >= 1) && ($imagechunkcheck[2] <= 3)) {
+				if (($imagechunkcheck = GetDataImageSize(substr($variable, 0, 32768), $imageinfo)) && ($imagechunkcheck[2] >= 1) && ($imagechunkcheck[2] <= 3)) {
 					$returnstring .= '<table border="1" cellspacing="0" cellpadding="2">';
 					$returnstring .= '<tr><td><b>type</b></td><td>'.ImageTypesLookup($imagechunkcheck[2]).'</td></tr>';
 					$returnstring .= '<tr><td><b>width</b></td><td>'.number_format($imagechunkcheck[0]).' px</td></tr>';
