@@ -432,6 +432,11 @@ Known Bugs/Issues in other programs
 -----------------------------------
 http://www.getid3.org/phpBB3/viewtopic.php?t=25
 
+* MusicBrainz Picard (at least up to v1.3.2) writes multiple
+  ID3v2.3 genres in non-standard forward-slash separated text
+  rather than parenthesis-numeric+refinement style per the ID3v2.3
+  specs. Tags written in ID3v2.4 mode are written correctly.
+  (detected and worked around by getID3())
 * PZ TagEditor v4.53.408 has been known to insert ID3v2.3 frames
   into an existing ID3v2.2 tag which, of course, breaks things
 * Windows Media Player (up to v11) and iTunes (up to v10+) do

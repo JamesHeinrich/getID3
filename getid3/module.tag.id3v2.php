@@ -442,12 +442,14 @@ class getid3_id3v2 extends getid3_handler
 		} // end footer
 
 		if (isset($thisfile_id3v2['comments']['genre'])) {
-			$genre = array();
+			$genres = array();
 			foreach ($thisfile_id3v2['comments']['genre'] as $key => $value) {
-				unset($thisfile_id3v2['comments']['genre'][$key]);
-				$genre = getid3_lib::flipped_array_merge_noclobber($genre, $this->ParseID3v2GenreString($value));
+				foreach ($this->ParseID3v2GenreString($value) as $genre) {
+					$genres[] = $genre;
+				}
 			}
-			$thisfile_id3v2['comments']['genre'] = getid3_lib::flipped_array_merge_noclobber($thisfile_id3v2['comments']['genre'], $genre);
+			$thisfile_id3v2['comments']['genre'] = array_unique($genres);
+			unset($key, $value, $genres, $genre);
 		}
 
 		if (isset($thisfile_id3v2['comments']['track'])) {
