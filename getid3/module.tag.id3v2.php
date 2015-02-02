@@ -505,6 +505,13 @@ class getid3_id3v2 extends getid3_handler
 		if (strpos($genrestring, "\x00") === false) {
 			$genrestring = preg_replace('#\(([0-9]{1,3})\)#', '$1'."\x00", $genrestring);
 		}
+
+		// note: MusicBrainz Picard incorrectly stores plaintext genres separated by "/" when writing in ID3v2.3 mode, hack-fix here:
+		// replace / with NULL, then replace back the two ID3v1 genres that legitimately have "/" as part of the single genre name
+		$genrestring = str_replace('/', "\x00", $genrestring);
+		$genrestring = str_replace('Pop'."\x00".'Funk', 'Pop/Funk', $genrestring);
+		$genrestring = str_replace('Rock'."\x00".'Rock', 'Folk/Rock', $genrestring);
+
 		$genre_elements = explode("\x00", $genrestring);
 		foreach ($genre_elements as $element) {
 			$element = trim($element);
