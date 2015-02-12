@@ -195,6 +195,11 @@ if ($fp_remote = fopen($remotefilename, 'rb')) {
     fclose($fp_remote);
 }
 
+Note: since v1.9.9-20150212 it is possible a second and third parameter
+to $getID3->analyze(), for original filesize and original filename
+respectively. This permits you to download only a portion of a large remote
+file but get accurate playtime estimates, assuming the format only requires
+the beginning of the file for correct format analysis.
 
 See /demos/demo.write.php for how to write tags.
 
