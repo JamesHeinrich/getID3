@@ -961,8 +961,8 @@ class getid3_lib
 		}
 
 		// iconv() availble
-		if (function_exists('iconv')) {
-			if ($converted_string = @iconv($in_charset, $out_charset.'//TRANSLIT', $string)) {
+		//if (function_exists('iconv')) {
+			if ($converted_string = iconv($in_charset, $out_charset, $string)) {
 				switch ($out_charset) {
 					case 'ISO-8859-1':
 						$converted_string = rtrim($converted_string, "\x00");
