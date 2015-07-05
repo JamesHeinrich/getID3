@@ -457,6 +457,7 @@ class getid3_matroska extends getid3_handler
 
 							default:
 								$this->warning('Unhandled audio type "'.(isset($trackarray['CodecID']) ? $trackarray['CodecID'] : '').'"');
+								break;
 						}
 
 						$info['audio']['streams'][] = $track_info;
@@ -524,6 +525,7 @@ class getid3_matroska extends getid3_handler
 
 							default:
 								$this->unhandledElement('header', __LINE__, $element_data);
+								break;
 						}
 
 						unset($element_data['offset'], $element_data['end']);
@@ -562,6 +564,7 @@ class getid3_matroska extends getid3_handler
 
 													default:
 														$this->unhandledElement('seekhead.seek', __LINE__, $sub_seek_entry);												}
+														break;
 											}
 
 											if ($seek_entry['target_id'] != EBML_ID_CLUSTER || !self::$hide_clusters) { // collect clusters only if required
@@ -571,6 +574,7 @@ class getid3_matroska extends getid3_handler
 
 										default:
 											$this->unhandledElement('seekhead', __LINE__, $seek_entry);
+											break;
 									}
 								}
 								break;
@@ -653,6 +657,7 @@ class getid3_matroska extends getid3_handler
 
 																default:
 																	$this->unhandledElement('track.video', __LINE__, $sub_subelement);
+																	break;
 															}
 														}
 														break;
@@ -678,6 +683,7 @@ class getid3_matroska extends getid3_handler
 
 																default:
 																	$this->unhandledElement('track.audio', __LINE__, $sub_subelement);
+																	break;
 															}
 														}
 														break;
@@ -713,6 +719,7 @@ class getid3_matroska extends getid3_handler
 
 																						default:
 																							$this->unhandledElement('track.contentencodings.contentencoding.contentcompression', __LINE__, $sub_sub_sub_subelement);
+																							break;
 																					}
 																				}
 																				break;
@@ -736,24 +743,28 @@ class getid3_matroska extends getid3_handler
 
 																						default:
 																							$this->unhandledElement('track.contentencodings.contentencoding.contentcompression', __LINE__, $sub_sub_sub_subelement);
+																							break;
 																					}
 																				}
 																				break;
 
 																			default:
 																				$this->unhandledElement('track.contentencodings.contentencoding', __LINE__, $sub_sub_subelement);
+																				break;
 																		}
 																	}
 																	break;
 
 																default:
 																	$this->unhandledElement('track.contentencodings', __LINE__, $sub_subelement);
+																	break;
 															}
 														}
 														break;
 
 													default:
 														$this->unhandledElement('track', __LINE__, $subelement);
+														break;
 												}
 											}
 
@@ -762,6 +773,7 @@ class getid3_matroska extends getid3_handler
 
 										default:
 											$this->unhandledElement('tracks', __LINE__, $track_entry);
+											break;
 									}
 								}
 								break;
@@ -825,6 +837,7 @@ class getid3_matroska extends getid3_handler
 
 													default:
 														$this->unhandledElement('info.chaptertranslate', __LINE__, $sub_subelement);
+														break;
 												}
 											}
 											$info_entry[$subelement['id_name']] = $chaptertranslate_entry;
@@ -832,6 +845,7 @@ class getid3_matroska extends getid3_handler
 
 										default:
 											$this->unhandledElement('info', __LINE__, $subelement);
+											break;
 									}
 								}
 								$info['matroska']['info'][] = $info_entry;
@@ -868,6 +882,7 @@ class getid3_matroska extends getid3_handler
 
 																default:
 																	$this->unhandledElement('cues.cuepoint.cuetrackpositions', __LINE__, $sub_sub_subelement);
+																	break;
 															}
 														}
 														$cuepoint_entry[$sub_subelement['id_name']][] = $cuetrackpositions_entry;
@@ -879,6 +894,7 @@ class getid3_matroska extends getid3_handler
 
 													default:
 														$this->unhandledElement('cues.cuepoint', __LINE__, $sub_subelement);
+														break;
 												}
 											}
 											$cues_entry[] = $cuepoint_entry;
@@ -886,6 +902,7 @@ class getid3_matroska extends getid3_handler
 
 										default:
 											$this->unhandledElement('cues', __LINE__, $subelement);
+											break;
 									}
 								}
 								$info['matroska']['cues'] = $cues_entry;
@@ -927,6 +944,7 @@ class getid3_matroska extends getid3_handler
 
 																default:
 																	$this->unhandledElement('tags.tag.targets', __LINE__, $sub_sub_subelement);
+																	break;
 															}
 														}
 														$tag_entry[$sub_subelement['id_name']] = $targets_entry;
@@ -938,6 +956,7 @@ class getid3_matroska extends getid3_handler
 
 													default:
 														$this->unhandledElement('tags.tag', __LINE__, $sub_subelement);
+														break;
 												}
 											}
 											$tags_entry[] = $tag_entry;
@@ -945,6 +964,7 @@ class getid3_matroska extends getid3_handler
 
 										default:
 											$this->unhandledElement('tags', __LINE__, $subelement);
+											break;
 									}
 								}
 								$info['matroska']['tags'] = $tags_entry;
@@ -985,6 +1005,7 @@ class getid3_matroska extends getid3_handler
 
 													default:
 														$this->unhandledElement('attachments.attachedfile', __LINE__, $sub_subelement);
+														break;
 												}
 											}
 											$info['matroska']['attachments'][] = $attachedfile_entry;
@@ -992,6 +1013,7 @@ class getid3_matroska extends getid3_handler
 
 										default:
 											$this->unhandledElement('attachments', __LINE__, $subelement);
+											break;
 									}
 								}
 								break;
@@ -1051,6 +1073,7 @@ class getid3_matroska extends getid3_handler
 
 																			default:
 																				$this->unhandledElement('chapters.editionentry.chapteratom.chaptertrack', __LINE__, $sub_sub_sub_subelement);
+																				break;
 																		}
 																	}
 																	$chapteratom_entry[$sub_sub_subelement['id_name']][] = $chaptertrack_entry;
@@ -1070,6 +1093,7 @@ class getid3_matroska extends getid3_handler
 
 																			default:
 																				$this->unhandledElement('chapters.editionentry.chapteratom.chapterdisplay', __LINE__, $sub_sub_sub_subelement);
+																				break;
 																		}
 																	}
 																	$chapteratom_entry[$sub_sub_subelement['id_name']][] = $chapterdisplay_entry;
@@ -1077,6 +1101,7 @@ class getid3_matroska extends getid3_handler
 
 																default:
 																	$this->unhandledElement('chapters.editionentry.chapteratom', __LINE__, $sub_sub_subelement);
+																	break;
 															}
 														}
 														$editionentry_entry[$sub_subelement['id_name']][] = $chapteratom_entry;
@@ -1084,6 +1109,7 @@ class getid3_matroska extends getid3_handler
 
 													default:
 														$this->unhandledElement('chapters.editionentry', __LINE__, $sub_subelement);
+														break;
 												}
 											}
 											$info['matroska']['chapters'][] = $editionentry_entry;
@@ -1091,6 +1117,7 @@ class getid3_matroska extends getid3_handler
 
 										default:
 											$this->unhandledElement('chapters', __LINE__, $subelement);
+											break;
 									}
 								}
 								break;
@@ -1119,6 +1146,7 @@ class getid3_matroska extends getid3_handler
 
 													default:
 														$this->unhandledElement('cluster.silenttracks', __LINE__, $sub_subelement);
+														break;
 												}
 											}
 											$cluster_entry[$subelement['id_name']][] = $cluster_silent_tracks;
@@ -1149,6 +1177,7 @@ class getid3_matroska extends getid3_handler
 
 													default:
 														$this->unhandledElement('clusters.blockgroup', __LINE__, $sub_subelement);
+														break;
 												}
 											}
 											$cluster_entry[$subelement['id_name']][] = $cluster_block_group;
@@ -1160,6 +1189,7 @@ class getid3_matroska extends getid3_handler
 
 										default:
 											$this->unhandledElement('cluster', __LINE__, $subelement);
+											break;
 									}
 									$this->current_offset = $subelement['end'];
 								}
@@ -1181,12 +1211,14 @@ class getid3_matroska extends getid3_handler
 
 							default:
 								$this->unhandledElement('segment', __LINE__, $element_data);
+								break;
 						}
 					}
 					break;
 
 				default:
 					$this->unhandledElement('root', __LINE__, $top_element);
+					break;
 			}
 		}
 	}
@@ -1339,6 +1371,7 @@ class getid3_matroska extends getid3_handler
 
 				default:
 					$this->unhandledElement('tag.simpletag', __LINE__, $element);
+					break;
 			}
 		}
 

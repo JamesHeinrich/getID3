@@ -541,7 +541,7 @@ class AMFReader {
 			// Long string
 			default:
 				$value = '(unknown or unsupported data type)';
-			break;
+				break;
 		}
 
 		return $value;

@@ -420,7 +420,6 @@ class getid3_quicktime extends getid3_handler
 													break;
 
 												case 'plID':
-												default:
 													// 64-bit integer
 													$atom_structure['data'] = getid3_lib::BigEndian2Int(substr($boxdata, 8, 8));
 

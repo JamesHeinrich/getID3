@@ -562,6 +562,7 @@ $info['warning'][] = 'Ogg Theora (v3) not fully supported in this version of get
 
 			default:
 				return false;
+				break;
 		}
 
 		$VendorSize = getid3_lib::LittleEndian2Int(substr($commentdata, $commentdataoffset, 4));
