@@ -49,20 +49,20 @@
 *
 *   sqlite3             table='getid3_cache', hide=false        (PHP5)
 *
-
-***  database file will be stored in the same directory as this script,
-***  webserver must have write access to that directory!
-***  set $hide to TRUE to prefix db file with .ht to pervent access from web client
-***  this is a default setting in the Apache configuration:
-
-# The following lines prevent .htaccess and .htpasswd files from being viewed by Web clients.
-
-<Files ~ "^\.ht">
-    Order allow,deny
-    Deny from all
-    Satisfy all
-</Files>
-
+*
+* ***  database file will be stored in the same directory as this script,
+* ***  webserver must have write access to that directory!
+* ***  set $hide to TRUE to prefix db file with .ht to pervent access from web client
+* ***  this is a default setting in the Apache configuration:
+* 
+* The following lines prevent .htaccess and .htpasswd files from being viewed by Web clients.
+* 
+* <Files ~ "^\.ht">
+*     Order allow,deny
+*     Deny from all
+*     Satisfy all
+* </Files>
+*
 ********************************************************************************
 *
 *   -------------------------------------------------------------------
