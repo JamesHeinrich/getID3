@@ -17,6 +17,7 @@ die('Due to a security issue, this demo has been disabled. It can be enabled by 
 
 
 require_once('../getid3/getid3.php');
+require_once('../getid3/getid3.lib.php');
 getid3_lib::IncludeDependency(GETID3_INCLUDEPATH.'extension.cache.mysql.php', __FILE__, true);
 
 $getID3 = new getID3_cached_mysql('localhost', 'database', 'username', 'password');
