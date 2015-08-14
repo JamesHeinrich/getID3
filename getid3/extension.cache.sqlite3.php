@@ -54,9 +54,9 @@
 * ***  webserver must have write access to that directory!
 * ***  set $hide to TRUE to prefix db file with .ht to pervent access from web client
 * ***  this is a default setting in the Apache configuration:
-* 
+*
 * The following lines prevent .htaccess and .htpasswd files from being viewed by Web clients.
-* 
+*
 * <Files ~ "^\.ht">
 *     Order allow,deny
 *     Deny from all
@@ -159,7 +159,7 @@ class getID3_cached_sqlite3 extends getID3 {
 	* @param type $filename
 	* @return boolean
 	*/
-	public function analyze($filename) {
+	public function analyze($filename, $filesize=null, $original_filename='') {
 		if (!file_exists($filename)) {
 			return false;
 		}
@@ -182,7 +182,7 @@ class getID3_cached_sqlite3 extends getID3 {
 			return unserialize(base64_decode($result));
 		}
 		// if it hasn't been analyzed before, then do it now
-		$analysis = parent::analyze($filename);
+		$analysis = parent::analyze($filename, $filesize=null, $original_filename='');
 		// Save result
 		$sql = $this->cache_file;
 		$stmt = $db->prepare($sql);
