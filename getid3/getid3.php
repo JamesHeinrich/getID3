@@ -1235,6 +1235,29 @@ class getID3
 					}
 				}
 
+				// ID3v1 encoding detection hack start
+				// ID3v1 is defined as always using ISO-8859-1 encoding, but it is not uncommon to find files tagged with ID3v1 using Windows-1251 or other character sets
+				// Since ID3v1 has no concept of character sets there is no certain way to know we have the correct non-ISO-8859-1 character set, but we can guess
+				if ($comment_name == 'id3v1') {
+					if ($encoding == 'ISO-8859-1') {
+						if (function_exists('iconv')) {
+							foreach ($this->info['tags'][$tag_name] as $tag_key => $valuearray) {
+								foreach ($valuearray as $key => $value) {
+									if (preg_match('#^[\\x80-\\xFF]+$#', $value)) {
+										foreach (array('windows-1251', 'KOI8-R') as $id3v1_bad_encoding) {
+											if (@iconv($id3v1_bad_encoding, $id3v1_bad_encoding, $value) === $value) {
+												$encoding = $id3v1_bad_encoding;
+												break 3;
+											}
+										}
+									}
+								}
+							}
+						}
+					}
+				}
+				// ID3v1 encoding detection hack end
+
 				$this->CharConvert($this->info['tags'][$tag_name], $encoding);           // only copy gets converted!
 			}
 
