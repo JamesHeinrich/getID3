@@ -18,6 +18,17 @@
 Version History
 ===============
 
+1.9.10: [2015-09-14] James Heinrich
+    * bugfix (G:49): Declaration of getID3_cached_sqlite3
+    * bugfix (#1892): extension.cache.mysql
+    * bugfix (#1891): duplicate default clause [Quicktime]
+    * bugfix (G:41): incorrect MP3 playtime
+    * bugfix: iconv problems on musl with //TRANSLIT
+    * Add arguments to analyze() for original filesize (and filename)
+    * ID3v2 simplify handling of multiple genres
+    * Corrected merging of multiple genres for ID3v2
+    * getid3_lib::GetDataImageSize return false on error
+
 1.9.9: [2014-12-18] James Heinrich
     Â» Added basic support for OggOpus
     Â» Add ID3v2 CHAP + CTOC support
