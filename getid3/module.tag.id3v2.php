@@ -514,6 +514,9 @@ class getid3_id3v2 extends getid3_handler
 		$genrestring = str_replace('Pop'."\x00".'Funk', 'Pop/Funk', $genrestring);
 		$genrestring = str_replace('Rock'."\x00".'Rock', 'Folk/Rock', $genrestring);
 
+		// some other taggers separate multiple genres with semicolon, e.g. "Heavy Metal;Thrash Metal;Metal"
+		$genrestring = str_replace(';', "\x00", $genrestring);
+
 		$genre_elements = explode("\x00", $genrestring);
 		foreach ($genre_elements as $element) {
 			$element = trim($element);

@@ -2257,7 +2257,14 @@ echo 'QuicktimeParseNikonNCTG()::unknown $data_size_type: '.$data_size_type.'<br
 					$data = array('data'=>$data, 'image_mime'=>$image_mime);
 				}
 			}
-			$info['quicktime']['comments'][$comment_key][] = $data;
+			$gooddata = array($data);
+			if ($comment_key == 'genre') {
+				// some other taggers separate multiple genres with semicolon, e.g. "Heavy Metal;Thrash Metal;Metal"
+				$gooddata = explode(';', $data);
+			}
+			foreach ($gooddata as $data) {
+				$info['quicktime']['comments'][$comment_key][] = $data;
+			}
 		}
 		return true;
 	}
