@@ -954,13 +954,13 @@ if (!empty($atom_structure['sample_description_table'][$i]['width']) && !empty($
 				for ($i = 0; $i < $atom_structure['number_entries']; $i++) {
 					$atom_structure['data_references'][$i]['size']                    = getid3_lib::BigEndian2Int(substr($atom_data, $drefDataOffset, 4));
 					$drefDataOffset += 4;
-					$atom_structure['data_references'][$i]['type']                    =               substr($atom_data, $drefDataOffset, 4);
+					$atom_structure['data_references'][$i]['type']                    =                           substr($atom_data, $drefDataOffset, 4);
 					$drefDataOffset += 4;
 					$atom_structure['data_references'][$i]['version']                 = getid3_lib::BigEndian2Int(substr($atom_data,  $drefDataOffset, 1));
 					$drefDataOffset += 1;
 					$atom_structure['data_references'][$i]['flags_raw']               = getid3_lib::BigEndian2Int(substr($atom_data,  $drefDataOffset, 3)); // hardcoded: 0x0000
 					$drefDataOffset += 3;
-					$atom_structure['data_references'][$i]['data']                    =               substr($atom_data, $drefDataOffset, ($atom_structure['data_references'][$i]['size'] - 4 - 4 - 1 - 3));
+					$atom_structure['data_references'][$i]['data']                    =                           substr($atom_data, $drefDataOffset, ($atom_structure['data_references'][$i]['size'] - 4 - 4 - 1 - 3));
 					$drefDataOffset += ($atom_structure['data_references'][$i]['size'] - 4 - 4 - 1 - 3);
 
 					$atom_structure['data_references'][$i]['flags']['self_reference'] = (bool) ($atom_structure['data_references'][$i]['flags_raw'] & 0x001);
@@ -1030,7 +1030,7 @@ if (!empty($atom_structure['sample_description_table'][$i]['width']) && !empty($
 					$info['error'][] = 'Corrupt Quicktime file: mdhd.time_scale == zero';
 					return false;
 				}
-				$info['quicktime']['time_scale'] = (isset($info['quicktime']['time_scale']) ? max($info['quicktime']['time_scale'], $atom_structure['time_scale']) : $atom_structure['time_scale']);
+				$info['quicktime']['time_scale'] = ((isset($info['quicktime']['time_scale']) && ($info['quicktime']['time_scale'] < 1000)) ? max($info['quicktime']['time_scale'], $atom_structure['time_scale']) : $atom_structure['time_scale']);
 
 				$atom_structure['creation_time_unix']    = getid3_lib::DateMac2Unix($atom_structure['creation_time']);
 				$atom_structure['modify_time_unix']      = getid3_lib::DateMac2Unix($atom_structure['modify_time']);
@@ -1045,7 +1045,7 @@ if (!empty($atom_structure['sample_description_table'][$i]['width']) && !empty($
 			case 'pnot': // Preview atom
 				$atom_structure['modification_date']      = getid3_lib::BigEndian2Int(substr($atom_data,  0, 4)); // "standard Macintosh format"
 				$atom_structure['version_number']         = getid3_lib::BigEndian2Int(substr($atom_data,  4, 2)); // hardcoded: 0x00
-				$atom_structure['atom_type']              =               substr($atom_data,  6, 4);        // usually: 'PICT'
+				$atom_structure['atom_type']              =                           substr($atom_data,  6, 4);        // usually: 'PICT'
 				$atom_structure['atom_index']             = getid3_lib::BigEndian2Int(substr($atom_data, 10, 2)); // usually: 0x01
 
 				$atom_structure['modification_date_unix'] = getid3_lib::DateMac2Unix($atom_structure['modification_date']);
@@ -1055,7 +1055,7 @@ if (!empty($atom_structure['sample_description_table'][$i]['width']) && !empty($
 			case 'crgn': // Clipping ReGioN atom
 				$atom_structure['region_size']   = getid3_lib::BigEndian2Int(substr($atom_data,  0, 2)); // The Region size, Region boundary box,
 				$atom_structure['boundary_box']  = getid3_lib::BigEndian2Int(substr($atom_data,  2, 8)); // and Clipping region data fields
-				$atom_structure['clipping_data'] =               substr($atom_data, 10);           // constitute a QuickDraw region.
+				$atom_structure['clipping_data'] =                           substr($atom_data, 10);           // constitute a QuickDraw region.
 				break;
 
 
@@ -1146,7 +1146,7 @@ if (!empty($atom_structure['sample_description_table'][$i]['width']) && !empty($
 				}
 				$atom_structure['creation_time_unix']        = getid3_lib::DateMac2Unix($atom_structure['creation_time']);
 				$atom_structure['modify_time_unix']          = getid3_lib::DateMac2Unix($atom_structure['modify_time']);
-				$info['quicktime']['time_scale']    = (isset($info['quicktime']['time_scale']) ? max($info['quicktime']['time_scale'], $atom_structure['time_scale']) : $atom_structure['time_scale']);
+				$info['quicktime']['time_scale']    = ((isset($info['quicktime']['time_scale']) && ($info['quicktime']['time_scale'] < 1000)) ? max($info['quicktime']['time_scale'], $atom_structure['time_scale']) : $atom_structure['time_scale']);
 				$info['quicktime']['display_scale'] = $atom_structure['matrix_a'];
 				$info['playtime_seconds']           = $atom_structure['duration'] / $atom_structure['time_scale'];
 				break;
