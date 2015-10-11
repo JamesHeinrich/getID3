@@ -186,7 +186,7 @@ if ($fp_remote = fopen($remotefilename, 'rb')) {
         fclose($fp_local);
         // Initialize getID3 engine
         $getID3 = new getID3;
-        $ThisFileInfo = $getID3->analyze($filename);
+        $ThisFileInfo = $getID3->analyze($localtempfilename);
         // Delete temporary file
         unlink($localtempfilename);
     }
