@@ -1628,7 +1628,7 @@ class getid3_id3v2 extends getid3_handler
 			$frame_terminatorpos = strpos($parsedFrame['data'], "\x00", $frame_offset);
 			$frame_ownerid = substr($parsedFrame['data'], $frame_offset, $frame_terminatorpos - $frame_offset);
 			if (ord($frame_ownerid) === 0) {
-				$frame_ownerid == '';
+				$frame_ownerid = '';
 			}
 			$frame_offset = $frame_terminatorpos + strlen("\x00");
 			$parsedFrame['ownerid'] = $frame_ownerid;
