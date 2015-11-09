@@ -1906,6 +1906,7 @@ class getid3_write_id3v2
 			$ID3v2ShortFrameNameLookup[2]['comment']                                          = 'COM';
 			$ID3v2ShortFrameNameLookup[2]['album']                                            = 'TAL';
 			$ID3v2ShortFrameNameLookup[2]['beats_per_minute']                                 = 'TBP';
+			$ID3v2ShortFrameNameLookup[2]['bpm']                                              = 'TBP';
 			$ID3v2ShortFrameNameLookup[2]['composer']                                         = 'TCM';
 			$ID3v2ShortFrameNameLookup[2]['genre']                                            = 'TCO';
 			$ID3v2ShortFrameNameLookup[2]['itunescompilation']                                = 'TCP';
@@ -1966,6 +1967,7 @@ class getid3_write_id3v2
 			$ID3v2ShortFrameNameLookup[3]['synchronised_tempo_codes']                         = 'SYTC';
 			$ID3v2ShortFrameNameLookup[3]['album']                                            = 'TALB';
 			$ID3v2ShortFrameNameLookup[3]['beats_per_minute']                                 = 'TBPM';
+			$ID3v2ShortFrameNameLookup[3]['bpm']                                              = 'TBPM';
 			$ID3v2ShortFrameNameLookup[3]['itunescompilation']                                = 'TCMP';
 			$ID3v2ShortFrameNameLookup[3]['composer']                                         = 'TCOM';
 			$ID3v2ShortFrameNameLookup[3]['genre']                                            = 'TCON';
