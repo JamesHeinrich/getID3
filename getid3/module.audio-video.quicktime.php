@@ -81,6 +81,23 @@ class getid3_quicktime extends getid3_handler
 			unset($info['avdataend_tmp']);
 		}
 
+		if (!empty($info['quicktime']['comments']['chapters']) && is_array($info['quicktime']['comments']['chapters']) && (count($info['quicktime']['comments']['chapters']) > 0)) {
+			$durations = $this->quicktime_time_to_sample_table($info);
+			for ($i = 0; $i < count($info['quicktime']['comments']['chapters']); $i++) {
+				$bookmark = array();
+				$bookmark['title'] = $info['quicktime']['comments']['chapters'][$i];
+				if (isset($durations[$i])) {
+					$bookmark['sample_duration'] = $durations[$i]['sample_duration'];
+					if ($i > 0) {
+						$bookmark['sample_start'] = $info['quicktime']['bookmarks'][($i - 1)]['sample_start'] + $info['quicktime']['bookmarks'][($i - 1)]['sample_duration'];
+					} else {
+						$bookmark['sample_start'] = 0;
+					}
+				}
+				$info['quicktime']['bookmarks'][] = $bookmark;
+			}
+		}
+
 		if (!isset($info['bitrate']) && isset($info['playtime_seconds'])) {
 			$info['bitrate'] = (($info['avdataend'] - $info['avdataoffset']) * 8) / $info['playtime_seconds'];
 		}
@@ -1267,14 +1284,20 @@ if (!empty($atom_structure['sample_description_table'][$i]['width']) && !empty($
 				}
 
 				// check to see if it looks like chapter titles, in the form of unterminated strings with a leading 16-bit size field
-				while  (($chapter_string_length = getid3_lib::BigEndian2Int(substr($atom_data, $mdat_offset, 2)))
+				while (($mdat_offset < (strlen($atom_data) - 8))
+					&& ($chapter_string_length = getid3_lib::BigEndian2Int(substr($atom_data, $mdat_offset, 2)))
 					&& ($chapter_string_length < 1000)
 					&& ($chapter_string_length <= (strlen($atom_data) - $mdat_offset - 2))
-					&& preg_match('#^[\x20-\xFF]+$#', substr($atom_data, $mdat_offset + 2, $chapter_string_length), $chapter_matches)) {
+					&& preg_match('#^([\x00-\xFF]{2})([\x20-\xFF]+)$#', substr($atom_data, $mdat_offset, $chapter_string_length + 2), $chapter_matches)) {
+						list($dummy, $chapter_string_length_hex, $chapter_string) = $chapter_matches;
 						$mdat_offset += (2 + $chapter_string_length);
-						@$info['quicktime']['comments']['chapters'][] = $chapter_matches[0];
-				}
+						@$info['quicktime']['comments']['chapters'][] = $chapter_string;
 
+						// "encd" atom specifies encoding. In theory could be anything, almost always UTF-8, but may be UTF-16 with BOM (not currently handled)
+						if (substr($atom_data, $mdat_offset, 12) == "\x00\x00\x00\x0C\x65\x6E\x63\x64\x00\x00\x01\x00") { // UTF-8
+							$mdat_offset += 12;
+						}
+				}
 
 
 				if (($atomsize > 8) && (!isset($info['avdataend_tmp']) || ($info['quicktime'][$atomname]['size'] > ($info['avdataend_tmp'] - $info['avdataoffset'])))) {
@@ -2282,5 +2305,57 @@ echo 'QuicktimeParseNikonNCTG()::unknown $data_size_type: '.$data_size_type.'<br
 		// Pascal strings have 1 unsigned byte at the beginning saying how many chars (1-255) are in the string
 		return substr($pascalstring, 1);
 	}
+
+
+	/*
+	// helper functions for m4b audiobook chapters
+	// code by Steffen Hartmann 2015-Nov-08
+	*/
+	public function search_tag_by_key($info, $tag, $history, &$result) {
+		foreach ($info as $key => $value) {
+			$key_history = $history.'/'.$key;
+			if ($key === $tag) {
+				$result[] = array($key_history, $info);
+			} else {
+				if (is_array($value)) {
+					$this->search_tag_by_key($value, $tag, $key_history, $result);
+				}
+			}
+		}
+	}
+
+	public function search_tag_by_pair($info, $k, $v, $history, &$result) {
+		foreach ($info as $key => $value) {
+			$key_history = $history.'/'.$key;
+			if (($key === $k) && ($value === $v)) {
+				$result[] = array($key_history, $info);
+			} else {
+				if (is_array($value)) {
+					$this->search_tag_by_pair($value, $k, $v, $key_history, $result);
+				}
+			}
+		}
+	}
+
+	public function quicktime_time_to_sample_table($info) {
+		$res = array();
+		$this->search_tag_by_pair($info['quicktime']['moov'], 'name', 'stbl', 'quicktime/moov', $res);
+		foreach ($res as $value) {
+			$stbl_res = array();
+			$this->search_tag_by_pair($value[1], 'data_format', 'text', $value[0], $stbl_res);
+			if (count($stbl_res) > 0) {
+				$stts_res = array();
+				$this->search_tag_by_key($value[1], 'time_to_sample_table', $value[0], $stts_res);
+				if (count($stts_res) > 0) {
+					return $stts_res[0][1]['time_to_sample_table'];
+				}
+			}
+		}
+		return array();
+	}
+	/*
+	// END helper functions for m4b audiobook chapters
+	*/
+
 
 }
