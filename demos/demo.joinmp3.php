@@ -21,8 +21,8 @@
 //   $FilenamesIn[] = array('second.mp3',   0,   0);  // filename with zero for start/length is the same as not specified (start = beginning, length = full duration)
 //   $FilenamesIn[] = array('third.mp3',    0,  10);  // extract first 10 seconds of audio
 //   $FilenamesIn[] = array('fourth.mp3', -10,   0);  // extract last 10 seconds of audio
-//   $FilenamesIn[] = array('fourth.mp3',  10,   0);  // extract everything except first 10 seconds of audio
-//   $FilenamesIn[] = array('fifth.mp3',    0, -10);  // extract everything except last 10 seconds of audio
+//   $FilenamesIn[] = array('fifth.mp3',   10,   0);  // extract everything except first 10 seconds of audio
+//   $FilenamesIn[] = array('sixth.mp3',    0, -10);  // extract everything except last 10 seconds of audio
 //   if (CombineMultipleMP3sTo($FilenameOut, $FilenamesIn)) {
 //       echo 'Successfully copied '.implode(' + ', $FilenamesIn).' to '.$FilenameOut;
 //   } else {
