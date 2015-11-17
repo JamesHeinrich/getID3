@@ -87,11 +87,15 @@ class getid3_quicktime extends getid3_handler
 				$bookmark = array();
 				$bookmark['title'] = $info['quicktime']['comments']['chapters'][$i];
 				if (isset($durations[$i])) {
-					$bookmark['sample_duration'] = $durations[$i]['sample_duration'];
+					$bookmark['duration_sample'] = $durations[$i]['sample_duration'];
 					if ($i > 0) {
-						$bookmark['sample_start'] = $info['quicktime']['bookmarks'][($i - 1)]['sample_start'] + $info['quicktime']['bookmarks'][($i - 1)]['sample_duration'];
+						$bookmark['start_sample'] = $info['quicktime']['bookmarks'][($i - 1)]['start_sample'] + $info['quicktime']['bookmarks'][($i - 1)]['duration_sample'];
 					} else {
-						$bookmark['sample_start'] = 0;
+						$bookmark['start_sample'] = 0;
+					}
+					if (!empty($info['quicktime']['audio']['sample_rate'])) {
+						$bookmark['duration_seconds'] = $bookmark['duration_sample'] / $info['quicktime']['audio']['sample_rate'];
+						$bookmark['start_seconds']    = $bookmark['start_sample']    / $info['quicktime']['audio']['sample_rate'];
 					}
 				}
 				$info['quicktime']['bookmarks'][] = $bookmark;
