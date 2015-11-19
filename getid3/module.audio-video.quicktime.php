@@ -93,9 +93,9 @@ class getid3_quicktime extends getid3_handler
 					} else {
 						$bookmark['start_sample'] = 0;
 					}
-					if (!empty($info['quicktime']['audio']['sample_rate'])) {
-						$bookmark['duration_seconds'] = $bookmark['duration_sample'] / $info['quicktime']['audio']['sample_rate'];
-						$bookmark['start_seconds']    = $bookmark['start_sample']    / $info['quicktime']['audio']['sample_rate'];
+					if ($time_scale = $this->quicktime_bookmark_time_scale($info)) {
+						$bookmark['duration_seconds'] = $bookmark['duration_sample'] / $time_scale;
+						$bookmark['start_seconds']    = $bookmark['start_sample']    / $time_scale;
 					}
 				}
 				$info['quicktime']['bookmarks'][] = $bookmark;
@@ -2356,6 +2356,29 @@ echo 'QuicktimeParseNikonNCTG()::unknown $data_size_type: '.$data_size_type.'<br
 			}
 		}
 		return array();
+	}
+
+	function quicktime_bookmark_time_scale($info) {
+		$time_scale = '';
+		$ts_prefix_len = 0;
+		$res = array();
+		$this->search_tag_by_pair($info['quicktime']['moov'], 'name', 'stbl', 'quicktime/moov', $res);
+		foreach ($res as $value) {
+			$stbl_res = array();
+			$this->search_tag_by_pair($value[1], 'data_format', 'text', $value[0], $stbl_res);
+			if (count($stbl_res) > 0) {
+				$ts_res = array();
+				$this->search_tag_by_key($info['quicktime']['moov'], 'time_scale', 'quicktime/moov', $ts_res);
+				foreach ($ts_res as $value) {
+					$prefix = substr($value[0], 0, -12);
+					if ((substr($stbl_res[0][0], 0, strlen($prefix)) === $prefix) && ($ts_prefix_len < strlen($prefix))) {
+						$time_scale = $value[1]['time_scale'];
+						$ts_prefix_len = strlen($prefix);
+					}
+				}
+			}
+		}
+		return $time_scale;
 	}
 	/*
 	// END helper functions for m4b audiobook chapters
