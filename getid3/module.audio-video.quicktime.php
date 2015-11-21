@@ -102,6 +102,60 @@ class getid3_quicktime extends getid3_handler
 			}
 		}
 
+		if (isset($info['quicktime']['temp_meta_key_names'])) {
+			unset($info['quicktime']['temp_meta_key_names']);
+		}
+
+		if (!empty($info['quicktime']['comments']['location.ISO6709'])) {
+			// https://en.wikipedia.org/wiki/ISO_6709
+			foreach ($info['quicktime']['comments']['location.ISO6709'] as $ISO6709string) {
+				$latitude  = false;
+				$longitude = false;
+				$altitude  = false;
+				if (preg_match('#^([\\+\\-])([0-9]{2}|[0-9]{4}|[0-9]{6})(\\.[0-9]+)?([\\+\\-])([0-9]{3}|[0-9]{5}|[0-9]{7})(\\.[0-9]+)?(([\\+\\-])([0-9]{3}|[0-9]{5}|[0-9]{7})(\\.[0-9]+)?)?/$#', $ISO6709string, $matches)) {
+					@list($dummy, $lat_sign, $lat_deg, $lat_deg_dec, $lon_sign, $lon_deg, $lon_deg_dec, $dummy, $alt_sign, $alt_deg, $alt_deg_dec) = $matches;
+
+					if (strlen($lat_deg) == 2) {        // [+-]DD.D
+						$latitude = floatval(ltrim($lat_deg, '0').$lat_deg_dec);
+					} elseif (strlen($lat_deg) == 4) {  // [+-]DDMM.M
+						$latitude = floatval(ltrim(substr($lat_deg, 0, 2), '0')) + floatval(ltrim(substr($lat_deg, 2, 2), '0').$lat_deg_dec / 60);
+					} elseif (strlen($lat_deg) == 6) {  // [+-]DDMMSS.S
+						$latitude = floatval(ltrim(substr($lat_deg, 0, 2), '0')) + floatval(ltrim(substr($lat_deg, 2, 2), '0') / 60) + floatval(ltrim(substr($lat_deg, 4, 2), '0').$lat_deg_dec / 3600);
+					}
+
+					if (strlen($lon_deg) == 3) {        // [+-]DDD.D
+						$longitude = floatval(ltrim($lon_deg, '0').$lon_deg_dec);
+					} elseif (strlen($lon_deg) == 5) {  // [+-]DDDMM.M
+						$longitude = floatval(ltrim(substr($lon_deg, 0, 2), '0')) + floatval(ltrim(substr($lon_deg, 2, 2), '0').$lon_deg_dec / 60);
+					} elseif (strlen($lon_deg) == 7) {  // [+-]DDDMMSS.S
+						$longitude = floatval(ltrim(substr($lon_deg, 0, 2), '0')) + floatval(ltrim(substr($lon_deg, 2, 2), '0') / 60) + floatval(ltrim(substr($lon_deg, 4, 2), '0').$lon_deg_dec / 3600);
+					}
+
+					if (strlen($alt_deg) == 3) {        // [+-]DDD.D
+						$altitude = floatval(ltrim($alt_deg, '0').$alt_deg_dec);
+					} elseif (strlen($alt_deg) == 5) {  // [+-]DDDMM.M
+						$altitude = floatval(ltrim(substr($alt_deg, 0, 2), '0')) + floatval(ltrim(substr($alt_deg, 2, 2), '0').$alt_deg_dec / 60);
+					} elseif (strlen($alt_deg) == 7) {  // [+-]DDDMMSS.S
+						$altitude = floatval(ltrim(substr($alt_deg, 0, 2), '0')) + floatval(ltrim(substr($alt_deg, 2, 2), '0') / 60) + floatval(ltrim(substr($alt_deg, 4, 2), '0').$alt_deg_dec / 3600);
+					}
+
+					if ($latitude !== false) {
+						$info['quicktime']['comments']['gps_latitude'][]  = (($lat_sign == '-') ? -1 : 1) * floatval($latitude);
+					}
+					if ($longitude !== false) {
+						$info['quicktime']['comments']['gps_longitude'][] = (($lon_sign == '-') ? -1 : 1) * floatval($longitude);
+					}
+					if ($altitude !== false) {
+						$info['quicktime']['comments']['gps_altitude'][]  = (($alt_sign == '-') ? -1 : 1) * floatval($altitude);
+					}
+				}
+				if ($latitude === false) {
+					$info['warning'][] = 'location.ISO6709 string not parsed correctly: "'.$ISO6709string.'", please submit as a bug';
+				}
+				break;
+			}
+		}
+
 		if (!isset($info['bitrate']) && isset($info['playtime_seconds'])) {
 			$info['bitrate'] = (($info['avdataend'] - $info['avdataoffset']) * 8) / $info['playtime_seconds'];
 		}
@@ -1451,22 +1505,53 @@ if (!empty($atom_structure['sample_description_table'][$i]['width']) && !empty($
 				break;
 
 			case "\x00\x00\x00\x00":
-			case 'meta': // METAdata atom
 				// some kind of metacontainer, may contain a big data dump such as:
 				// mdta keys \005 mdtacom.apple.quicktime.make (mdtacom.apple.quicktime.creationdate ,mdtacom.apple.quicktime.location.ISO6709 $mdtacom.apple.quicktime.software !mdtacom.apple.quicktime.model ilst \01D \001 \015data \001DE\010Apple 0 \002 (data \001DE\0102011-05-11T17:54:04+0200 2 \003 *data \001DE\010+52.4936+013.3897+040.247/ \01D \004 \015data \001DE\0104.3.1 \005 \018data \001DE\010iPhone 4
 				// http://www.geocities.com/xhelmboyx/quicktime/formats/qti-layout.txt
 
-	            $atom_structure['version']   =          getid3_lib::BigEndian2Int(substr($atom_data, 0, 1));
-	            $atom_structure['flags_raw'] =          getid3_lib::BigEndian2Int(substr($atom_data, 1, 3));
-	            $atom_structure['subatoms']  = $this->QuicktimeParseContainerAtom(substr($atom_data, 4), $baseoffset + 8, $atomHierarchy, $ParseAllPossibleAtoms);
+				$atom_structure['version']   =          getid3_lib::BigEndian2Int(substr($atom_data, 0, 1));
+				$atom_structure['flags_raw'] =          getid3_lib::BigEndian2Int(substr($atom_data, 1, 3));
+				$atom_structure['subatoms']  = $this->QuicktimeParseContainerAtom(substr($atom_data, 4), $baseoffset + 8, $atomHierarchy, $ParseAllPossibleAtoms);
 				//$atom_structure['subatoms']  = $this->QuicktimeParseContainerAtom($atom_data, $baseoffset + 8, $atomHierarchy, $ParseAllPossibleAtoms);
 				break;
 
+			case 'meta': // METAdata atom
+				// https://developer.apple.com/library/mac/documentation/QuickTime/QTFF/Metadata/Metadata.html
+
+				$atom_structure['version']   =          getid3_lib::BigEndian2Int(substr($atom_data, 0, 1));
+				$atom_structure['flags_raw'] =          getid3_lib::BigEndian2Int(substr($atom_data, 1, 3));
+				$atom_structure['subatoms']  = $this->QuicktimeParseContainerAtom($atom_data, $baseoffset + 8, $atomHierarchy, $ParseAllPossibleAtoms);
+				break;
+
 			case 'data': // metaDATA atom
+				static $metaDATAkey = 1; // real ugly, but so is the QuickTime structure that stores keys and values in different multinested locations that are hard to relate to each other
 				// seems to be 2 bytes language code (ASCII), 2 bytes unknown (set to 0x10B5 in sample I have), remainder is useful data
 				$atom_structure['language'] =                           substr($atom_data, 4 + 0, 2);
 				$atom_structure['unknown']  = getid3_lib::BigEndian2Int(substr($atom_data, 4 + 2, 2));
 				$atom_structure['data']     =                           substr($atom_data, 4 + 4);
+				$atom_structure['key_name'] = @$info['quicktime']['temp_meta_key_names'][$metaDATAkey++];
+
+				if ($atom_structure['key_name'] && $atom_structure['data']) {
+					@$info['quicktime']['comments'][str_replace('com.apple.quicktime.', '', $atom_structure['key_name'])][] = $atom_structure['data'];
+				}
+				break;
+
+			case 'keys': // KEYS that may be present in the metadata atom.
+				// https://developer.apple.com/library/mac/documentation/QuickTime/QTFF/Metadata/Metadata.html#//apple_ref/doc/uid/TP40000939-CH1-SW21
+				// The metadata item keys atom holds a list of the metadata keys that may be present in the metadata atom.
+				// This list is indexed starting with 1; 0 is a reserved index value. The metadata item keys atom is a full atom with an atom type of "keys".
+				$atom_structure['version']       = getid3_lib::BigEndian2Int(substr($atom_data,  0, 1));
+				$atom_structure['flags_raw']     = getid3_lib::BigEndian2Int(substr($atom_data,  1, 3));
+				$atom_structure['entry_count']   = getid3_lib::BigEndian2Int(substr($atom_data,  4, 4));
+				$keys_atom_offset = 8;
+				for ($i = 1; $i <= $atom_structure['entry_count']; $i++) {
+					$atom_structure['keys'][$i]['key_size']      = getid3_lib::BigEndian2Int(substr($atom_data, $keys_atom_offset + 0, 4));
+					$atom_structure['keys'][$i]['key_namespace'] =                           substr($atom_data, $keys_atom_offset + 4, 4);
+					$atom_structure['keys'][$i]['key_value']     =                           substr($atom_data, $keys_atom_offset + 8, $atom_structure['keys'][$i]['key_size'] - 8);
+					$keys_atom_offset += $atom_structure['keys'][$i]['key_size']; // key_size includes the 4+4 bytes for key_size and key_namespace
+
+					$info['quicktime']['temp_meta_key_names'][$i] = $atom_structure['keys'][$i]['key_value'];
+				}
 				break;
 
 			default:
@@ -1807,56 +1892,56 @@ if (!empty($atom_structure['sample_description_table'][$i]['width']) && !empty($
 		static $QuicktimeIODSaudioProfileNameLookup = array();
 		if (empty($QuicktimeIODSaudioProfileNameLookup)) {
 			$QuicktimeIODSaudioProfileNameLookup = array(
-			    0x00 => 'ISO Reserved (0x00)',
-			    0x01 => 'Main Audio Profile @ Level 1',
-			    0x02 => 'Main Audio Profile @ Level 2',
-			    0x03 => 'Main Audio Profile @ Level 3',
-			    0x04 => 'Main Audio Profile @ Level 4',
-			    0x05 => 'Scalable Audio Profile @ Level 1',
-			    0x06 => 'Scalable Audio Profile @ Level 2',
-			    0x07 => 'Scalable Audio Profile @ Level 3',
-			    0x08 => 'Scalable Audio Profile @ Level 4',
-			    0x09 => 'Speech Audio Profile @ Level 1',
-			    0x0A => 'Speech Audio Profile @ Level 2',
-			    0x0B => 'Synthetic Audio Profile @ Level 1',
-			    0x0C => 'Synthetic Audio Profile @ Level 2',
-			    0x0D => 'Synthetic Audio Profile @ Level 3',
-			    0x0E => 'High Quality Audio Profile @ Level 1',
-			    0x0F => 'High Quality Audio Profile @ Level 2',
-			    0x10 => 'High Quality Audio Profile @ Level 3',
-			    0x11 => 'High Quality Audio Profile @ Level 4',
-			    0x12 => 'High Quality Audio Profile @ Level 5',
-			    0x13 => 'High Quality Audio Profile @ Level 6',
-			    0x14 => 'High Quality Audio Profile @ Level 7',
-			    0x15 => 'High Quality Audio Profile @ Level 8',
-			    0x16 => 'Low Delay Audio Profile @ Level 1',
-			    0x17 => 'Low Delay Audio Profile @ Level 2',
-			    0x18 => 'Low Delay Audio Profile @ Level 3',
-			    0x19 => 'Low Delay Audio Profile @ Level 4',
-			    0x1A => 'Low Delay Audio Profile @ Level 5',
-			    0x1B => 'Low Delay Audio Profile @ Level 6',
-			    0x1C => 'Low Delay Audio Profile @ Level 7',
-			    0x1D => 'Low Delay Audio Profile @ Level 8',
-			    0x1E => 'Natural Audio Profile @ Level 1',
-			    0x1F => 'Natural Audio Profile @ Level 2',
-			    0x20 => 'Natural Audio Profile @ Level 3',
-			    0x21 => 'Natural Audio Profile @ Level 4',
-			    0x22 => 'Mobile Audio Internetworking Profile @ Level 1',
-			    0x23 => 'Mobile Audio Internetworking Profile @ Level 2',
-			    0x24 => 'Mobile Audio Internetworking Profile @ Level 3',
-			    0x25 => 'Mobile Audio Internetworking Profile @ Level 4',
-			    0x26 => 'Mobile Audio Internetworking Profile @ Level 5',
-			    0x27 => 'Mobile Audio Internetworking Profile @ Level 6',
-			    0x28 => 'AAC Profile @ Level 1',
-			    0x29 => 'AAC Profile @ Level 2',
-			    0x2A => 'AAC Profile @ Level 4',
-			    0x2B => 'AAC Profile @ Level 5',
-			    0x2C => 'High Efficiency AAC Profile @ Level 2',
-			    0x2D => 'High Efficiency AAC Profile @ Level 3',
-			    0x2E => 'High Efficiency AAC Profile @ Level 4',
-			    0x2F => 'High Efficiency AAC Profile @ Level 5',
-			    0xFE => 'Not part of MPEG-4 audio profiles',
-			    0xFF => 'No audio capability required',
+				0x00 => 'ISO Reserved (0x00)',
+				0x01 => 'Main Audio Profile @ Level 1',
+				0x02 => 'Main Audio Profile @ Level 2',
+				0x03 => 'Main Audio Profile @ Level 3',
+				0x04 => 'Main Audio Profile @ Level 4',
+				0x05 => 'Scalable Audio Profile @ Level 1',
+				0x06 => 'Scalable Audio Profile @ Level 2',
+				0x07 => 'Scalable Audio Profile @ Level 3',
+				0x08 => 'Scalable Audio Profile @ Level 4',
+				0x09 => 'Speech Audio Profile @ Level 1',
+				0x0A => 'Speech Audio Profile @ Level 2',
+				0x0B => 'Synthetic Audio Profile @ Level 1',
+				0x0C => 'Synthetic Audio Profile @ Level 2',
+				0x0D => 'Synthetic Audio Profile @ Level 3',
+				0x0E => 'High Quality Audio Profile @ Level 1',
+				0x0F => 'High Quality Audio Profile @ Level 2',
+				0x10 => 'High Quality Audio Profile @ Level 3',
+				0x11 => 'High Quality Audio Profile @ Level 4',
+				0x12 => 'High Quality Audio Profile @ Level 5',
+				0x13 => 'High Quality Audio Profile @ Level 6',
+				0x14 => 'High Quality Audio Profile @ Level 7',
+				0x15 => 'High Quality Audio Profile @ Level 8',
+				0x16 => 'Low Delay Audio Profile @ Level 1',
+				0x17 => 'Low Delay Audio Profile @ Level 2',
+				0x18 => 'Low Delay Audio Profile @ Level 3',
+				0x19 => 'Low Delay Audio Profile @ Level 4',
+				0x1A => 'Low Delay Audio Profile @ Level 5',
+				0x1B => 'Low Delay Audio Profile @ Level 6',
+				0x1C => 'Low Delay Audio Profile @ Level 7',
+				0x1D => 'Low Delay Audio Profile @ Level 8',
+				0x1E => 'Natural Audio Profile @ Level 1',
+				0x1F => 'Natural Audio Profile @ Level 2',
+				0x20 => 'Natural Audio Profile @ Level 3',
+				0x21 => 'Natural Audio Profile @ Level 4',
+				0x22 => 'Mobile Audio Internetworking Profile @ Level 1',
+				0x23 => 'Mobile Audio Internetworking Profile @ Level 2',
+				0x24 => 'Mobile Audio Internetworking Profile @ Level 3',
+				0x25 => 'Mobile Audio Internetworking Profile @ Level 4',
+				0x26 => 'Mobile Audio Internetworking Profile @ Level 5',
+				0x27 => 'Mobile Audio Internetworking Profile @ Level 6',
+				0x28 => 'AAC Profile @ Level 1',
+				0x29 => 'AAC Profile @ Level 2',
+				0x2A => 'AAC Profile @ Level 4',
+				0x2B => 'AAC Profile @ Level 5',
+				0x2C => 'High Efficiency AAC Profile @ Level 2',
+				0x2D => 'High Efficiency AAC Profile @ Level 3',
+				0x2E => 'High Efficiency AAC Profile @ Level 4',
+				0x2F => 'High Efficiency AAC Profile @ Level 5',
+				0xFE => 'Not part of MPEG-4 audio profiles',
+				0xFF => 'No audio capability required',
 			);
 		}
 		return (isset($QuicktimeIODSaudioProfileNameLookup[$audio_profile_id]) ? $QuicktimeIODSaudioProfileNameLookup[$audio_profile_id] : 'ISO Reserved / User Private');
