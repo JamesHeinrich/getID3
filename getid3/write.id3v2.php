@@ -1759,10 +1759,15 @@ class getid3_write_id3v2
 	}
 
 	public function ID3v2IsValidTextEncoding($textencodingbyte) {
+		// 0 = ISO-8859-1
+		// 1 = UTF-16 with BOM
+		// 2 = UTF-16BE without BOM
+		// 3 = UTF-8
 		static $ID3v2IsValidTextEncoding_cache = array(
-			2 => array(true, true),
-			3 => array(true, true),
-			4 => array(true, true, true, true));
+			2 => array(true, true),              // ID3v2.2 - allow 0=ISO-8859-1, 1=UTF-16
+			3 => array(true, true),              // ID3v2.3 - allow 0=ISO-8859-1, 1=UTF-16
+			4 => array(true, true, true, true),  // ID3v2.4 - allow 0=ISO-8859-1, 1=UTF-16, 2=UTF-16BE, 3=UTF-8
+		);
 		return isset($ID3v2IsValidTextEncoding_cache[$this->majorversion][$textencodingbyte]);
 	}
 
