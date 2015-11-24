@@ -45,7 +45,10 @@ class getid3_png extends getid3_handler
 		while ((($this->ftell() - (strlen($PNGfiledata) - $offset)) < $info['filesize'])) {
 			$chunk['data_length'] = getid3_lib::BigEndian2Int(substr($PNGfiledata, $offset, 4));
 			$offset += 4;
-			while (((strlen($PNGfiledata) - $offset) < ($chunk['data_length'] + 4)) && ($this->ftell() < $info['filesize'])) {
+			while ((strlen($PNGfiledata) > $offset)
+					&& ((strlen($PNGfiledata) - $offset) < ($chunk['data_length'] + 4))
+					&& ($this->ftell() < $info['filesize'])
+				) {
 				$PNGfiledata .= $this->fread($this->getid3->fread_buffer_size());
 			}
 			$chunk['type_text']   =               substr($PNGfiledata, $offset, 4);
