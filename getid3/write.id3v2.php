@@ -30,7 +30,7 @@ class getid3_write_id3v2
 	public $warnings                    = array();  // any non-critical errors will be stored here
 	public $errors                      = array();  // any critical errors will be stored here
 
-	public function getid3_write_id3v2() {
+	public function __construct() {
 		return true;
 	}
 
