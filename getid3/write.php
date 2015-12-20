@@ -64,7 +64,7 @@ class getid3_writetags
 	// private
 	private $ThisFileInfo; // analysis of file before writing
 
-	public function getid3_writetags() {
+	public function __construct() {
 		return true;
 	}
 

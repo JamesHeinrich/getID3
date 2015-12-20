@@ -80,7 +80,7 @@ class getID3_cached_mysql extends getID3
 
 
 	// public: constructor - see top of this file for cache type and cache_options
-	public function getID3_cached_mysql($host, $database, $username, $password, $table='getid3_cache') {
+	public function __construct($host, $database, $username, $password, $table='getid3_cache') {
 
 		// Check for mysql support
 		if (!function_exists('mysql_pconnect')) {

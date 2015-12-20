@@ -23,7 +23,7 @@ class getid3_write_real
 	public $errors            = array(); // any critical errors will be stored here
 	public $paddedlength      = 512;     // minimum length of CONT tag in bytes
 
-	public function getid3_write_real() {
+	public function __construct() {
 		return true;
 	}
 
