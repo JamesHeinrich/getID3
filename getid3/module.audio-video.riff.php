@@ -1170,9 +1170,16 @@ class getid3_riff extends getid3_handler {
 				}
 				break;
 
+			case 'WEBP':
+				// https://developers.google.com/speed/webp/docs/riff_container
+				$info['fileformat'] = 'webp';
+				$info['mime_type']  = 'image/webp';
+
+$info['error'][] = 'WebP image parsing not supported in this version of getID3()';
+				break;
 
 			default:
-				$info['error'][] = 'Unknown RIFF type: expecting one of (WAVE|RMP3|AVI |CDDA|AIFF|AIFC|8SVX|CDXA), found "'.$RIFFsubtype.'" instead';
+				$info['error'][] = 'Unknown RIFF type: expecting one of (WAVE|RMP3|AVI |CDDA|AIFF|AIFC|8SVX|CDXA|WEBP), found "'.$RIFFsubtype.'" instead';
 				//unset($info['fileformat']);
 		}
 
