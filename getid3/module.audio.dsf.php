@@ -10,10 +10,11 @@
 //                                                             //
 // module.audio.dsf.php                                        //
 // module for analyzing dsf/DSF Audio files                    //
-// dependencies: NONE                                          //
+// dependencies: module.tag.id3v2.php                          //
 //                                                            ///
 /////////////////////////////////////////////////////////////////
 
+getid3_lib::IncludeDependency(GETID3_INCLUDEPATH.'module.tag.id3v2.php', __FILE__, true);
 
 class getid3_dsf extends getid3_handler
 {
@@ -96,9 +97,12 @@ class getid3_dsf extends getid3_handler
 
 
 		if ($info['dsf']['dsd']['meta_chunk_offset'] > 0) {
-			$info['warning'][] = 'DSF META chunk parsing not enabled. Please submit sample file to info@getid3.org if you see this message.';
-			return false;
+			$getid3_id3v2 = new getid3_id3v2($this->getid3);
+			$getid3_id3v2->StartingOffset = $info['dsf']['dsd']['meta_chunk_offset'];
+			$getid3_id3v2->Analyze();
+			unset($getid3_id3v2);
 		}
+
 
 		$info['dsf']['fmt']['channel_type'] = $this->DSFchannelTypeLookup($info['dsf']['fmt']['channel_type_id']);
 		$info['audio']['channelmode']       = $info['dsf']['fmt']['channel_type'];
