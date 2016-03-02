@@ -18,6 +18,12 @@
 Version History
 ===============
 
+1.9.12: [2016-03-02] James Heinrich
+    Â» Add support for Direct Stream Digital (DSD) /
+      DSD Storage Facility (DSF) file format
+    Â» Add detection (not parsing) of WebP image format
+    * bugfix (#1910): Quicktime embedded images
+
 1.9.11: [2015-12-24] James Heinrich
     * bugfix (G:64): update constructor syntax for PHP 7
     * bugfix (G:62): infinite loop in large PNG files
