@@ -463,6 +463,11 @@ http://www.getid3.org/phpBB3/viewtopic.php?t=25
     written just "value"  (detected by getID3())
 * Oggenc 0.9-rc3 flags the encoded file as ABR whether it's
     actually ABR or VBR.
+* iTunes (versions "v7.0.0.70" is known-guilty, probably
+    other versions are too) writes ID3v2.3 comment tags using an
+    ID3v2.2 frame name (3-bytes) null-padded to 4 bytes which is
+    not valid for ID3v2.3+
+    (detected by getID3() since 1.9.12-201603221746)
 * iTunes (versions "X v2.0.3", "v3.0.1" are known-guilty, probably
     other versions are too) writes ID3v2.3 comment tags using a
     frame name 'COM ' which is not valid for ID3v2.3+ (it's an
