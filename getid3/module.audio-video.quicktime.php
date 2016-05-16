@@ -173,10 +173,14 @@ class getid3_quicktime extends getid3_handler
 				}
 			}
 		}
-		if (($info['audio']['dataformat'] == 'mp4') && empty($info['video']['resolution_x'])) {
+		if ($info['audio']['dataformat'] == 'mp4') {
 			$info['fileformat'] = 'mp4';
-			$info['mime_type']  = 'audio/mp4';
-			unset($info['video']['dataformat']);
+			if (empty($info['video']['resolution_x'])) {
+				$info['mime_type']  = 'audio/mp4';
+				unset($info['video']['dataformat']);
+			} else {
+				$info['mime_type']  = 'video/mp4';
+			}
 		}
 
 		if (!$this->ReturnAtomData) {
