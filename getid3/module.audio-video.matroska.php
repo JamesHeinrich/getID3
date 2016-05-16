@@ -566,8 +566,11 @@ class getid3_matroska extends getid3_handler
 														$this->unhandledElement('seekhead.seek', __LINE__, $sub_seek_entry);												}
 														break;
 											}
-
-											if ($seek_entry['target_id'] != EBML_ID_CLUSTER || !self::$hide_clusters) { // collect clusters only if required
+											if (!isset($seek_entry['target_id'])) {
+												$this->warning('seek_entry[target_id] unexpectedly not set at '.$seek_entry['offset']);
+												break;
+											}
+											if (($seek_entry['target_id'] != EBML_ID_CLUSTER) || !self::$hide_clusters) { // collect clusters only if required
 												$info['matroska']['seek'][] = $seek_entry;
 											}
 											break;
