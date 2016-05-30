@@ -508,6 +508,16 @@ throw new Exception('$this->overwrite_tags=false is known to be buggy in this ve
 					}
 					break;
 
+				case 'UFID':
+					if (isset($valuearray['ownerid']) &&
+						isset($valuearray['data'])) {
+							$tag_data_id3v2['UFID'][] = $valuearray;
+					} else {
+						$this->errors[] = 'ID3v2 UFID data is not properly structured';
+						return false;
+					}
+					break;
+
 				case '':
 					$this->errors[] = 'ID3v2: Skipping "'.$tag_key.'" because cannot match it to a known ID3v2 frame type';
 					// some other data type, don't know how to handle it, ignore it

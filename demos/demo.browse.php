@@ -13,7 +13,7 @@
 //                                                            ///
 /////////////////////////////////////////////////////////////////
 
-die('For security reasons, this demo has been disabled. It can be enabled by removing line '.__LINE__.' in demos/'.basename(__FILE__));
+//die('For security reasons, this demo has been disabled. It can be enabled by removing line '.__LINE__.' in demos/'.basename(__FILE__));
 define('GETID3_DEMO_BROWSE_ALLOW_EDIT_LINK',   false);
 define('GETID3_DEMO_BROWSE_ALLOW_DELETE_LINK', false);
 define('GETID3_DEMO_BROWSE_ALLOW_MD5_LINK',    false);
@@ -160,7 +160,6 @@ if (isset($_REQUEST['filename'])) {
 			set_time_limit(30); // allocate another 30 seconds to process this file - should go much quicker than this unless intense processing (like bitrate histogram analysis) is enabled
 			echo ' .'; // progress indicator dot
 			flush();  // make sure the dot is shown, otherwise it's useless
-
 			switch ($file) {
 				case '..':
 					$ParentDir = realpath($file.'/..').'/';
@@ -607,7 +606,7 @@ function MoreNaturalSort($ar1, $ar2) {
 function PoweredBygetID3($string='') {
 	global $getID3;
 	if (!$string) {
-		$string = '<div style="border: 1px #CCCCCC solid; padding: 5px; margin: 5px 0px; float: left; background-color: #EEEEEE; font-size: 8pt; font-face: sans-serif;">Powered by <a href="http://getid3.sourceforge.net"><b>getID3() v<!--GETID3VER--></b><br>http://getid3.sourceforge.net</a><br>Running on PHP v'.phpversion().' ('.(ceil(log(PHP_INT_MAX, 2)) + 1).'-bit)</div>';
+		$string = '<div style="border: 1px #CCCCCC solid; padding: 5px; margin: 5px 0px; float: left; background-color: #EEEEEE; font-size: 8pt; font-face: sans-serif;">Powered by <a href="http://www.getid3.org/"><b>getID3() v<!--GETID3VER--></b><br>http://www.getid3.org/</a><br>Running on PHP v'.phpversion().' ('.(ceil(log(PHP_INT_MAX, 2)) + 1).'-bit)</div>';
 	}
 	return str_replace('<!--GETID3VER-->', $getID3->version(), $string);
 }
