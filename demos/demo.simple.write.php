@@ -12,7 +12,7 @@
 //                                                            ///
 /////////////////////////////////////////////////////////////////
 
-//die('Due to a security issue, this demo has been disabled. It can be enabled by removing line '.__LINE__.' in '.$_SERVER['PHP_SELF']);
+die('Due to a security issue, this demo has been disabled. It can be enabled by removing line '.__LINE__.' in '.$_SERVER['PHP_SELF']);
 
 $TextEncoding = 'UTF-8';
 

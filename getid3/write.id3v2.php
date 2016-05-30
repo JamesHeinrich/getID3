@@ -815,7 +815,7 @@ class getid3_write_id3v2
 					// Counter         $xx xx xx xx (xx ...)
 					if (!$this->IsWithinBitRange($source_data_array['rating'], 8, false)) {
 						$this->errors[] = 'Invalid Rating byte in '.$frame_name.' ('.$source_data_array['rating'].') (range = 0 to 255)';
-					} elseif (!IsValidEmail($source_data_array['email'])) {
+					} elseif (!$this->IsValidEmail($source_data_array['email'])) {
 						$this->errors[] = 'Invalid Email in '.$frame_name.' ('.$source_data_array['email'].')';
 					} else {
 						$framedata .= str_replace("\x00", '', $source_data_array['email'])."\x00";
@@ -1183,7 +1183,6 @@ class getid3_write_id3v2
 			$PreviousFrames = array();
 			return true;
 		}
-
 		if ($this->majorversion == 4) {
 			switch ($frame_name) {
 				case 'UFID':
@@ -1869,6 +1868,14 @@ class getid3_write_id3v2
 		$parts['path']   = (isset($parts['path'])   ? $parts['path']   : '');
 		$parts['query']  = (isset($parts['query'])  ? $parts['query']  : '');
 		return $parts;
+	}
+
+	public function IsValidEmail($email) {
+		if (function_exists('filter_var')) {
+			return filter_var($email, FILTER_VALIDATE_EMAIL);
+		}
+		// VERY crude email validation
+		return preg_match('#^[^ ]+@[a-z\\-\\.]+\\.[a-z]{2,}$#', $email);
 	}
 
 	public function IsValidURL($url, $allowUserPass=false) {
