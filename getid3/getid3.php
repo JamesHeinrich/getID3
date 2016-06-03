@@ -72,7 +72,7 @@ unset($open_basedir, $temp_dir);
 class getID3
 {
 	// public: Settings
-	public $encoding        = 'UTF-8';        // CASE SENSITIVE! - i.e. (must be supported by iconv()). Examples:  ISO-8859-1  UTF-8  UTF-16  UTF-16BE
+	public $encoding        = 'UTF-8';        // CASE SENSITIVE! - i.e. (must be supported by mb_convert_encoding()). Examples:  ISO-8859-1  UTF-8  UTF-16  UTF-16BE
 	public $encoding_id3v1  = 'ISO-8859-1';   // Should always be 'ISO-8859-1', but some tags may be written in other encodings such as 'EUC-CN' or 'CP1252'
 
 	// public: Optional tag checks - disable for speed.
@@ -428,12 +428,12 @@ class getID3
 
 			// module requires iconv support
 			// Check encoding/iconv support
-			if (!empty($determined_format['iconv_req']) && !function_exists('iconv') && !in_array($this->encoding, array('ISO-8859-1', 'UTF-8', 'UTF-16LE', 'UTF-16BE', 'UTF-16'))) {
-				$errormessage = 'iconv() support is required for this module ('.$determined_format['include'].') for encodings other than ISO-8859-1, UTF-8, UTF-16LE, UTF16-BE, UTF-16. ';
+			if (!empty($determined_format['iconv_req']) && !function_exists('mb_convert_encoding') && !in_array($this->encoding, array('ISO-8859-1', 'UTF-8', 'UTF-16LE', 'UTF-16BE', 'UTF-16'))) {
+				$errormessage = 'mb_convert_encoding() support is required for this module ('.$determined_format['include'].') for encodings other than ISO-8859-1, UTF-8, UTF-16LE, UTF16-BE, UTF-16. ';
 				if (GETID3_OS_ISWINDOWS) {
-					$errormessage .= 'PHP does not have iconv() support. Please enable php_iconv.dll in php.ini, and copy iconv.dll from c:/php/dlls to c:/windows/system32';
+					$errormessage .= 'PHP does not have mb_convert_encoding() support. Please enable php_iconv.dll in php.ini, and copy iconv.dll from c:/php/dlls to c:/windows/system32';
 				} else {
-					$errormessage .= 'PHP is not compiled with iconv() support. Please recompile with the --with-iconv switch';
+					$errormessage .= 'PHP is not compiled with mb_convert_encoding() support. Please recompile with the --with-iconv switch';
 				}
 				return $this->error($errormessage);
 			}
@@ -1248,12 +1248,12 @@ class getID3
 				// Since ID3v1 has no concept of character sets there is no certain way to know we have the correct non-ISO-8859-1 character set, but we can guess
 				if ($comment_name == 'id3v1') {
 					if ($encoding == 'ISO-8859-1') {
-						if (function_exists('iconv')) {
+						if (function_exists('mb_convert_encoding')) {
 							foreach ($this->info['tags'][$tag_name] as $tag_key => $valuearray) {
 								foreach ($valuearray as $key => $value) {
 									if (preg_match('#^[\\x80-\\xFF]+$#', $value)) {
 										foreach (array('windows-1251', 'KOI8-R') as $id3v1_bad_encoding) {
-											if (@iconv($id3v1_bad_encoding, $id3v1_bad_encoding, $value) === $value) {
+											if (mb_convert_encoding($value, $id3v1_bad_encoding, $id3v1_bad_encoding) === $value) {
 												$encoding = $id3v1_bad_encoding;
 												break 3;
 											}
