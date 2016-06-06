@@ -960,8 +960,20 @@ class getid3_lib
 			return $string;
 		}
 
+		// mb_convert_encoding() availble
+		if (function_exists('mb_convert_encoding')) {
+			if ($converted_string = @mb_convert_encoding($string, $out_charset, $in_charset)) {
+				switch ($out_charset) {
+					case 'ISO-8859-1':
+						$converted_string = rtrim($converted_string, "\x00");
+						break;
+				}
+				return $converted_string;
+			}
+			return $string;
+		}
 		// iconv() availble
-		if (function_exists('iconv')) {
+		else if (function_exists('iconv')) {
 			if ($converted_string = @iconv($in_charset, $out_charset.'//TRANSLIT', $string)) {
 				switch ($out_charset) {
 					case 'ISO-8859-1':
@@ -977,7 +989,7 @@ class getid3_lib
 		}
 
 
-		// iconv() not available
+		// neither mb_convert_encoding or iconv() is available
 		static $ConversionFunctionList = array();
 		if (empty($ConversionFunctionList)) {
 			$ConversionFunctionList['ISO-8859-1']['UTF-8']    = 'iconv_fallback_iso88591_utf8';
@@ -999,7 +1011,7 @@ class getid3_lib
 			$ConversionFunction = $ConversionFunctionList[strtoupper($in_charset)][strtoupper($out_charset)];
 			return self::$ConversionFunction($string);
 		}
-		throw new Exception('PHP does not have iconv() support - cannot convert from '.$in_charset.' to '.$out_charset);
+		throw new Exception('PHP does not has mb_convert_encoding() or iconv() support - cannot convert from '.$in_charset.' to '.$out_charset);
 	}
 
 	public static function recursiveMultiByteCharString2HTML($data, $charset='ISO-8859-1') {
