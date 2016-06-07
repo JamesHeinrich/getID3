@@ -68,7 +68,18 @@ class getid3_jpg extends getid3_handler
 						if (substr($imageinfo['APP1'], 0, 4) == 'Exif') {
 //$info['warning'][] = 'known issue: https://bugs.php.net/bug.php?id=62523';
 //return false;
+							set_error_handler(function($errno, $errstr, $errfile, $errline, array $errcontext) {
+								if (!(error_reporting() & $errno)) {
+									// error is not specified in the error_reporting setting, so we ignore it
+									return false;
+								}
+
+								$errcontext['info']['warning'][] = 'Error parsing EXIF data ('.$errstr.')';
+							});
+
 							$info['jpg']['exif'] = exif_read_data($info['filenamepath'], null, true, false);
+
+							restore_error_handler();
 						} else {
 							$info['warning'][] = 'exif_read_data() cannot parse non-EXIF data in APP1 (expected "Exif", found "'.substr($imageinfo['APP1'], 0, 4).'")';
 						}
