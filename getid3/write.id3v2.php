@@ -1889,6 +1889,10 @@ class getid3_write_id3v2
 				return false;
 			}
 		}
+		// 2016-06-08: relax URL checking to avoid falsely rejecting valid URLs, leave URL validation to the user
+		// http://www.getid3.org/phpBB3/viewtopic.php?t=1926
+		return true;
+		/*
 		if ($parts = $this->safe_parse_url($url)) {
 			if (($parts['scheme'] != 'http') && ($parts['scheme'] != 'https') && ($parts['scheme'] != 'ftp') && ($parts['scheme'] != 'gopher')) {
 				return false;
@@ -1907,6 +1911,7 @@ class getid3_write_id3v2
 			}
 		}
 		return false;
+		*/
 	}
 
 	public static function ID3v2ShortFrameNameLookup($majorversion, $long_description) {
