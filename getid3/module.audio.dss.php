@@ -24,8 +24,8 @@ class getid3_dss extends getid3_handler
 		$this->fseek($info['avdataoffset']);
 		$DSSheader  = $this->fread(1540);
 
-		if (!preg_match('#^(\x02|\x03)ds[s2]#', $DSSheader)) {
-			$info['error'][] = 'Expecting "[02-03] 64 73 [73|32]" at offset '.$info['avdataoffset'].', found "'.getid3_lib::PrintHexBytes(substr($DSSheader, 0, 4)).'"';
+		if (!preg_match('#^.?ds[s2]#', $DSSheader)) {
+			$info['error'][] = 'Expecting "[any] 64 73 [73|32]" at offset '.$info['avdataoffset'].', found "'.getid3_lib::PrintHexBytes(substr($DSSheader, 0, 4)).'"';
 			return false;
 		}
 

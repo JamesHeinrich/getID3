@@ -352,6 +352,7 @@ class getID3
 			foreach (array('id3v2'=>'id3v2', 'id3v1'=>'id3v1', 'apetag'=>'ape', 'lyrics3'=>'lyrics3') as $tag_name => $tag_key) {
 				$option_tag = 'option_tag_'.$tag_name;
 				if ($this->$option_tag) {
+					
 					$this->include_module('tag.'.$tag_name);
 					try {
 						$tag_class = 'getid3_'.$tag_name;
@@ -1128,6 +1129,13 @@ class getID3
 			}
 		}
 
+		if (preg_match('#\.ds[s2]$#i', $filename)) {
+			// simple DSS recognition
+			$GetFileFormatArray = $this->GetFileFormatArray();
+			$info = $GetFileFormatArray['dss'];
+			$info['include'] = 'module.'.$info['group'].'.'.$info['module'].'.php';
+			return $info;
+		}
 
 		if (preg_match('#\.mp[123a]$#i', $filename)) {
 			// Too many mp3 encoders on the market put gabage in front of mpeg files
