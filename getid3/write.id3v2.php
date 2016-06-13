@@ -1743,14 +1743,14 @@ class getid3_write_id3v2
 		return false;
 	}
 
-	public function ID3v2IsValidRGADname($RGADname) {
+	public static function ID3v2IsValidRGADname($RGADname) {
 		if (($RGADname >= 0) && ($RGADname <= 2)) {
 			return true;
 		}
 		return false;
 	}
 
-	public function ID3v2IsValidRGADoriginator($RGADoriginator) {
+	public static function ID3v2IsValidRGADoriginator($RGADoriginator) {
 		if (($RGADoriginator >= 0) && ($RGADoriginator <= 3)) {
 			return true;
 		}
@@ -1770,7 +1770,7 @@ class getid3_write_id3v2
 		return isset($ID3v2IsValidTextEncoding_cache[$this->majorversion][$textencodingbyte]);
 	}
 
-	public function Unsynchronise($data) {
+	public static function Unsynchronise($data) {
 		// Whenever a false synchronisation is found within the tag, one zeroed
 		// byte is inserted after the first false synchronisation byte. The
 		// format of a correct sync that should be altered by ID3 encoders is as
@@ -1839,14 +1839,11 @@ class getid3_write_id3v2
 		}
 	}
 
-	public function IsValidMIMEstring($mimestring) {
-		if ((strlen($mimestring) >= 3) && (strpos($mimestring, '/') > 0) && (strpos($mimestring, '/') < (strlen($mimestring) - 1))) {
-			return true;
-		}
-		return false;
+	public static function IsValidMIMEstring($mimestring) {
+		return preg_match('#^.+/.+$#', $mimestring);
 	}
 
-	public function IsWithinBitRange($number, $maxbits, $signed=false) {
+	public static function IsWithinBitRange($number, $maxbits, $signed=false) {
 		if ($signed) {
 			if (($number > (0 - pow(2, $maxbits - 1))) && ($number <= pow(2, $maxbits - 1))) {
 				return true;
@@ -1859,18 +1856,7 @@ class getid3_write_id3v2
 		return false;
 	}
 
-	public function safe_parse_url($url) {
-		$parts = @parse_url($url);
-		$parts['scheme'] = (isset($parts['scheme']) ? $parts['scheme'] : '');
-		$parts['host']   = (isset($parts['host'])   ? $parts['host']   : '');
-		$parts['user']   = (isset($parts['user'])   ? $parts['user']   : '');
-		$parts['pass']   = (isset($parts['pass'])   ? $parts['pass']   : '');
-		$parts['path']   = (isset($parts['path'])   ? $parts['path']   : '');
-		$parts['query']  = (isset($parts['query'])  ? $parts['query']  : '');
-		return $parts;
-	}
-
-	public function IsValidEmail($email) {
+	public static function IsValidEmail($email) {
 		if (function_exists('filter_var')) {
 			return filter_var($email, FILTER_VALIDATE_EMAIL);
 		}
@@ -1878,7 +1864,7 @@ class getid3_write_id3v2
 		return preg_match('#^[^ ]+@[a-z\\-\\.]+\\.[a-z]{2,}$#', $email);
 	}
 
-	public function IsValidURL($url, $allowUserPass=false) {
+	public static function IsValidURL($url, $allowUserPass=false) {
 		if ($url == '') {
 			return false;
 		}
@@ -1889,6 +1875,10 @@ class getid3_write_id3v2
 				return false;
 			}
 		}
+		// 2016-06-08: relax URL checking to avoid falsely rejecting valid URLs, leave URL validation to the user
+		// http://www.getid3.org/phpBB3/viewtopic.php?t=1926
+		return true;
+		/*
 		if ($parts = $this->safe_parse_url($url)) {
 			if (($parts['scheme'] != 'http') && ($parts['scheme'] != 'https') && ($parts['scheme'] != 'ftp') && ($parts['scheme'] != 'gopher')) {
 				return false;
@@ -1907,6 +1897,18 @@ class getid3_write_id3v2
 			}
 		}
 		return false;
+		*/
+	}
+
+	public static function safe_parse_url($url) {
+		$parts = @parse_url($url);
+		$parts['scheme'] = (isset($parts['scheme']) ? $parts['scheme'] : '');
+		$parts['host']   = (isset($parts['host'])   ? $parts['host']   : '');
+		$parts['user']   = (isset($parts['user'])   ? $parts['user']   : '');
+		$parts['pass']   = (isset($parts['pass'])   ? $parts['pass']   : '');
+		$parts['path']   = (isset($parts['path'])   ? $parts['path']   : '');
+		$parts['query']  = (isset($parts['query'])  ? $parts['query']  : '');
+		return $parts;
 	}
 
 	public static function ID3v2ShortFrameNameLookup($majorversion, $long_description) {
