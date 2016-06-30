@@ -178,12 +178,12 @@ class getID3_cached_mysql extends getID3
 	private function create_table($drop=false) {
 
 		$SQLquery  = 'CREATE TABLE IF NOT EXISTS `'.mysql_real_escape_string($this->table).'` (';
-		$SQLquery .=   '`filename` VARCHAR(500) NOT NULL DEFAULT \'\'';
+		$SQLquery .=   '`filename` VARCHAR(330) NOT NULL DEFAULT \'\'';
 		$SQLquery .= ', `filesize` INT(11) NOT NULL DEFAULT \'0\'';
 		$SQLquery .= ', `filetime` INT(11) NOT NULL DEFAULT \'0\'';
 		$SQLquery .= ', `analyzetime` INT(11) NOT NULL DEFAULT \'0\'';
 		$SQLquery .= ', `value` LONGTEXT NOT NULL';
-		$SQLquery .= ', PRIMARY KEY (`filename`, `filesize`, `filetime`)) ENGINE=MyISAM';
+		$SQLquery .= ', PRIMARY KEY (`filename`, `filesize`, `filetime`)) ENGINE=MyISAM CHARSET=utf8';
 		$this->cursor = mysql_query($SQLquery, $this->connection);
 		echo mysql_error($this->connection);
 	}
