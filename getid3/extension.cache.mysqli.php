@@ -111,7 +111,7 @@ class getID3_cached_mysqli extends getID3
 		$SQLquery .= ' AND (`filetime` = -1)';
 		$SQLquery .= ' AND (`analyzetime` = -1)';
 		if ($this->cursor = $this->mysqli->query($SQLquery)) {
-			list($version) = $this->mysqli->fetch_array();
+			list($version) = $this->cursor->fetch_array();
 		}
 		if ($version != getID3::VERSION) {
 			$this->clear_cache();
@@ -146,7 +146,7 @@ class getID3_cached_mysqli extends getID3
 			$this->cursor = $this->mysqli->query($SQLquery);
 			if ($this->cursor->num_rows > 0) {
 				// Hit
-				list($result) = $this->mysqli->fetch_array();
+				list($result) = $this->cursor->fetch_array();
 				return unserialize(base64_decode($result));
 			}
 		}
@@ -176,7 +176,7 @@ class getID3_cached_mysqli extends getID3
 		$SQLquery .= ', `filetime` INT(11) NOT NULL DEFAULT \'0\'';
 		$SQLquery .= ', `analyzetime` INT(11) NOT NULL DEFAULT \'0\'';
 		$SQLquery .= ', `value` LONGTEXT NOT NULL';
-		$SQLquery .= ', PRIMARY KEY (`filename`, `filesize`, `filetime`)) ENGINE=MyISAM CHARSET=latin1 COLLATE=latin1_general_ci';
+		$SQLquery .= ', PRIMARY KEY (`filename`, `filesize`, `filetime`)) ENGINE=MyISAM CHARACTER SET=latin1 COLLATE=latin1_general_ci';
 		$this->cursor = $this->mysqli->query($SQLquery);
 		echo $this->mysqli->error;
 	}
