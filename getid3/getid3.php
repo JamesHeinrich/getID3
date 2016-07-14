@@ -109,7 +109,7 @@ class getID3
 	protected $startup_error   = '';
 	protected $startup_warning = '';
 
-	const VERSION           = '1.9.12-201606301451';
+	const VERSION           = '1.9.12-201607140837';
 	const FREAD_BUFFER_SIZE = 32768;
 
 	const ATTACHMENTS_NONE   = false;
@@ -259,7 +259,7 @@ class getID3
 			$this->info['php_memory_limit'] = (($this->memory_limit > 0) ? $this->memory_limit : false);
 
 			// remote files not supported
-			if (preg_match('/^(ht|f)tp:\/\//', $filename)) {
+			if (preg_match('#^(ht|f)tp://#', $filename)) {
 				throw new getid3_exception('Remote files are not supported - please copy the file locally first');
 			}
 
@@ -568,7 +568,7 @@ class getID3
 
 				// AC-3   - audio      - Dolby AC-3 / Dolby Digital
 				'ac3'  => array(
-							'pattern'   => '^\x0B\x77',
+							'pattern'   => '^\\x0B\\x77',
 							'group'     => 'audio',
 							'module'    => 'ac3',
 							'mime_type' => 'audio/ac3',
@@ -586,7 +586,7 @@ class getID3
 /*
 				// AA   - audio       - Audible Audiobook
 				'aa'   => array(
-							'pattern'   => '^.{4}\x57\x90\x75\x36',
+							'pattern'   => '^.{4}\\x57\\x90\\x75\\x36',
 							'group'     => 'audio',
 							'module'    => 'aa',
 							'mime_type' => 'audio/audible',
@@ -594,7 +594,7 @@ class getID3
 */
 				// AAC  - audio       - Advanced Audio Coding (AAC) - ADTS format (very similar to MP3)
 				'adts' => array(
-							'pattern'   => '^\xFF[\xF0-\xF1\xF8-\xF9]',
+							'pattern'   => '^\\xFF[\\xF0-\\xF1\\xF8-\\xF9]',
 							'group'     => 'audio',
 							'module'    => 'aac',
 							'mime_type' => 'application/octet-stream',
@@ -604,7 +604,7 @@ class getID3
 
 				// AU   - audio       - NeXT/Sun AUdio (AU)
 				'au'   => array(
-							'pattern'   => '^\.snd',
+							'pattern'   => '^\\.snd',
 							'group'     => 'audio',
 							'module'    => 'au',
 							'mime_type' => 'audio/basic',
@@ -612,7 +612,7 @@ class getID3
 
 				// AMR  - audio       - Adaptive Multi Rate
 				'amr'  => array(
-							'pattern'   => '^\x23\x21AMR\x0A', // #!AMR[0A]
+							'pattern'   => '^\\x23\\x21AMR\\x0A', // #!AMR[0A]
 							'group'     => 'audio',
 							'module'    => 'amr',
 							'mime_type' => 'audio/amr',
@@ -628,7 +628,7 @@ class getID3
 
 				// BONK - audio       - Bonk v0.9+
 				'bonk' => array(
-							'pattern'   => '^\x00(BONK|INFO|META| ID3)',
+							'pattern'   => '^\\x00(BONK|INFO|META| ID3)',
 							'group'     => 'audio',
 							'module'    => 'bonk',
 							'mime_type' => 'audio/xmms-bonk',
@@ -644,7 +644,7 @@ class getID3
 
 				// DSS  - audio       - Digital Speech Standard
 				'dss'  => array(
-							'pattern'   => '^[\x02-\x03]ds[s2]',
+							'pattern'   => '^[\\x02-\\x03]ds[s2]',
 							'group'     => 'audio',
 							'module'    => 'dss',
 							'mime_type' => 'application/octet-stream',
@@ -652,7 +652,7 @@ class getID3
 
 				// DTS  - audio       - Dolby Theatre System
 				'dts'  => array(
-							'pattern'   => '^\x7F\xFE\x80\x01',
+							'pattern'   => '^\\x7F\\xFE\\x80\\x01',
 							'group'     => 'audio',
 							'module'    => 'dts',
 							'mime_type' => 'audio/dts',
@@ -737,7 +737,7 @@ class getID3
 
 				// MPC  - audio       - Musepack / MPEGplus
 				'mpc'  => array(
-							'pattern'   => '^(MPCK|MP\+|[\x00\x01\x10\x11\x40\x41\x50\x51\x80\x81\x90\x91\xC0\xC1\xD0\xD1][\x20-37][\x00\x20\x40\x60\x80\xA0\xC0\xE0])',
+							'pattern'   => '^(MPCK|MP\\+|[\\x00\\x01\\x10\\x11\\x40\\x41\\x50\\x51\\x80\\x81\\x90\\x91\\xC0\\xC1\\xD0\\xD1][\\x20-\\x37][\\x00\\x20\\x40\\x60\\x80\\xA0\\xC0\\xE0])',
 							'group'     => 'audio',
 							'module'    => 'mpc',
 							'mime_type' => 'audio/x-musepack',
@@ -745,7 +745,7 @@ class getID3
 
 				// MP3  - audio       - MPEG-audio Layer 3 (very similar to AAC-ADTS)
 				'mp3'  => array(
-							'pattern'   => '^\xFF[\xE2-\xE7\xF2-\xF7\xFA-\xFF][\x00-\x0B\x10-\x1B\x20-\x2B\x30-\x3B\x40-\x4B\x50-\x5B\x60-\x6B\x70-\x7B\x80-\x8B\x90-\x9B\xA0-\xAB\xB0-\xBB\xC0-\xCB\xD0-\xDB\xE0-\xEB\xF0-\xFB]',
+							'pattern'   => '^\\xFF[\\xE2-\\xE7\\xF2-\\xF7\\xFA-\\xFF][\\x00-\\x0B\\x10-\\x1B\\x20-\\x2B\\x30-\\x3B\\x40-\\x4B\\x50-\\x5B\\x60-\\x6B\\x70-\\x7B\\x80-\\x8B\\x90-\\x9B\\xA0-\\xAB\\xB0-\\xBB\\xC0-\\xCB\\xD0-\\xDB\\xE0-\\xEB\\xF0-\\xFB]',
 							'group'     => 'audio',
 							'module'    => 'mp3',
 							'mime_type' => 'audio/mpeg',
@@ -753,7 +753,7 @@ class getID3
 
 				// OFR  - audio       - OptimFROG
 				'ofr'  => array(
-							'pattern'   => '^(\*RIFF|OFR)',
+							'pattern'   => '^(\\*RIFF|OFR)',
 							'group'     => 'audio',
 							'module'    => 'optimfrog',
 							'mime_type' => 'application/octet-stream',
@@ -779,7 +779,7 @@ class getID3
 
 				// TTA  - audio       - TTA Lossless Audio Compressor (http://tta.corecodec.org)
 				'tta'  => array(
-							'pattern'   => '^TTA',  // could also be '^TTA(\x01|\x02|\x03|2|1)'
+							'pattern'   => '^TTA',  // could also be '^TTA(\\x01|\\x02|\\x03|2|1)'
 							'group'     => 'audio',
 							'module'    => 'tta',
 							'mime_type' => 'application/octet-stream',
@@ -814,7 +814,7 @@ class getID3
 
 				// ASF  - audio/video - Advanced Streaming Format, Windows Media Video, Windows Media Audio
 				'asf'  => array(
-							'pattern'   => '^\x30\x26\xB2\x75\x8E\x66\xCF\x11\xA6\xD9\x00\xAA\x00\x62\xCE\x6C',
+							'pattern'   => '^\\x30\\x26\\xB2\\x75\\x8E\\x66\\xCF\\x11\\xA6\\xD9\\x00\\xAA\\x00\\x62\\xCE\\x6C',
 							'group'     => 'audio-video',
 							'module'    => 'asf',
 							'mime_type' => 'video/x-ms-asf',
@@ -831,7 +831,7 @@ class getID3
 
 				// FLV  - audio/video - FLash Video
 				'flv' => array(
-							'pattern'   => '^FLV\x01',
+							'pattern'   => '^FLV[\\x01]',
 							'group'     => 'audio-video',
 							'module'    => 'flv',
 							'mime_type' => 'video/x-flv',
@@ -839,7 +839,7 @@ class getID3
 
 				// MKAV - audio/video - Mastroka
 				'matroska' => array(
-							'pattern'   => '^\x1A\x45\xDF\xA3',
+							'pattern'   => '^\\x1A\\x45\\xDF\\xA3',
 							'group'     => 'audio-video',
 							'module'    => 'matroska',
 							'mime_type' => 'video/x-matroska', // may also be audio/x-matroska
@@ -847,7 +847,7 @@ class getID3
 
 				// MPEG - audio/video - MPEG (Moving Pictures Experts Group)
 				'mpeg' => array(
-							'pattern'   => '^\x00\x00\x01(\xBA|\xB3)',
+							'pattern'   => '^\\x00\\x00\\x01[\\xB3\\xBA]',
 							'group'     => 'audio-video',
 							'module'    => 'mpeg',
 							'mime_type' => 'video/mpeg',
@@ -890,7 +890,7 @@ class getID3
 
 				// Real - audio/video - RealAudio, RealVideo
 				'real' => array(
-							'pattern'   => '^(\\.RMF|\\.ra)',
+							'pattern'   => '^\\.(RMF|ra)',
 							'group'     => 'audio-video',
 							'module'    => 'real',
 							'mime_type' => 'audio/x-realaudio',
@@ -906,7 +906,7 @@ class getID3
 
 				// TS - audio/video - MPEG-2 Transport Stream
 				'ts' => array(
-							'pattern'   => '^(\x47.{187}){10,}', // packets are 188 bytes long and start with 0x47 "G".  Check for at least 10 packets matching this pattern
+							'pattern'   => '^(\\x47.{187}){10,}', // packets are 188 bytes long and start with 0x47 "G".  Check for at least 10 packets matching this pattern
 							'group'     => 'audio-video',
 							'module'    => 'ts',
 							'mime_type' => 'video/MP2T',
@@ -937,7 +937,7 @@ class getID3
 
 				// JPEG - still image - Joint Photographic Experts Group (JPEG)
 				'jpg'  => array(
-							'pattern'   => '^\xFF\xD8\xFF',
+							'pattern'   => '^\\xFF\\xD8\\xFF',
 							'group'     => 'graphic',
 							'module'    => 'jpg',
 							'mime_type' => 'image/jpeg',
@@ -947,7 +947,7 @@ class getID3
 
 				// PCD  - still image - Kodak Photo CD
 				'pcd'  => array(
-							'pattern'   => '^.{2048}PCD_IPI\x00',
+							'pattern'   => '^.{2048}PCD_IPI\\x00',
 							'group'     => 'graphic',
 							'module'    => 'pcd',
 							'mime_type' => 'image/x-photo-cd',
@@ -958,7 +958,7 @@ class getID3
 
 				// PNG  - still image - Portable Network Graphics (PNG)
 				'png'  => array(
-							'pattern'   => '^\x89\x50\x4E\x47\x0D\x0A\x1A\x0A',
+							'pattern'   => '^\\x89\\x50\\x4E\\x47\\x0D\\x0A\\x1A\\x0A',
 							'group'     => 'graphic',
 							'module'    => 'png',
 							'mime_type' => 'image/png',
@@ -969,7 +969,7 @@ class getID3
 
 				// SVG  - still image - Scalable Vector Graphics (SVG)
 				'svg'  => array(
-							'pattern'   => '(<!DOCTYPE svg PUBLIC |xmlns="http:\/\/www\.w3\.org\/2000\/svg")',
+							'pattern'   => '(<!DOCTYPE svg PUBLIC |xmlns="http://www\\.w3\\.org/2000/svg")',
 							'group'     => 'graphic',
 							'module'    => 'svg',
 							'mime_type' => 'image/svg+xml',
@@ -980,7 +980,7 @@ class getID3
 
 				// TIFF - still image - Tagged Information File Format (TIFF)
 				'tiff' => array(
-							'pattern'   => '^(II\x2A\x00|MM\x00\x2A)',
+							'pattern'   => '^(II\\x2A\\x00|MM\\x00\\x2A)',
 							'group'     => 'graphic',
 							'module'    => 'tiff',
 							'mime_type' => 'image/tiff',
@@ -991,7 +991,7 @@ class getID3
 
 				// EFAX - still image - eFax (TIFF derivative)
 				'efax'  => array(
-							'pattern'   => '^\xDC\xFE',
+							'pattern'   => '^\\xDC\\xFE',
 							'group'     => 'graphic',
 							'module'    => 'efax',
 							'mime_type' => 'image/efax',
@@ -1015,7 +1015,7 @@ class getID3
 
 				// RAR  - data        - RAR compressed data
 				'rar'  => array(
-							'pattern'   => '^Rar\!',
+							'pattern'   => '^Rar\\!',
 							'group'     => 'archive',
 							'module'    => 'rar',
 							'mime_type' => 'application/octet-stream',
@@ -1025,7 +1025,7 @@ class getID3
 
 				// SZIP - audio/data  - SZIP compressed data
 				'szip' => array(
-							'pattern'   => '^SZ\x0A\x04',
+							'pattern'   => '^SZ\\x0A\\x04',
 							'group'     => 'archive',
 							'module'    => 'szip',
 							'mime_type' => 'application/octet-stream',
@@ -1035,7 +1035,7 @@ class getID3
 
 				// TAR  - data        - TAR compressed data
 				'tar'  => array(
-							'pattern'   => '^.{100}[0-9\x20]{7}\x00[0-9\x20]{7}\x00[0-9\x20]{7}\x00[0-9\x20\x00]{12}[0-9\x20\x00]{12}',
+							'pattern'   => '^.{100}[0-9\\x20]{7}\\x00[0-9\\x20]{7}\\x00[0-9\\x20]{7}\\x00[0-9\\x20\\x00]{12}[0-9\\x20\\x00]{12}',
 							'group'     => 'archive',
 							'module'    => 'tar',
 							'mime_type' => 'application/x-tar',
@@ -1045,7 +1045,7 @@ class getID3
 
 				// GZIP  - data        - GZIP compressed data
 				'gz'  => array(
-							'pattern'   => '^\x1F\x8B\x08',
+							'pattern'   => '^\\x1F\\x8B\\x08',
 							'group'     => 'archive',
 							'module'    => 'gzip',
 							'mime_type' => 'application/x-gzip',
@@ -1055,7 +1055,7 @@ class getID3
 
 				// ZIP  - data         - ZIP compressed data
 				'zip'  => array(
-							'pattern'   => '^PK\x03\x04',
+							'pattern'   => '^PK\\x03\\x04',
 							'group'     => 'archive',
 							'module'    => 'zip',
 							'mime_type' => 'application/zip',
@@ -1068,7 +1068,7 @@ class getID3
 
 				// PAR2 - data        - Parity Volume Set Specification 2.0
 				'par2' => array (
-							'pattern'   => '^PAR2\x00PKT',
+							'pattern'   => '^PAR2\\x00PKT',
 							'group'     => 'misc',
 							'module'    => 'par2',
 							'mime_type' => 'application/octet-stream',
@@ -1078,7 +1078,7 @@ class getID3
 
 				// PDF  - data        - Portable Document Format
 				'pdf'  => array(
-							'pattern'   => '^\x25PDF',
+							'pattern'   => '^\\x25PDF',
 							'group'     => 'misc',
 							'module'    => 'pdf',
 							'mime_type' => 'application/pdf',
@@ -1088,7 +1088,7 @@ class getID3
 
 				// MSOFFICE  - data   - ZIP compressed data
 				'msoffice' => array(
-							'pattern'   => '^\xD0\xCF\x11\xE0\xA1\xB1\x1A\xE1', // D0CF11E == DOCFILE == Microsoft Office Document
+							'pattern'   => '^\\xD0\\xCF\\x11\\xE0\\xA1\\xB1\\x1A\\xE1', // D0CF11E == DOCFILE == Microsoft Office Document
 							'group'     => 'misc',
 							'module'    => 'msoffice',
 							'mime_type' => 'application/octet-stream',
@@ -1129,14 +1129,14 @@ class getID3
 		}
 
 
-		if (preg_match('#\.mp[123a]$#i', $filename)) {
+		if (preg_match('#\\.mp[123a]$#i', $filename)) {
 			// Too many mp3 encoders on the market put gabage in front of mpeg files
 			// use assume format on these if format detection failed
 			$GetFileFormatArray = $this->GetFileFormatArray();
 			$info = $GetFileFormatArray['mp3'];
 			$info['include'] = 'module.'.$info['group'].'.'.$info['module'].'.php';
 			return $info;
-		} elseif (preg_match('/\.cue$/i', $filename) && preg_match('#FILE "[^"]+" (BINARY|MOTOROLA|AIFF|WAVE|MP3)#', $filedata)) {
+		} elseif (preg_match('#\\.cue$#i', $filename) && preg_match('#FILE "[^"]+" (BINARY|MOTOROLA|AIFF|WAVE|MP3)#', $filedata)) {
 			// there's not really a useful consistent "magic" at the beginning of .cue files to identify them
 			// so until I think of something better, just go by filename if all other format checks fail
 			// and verify there's at least one instance of "TRACK xx AUDIO" in the file
