@@ -22,6 +22,9 @@ if (!defined('GETID3_INCLUDEPATH')) {
 if (!defined('IMG_JPG') && defined('IMAGETYPE_JPEG')) {
 	define('IMG_JPG', IMAGETYPE_JPEG);
 }
+if (!defined('ENT_SUBSTITUTE')) { // PHP5.3 adds ENT_IGNORE, PHP5.4 adds ENT_SUBSTITUTE
+	define('ENT_SUBSTITUTE', (defined('ENT_IGNORE') ? ENT_IGNORE : 8));
+}
 
 // attempt to define temp dir as something flexible but reliable
 $temp_dir = ini_get('upload_tmp_dir');
@@ -109,7 +112,7 @@ class getID3
 	protected $startup_error   = '';
 	protected $startup_warning = '';
 
-	const VERSION           = '1.9.12-201607140910';
+	const VERSION           = '1.9.12-201607230845';
 	const FREAD_BUFFER_SIZE = 32768;
 
 	const ATTACHMENTS_NONE   = false;

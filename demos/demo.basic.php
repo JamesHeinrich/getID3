@@ -14,7 +14,6 @@
 
 die('Due to a security issue, this demo has been disabled. It can be enabled by removing line '.__LINE__.' in '.$_SERVER['PHP_SELF']);
 
-
 // include getID3() library (can be in a different directory if full path is specified)
 require_once('../getid3/getid3.php');
 
@@ -46,7 +45,10 @@ getid3_lib::CopyTagsToComments($ThisFileInfo);
 //echo $ThisFileInfo['audio']['bitrate'];           // audio bitrate
 //echo $ThisFileInfo['playtime_string'];            // playtime in minutes:seconds, formatted string
 
-/*
- if you want to see ALL the output, uncomment this line:
-*/
-//echo '<pre>'.htmlentities(print_r($ThisFileInfo, true)).'</pre>';
+/* if you want to see all the tag data (from all tag formats), uncomment this line: */
+//echo '<pre>'.htmlentities(print_r($ThisFileInfo['comments'], true), ENT_SUBSTITUTE).'</pre>';
+
+/* if you want to see ALL the output, uncomment this line: */
+//echo '<pre>'.htmlentities(print_r($ThisFileInfo, true), ENT_SUBSTITUTE).'</pre>';
+
+
