@@ -112,7 +112,7 @@ class getID3
 	protected $startup_error   = '';
 	protected $startup_warning = '';
 
-	const VERSION           = '1.9.12-201607230845';
+	const VERSION           = '1.9.12-201607231806';
 	const FREAD_BUFFER_SIZE = 32768;
 
 	const ATTACHMENTS_NONE   = false;
@@ -124,7 +124,7 @@ class getID3
 		// Check for PHP version
 		$required_php_version = '5.3.0';
 		if (version_compare(PHP_VERSION, $required_php_version, '<')) {
-			$this->startup_error .= 'getID3() requires PHP v'.$required_php_version.' or higher - you are running v'.PHP_VERSION;
+			$this->startup_error .= 'getID3() requires PHP v'.$required_php_version.' or higher - you are running v'.PHP_VERSION."\n";
 			return false;
 		}
 
@@ -140,9 +140,9 @@ class getID3
 		if ($this->memory_limit <= 0) {
 			// memory limits probably disabled
 		} elseif ($this->memory_limit <= 4194304) {
-			$this->startup_error .= 'PHP has less than 4MB available memory and will very likely run out. Increase memory_limit in php.ini';
+			$this->startup_error .= 'PHP has less than 4MB available memory and will very likely run out. Increase memory_limit in php.ini'."\n";
 		} elseif ($this->memory_limit <= 12582912) {
-			$this->startup_warning .= 'PHP has less than 12MB available memory and might run out if all modules are loaded. Increase memory_limit in php.ini';
+			$this->startup_warning .= 'PHP has less than 12MB available memory and might run out if all modules are loaded. Increase memory_limit in php.ini'."\n";
 		}
 
 		// Check safe_mode off
@@ -150,27 +150,30 @@ class getID3
 			$this->warning('WARNING: Safe mode is on, shorten support disabled, md5data/sha1data for ogg vorbis disabled, ogg vorbos/flac tag writing disabled.');
 		}
 
-		if (intval(ini_get('mbstring.func_overload')) > 0) {
-			$this->warning('WARNING: php.ini contains "mbstring.func_overload = '.ini_get('mbstring.func_overload').'", this may break things.');
+		if (($mbstring_func_overload = ini_get('mbstring.func_overload')) && ($mbstring_func_overload & 0x02)) {
+			// http://php.net/manual/en/mbstring.overload.php
+			// "mbstring.func_overload in php.ini is a positive value that represents a combination of bitmasks specifying the categories of functions to be overloaded. It should be set to 1 to overload the mail() function. 2 for string functions, 4 for regular expression functions"
+			// getID3 cannot run when string functions are overloaded. It doesn't matter if mail() or ereg* functions are overloaded since getID3 does not use those.
+			$this->startup_error .= 'WARNING: php.ini contains "mbstring.func_overload = '.ini_get('mbstring.func_overload').'", getID3 cannot run with this setting (bitmask 2 (string functions) cannot be set). Recommended to disable entirely.'."\n";
 		}
 
 		// Check for magic_quotes_runtime
 		if (function_exists('get_magic_quotes_runtime')) {
 			if (get_magic_quotes_runtime()) {
-				return $this->startup_error('magic_quotes_runtime must be disabled before running getID3(). Surround getid3 block by set_magic_quotes_runtime(0) and set_magic_quotes_runtime(1).');
+				$this->startup_error .= 'magic_quotes_runtime must be disabled before running getID3(). Surround getid3 block by set_magic_quotes_runtime(0) and set_magic_quotes_runtime(1).'."\n";
 			}
 		}
 
 		// Check for magic_quotes_gpc
 		if (function_exists('magic_quotes_gpc')) {
 			if (get_magic_quotes_gpc()) {
-				return $this->startup_error('magic_quotes_gpc must be disabled before running getID3(). Surround getid3 block by set_magic_quotes_gpc(0) and set_magic_quotes_gpc(1).');
+				$this->startup_error .= 'magic_quotes_gpc must be disabled before running getID3(). Surround getid3 block by set_magic_quotes_gpc(0) and set_magic_quotes_gpc(1).'."\n";
 			}
 		}
 
 		// Load support library
 		if (!include_once(GETID3_INCLUDEPATH.'getid3.lib.php')) {
-			$this->startup_error .= 'getid3.lib.php is missing or corrupt';
+			$this->startup_error .= 'getid3.lib.php is missing or corrupt'."\n";
 		}
 
 		if ($this->option_max_2gb_check === null) {
@@ -189,7 +192,7 @@ class getID3
 			$helperappsdir = GETID3_INCLUDEPATH.'..'.DIRECTORY_SEPARATOR.'helperapps'; // must not have any space in this path
 
 			if (!is_dir($helperappsdir)) {
-				$this->startup_warning .= '"'.$helperappsdir.'" cannot be defined as GETID3_HELPERAPPSDIR because it does not exist';
+				$this->startup_warning .= '"'.$helperappsdir.'" cannot be defined as GETID3_HELPERAPPSDIR because it does not exist'."\n";
 			} elseif (strpos(realpath($helperappsdir), ' ') !== false) {
 				$DirPieces = explode(DIRECTORY_SEPARATOR, realpath($helperappsdir));
 				$path_so_far = array();
@@ -209,7 +212,7 @@ class getID3
 								}
 							}
 						} else {
-							$this->startup_warning .= 'GETID3_HELPERAPPSDIR must not have any spaces in it - use 8dot3 naming convention if neccesary. You can run "dir /x" from the commandline to see the correct 8.3-style names.';
+							$this->startup_warning .= 'GETID3_HELPERAPPSDIR must not have any spaces in it - use 8dot3 naming convention if neccesary. You can run "dir /x" from the commandline to see the correct 8.3-style names.'."\n";
 						}
 					}
 					$path_so_far[] = $value;
@@ -217,6 +220,11 @@ class getID3
 				$helperappsdir = implode(DIRECTORY_SEPARATOR, $path_so_far);
 			}
 			define('GETID3_HELPERAPPSDIR', $helperappsdir.DIRECTORY_SEPARATOR);
+		}
+
+		if (!empty($this->startup_error)) {
+			echo $this->startup_error;
+			throw new getid3_exception($this->startup_error);
 		}
 
 		return true;
@@ -252,7 +260,9 @@ class getID3
 				throw new getid3_exception($this->startup_error);
 			}
 			if (!empty($this->startup_warning)) {
-				$this->warning($this->startup_warning);
+				foreach (explode("\n", $this->startup_warning) as $startup_warning) {
+					$this->warning($startup_warning);
+				}
 			}
 
 			// init result array and set parameters
