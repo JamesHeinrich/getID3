@@ -112,7 +112,7 @@ class getID3
 	protected $startup_error   = '';
 	protected $startup_warning = '';
 
-	const VERSION           = '1.9.12-201607231806';
+	const VERSION           = '1.9.12-201607251953';
 	const FREAD_BUFFER_SIZE = 32768;
 
 	const ATTACHMENTS_NONE   = false;
@@ -1726,7 +1726,23 @@ abstract class getid3_handler {
 		if (!getid3_lib::intValueSupported($pos)) {
 			throw new getid3_exception('cannot fread('.$bytes.' from '.$this->ftell().') because beyond PHP filesystem limit', 10);
 		}
-		return fread($this->getid3->fp, $bytes);
+
+		//return fread($this->getid3->fp, $bytes);
+		/*
+		* http://www.getid3.org/phpBB3/viewtopic.php?t=1930
+		* "I found out that the root cause for the problem was how getID3 uses the PHP system function fread().
+		* It seems to assume that fread() would always return as many bytes as were requested.
+		* However, according the PHP manual (http://php.net/manual/en/function.fread.php), this is the case only with regular local files, but not e.g. with Linux pipes.
+		* The call may return only part of the requested data and a new call is needed to get more."
+		*/
+		$contents = '';
+		do {
+			$part = fread($this->getid3->fp, $bytes);
+			$partLength  = strlen($part);
+			$bytes      -= $partLength;
+			$contents   .= $part;
+		} while (($bytes > 0) && ($partLength > 0));
+		return $contents;
 	}
 
 	protected function fseek($bytes, $whence=SEEK_SET) {
