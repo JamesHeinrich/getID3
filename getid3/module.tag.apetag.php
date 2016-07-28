@@ -119,7 +119,7 @@ class getid3_apetag extends getid3_handler
 			$item_flags = getid3_lib::LittleEndian2Int(substr($APEtagData, $offset, 4));
 			$offset += 4;
 			if (strstr(substr($APEtagData, $offset), "\x00") === false) {
-				$info['error'][] = 'Cannot find null-byte (0x00) seperator between ItemKey #'.$i.' and value. ItemKey starts '.$offset.' bytes into the APE tag, at file offset '.($thisfile_ape['tag_offset_start'] + $offset);
+				$info['error'][] = 'Cannot find null-byte (0x00) separator between ItemKey #'.$i.' and value. ItemKey starts '.$offset.' bytes into the APE tag, at file offset '.($thisfile_ape['tag_offset_start'] + $offset);
 				return false;
 			}
 			$ItemKeyLength = strpos($APEtagData, "\x00", $offset) - $offset;
