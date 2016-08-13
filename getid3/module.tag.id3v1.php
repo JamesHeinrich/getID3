@@ -60,6 +60,26 @@ class getid3_id3v1 extends getid3_handler
 			foreach ($ParsedID3v1 as $key => $value) {
 				$ParsedID3v1['comments'][$key][0] = $value;
 			}
+			// ID3v1 encoding detection hack START
+			// ID3v1 is defined as always using ISO-8859-1 encoding, but it is not uncommon to find files tagged with ID3v1 using Windows-1251 or other character sets
+			// Since ID3v1 has no concept of character sets there is no certain way to know we have the correct non-ISO-8859-1 character set, but we can guess
+			$ID3v1encoding = 'ISO-8859-1';
+			foreach ($ParsedID3v1['comments'] as $tag_key => $valuearray) {
+				foreach ($valuearray as $key => $value) {
+					if (preg_match('#^[\\x00-\\x40\\xA8\\B8\\x80-\\xFF]+$#', $value)) {
+						foreach (array('Windows-1251', 'KOI8-R') as $id3v1_bad_encoding) {
+							if (function_exists('mb_convert_encoding') && @mb_convert_encoding($value, $id3v1_bad_encoding, $id3v1_bad_encoding) === $value) {
+								$ID3v1encoding = $id3v1_bad_encoding;
+								break 3;
+							} elseif (function_exists('iconv') && @iconv($id3v1_bad_encoding, $id3v1_bad_encoding, $value) === $value) {
+								$ID3v1encoding = $id3v1_bad_encoding;
+								break 3;
+							}
+						}
+					}
+				}
+			}
+			// ID3v1 encoding detection hack END
 
 			// ID3v1 data is supposed to be padded with NULL characters, but some taggers pad with spaces
 			$GoodFormatID3v1tag = $this->GenerateID3v1Tag(
@@ -80,6 +100,7 @@ class getid3_id3v1 extends getid3_handler
 			$ParsedID3v1['tag_offset_start'] = $ParsedID3v1['tag_offset_end'] - 128;
 
 			$info['id3v1'] = $ParsedID3v1;
+			$info['id3v1']['encoding'] = $ID3v1encoding;
 		}
 
 		if (substr($preid3v1, 0, 3) == 'TAG') {

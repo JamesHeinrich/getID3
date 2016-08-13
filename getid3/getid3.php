@@ -112,7 +112,7 @@ class getID3
 	protected $startup_error   = '';
 	protected $startup_warning = '';
 
-	const VERSION           = '1.9.12-201607251953';
+	const VERSION           = '1.9.12-201608131000';
 	const FREAD_BUFFER_SIZE = 32768;
 
 	const ATTACHMENTS_NONE   = false;
@@ -1250,50 +1250,14 @@ class getID3
 					continue;
 				}
 
+				$this->CharConvert($this->info['tags'][$tag_name], $this->info[$comment_name]['encoding']);           // only copy gets converted!
+
 				if ($this->option_tags_html) {
 					foreach ($this->info['tags'][$tag_name] as $tag_key => $valuearray) {
-						$this->info['tags_html'][$tag_name][$tag_key] = getid3_lib::recursiveMultiByteCharString2HTML($valuearray, $encoding);
+						$this->info['tags_html'][$tag_name][$tag_key] = getid3_lib::recursiveMultiByteCharString2HTML($valuearray, $this->info[$comment_name]['encoding']);
 					}
 				}
 
-				// ID3v1 encoding detection hack start
-				// ID3v1 is defined as always using ISO-8859-1 encoding, but it is not uncommon to find files tagged with ID3v1 using Windows-1251 or other character sets
-				// Since ID3v1 has no concept of character sets there is no certain way to know we have the correct non-ISO-8859-1 character set, but we can guess
-				if ($comment_name == 'id3v1') {
-					if ($encoding == 'ISO-8859-1') {
-						if (function_exists('mb_convert_encoding')) {
-							foreach ($this->info['tags'][$tag_name] as $tag_key => $valuearray) {
-								foreach ($valuearray as $key => $value) {
-									if (preg_match('#^[\\x80-\\xFF]+$#', $value)) {
-										foreach (array('windows-1251', 'KOI8-R') as $id3v1_bad_encoding) {
-											if (@mb_convert_encoding($value, $id3v1_bad_encoding, $id3v1_bad_encoding) === $value) {
-												$encoding = $id3v1_bad_encoding;
-												break 3;
-											}
-										}
-									}
-								}
-							}
-						}
-						else if (function_exists('iconv')) {
-							foreach ($this->info['tags'][$tag_name] as $tag_key => $valuearray) {
-								foreach ($valuearray as $key => $value) {
-									if (preg_match('#^[\\x80-\\xFF]+$#', $value)) {
-										foreach (array('windows-1251', 'KOI8-R') as $id3v1_bad_encoding) {
-											if (@iconv($id3v1_bad_encoding, $id3v1_bad_encoding, $value) === $value) {
-												$encoding = $id3v1_bad_encoding;
-												break 3;
-											}
-										}
-									}
-								}
-							}
-						}
-					}
-				}
-				// ID3v1 encoding detection hack end
-
-				$this->CharConvert($this->info['tags'][$tag_name], $encoding);           // only copy gets converted!
 			}
 
 		}
