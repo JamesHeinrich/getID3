@@ -1289,6 +1289,18 @@ class getid3_lib
 				}
 			}
 
+			// attempt to standardize spelling of returned keys
+			$StandardizeFieldNames = array(
+				'tracknumber' => 'track_number',
+				'track'       => 'track_number',
+			);
+			foreach ($StandardizeFieldNames as $badkey => $goodkey) {
+				if (array_key_exists($badkey, $ThisFileInfo['comments']) && !array_key_exists($goodkey, $ThisFileInfo['comments'])) {
+					$ThisFileInfo['comments'][$goodkey] = $ThisFileInfo['comments'][$badkey];
+					unset($ThisFileInfo['comments'][$badkey]);
+				}
+			}
+
 			// Copy to ['comments_html']
 			if (!empty($ThisFileInfo['comments'])) {
 				foreach ($ThisFileInfo['comments'] as $field => $values) {
