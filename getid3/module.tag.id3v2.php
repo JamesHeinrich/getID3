@@ -1744,7 +1744,7 @@ class getid3_id3v2 extends getid3_handler
 			$parsedFrame['pricepaid']['value']      = substr($frame_pricepaid, 3);
 
 			$parsedFrame['purchasedate'] = substr($parsedFrame['data'], $frame_offset, 8);
-			if (!$this->IsValidDateStampString($parsedFrame['purchasedate'])) {
+			if ($this->IsValidDateStampString($parsedFrame['purchasedate'])) {
 				$parsedFrame['purchasedateunix'] = mktime (0, 0, 0, substr($parsedFrame['purchasedate'], 4, 2), substr($parsedFrame['purchasedate'], 6, 2), substr($parsedFrame['purchasedate'], 0, 4));
 			}
 			$frame_offset += 8;
