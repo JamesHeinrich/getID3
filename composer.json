@@ -10,6 +10,6 @@
         "php": ">=5.3.0"
     },
     "autoload": {
-        "classmap": ["getid3/getid3.php"]
+        "classmap": ["getid3/"]
     }
 }
