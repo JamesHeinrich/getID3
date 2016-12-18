@@ -95,7 +95,7 @@ class getid3_svg extends getid3_handler
 
 			return true;
 		}
-		$info['error'][] = 'Did not find expected <svg> tag';
+		$this->error('Did not find expected <svg> tag');
 		return false;
 	}
 

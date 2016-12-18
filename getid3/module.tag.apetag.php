@@ -72,7 +72,7 @@ class getid3_apetag extends getid3_handler
 		$this->fseek($thisfile_ape['tag_offset_end'] - $apetagheadersize);
 		$APEfooterData = $this->fread(32);
 		if (!($thisfile_ape['footer'] = $this->parseAPEheaderFooter($APEfooterData))) {
-			$info['error'][] = 'Error parsing APE footer at offset '.$thisfile_ape['tag_offset_end'];
+			$this->error('Error parsing APE footer at offset '.$thisfile_ape['tag_offset_end']);
 			return false;
 		}
 
@@ -104,7 +104,7 @@ class getid3_apetag extends getid3_handler
 			if ($thisfile_ape['header'] = $this->parseAPEheaderFooter(substr($APEtagData, 0, $apetagheadersize))) {
 				$offset += $apetagheadersize;
 			} else {
-				$info['error'][] = 'Error parsing APE header at offset '.$thisfile_ape['tag_offset_start'];
+				$this->error('Error parsing APE header at offset '.$thisfile_ape['tag_offset_start']);
 				return false;
 			}
 		}
@@ -119,7 +119,7 @@ class getid3_apetag extends getid3_handler
 			$item_flags = getid3_lib::LittleEndian2Int(substr($APEtagData, $offset, 4));
 			$offset += 4;
 			if (strstr(substr($APEtagData, $offset), "\x00") === false) {
-				$info['error'][] = 'Cannot find null-byte (0x00) separator between ItemKey #'.$i.' and value. ItemKey starts '.$offset.' bytes into the APE tag, at file offset '.($thisfile_ape['tag_offset_start'] + $offset);
+				$this->error('Cannot find null-byte (0x00) separator between ItemKey #'.$i.' and value. ItemKey starts '.$offset.' bytes into the APE tag, at file offset '.($thisfile_ape['tag_offset_start'] + $offset));
 				return false;
 			}
 			$ItemKeyLength = strpos($APEtagData, "\x00", $offset) - $offset;

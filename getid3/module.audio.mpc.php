@@ -50,7 +50,7 @@ class getid3_mpc extends getid3_handler
 
 		} else {
 
-			$info['error'][] = 'Expecting "MP+" or "MPCK" at offset '.$info['avdataoffset'].', found "'.getid3_lib::PrintHexBytes(substr($MPCheaderData, 0, 4)).'"';
+			$this->error('Expecting "MP+" or "MPCK" at offset '.$info['avdataoffset'].', found "'.getid3_lib::PrintHexBytes(substr($MPCheaderData, 0, 4)).'"');
 			unset($info['fileformat']);
 			unset($info['mpc']);
 			return false;
@@ -83,13 +83,13 @@ class getid3_mpc extends getid3_handler
 			$thisPacket['key']      = substr($MPCheaderData, 0, $keyNameSize);
 			$thisPacket['key_name'] = $this->MPCsv8PacketName($thisPacket['key']);
 			if ($thisPacket['key'] == $thisPacket['key_name']) {
-				$info['error'][] = 'Found unexpected key value "'.$thisPacket['key'].'" at offset '.$thisPacket['offset'];
+				$this->error('Found unexpected key value "'.$thisPacket['key'].'" at offset '.$thisPacket['offset']);
 				return false;
 			}
 			$packetLength = 0;
 			$thisPacket['packet_size'] = $this->SV8variableLengthInteger(substr($MPCheaderData, $keyNameSize), $packetLength); // includes keyname and packet_size field
 			if ($thisPacket['packet_size'] === false) {
-				$info['error'][] = 'Did not find expected packet length within '.$maxHandledPacketLength.' bytes at offset '.($thisPacket['offset'] + $keyNameSize);
+				$this->error('Did not find expected packet length within '.$maxHandledPacketLength.' bytes at offset '.($thisPacket['offset'] + $keyNameSize));
 				return false;
 			}
 			$packet_offset += $packetLength;
@@ -195,7 +195,7 @@ class getid3_mpc extends getid3_handler
 					break;
 
 				default:
-					$info['error'][] = 'Found unhandled key type "'.$thisPacket['key'].'" at offset '.$thisPacket['offset'];
+					$this->error('Found unhandled key type "'.$thisPacket['key'].'" at offset '.$thisPacket['offset']);
 					return false;
 					break;
 			}
@@ -229,7 +229,7 @@ class getid3_mpc extends getid3_handler
 		$offset += 4;
 
 		if ($thisfile_mpc_header['stream_version_major'] != 7) {
-			$info['error'][] = 'Only Musepack SV7 supported (this file claims to be v'.$thisfile_mpc_header['stream_version_major'].')';
+			$this->error('Only Musepack SV7 supported (this file claims to be v'.$thisfile_mpc_header['stream_version_major'].')');
 			return false;
 		}
 
@@ -268,7 +268,7 @@ class getid3_mpc extends getid3_handler
 		$thisfile_mpc_header['profile']     = $this->MPCprofileNameLookup($thisfile_mpc_header['raw']['profile']);
 		$thisfile_mpc_header['sample_rate'] = $this->MPCfrequencyLookup($thisfile_mpc_header['raw']['sample_rate']);
 		if ($thisfile_mpc_header['sample_rate'] == 0) {
-			$info['error'][] = 'Corrupt MPC file: frequency == zero';
+			$this->error('Corrupt MPC file: frequency == zero');
 			return false;
 		}
 		$info['audio']['sample_rate'] = $thisfile_mpc_header['sample_rate'];
@@ -276,7 +276,7 @@ class getid3_mpc extends getid3_handler
 
 		$info['playtime_seconds']     = ($thisfile_mpc_header['samples'] / $info['audio']['channels']) / $info['audio']['sample_rate'];
 		if ($info['playtime_seconds'] == 0) {
-			$info['error'][] = 'Corrupt MPC file: playtime_seconds == zero';
+			$this->error('Corrupt MPC file: playtime_seconds == zero');
 			return false;
 		}
 

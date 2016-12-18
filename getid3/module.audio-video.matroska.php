@@ -234,7 +234,7 @@ class getid3_matroska extends getid3_handler
 		try {
 			$this->parseEBML($info);
 		} catch (Exception $e) {
-			$info['error'][] = 'EBML parser: '.$e->getMessage();
+			$this->error('EBML parser: '.$e->getMessage());
 		}
 
 		// calculate playtime

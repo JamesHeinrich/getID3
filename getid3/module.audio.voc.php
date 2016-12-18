@@ -27,7 +27,7 @@ class getid3_voc extends getid3_handler
 
 		$magic = 'Creative Voice File';
 		if (substr($VOCheader, 0, 19) != $magic) {
-			$info['error'][] = 'Expecting "'.getid3_lib::PrintHexBytes($magic).'" at offset '.$info['avdataoffset'].', found "'.getid3_lib::PrintHexBytes(substr($VOCheader, 0, 19)).'"';
+			$this->error('Expecting "'.getid3_lib::PrintHexBytes($magic).'" at offset '.$info['avdataoffset'].', found "'.getid3_lib::PrintHexBytes(substr($VOCheader, 0, 19)).'"');
 			return false;
 		}
 

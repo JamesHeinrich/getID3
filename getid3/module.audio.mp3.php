@@ -34,7 +34,7 @@ class getid3_mp3 extends getid3_handler
 
 		if (!$this->getOnlyMPEGaudioInfo($info['avdataoffset'])) {
 			if ($this->allow_bruteforce) {
-				$info['error'][] = 'Rescanning file in BruteForce mode';
+				$this->error('Rescanning file in BruteForce mode');
 				$this->getOnlyMPEGaudioInfoBruteForce($this->getid3->fp, $info);
 			}
 		}
@@ -424,7 +424,7 @@ class getid3_mp3 extends getid3_handler
 		}
 
 		if ($this->fseek($offset) != 0) {
-			$info['error'][] = 'decodeMPEGaudioHeader() failed to seek to next offset at '.$offset;
+			$this->error('decodeMPEGaudioHeader() failed to seek to next offset at '.$offset);
 			return false;
 		}
 		//$headerstring = $this->fread(1441); // worst-case max length = 32kHz @ 320kbps layer 3 = 1441 bytes/frame
@@ -461,7 +461,7 @@ class getid3_mp3 extends getid3_handler
 		if ($MPEGaudioHeaderValidCache[$head4]) {
 			$thisfile_mpeg_audio['raw'] = $MPEGheaderRawArray;
 		} else {
-			$info['error'][] = 'Invalid MPEG audio header ('.getid3_lib::PrintHexBytes($head4).') at offset '.$offset;
+			$this->error('Invalid MPEG audio header ('.getid3_lib::PrintHexBytes($head4).') at offset '.$offset);
 			return false;
 		}
 
@@ -511,7 +511,7 @@ class getid3_mp3 extends getid3_handler
 					if (($thisfile_mpeg_audio['bitrate'] == 'free') || ($thisfile_mpeg_audio['bitrate'] <= 192000)) {
 						// these are ok
 					} else {
-						$info['error'][] = $thisfile_mpeg_audio['bitrate'].'kbps not allowed in Layer 2, '.$thisfile_mpeg_audio['channelmode'].'.';
+						$this->error($thisfile_mpeg_audio['bitrate'].'kbps not allowed in Layer 2, '.$thisfile_mpeg_audio['channelmode'].'.');
 						return false;
 					}
 					break;
@@ -522,7 +522,7 @@ class getid3_mp3 extends getid3_handler
 					if (($thisfile_mpeg_audio['bitrate'] == 'free') || ($thisfile_mpeg_audio['bitrate'] == 64000) || ($thisfile_mpeg_audio['bitrate'] >= 96000)) {
 						// these are ok
 					} else {
-						$info['error'][] = intval(round($thisfile_mpeg_audio['bitrate'] / 1000)).'kbps not allowed in Layer 2, '.$thisfile_mpeg_audio['channelmode'].'.';
+						$this->error(intval(round($thisfile_mpeg_audio['bitrate'] / 1000)).'kbps not allowed in Layer 2, '.$thisfile_mpeg_audio['channelmode'].'.');
 						return false;
 					}
 					break;
@@ -544,7 +544,7 @@ class getid3_mp3 extends getid3_handler
 			if (isset($thisfile_mpeg_audio['framelength'])) {
 				$nextframetestoffset = $offset + $thisfile_mpeg_audio['framelength'];
 			} else {
-				$info['error'][] = 'Frame at offset('.$offset.') is has an invalid frame length.';
+				$this->error('Frame at offset('.$offset.') is has an invalid frame length.');
 				return false;
 			}
 
@@ -941,7 +941,7 @@ class getid3_mp3 extends getid3_handler
 						$info['audio']['bitrate'] = (($framebytelength - intval($thisfile_mpeg_audio['padding'])) * $thisfile_mpeg_audio['sample_rate']) / 144;
 					}
 				} else {
-					$info['error'][] = 'Error calculating frame length of free-format MP3 without Xing/LAME header';
+					$this->error('Error calculating frame length of free-format MP3 without Xing/LAME header');
 				}
 			}
 		}
@@ -1108,7 +1108,7 @@ class getid3_mp3 extends getid3_handler
 				if (isset($nextframetestarray['mpeg']['audio']['framelength']) && ($nextframetestarray['mpeg']['audio']['framelength'] > 0)) {
 					$nextframetestoffset += $nextframetestarray['mpeg']['audio']['framelength'];
 				} else {
-					$info['error'][] = 'Frame at offset ('.$offset.') is has an invalid frame length.';
+					$this->error('Frame at offset ('.$offset.') is has an invalid frame length.');
 					return false;
 				}
 
@@ -1163,7 +1163,7 @@ class getid3_mp3 extends getid3_handler
 				$framelength = $framelength2;
 			}
 			if (!$framelength) {
-				$info['error'][] = 'Cannot find next free-format synch pattern ('.getid3_lib::PrintHexBytes($SyncPattern1).' or '.getid3_lib::PrintHexBytes($SyncPattern2).') after offset '.$offset;
+				$this->error('Cannot find next free-format synch pattern ('.getid3_lib::PrintHexBytes($SyncPattern1).' or '.getid3_lib::PrintHexBytes($SyncPattern2).') after offset '.$offset);
 				return false;
 			} else {
 				$this->warning('ModeExtension varies between first frame and other frames (known free-format issue in LAME 3.88)');
@@ -1193,7 +1193,7 @@ class getid3_mp3 extends getid3_handler
 					$ActualFrameLengthValues[] = ($framelength + 1);
 					$nextoffset++;
 				} else {
-					$info['error'][] = 'Did not find expected free-format sync pattern at offset '.$nextoffset;
+					$this->error('Did not find expected free-format sync pattern at offset '.$nextoffset);
 					return false;
 				}
 				$nextoffset += $framelength;
@@ -1318,13 +1318,13 @@ class getid3_mp3 extends getid3_handler
 		$info['mpeg']['audio']['version_distribution']   = $Distribution['version'];
 		$info['mpeg']['audio']['padding_distribution']   = $Distribution['padding'];
 		if (count($Distribution['version']) > 1) {
-			$info['error'][] = 'Corrupt file - more than one MPEG version detected';
+			$this->error('Corrupt file - more than one MPEG version detected');
 		}
 		if (count($Distribution['layer']) > 1) {
-			$info['error'][] = 'Corrupt file - more than one MPEG layer detected';
+			$this->error('Corrupt file - more than one MPEG layer detected');
 		}
 		if (count($Distribution['frequency']) > 1) {
-			$info['error'][] = 'Corrupt file - more than one MPEG sample rate detected';
+			$this->error('Corrupt file - more than one MPEG sample rate detected');
 		}
 
 
@@ -1336,7 +1336,7 @@ class getid3_mp3 extends getid3_handler
 		}
 		$info['mpeg']['audio']['frame_count']  = array_sum($Distribution['bitrate']);
 		if ($info['mpeg']['audio']['frame_count'] == 0) {
-			$info['error'][] = 'no MPEG audio frames found';
+			$this->error('no MPEG audio frames found');
 			return false;
 		}
 		$info['mpeg']['audio']['bitrate']      = ($bittotal / $info['mpeg']['audio']['frame_count']);
@@ -1371,7 +1371,7 @@ class getid3_mp3 extends getid3_handler
 		$this->fseek($avdataoffset);
 		$sync_seek_buffer_size = min(128 * 1024, $info['avdataend'] - $avdataoffset);
 		if ($sync_seek_buffer_size <= 0) {
-			$info['error'][] = 'Invalid $sync_seek_buffer_size at offset '.$avdataoffset;
+			$this->error('Invalid $sync_seek_buffer_size at offset '.$avdataoffset);
 			return false;
 		}
 		$header = $this->fread($sync_seek_buffer_size);
@@ -1382,7 +1382,7 @@ class getid3_mp3 extends getid3_handler
 
 				if ($SynchSeekOffset > $sync_seek_buffer_size) {
 					// if a synch's not found within the first 128k bytes, then give up
-					$info['error'][] = 'Could not find valid MPEG audio synch within the first '.round($sync_seek_buffer_size / 1024).'kB';
+					$this->error('Could not find valid MPEG audio synch within the first '.round($sync_seek_buffer_size / 1024).'kB');
 					if (isset($info['audio']['bitrate'])) {
 						unset($info['audio']['bitrate']);
 					}
@@ -1396,7 +1396,7 @@ class getid3_mp3 extends getid3_handler
 
 				} elseif (feof($this->getid3->fp)) {
 
-					$info['error'][] = 'Could not find valid MPEG audio synch before end of file';
+					$this->error('Could not find valid MPEG audio synch before end of file');
 					if (isset($info['audio']['bitrate'])) {
 						unset($info['audio']['bitrate']);
 					}
@@ -1411,7 +1411,7 @@ class getid3_mp3 extends getid3_handler
 			}
 
 			if (($SynchSeekOffset + 1) >= strlen($header)) {
-				$info['error'][] = 'Could not find valid MPEG synch before end of file';
+				$this->error('Could not find valid MPEG synch before end of file');
 				return false;
 			}
 
@@ -1574,7 +1574,7 @@ class getid3_mp3 extends getid3_handler
 							}
 						}
 						if ($framecounter == 0) {
-							$info['error'][] = 'Corrupt MP3 file: framecounter == zero';
+							$this->error('Corrupt MP3 file: framecounter == zero');
 							return false;
 						}
 						$info['mpeg']['audio']['frame_count'] = getid3_lib::CastAsInt($framecounter);
@@ -1609,7 +1609,7 @@ class getid3_mp3 extends getid3_handler
 
 				if (empty($info['mpeg']['audio'])) {
 
-					$info['error'][] = 'could not find valid MPEG synch before end of file';
+					$this->error('could not find valid MPEG synch before end of file');
 					if (isset($info['audio']['bitrate'])) {
 						unset($info['audio']['bitrate']);
 					}

@@ -190,7 +190,7 @@ class getid3_riff extends getid3_handler {
 					$thisfile_riff_audio[$streamindex] = self::parseWAVEFORMATex($thisfile_riff_WAVE['fmt '][0]['data']);
 					$thisfile_audio['wformattag'] = $thisfile_riff_audio[$streamindex]['raw']['wFormatTag'];
 					if (!isset($thisfile_riff_audio[$streamindex]['bitrate']) || ($thisfile_riff_audio[$streamindex]['bitrate'] == 0)) {
-						$info['error'][] = 'Corrupt RIFF file: bitrate_audio == zero';
+						$this->error('Corrupt RIFF file: bitrate_audio == zero');
 						return false;
 					}
 					$thisfile_riff_raw['fmt '] = $thisfile_riff_audio[$streamindex]['raw'];
@@ -660,7 +660,7 @@ class getid3_riff extends getid3_handler {
 
 					$thisfile_riff_raw_avih['dwMicroSecPerFrame']    = $this->EitherEndian2Int(substr($avihData,  0, 4)); // frame display rate (or 0L)
 					if ($thisfile_riff_raw_avih['dwMicroSecPerFrame'] == 0) {
-						$info['error'][] = 'Corrupt RIFF file: avih.dwMicroSecPerFrame == zero';
+						$this->error('Corrupt RIFF file: avih.dwMicroSecPerFrame == zero');
 						return false;
 					}
 
@@ -1020,7 +1020,7 @@ class getid3_riff extends getid3_handler {
 					}
 					$thisfile_audio['sample_rate']     = $thisfile_riff_audio['sample_rate'];
 					if ($thisfile_audio['sample_rate'] == 0) {
-						$info['error'][] = 'Corrupted AIFF file: sample_rate == zero';
+						$this->error('Corrupted AIFF file: sample_rate == zero');
 						return false;
 					}
 					$info['playtime_seconds'] = $thisfile_riff_audio['total_samples'] / $thisfile_audio['sample_rate'];
@@ -1175,11 +1175,11 @@ class getid3_riff extends getid3_handler {
 				$info['fileformat'] = 'webp';
 				$info['mime_type']  = 'image/webp';
 
-$info['error'][] = 'WebP image parsing not supported in this version of getID3()';
+$this->error('WebP image parsing not supported in this version of getID3()');
 				break;
 
 			default:
-				$info['error'][] = 'Unknown RIFF type: expecting one of (WAVE|RMP3|AVI |CDDA|AIFF|AIFC|8SVX|CDXA|WEBP), found "'.$RIFFsubtype.'" instead';
+				$this->error('Unknown RIFF type: expecting one of (WAVE|RMP3|AVI |CDDA|AIFF|AIFC|8SVX|CDXA|WEBP), found "'.$RIFFsubtype.'" instead');
 				//unset($info['fileformat']);
 		}
 

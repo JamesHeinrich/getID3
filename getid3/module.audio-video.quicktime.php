@@ -38,7 +38,7 @@ class getid3_quicktime extends getid3_handler
 		$atom_data_read_buffer_size = max($this->getid3->option_fread_buffer_size * 1024, ($info['php_memory_limit'] ? round($info['php_memory_limit'] / 4) : 1024)); // set read buffer to 25% of PHP memory limit (if one is specified), otherwise use option_fread_buffer_size [default: 32MB]
 		while ($offset < $info['avdataend']) {
 			if (!getid3_lib::intValueSupported($offset)) {
-				$info['error'][] = 'Unable to parse atom at offset '.$offset.' because beyond '.round(PHP_INT_MAX / 1073741824).'GB limit of PHP filesystem functions';
+				$this->error('Unable to parse atom at offset '.$offset.' because beyond '.round(PHP_INT_MAX / 1073741824).'GB limit of PHP filesystem functions');
 				break;
 			}
 			$this->fseek($offset);
@@ -57,7 +57,7 @@ class getid3_quicktime extends getid3_handler
 			$info['quicktime'][$atomname]['offset'] = $offset;
 
 			if (($offset + $atomsize) > $info['avdataend']) {
-				$info['error'][] = 'Atom at offset '.$offset.' claims to go beyond end-of-file (length: '.$atomsize.' bytes)';
+				$this->error('Atom at offset '.$offset.' claims to go beyond end-of-file (length: '.$atomsize.' bytes)');
 				return false;
 			}
 
@@ -1119,7 +1119,7 @@ if (!empty($atom_structure['sample_description_table'][$i]['width']) && !empty($
 				$atom_structure['quality']               = getid3_lib::BigEndian2Int(substr($atom_data, 22, 2));
 
 				if ($atom_structure['time_scale'] == 0) {
-					$info['error'][] = 'Corrupt Quicktime file: mdhd.time_scale == zero';
+					$this->error('Corrupt Quicktime file: mdhd.time_scale == zero');
 					return false;
 				}
 				$info['quicktime']['time_scale'] = ((isset($info['quicktime']['time_scale']) && ($info['quicktime']['time_scale'] < 1000)) ? max($info['quicktime']['time_scale'], $atom_structure['time_scale']) : $atom_structure['time_scale']);
@@ -1233,7 +1233,7 @@ if (!empty($atom_structure['sample_description_table'][$i]['width']) && !empty($
 				$atom_structure['next_track_id']      =   getid3_lib::BigEndian2Int(substr($atom_data, 96, 4));
 
 				if ($atom_structure['time_scale'] == 0) {
-					$info['error'][] = 'Corrupt Quicktime file: mvhd.time_scale == zero';
+					$this->error('Corrupt Quicktime file: mvhd.time_scale == zero');
 					return false;
 				}
 				$atom_structure['creation_time_unix']        = getid3_lib::DateMac2Unix($atom_structure['creation_time']);

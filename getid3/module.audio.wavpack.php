@@ -47,7 +47,7 @@ class getid3_wavpack extends getid3_handler
 
 			$magic = 'wvpk';
 			if ($blockheader_magic != $magic) {
-				$info['error'][] = 'Expecting "'.getid3_lib::PrintHexBytes($magic).'" at offset '.$blockheader_offset.', found "'.getid3_lib::PrintHexBytes($blockheader_magic).'"';
+				$this->error('Expecting "'.getid3_lib::PrintHexBytes($magic).'" at offset '.$blockheader_offset.', found "'.getid3_lib::PrintHexBytes($blockheader_magic).'"');
 				switch (isset($info['audio']['dataformat']) ? $info['audio']['dataformat'] : '') {
 					case 'wavpack':
 					case 'wvc':
@@ -86,7 +86,7 @@ class getid3_wavpack extends getid3_handler
 				$info['wavpack']['blockheader']['size']   = $blockheader_size;
 
 				if ($info['wavpack']['blockheader']['size'] >= 0x100000) {
-					$info['error'][] = 'Expecting WavPack block size less than "0x100000", found "'.$info['wavpack']['blockheader']['size'].'" at offset '.$info['wavpack']['blockheader']['offset'];
+					$this->error('Expecting WavPack block size less than "0x100000", found "'.$info['wavpack']['blockheader']['size'].'" at offset '.$info['wavpack']['blockheader']['offset']);
 					switch (isset($info['audio']['dataformat']) ? $info['audio']['dataformat'] : '') {
 						case 'wavpack':
 						case 'wvc':
@@ -106,7 +106,7 @@ class getid3_wavpack extends getid3_handler
 				if (($info['wavpack']['blockheader']['major_version'] != 4) ||
 					(($info['wavpack']['blockheader']['minor_version'] < 4) &&
 					($info['wavpack']['blockheader']['minor_version'] > 16))) {
-						$info['error'][] = 'Expecting WavPack version between "4.2" and "4.16", found version "'.$info['wavpack']['blockheader']['major_version'].'.'.$info['wavpack']['blockheader']['minor_version'].'" at offset '.$info['wavpack']['blockheader']['offset'];
+						$this->error('Expecting WavPack version between "4.2" and "4.16", found version "'.$info['wavpack']['blockheader']['major_version'].'.'.$info['wavpack']['blockheader']['minor_version'].'" at offset '.$info['wavpack']['blockheader']['offset']);
 						switch (isset($info['audio']['dataformat']) ? $info['audio']['dataformat'] : '') {
 							case 'wavpack':
 							case 'wvc':

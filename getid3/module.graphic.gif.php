@@ -35,7 +35,7 @@ class getid3_gif extends getid3_handler
 
 		$magic = 'GIF';
 		if ($info['gif']['header']['raw']['identifier'] != $magic) {
-			$info['error'][] = 'Expecting "'.getid3_lib::PrintHexBytes($magic).'" at offset '.$info['avdataoffset'].', found "'.getid3_lib::PrintHexBytes($info['gif']['header']['raw']['identifier']).'"';
+			$this->error('Expecting "'.getid3_lib::PrintHexBytes($magic).'" at offset '.$info['avdataoffset'].', found "'.getid3_lib::PrintHexBytes($info['gif']['header']['raw']['identifier']).'"');
 			unset($info['fileformat']);
 			unset($info['gif']);
 			return false;

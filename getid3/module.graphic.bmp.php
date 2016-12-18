@@ -46,7 +46,7 @@ class getid3_bmp extends getid3_handler
 
 		$magic = 'BM';
 		if ($thisfile_bmp_header_raw['identifier'] != $magic) {
-			$info['error'][] = 'Expecting "'.getid3_lib::PrintHexBytes($magic).'" at offset '.$info['avdataoffset'].', found "'.getid3_lib::PrintHexBytes($thisfile_bmp_header_raw['identifier']).'"';
+			$this->error('Expecting "'.getid3_lib::PrintHexBytes($magic).'" at offset '.$info['avdataoffset'].', found "'.getid3_lib::PrintHexBytes($thisfile_bmp_header_raw['identifier']).'"');
 			unset($info['fileformat']);
 			unset($info['bmp']);
 			return false;
@@ -86,7 +86,7 @@ class getid3_bmp extends getid3_handler
 			$thisfile_bmp['type_os']      = 'Windows';
 			$thisfile_bmp['type_version'] = 5;
 		} else {
-			$info['error'][] = 'Unknown BMP subtype (or not a BMP file)';
+			$this->error('Unknown BMP subtype (or not a BMP file)');
 			unset($info['fileformat']);
 			unset($info['bmp']);
 			return false;
@@ -283,7 +283,7 @@ class getid3_bmp extends getid3_handler
 
 		} else {
 
-			$info['error'][] = 'Unknown BMP format in header.';
+			$this->error('Unknown BMP format in header.');
 			return false;
 
 		}
@@ -406,7 +406,7 @@ class getid3_bmp extends getid3_handler
 							break;
 
 						default:
-							$info['error'][] = 'Unknown bits-per-pixel value ('.$thisfile_bmp_header_raw['bits_per_pixel'].') - cannot read pixel data';
+							$this->error('Unknown bits-per-pixel value ('.$thisfile_bmp_header_raw['bits_per_pixel'].') - cannot read pixel data');
 							break;
 					}
 					break;
@@ -481,7 +481,7 @@ class getid3_bmp extends getid3_handler
 							break;
 
 						default:
-							$info['error'][] = 'Unknown bits-per-pixel value ('.$thisfile_bmp_header_raw['bits_per_pixel'].') - cannot read pixel data';
+							$this->error('Unknown bits-per-pixel value ('.$thisfile_bmp_header_raw['bits_per_pixel'].') - cannot read pixel data');
 							break;
 					}
 					break;
@@ -570,7 +570,7 @@ class getid3_bmp extends getid3_handler
 							break;
 
 						default:
-							$info['error'][] = 'Unknown bits-per-pixel value ('.$thisfile_bmp_header_raw['bits_per_pixel'].') - cannot read pixel data';
+							$this->error('Unknown bits-per-pixel value ('.$thisfile_bmp_header_raw['bits_per_pixel'].') - cannot read pixel data');
 							break;
 					}
 					break;
@@ -610,14 +610,14 @@ class getid3_bmp extends getid3_handler
 							break;
 
 						default:
-							$info['error'][] = 'Unknown bits-per-pixel value ('.$thisfile_bmp_header_raw['bits_per_pixel'].') - cannot read pixel data';
+							$this->error('Unknown bits-per-pixel value ('.$thisfile_bmp_header_raw['bits_per_pixel'].') - cannot read pixel data');
 							break;
 					}
 					break;
 
 
 				default: // unhandled compression type
-					$info['error'][] = 'Unknown/unhandled compression type value ('.$thisfile_bmp_header_raw['compression'].') - cannot decompress pixel data';
+					$this->error('Unknown/unhandled compression type value ('.$thisfile_bmp_header_raw['compression'].') - cannot decompress pixel data');
 					break;
 			}
 		}

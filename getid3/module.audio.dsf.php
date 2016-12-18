@@ -35,7 +35,7 @@ class getid3_dsf extends getid3_handler
 		$headeroffset += 4;
 		$magic = 'DSD ';
 		if ($info['dsf']['dsd']['magic'] != $magic) {
-			$info['error'][] = 'Expecting "'.getid3_lib::PrintHexBytes($magic).'" at offset '.$info['avdataoffset'].', found "'.getid3_lib::PrintHexBytes($info['dsf']['dsd']['magic']).'"';
+			$this->error('Expecting "'.getid3_lib::PrintHexBytes($magic).'" at offset '.$info['avdataoffset'].', found "'.getid3_lib::PrintHexBytes($info['dsf']['dsd']['magic']).'"');
 			unset($info['fileformat']);
 			unset($info['audio']);
 			unset($info['dsf']);
@@ -53,14 +53,14 @@ class getid3_dsf extends getid3_handler
 		$headeroffset += 4;
 		$magic = 'fmt ';
 		if ($info['dsf']['fmt']['magic'] != $magic) {
-			$info['error'][] = 'Expecting "'.getid3_lib::PrintHexBytes($magic).'" at offset '.$headeroffset.', found "'.getid3_lib::PrintHexBytes($info['dsf']['fmt']['magic']).'"';
+			$this->error('Expecting "'.getid3_lib::PrintHexBytes($magic).'" at offset '.$headeroffset.', found "'.getid3_lib::PrintHexBytes($info['dsf']['fmt']['magic']).'"');
 			return false;
 		}
 		$info['dsf']['fmt']['fmt_chunk_size']     = getid3_lib::LittleEndian2Int(substr($dsfheader, $headeroffset, 8));  // usually 52 bytes
 		$headeroffset += 8;
 		$dsfheader .= $this->fread($info['dsf']['fmt']['fmt_chunk_size'] - 12 + 12);  // we have already read the entire DSD chunk, plus 12 bytes of FMT. We now want to read the size of FMT, plus 12 bytes into the next chunk to get magic and size.
 		if (strlen($dsfheader) != ($info['dsf']['dsd']['dsd_chunk_size'] + $info['dsf']['fmt']['fmt_chunk_size'] + 12)) {
-			$info['error'][] = 'Expecting '.($info['dsf']['dsd']['dsd_chunk_size'] + $info['dsf']['fmt']['fmt_chunk_size']).' bytes header, found '.strlen($dsfheader).' bytes';
+			$this->error('Expecting '.($info['dsf']['dsd']['dsd_chunk_size'] + $info['dsf']['fmt']['fmt_chunk_size']).' bytes header, found '.strlen($dsfheader).' bytes');
 			return false;
 		}
 		$info['dsf']['fmt']['format_version']     = getid3_lib::LittleEndian2Int(substr($dsfheader, $headeroffset, 4));  // usually "1"
@@ -87,7 +87,7 @@ class getid3_dsf extends getid3_handler
 		$headeroffset += 4;
 		$magic = 'data';
 		if ($info['dsf']['data']['magic'] != $magic) {
-			$info['error'][] = 'Expecting "'.getid3_lib::PrintHexBytes($magic).'" at offset '.$headeroffset.', found "'.getid3_lib::PrintHexBytes($info['dsf']['data']['magic']).'"';
+			$this->error('Expecting "'.getid3_lib::PrintHexBytes($magic).'" at offset '.$headeroffset.', found "'.getid3_lib::PrintHexBytes($info['dsf']['data']['magic']).'"');
 			return false;
 		}
 		$info['dsf']['data']['data_chunk_size']    = getid3_lib::LittleEndian2Int(substr($dsfheader, $headeroffset, 8));

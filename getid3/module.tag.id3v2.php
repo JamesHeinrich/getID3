@@ -71,7 +71,7 @@ class getid3_id3v2 extends getid3_handler
 
 		if ($id3v2_majorversion > 4) { // this script probably won't correctly parse ID3v2.5.x and above (if it ever exists)
 
-			$info['error'][] = 'this script only parses up to ID3v2.4.x - this tag is ID3v2.'.$id3v2_majorversion.'.'.$thisfile_id3v2['minorversion'];
+			$this->error('this script only parses up to ID3v2.4.x - this tag is ID3v2.'.$id3v2_majorversion.'.'.$thisfile_id3v2['minorversion']);
 			return false;
 
 		}
@@ -362,7 +362,7 @@ class getid3_id3v2 extends getid3_handler
 							// next frame is invalid too, abort processing
 							//unset($framedata);
 							$framedata = null;
-							$info['error'][] = 'Next ID3v2 frame is also invalid, aborting processing.';
+							$this->error('Next ID3v2 frame is also invalid, aborting processing.');
 
 						}
 
@@ -399,11 +399,11 @@ class getid3_id3v2 extends getid3_handler
 
 					} elseif (!isset($framedata) || ($frame_size > strlen($framedata))) {
 
-						$info['error'][] = 'error parsing "'.$frame_name.'" ('.$framedataoffset.' bytes into the ID3v2.'.$id3v2_majorversion.' tag). (ERROR: $frame_size ('.$frame_size.') > strlen($framedata) ('.(isset($framedata) ? strlen($framedata) : 'null').')).';
+						$this->error('error parsing "'.$frame_name.'" ('.$framedataoffset.' bytes into the ID3v2.'.$id3v2_majorversion.' tag). (ERROR: $frame_size ('.$frame_size.') > strlen($framedata) ('.(isset($framedata) ? strlen($framedata) : 'null').')).');
 
 					} else {
 
-						$info['error'][] = 'error parsing "'.$frame_name.'" ('.$framedataoffset.' bytes into the ID3v2.'.$id3v2_majorversion.' tag).';
+						$this->error('error parsing "'.$frame_name.'" ('.$framedataoffset.' bytes into the ID3v2.'.$id3v2_majorversion.' tag).');
 
 					}
 

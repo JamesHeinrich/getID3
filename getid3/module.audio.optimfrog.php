@@ -39,7 +39,7 @@ class getid3_optimfrog extends getid3_handler
 
 		}
 
-		$info['error'][] = 'Expecting "*RIFF" or "OFR " at offset '.$info['avdataoffset'].', found "'.getid3_lib::PrintHexBytes($OFRheader).'"';
+		$this->error('Expecting "*RIFF" or "OFR " at offset '.$info['avdataoffset'].', found "'.getid3_lib::PrintHexBytes($OFRheader).'"');
 		unset($info['fileformat']);
 		return false;
 	}

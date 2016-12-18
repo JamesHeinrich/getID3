@@ -39,7 +39,7 @@ class getid3_monkey extends getid3_handler
 		$thisfile_monkeysaudio_raw['magic'] = substr($MACheaderData, 0, 4);
 		$magic = 'MAC ';
 		if ($thisfile_monkeysaudio_raw['magic'] != $magic) {
-			$info['error'][] = 'Expecting "'.getid3_lib::PrintHexBytes($magic).'" at offset '.$info['avdataoffset'].', found "'.getid3_lib::PrintHexBytes($thisfile_monkeysaudio_raw['magic']).'"';
+			$this->error('Expecting "'.getid3_lib::PrintHexBytes($magic).'" at offset '.$info['avdataoffset'].', found "'.getid3_lib::PrintHexBytes($thisfile_monkeysaudio_raw['magic']).'"');
 			unset($info['fileformat']);
 			return false;
 		}
@@ -112,7 +112,7 @@ class getid3_monkey extends getid3_handler
 		$info['audio']['channels']               = $thisfile_monkeysaudio['channels'];
 		$thisfile_monkeysaudio['sample_rate']            = $thisfile_monkeysaudio_raw['nSampleRate'];
 		if ($thisfile_monkeysaudio['sample_rate'] == 0) {
-			$info['error'][] = 'Corrupt MAC file: frequency == zero';
+			$this->error('Corrupt MAC file: frequency == zero');
 			return false;
 		}
 		$info['audio']['sample_rate']            = $thisfile_monkeysaudio['sample_rate'];
@@ -127,14 +127,14 @@ class getid3_monkey extends getid3_handler
 		}
 		$thisfile_monkeysaudio['playtime']               = $thisfile_monkeysaudio['samples'] / $thisfile_monkeysaudio['sample_rate'];
 		if ($thisfile_monkeysaudio['playtime'] == 0) {
-			$info['error'][] = 'Corrupt MAC file: playtime == zero';
+			$this->error('Corrupt MAC file: playtime == zero');
 			return false;
 		}
 		$info['playtime_seconds']                = $thisfile_monkeysaudio['playtime'];
 		$thisfile_monkeysaudio['compressed_size']        = $info['avdataend'] - $info['avdataoffset'];
 		$thisfile_monkeysaudio['uncompressed_size']      = $thisfile_monkeysaudio['samples'] * $thisfile_monkeysaudio['channels'] * ($thisfile_monkeysaudio['bits_per_sample'] / 8);
 		if ($thisfile_monkeysaudio['uncompressed_size'] == 0) {
-			$info['error'][] = 'Corrupt MAC file: uncompressed_size == zero';
+			$this->error('Corrupt MAC file: uncompressed_size == zero');
 			return false;
 		}
 		$thisfile_monkeysaudio['compression_ratio']      = $thisfile_monkeysaudio['compressed_size'] / ($thisfile_monkeysaudio['uncompressed_size'] + $thisfile_monkeysaudio_raw['nHeaderDataBytes']);

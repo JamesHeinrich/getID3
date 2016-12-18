@@ -36,13 +36,13 @@ class getid3_rar extends getid3_handler
 					rar_close($rp);
 					return true;
 				} else {
-					$info['error'][] = 'failed to rar_open('.$info['filename'].')';
+					$this->error('failed to rar_open('.$info['filename'].')');
 				}
 			} else {
-				$info['error'][] = 'RAR support does not appear to be available in this PHP installation';
+				$this->error('RAR support does not appear to be available in this PHP installation');
 			}
 		} else {
-			$info['error'][] = 'PHP-RAR processing has been disabled (set $getid3_rar->option_use_rar_extension=true to enable)';
+			$this->error('PHP-RAR processing has been disabled (set $getid3_rar->option_use_rar_extension=true to enable)');
 		}
 		return false;
 

@@ -53,7 +53,7 @@ class getid3_real extends getid3_handler
 					}
 					return true;
 				}
-				$info['error'][] = 'There was a problem parsing this RealAudio file. Please submit it for analysis to info@getid3.org';
+				$this->error('There was a problem parsing this RealAudio file. Please submit it for analysis to info@getid3.org');
 				unset($info['bitrate']);
 				unset($info['playtime_seconds']);
 				return false;

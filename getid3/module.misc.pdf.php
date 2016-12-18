@@ -23,7 +23,7 @@ class getid3_pdf extends getid3_handler
 
 		$info['fileformat'] = 'pdf';
 
-		$info['error'][] = 'PDF parsing not enabled in this version of getID3() ['.$this->getid3->version().']';
+		$this->error('PDF parsing not enabled in this version of getID3() ['.$this->getid3->version().']');
 		return false;
 
 	}

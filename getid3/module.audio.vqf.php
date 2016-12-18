@@ -40,7 +40,7 @@ class getid3_vqf extends getid3_handler
 		$thisfile_vqf_raw['header_tag'] = substr($VQFheaderData, $offset, 4);
 		$magic = 'TWIN';
 		if ($thisfile_vqf_raw['header_tag'] != $magic) {
-			$info['error'][] = 'Expecting "'.getid3_lib::PrintHexBytes($magic).'" at offset '.$info['avdataoffset'].', found "'.getid3_lib::PrintHexBytes($thisfile_vqf_raw['header_tag']).'"';
+			$this->error('Expecting "'.getid3_lib::PrintHexBytes($magic).'" at offset '.$info['avdataoffset'].', found "'.getid3_lib::PrintHexBytes($thisfile_vqf_raw['header_tag']).'"');
 			unset($info['vqf']);
 			unset($info['fileformat']);
 			return false;
@@ -65,7 +65,7 @@ class getid3_vqf extends getid3_handler
 			$ChunkSize = getid3_lib::BigEndian2Int(substr($ChunkData, $chunkoffset, 4));
 			$chunkoffset += 4;
 			if ($ChunkSize > ($info['avdataend'] - $this->ftell())) {
-				$info['error'][] = 'Invalid chunk size ('.$ChunkSize.') for chunk "'.$ChunkName.'" at offset '.$ChunkBaseOffset;
+				$this->error('Invalid chunk size ('.$ChunkSize.') for chunk "'.$ChunkName.'" at offset '.$ChunkBaseOffset);
 				break;
 			}
 			if ($ChunkSize > 0) {
@@ -93,7 +93,7 @@ class getid3_vqf extends getid3_handler
 					$info['audio']['encoder_options'] = 'CBR' . ceil($info['audio']['bitrate']/1000);
 
 					if ($info['audio']['bitrate'] == 0) {
-						$info['error'][] = 'Corrupt VQF file: bitrate_audio == zero';
+						$this->error('Corrupt VQF file: bitrate_audio == zero');
 						return false;
 					}
 					break;

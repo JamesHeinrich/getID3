@@ -31,7 +31,7 @@ class getid3_mod extends getid3_handler
 		} elseif (preg_match('#^.{1080}(M\\.K\\.|M!K!|FLT4|FLT8|[5-9]CHN|[1-3][0-9]CH)#', $fileheader)) {
 			return $this->getMODheaderFilepointer();
 		}
-		$info['error'][] = 'This is not a known type of MOD file';
+		$this->error('This is not a known type of MOD file');
 		return false;
 	}
 
@@ -41,13 +41,13 @@ class getid3_mod extends getid3_handler
 		$this->fseek($info['avdataoffset'] + 1080);
 		$FormatID = $this->fread(4);
 		if (!preg_match('#^(M.K.|[5-9]CHN|[1-3][0-9]CH)$#', $FormatID)) {
-			$info['error'][] = 'This is not a known type of MOD file';
+			$this->error('This is not a known type of MOD file');
 			return false;
 		}
 
 		$info['fileformat'] = 'mod';
 
-		$info['error'][] = 'MOD parsing not enabled in this version of getID3() ['.$this->getid3->version().']';
+		$this->error('MOD parsing not enabled in this version of getID3() ['.$this->getid3->version().']');
 		return false;
 	}
 
@@ -56,13 +56,13 @@ class getid3_mod extends getid3_handler
 		$this->fseek($info['avdataoffset']);
 		$FormatID = $this->fread(15);
 		if (!preg_match('#^Extended Module$#', $FormatID)) {
-			$info['error'][] = 'This is not a known type of XM-MOD file';
+			$this->error('This is not a known type of XM-MOD file');
 			return false;
 		}
 
 		$info['fileformat'] = 'xm';
 
-		$info['error'][] = 'XM-MOD parsing not enabled in this version of getID3() ['.$this->getid3->version().']';
+		$this->error('XM-MOD parsing not enabled in this version of getID3() ['.$this->getid3->version().']');
 		return false;
 	}
 
@@ -71,13 +71,13 @@ class getid3_mod extends getid3_handler
 		$this->fseek($info['avdataoffset'] + 44);
 		$FormatID = $this->fread(4);
 		if (!preg_match('#^SCRM$#', $FormatID)) {
-			$info['error'][] = 'This is not a ScreamTracker MOD file';
+			$this->error('This is not a ScreamTracker MOD file');
 			return false;
 		}
 
 		$info['fileformat'] = 's3m';
 
-		$info['error'][] = 'ScreamTracker parsing not enabled in this version of getID3() ['.$this->getid3->version().']';
+		$this->error('ScreamTracker parsing not enabled in this version of getID3() ['.$this->getid3->version().']');
 		return false;
 	}
 
@@ -86,13 +86,13 @@ class getid3_mod extends getid3_handler
 		$this->fseek($info['avdataoffset']);
 		$FormatID = $this->fread(4);
 		if (!preg_match('#^IMPM$#', $FormatID)) {
-			$info['error'][] = 'This is not an ImpulseTracker MOD file';
+			$this->error('This is not an ImpulseTracker MOD file');
 			return false;
 		}
 
 		$info['fileformat'] = 'it';
 
-		$info['error'][] = 'ImpulseTracker parsing not enabled in this version of getID3() ['.$this->getid3->version().']';
+		$this->error('ImpulseTracker parsing not enabled in this version of getID3() ['.$this->getid3->version().']');
 		return false;
 	}
 
