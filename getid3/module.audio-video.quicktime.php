@@ -150,7 +150,7 @@ class getid3_quicktime extends getid3_handler
 					}
 				}
 				if ($latitude === false) {
-					$info['warning'][] = 'location.ISO6709 string not parsed correctly: "'.$ISO6709string.'", please submit as a bug';
+					$this->warning('location.ISO6709 string not parsed correctly: "'.$ISO6709string.'", please submit as a bug');
 				}
 				break;
 			}
@@ -405,7 +405,7 @@ class getid3_quicktime extends getid3_handler
 							$boxsmalltype =                           substr($atom_data, $atomoffset + 2, 2);
 							$boxsmalldata =                           substr($atom_data, $atomoffset + 4, $boxsmallsize);
 							if ($boxsmallsize <= 1) {
-								$info['warning'][] = 'Invalid QuickTime atom smallbox size "'.$boxsmallsize.'" in atom "'.preg_replace('#[^a-zA-Z0-9 _\\-]#', '?', $atomname).'" at offset: '.($atom_structure['offset'] + $atomoffset);
+								$this->warning('Invalid QuickTime atom smallbox size "'.$boxsmallsize.'" in atom "'.preg_replace('#[^a-zA-Z0-9 _\\-]#', '?', $atomname).'" at offset: '.($atom_structure['offset'] + $atomoffset));
 								$atom_structure['data'] = null;
 								$atomoffset = strlen($atom_data);
 								break;
@@ -415,7 +415,7 @@ class getid3_quicktime extends getid3_handler
 									$atom_structure['data'] = $boxsmalldata;
 									break;
 								default:
-									$info['warning'][] = 'Unknown QuickTime smallbox type: "'.preg_replace('#[^a-zA-Z0-9 _\\-]#', '?', $boxsmalltype).'" ('.trim(getid3_lib::PrintHexBytes($boxsmalltype)).') at offset '.$baseoffset;
+									$this->warning('Unknown QuickTime smallbox type: "'.preg_replace('#[^a-zA-Z0-9 _\\-]#', '?', $boxsmalltype).'" ('.trim(getid3_lib::PrintHexBytes($boxsmalltype)).') at offset '.$baseoffset);
 									$atom_structure['data'] = $atom_data;
 									break;
 							}
@@ -427,7 +427,7 @@ class getid3_quicktime extends getid3_handler
 							$boxtype =                           substr($atom_data, $atomoffset + 4, 4);
 							$boxdata =                           substr($atom_data, $atomoffset + 8, $boxsize - 8);
 							if ($boxsize <= 1) {
-								$info['warning'][] = 'Invalid QuickTime atom box size "'.$boxsize.'" in atom "'.preg_replace('#[^a-zA-Z0-9 _\\-]#', '?', $atomname).'" at offset: '.($atom_structure['offset'] + $atomoffset);
+								$this->warning('Invalid QuickTime atom box size "'.$boxsize.'" in atom "'.preg_replace('#[^a-zA-Z0-9 _\\-]#', '?', $atomname).'" at offset: '.($atom_structure['offset'] + $atomoffset));
 								$atom_structure['data'] = null;
 								$atomoffset = strlen($atom_data);
 								break;
@@ -546,7 +546,7 @@ class getid3_quicktime extends getid3_handler
 									break;
 
 								default:
-									$info['warning'][] = 'Unknown QuickTime box type: "'.preg_replace('#[^a-zA-Z0-9 _\\-]#', '?', $boxtype).'" ('.trim(getid3_lib::PrintHexBytes($boxtype)).') at offset '.$baseoffset;
+									$this->warning('Unknown QuickTime box type: "'.preg_replace('#[^a-zA-Z0-9 _\\-]#', '?', $boxtype).'" ('.trim(getid3_lib::PrintHexBytes($boxtype)).') at offset '.$baseoffset);
 									$atom_structure['data'] = $atom_data;
 
 							}
@@ -594,7 +594,7 @@ class getid3_quicktime extends getid3_handler
 				if ($UncompressedHeader = @gzuncompress($CompressedFileData)) {
 					$atom_structure['subatoms'] = $this->QuicktimeParseContainerAtom($UncompressedHeader, 0, $atomHierarchy, $ParseAllPossibleAtoms);
 				} else {
-					$info['warning'][] = 'Error decompressing compressed MOV atom at offset '.$atom_structure['offset'];
+					$this->warning('Error decompressing compressed MOV atom at offset '.$atom_structure['offset']);
 				}
 				break;
 
@@ -713,7 +713,7 @@ class getid3_quicktime extends getid3_handler
 				if (isset($ptv_lookup[$atom_structure['display_size_raw']])) {
 					$atom_structure['display_size'] = $ptv_lookup[$atom_structure['display_size_raw']];
 				} else {
-					$info['warning'][] = 'unknown "ptv " display constant ('.$atom_structure['display_size_raw'].')';
+					$this->warning('unknown "ptv " display constant ('.$atom_structure['display_size_raw'].')');
 				}
 				break;
 
@@ -919,7 +919,7 @@ if (!empty($atom_structure['sample_description_table'][$i]['width']) && !empty($
 
 				$max_stts_entries_to_scan = ($info['php_memory_limit'] ? min(floor($this->getid3->memory_limit / 10000), $atom_structure['number_entries']) : $atom_structure['number_entries']);
 				if ($max_stts_entries_to_scan < $atom_structure['number_entries']) {
-					$info['warning'][] = 'QuickTime atom "stts" has '.$atom_structure['number_entries'].' but only scanning the first '.$max_stts_entries_to_scan.' entries due to limited PHP memory available ('.floor($atom_structure['number_entries'] / 1048576).'MB).';
+					$this->warning('QuickTime atom "stts" has '.$atom_structure['number_entries'].' but only scanning the first '.$max_stts_entries_to_scan.' entries due to limited PHP memory available ('.floor($atom_structure['number_entries'] / 1048576).'MB).');
 				}
 				for ($i = 0; $i < $max_stts_entries_to_scan; $i++) {
 					$atom_structure['time_to_sample_table'][$i]['sample_count']    = getid3_lib::BigEndian2Int(substr($atom_data, $sttsEntriesDataOffset, 4));
@@ -1389,7 +1389,7 @@ if (!empty($atom_structure['sample_description_table'][$i]['width']) && !empty($
 						$getid3_mp3->getOnlyMPEGaudioInfo($getid3_temp->info['avdataoffset'], false);
 						if (!empty($getid3_temp->info['warning'])) {
 							foreach ($getid3_temp->info['warning'] as $value) {
-								$info['warning'][] = $value;
+								$this->warning($value);
 							}
 						}
 						if (!empty($getid3_temp->info['mpeg'])) {
@@ -1492,7 +1492,7 @@ if (!empty($atom_structure['sample_description_table'][$i]['width']) && !empty($
 						$info['quicktime']['comments']['gps_altitude'][] = floatval($altitude);
 					}
 				} else {
-					$info['warning'][] = 'QuickTime atom "©xyz" data does not match expected data pattern at offset '.$baseoffset.'. Please report as getID3() bug.';
+					$this->warning('QuickTime atom "©xyz" data does not match expected data pattern at offset '.$baseoffset.'. Please report as getID3() bug.');
 				}
 				break;
 
@@ -1571,7 +1571,7 @@ if (!empty($atom_structure['sample_description_table'][$i]['width']) && !empty($
 				break;
 
 			default:
-				$info['warning'][] = 'Unknown QuickTime atom type: "'.preg_replace('#[^a-zA-Z0-9 _\\-]#', '?', $atomname).'" ('.trim(getid3_lib::PrintHexBytes($atomname)).') at offset '.$baseoffset;
+				$this->warning('Unknown QuickTime atom type: "'.preg_replace('#[^a-zA-Z0-9 _\\-]#', '?', $atomname).'" ('.trim(getid3_lib::PrintHexBytes($atomname)).') at offset '.$baseoffset);
 				$atom_structure['data'] = $atom_data;
 				break;
 		}

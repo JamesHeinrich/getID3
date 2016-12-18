@@ -146,7 +146,7 @@ class getid3_la extends getid3_handler
 					$offset += 4;
 
 					if ($info['la']['footerstart'] > $info['filesize']) {
-						$info['warning'][] = 'FooterStart value points to offset '.$info['la']['footerstart'].' which is beyond end-of-file ('.$info['filesize'].')';
+						$this->warning('FooterStart value points to offset '.$info['la']['footerstart'].' which is beyond end-of-file ('.$info['filesize'].')');
 						$info['la']['footerstart'] = $info['filesize'];
 					}
 
@@ -182,7 +182,7 @@ class getid3_la extends getid3_handler
 							if (empty($getid3_temp->info['error'])) {
 								$info['riff'] = $getid3_temp->info['riff'];
 							} else {
-								$info['warning'][] = 'Error parsing RIFF portion of La file: '.implode($getid3_temp->info['error']);
+								$this->warning('Error parsing RIFF portion of La file: '.implode($getid3_temp->info['error']));
 							}
 							unset($getid3_temp, $getid3_riff);
 						}

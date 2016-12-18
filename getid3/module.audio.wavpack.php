@@ -208,7 +208,7 @@ class getid3_wavpack extends getid3_handler
 							break;
 
 						default:
-							$info['warning'][] = 'Unexpected metablock type "0x'.str_pad(dechex($metablock['function_id']), 2, '0', STR_PAD_LEFT).'" at offset '.$metablock['offset'];
+							$this->warning('Unexpected metablock type "0x'.str_pad(dechex($metablock['function_id']), 2, '0', STR_PAD_LEFT).'" at offset '.$metablock['offset']);
 							$this->fseek($metablock['offset'] + ($metablock['large_block'] ? 4 : 2) + $metablock['size']);
 							break;
 					}
@@ -256,12 +256,12 @@ class getid3_wavpack extends getid3_handler
 
 
 						case 0x23: // ID_REPLAY_GAIN
-							$info['warning'][] = 'WavPack "Replay Gain" contents not yet handled by getID3() in metablock at offset '.$metablock['offset'];
+							$this->warning('WavPack "Replay Gain" contents not yet handled by getID3() in metablock at offset '.$metablock['offset']);
 							break;
 
 
 						case 0x24: // ID_CUESHEET
-							$info['warning'][] = 'WavPack "Cuesheet" contents not yet handled by getID3() in metablock at offset '.$metablock['offset'];
+							$this->warning('WavPack "Cuesheet" contents not yet handled by getID3() in metablock at offset '.$metablock['offset']);
 							break;
 
 
@@ -319,7 +319,7 @@ class getid3_wavpack extends getid3_handler
 							if (strlen($metablock['data']) == 16) {
 								$info['md5_data_source'] = strtolower(getid3_lib::PrintHexBytes($metablock['data'], true, false, false));
 							} else {
-								$info['warning'][] = 'Expecting 16 bytes of WavPack "MD5 Checksum" in metablock at offset '.$metablock['offset'].', but found '.strlen($metablock['data']).' bytes';
+								$this->warning('Expecting 16 bytes of WavPack "MD5 Checksum" in metablock at offset '.$metablock['offset'].', but found '.strlen($metablock['data']).' bytes');
 							}
 							break;
 

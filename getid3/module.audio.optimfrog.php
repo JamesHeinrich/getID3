@@ -128,7 +128,7 @@ class getid3_optimfrog extends getid3_handler
 							break;
 
 						default:
-							$info['warning'][] = '"'.$BlockName.'" contains more data than expected (expected 12 or 15 bytes, found '.$BlockSize.' bytes)';
+							$this->warning('"'.$BlockName.'" contains more data than expected (expected 12 or 15 bytes, found '.$BlockSize.' bytes)');
 							break;
 					}
 					$BlockData .= $this->fread($BlockSize);
@@ -252,7 +252,7 @@ class getid3_optimfrog extends getid3_handler
 
 					$thisfile_ofr_thisblock['offset'] = $BlockOffset;
 					$thisfile_ofr_thisblock['size']   = $BlockSize;
-					$info['warning'][] = 'APEtag processing inside OptimFROG not supported in this version ('.$this->getid3->version().') of getID3()';
+					$this->warning('APEtag processing inside OptimFROG not supported in this version ('.$this->getid3->version().') of getID3()');
 
 					$this->fseek($BlockSize, SEEK_CUR);
 					break;
@@ -272,7 +272,7 @@ class getid3_optimfrog extends getid3_handler
 
 					} else {
 
-						$info['warning'][] = 'Expecting block size of 16 in "MD5 " chunk, found '.$BlockSize.' instead';
+						$this->warning('Expecting block size of 16 in "MD5 " chunk, found '.$BlockSize.' instead');
 						$this->fseek($BlockSize, SEEK_CUR);
 
 					}
@@ -283,7 +283,7 @@ class getid3_optimfrog extends getid3_handler
 					$thisfile_ofr_thisblock['offset'] = $BlockOffset;
 					$thisfile_ofr_thisblock['size']   = $BlockSize;
 
-					$info['warning'][] = 'Unhandled OptimFROG block type "'.$BlockName.'" at offset '.$thisfile_ofr_thisblock['offset'];
+					$this->warning('Unhandled OptimFROG block type "'.$BlockName.'" at offset '.$thisfile_ofr_thisblock['offset']);
 					$this->fseek($BlockSize, SEEK_CUR);
 					break;
 			}

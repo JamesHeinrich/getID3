@@ -53,7 +53,7 @@ class getid3_nsv extends getid3_handler
 		}
 
 		if (!isset($info['nsv']['NSVf'])) {
-			$info['warning'][] = 'NSVf header not present - cannot calculate playtime or bitrate';
+			$this->warning('NSVf header not present - cannot calculate playtime or bitrate');
 		}
 
 		return true;
@@ -155,7 +155,7 @@ class getid3_nsv extends getid3_handler
 		$offset += 4;
 
 		if ($info['nsv']['NSVf']['file_size'] > $info['avdataend']) {
-			$info['warning'][] = 'truncated file - NSVf header indicates '.$info['nsv']['NSVf']['file_size'].' bytes, file actually '.$info['avdataend'].' bytes';
+			$this->warning('truncated file - NSVf header indicates '.$info['nsv']['NSVf']['file_size'].' bytes, file actually '.$info['avdataend'].' bytes');
 		}
 
 		$info['nsv']['NSVf']['playtime_ms']   = getid3_lib::LittleEndian2Int(substr($NSVfheader, $offset, 4));

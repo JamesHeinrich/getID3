@@ -109,7 +109,7 @@ class getid3_gif extends getid3_handler
 //
 //					if ($ImageDescriptor['flags']['use_local_color_map']) {
 //
-//						$info['warning'][] = 'This version of getID3() cannot parse local color maps for GIFs';
+//						$this->warning('This version of getID3() cannot parse local color maps for GIFs');
 //						return true;
 //
 //					}

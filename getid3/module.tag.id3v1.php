@@ -22,7 +22,7 @@ class getid3_id3v1 extends getid3_handler
 		$info = &$this->getid3->info;
 
 		if (!getid3_lib::intValueSupported($info['filesize'])) {
-			$info['warning'][] = 'Unable to check for ID3v1 because file is larger than '.round(PHP_INT_MAX / 1073741824).'GB';
+			$this->warning('Unable to check for ID3v1 because file is larger than '.round(PHP_INT_MAX / 1073741824).'GB');
 			return false;
 		}
 
@@ -93,7 +93,7 @@ class getid3_id3v1 extends getid3_handler
 			$ParsedID3v1['padding_valid'] = true;
 			if ($id3v1tag !== $GoodFormatID3v1tag) {
 				$ParsedID3v1['padding_valid'] = false;
-				$info['warning'][] = 'Some ID3v1 fields do not use NULL characters for padding';
+				$this->warning('Some ID3v1 fields do not use NULL characters for padding');
 			}
 
 			$ParsedID3v1['tag_offset_end']   = $info['filesize'];
@@ -116,7 +116,7 @@ class getid3_id3v1 extends getid3_handler
 				// a Lyrics3 tag footer was found before the last ID3v1, assume false "TAG" synch
 			} else {
 				// APE and Lyrics3 footers not found - assume double ID3v1
-				$info['warning'][] = 'Duplicate ID3v1 tag detected - this has been known to happen with iTunes';
+				$this->warning('Duplicate ID3v1 tag detected - this has been known to happen with iTunes');
 				$info['avdataend'] -= 128;
 			}
 		}

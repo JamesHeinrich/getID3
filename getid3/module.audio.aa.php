@@ -43,7 +43,7 @@ return false;
 
 		$thisfile_aa['filesize'] = getid3_lib::BigEndian2Int(substr($AUheader,  0, 4));
 		if ($thisfile_aa['filesize'] > ($info['avdataend'] - $info['avdataoffset'])) {
-			$info['warning'][] = 'Possible truncated file - expecting "'.$thisfile_aa['filesize'].'" bytes of data, only found '.($info['avdataend'] - $info['avdataoffset']).' bytes"';
+			$this->warning('Possible truncated file - expecting "'.$thisfile_aa['filesize'].'" bytes of data, only found '.($info['avdataend'] - $info['avdataoffset']).' bytes"');
 		}
 
 		$info['audio']['bits_per_sample'] = 16; // is it?

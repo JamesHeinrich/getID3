@@ -459,7 +459,7 @@ $PackedElementaryStream['additional_header_bytes'] = $additional_header_bytes;
 //			//		break;
 //			//}
 //			//$info['playtime_seconds'] *= $multiplier;
-//			//$info['warning'][] = 'Interleaved MPEG audio/video playtime may be inaccurate. With current hack should be within a few seconds of accurate. Report to info@getid3.org if off by more than 10 seconds.';
+//			//$this->warning('Interleaved MPEG audio/video playtime may be inaccurate. With current hack should be within a few seconds of accurate. Report to info@getid3.org if off by more than 10 seconds.');
 //			if ($info['video']['bitrate'] < 50000) {
 //				$this->warning('Interleaved MPEG audio/video playtime may be slightly inaccurate for video bitrates below 100kbps. Except in extreme low-bitrate situations, error should be less than 1%. Report to info@getid3.org if greater than this.');
 //			}

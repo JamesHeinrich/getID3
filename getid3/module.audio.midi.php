@@ -56,7 +56,7 @@ class getid3_midi extends getid3_handler
 				if ($buffer = $this->fread($this->getid3->fread_buffer_size())) {
 					$MIDIdata .= $buffer;
 				} else {
-					$info['warning'][] = 'only processed '.($i - 1).' of '.$thisfile_midi_raw['tracks'].' tracks';
+					$this->warning('only processed '.($i - 1).' of '.$thisfile_midi_raw['tracks'].' tracks');
 					$info['error'][] = 'Unabled to read more file data at '.$this->ftell().' (trying to seek to : '.$offset.'), was expecting at least 8 more bytes';
 					return false;
 				}
@@ -269,13 +269,13 @@ class getid3_midi extends getid3_handler
 								break;
 
 							default:
-								$info['warning'][] = 'Unhandled META Event Command: '.$METAeventCommand;
+								$this->warning('Unhandled META Event Command: '.$METAeventCommand);
 								break;
 						}
 
 					} else {
 
-						$info['warning'][] = 'Unhandled MIDI Event ID: '.$MIDIevents[$tracknumber][$eventid]['eventid'].' + Channel ID: '.$MIDIevents[$tracknumber][$eventid]['channel'];
+						$this->warning('Unhandled MIDI Event ID: '.$MIDIevents[$tracknumber][$eventid]['eventid'].' + Channel ID: '.$MIDIevents[$tracknumber][$eventid]['channel']);
 
 					}
 				}

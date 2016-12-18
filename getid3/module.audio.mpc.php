@@ -377,7 +377,7 @@ class getid3_mpc extends getid3_handler
 		}
 
 		if (($thisfile_mpc_header['stream_version_major'] > 4) && ($thisfile_mpc_header['block_size'] != 1)) {
-			$info['warning'][] = 'Block size expected to be 1, actual value found: '.$thisfile_mpc_header['block_size'];
+			$this->warning('Block size expected to be 1, actual value found: '.$thisfile_mpc_header['block_size']);
 		}
 
 		$thisfile_mpc_header['sample_rate']   = 44100; // AB: used by all files up to SV7

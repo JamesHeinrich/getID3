@@ -311,7 +311,7 @@ class getid3_aac extends getid3_handler
 			// or MaxFramesToScan frames have been scanned
 
 			if (!getid3_lib::intValueSupported($byteoffset)) {
-				$info['warning'][] = 'Unable to parse AAC file beyond '.$this->ftell().' (PHP does not support file operations beyond '.round(PHP_INT_MAX / 1073741824).'GB)';
+				$this->warning('Unable to parse AAC file beyond '.$this->ftell().' (PHP does not support file operations beyond '.round(PHP_INT_MAX / 1073741824).'GB)');
 				return false;
 			}
 			$this->fseek($byteoffset);
@@ -372,7 +372,7 @@ class getid3_aac extends getid3_handler
 				}
 
 				if ($info['aac']['header']['raw']['mpeg_layer'] != 0) {
-					$info['warning'][] = 'Layer error - expected "0", found "'.$info['aac']['header']['raw']['mpeg_layer'].'" instead';
+					$this->warning('Layer error - expected "0", found "'.$info['aac']['header']['raw']['mpeg_layer'].'" instead');
 				}
 				if ($info['aac']['header']['sample_frequency'] == 0) {
 					$info['error'][] = 'Corrupt AAC file: sample_frequency == zero';

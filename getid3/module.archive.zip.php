@@ -86,7 +86,7 @@ class getid3_zip extends getid3_handler
 						if ($fileentry = $this->ZIPparseLocalFileHeader()) {
 							$info['zip']['entries'][] = $fileentry;
 						} else {
-							$info['warning'][] = 'Error parsing Local File Header at offset '.$central_directory_entry['entry_offset'];
+							$this->warning('Error parsing Local File Header at offset '.$central_directory_entry['entry_offset']);
 						}
 					}
 
@@ -278,13 +278,13 @@ class getid3_zip extends getid3_handler
 						if ($LocalFileHeader['data_descriptor']['compressed_size'] == $central_directory_entry['compressed_size']) {
 							// $LocalFileHeader['compressed_size'] already set from Central Directory
 						} else {
-							$this->getid3->info['warning'][] = 'conflicting compressed_size from data_descriptor ('.$LocalFileHeader['data_descriptor']['compressed_size'].') vs Central Directory ('.$central_directory_entry['compressed_size'].') for file at offset '.$LocalFileHeader['offset'];
+							$this->warning('conflicting compressed_size from data_descriptor ('.$LocalFileHeader['data_descriptor']['compressed_size'].') vs Central Directory ('.$central_directory_entry['compressed_size'].') for file at offset '.$LocalFileHeader['offset']);
 						}
 
 						if ($LocalFileHeader['data_descriptor']['uncompressed_size'] == $central_directory_entry['uncompressed_size']) {
 							$LocalFileHeader['uncompressed_size'] = $LocalFileHeader['data_descriptor']['uncompressed_size'];
 						} else {
-							$this->getid3->info['warning'][] = 'conflicting uncompressed_size from data_descriptor ('.$LocalFileHeader['data_descriptor']['uncompressed_size'].') vs Central Directory ('.$central_directory_entry['uncompressed_size'].') for file at offset '.$LocalFileHeader['offset'];
+							$this->warning('conflicting uncompressed_size from data_descriptor ('.$LocalFileHeader['data_descriptor']['uncompressed_size'].') vs Central Directory ('.$central_directory_entry['uncompressed_size'].') for file at offset '.$LocalFileHeader['offset']);
 						}
 						break;
 					}

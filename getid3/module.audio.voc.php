@@ -137,7 +137,7 @@ class getid3_voc extends getid3_handler
 					break;
 
 				default:
-					$info['warning'][] = 'Unhandled block type "'.$BlockType.'" at offset '.$BlockOffset;
+					$this->warning('Unhandled block type "'.$BlockType.'" at offset '.$BlockOffset);
 					$this->fseek($BlockSize, SEEK_CUR);
 					break;
 			}

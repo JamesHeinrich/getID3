@@ -112,7 +112,7 @@ class getid3_vqf extends getid3_handler
 					break;
 
 				default:
-					$info['warning'][] = 'Unhandled chunk type "'.$ChunkName.'" at offset '.$ChunkBaseOffset;
+					$this->warning('Unhandled chunk type "'.$ChunkName.'" at offset '.$ChunkBaseOffset);
 					break;
 			}
 		}
@@ -123,12 +123,12 @@ class getid3_vqf extends getid3_handler
 			switch ($thisfile_vqf['DSIZ']) {
 				case 0:
 				case 1:
-					$info['warning'][] = 'Invalid DSIZ value "'.$thisfile_vqf['DSIZ'].'". This is known to happen with VQF files encoded by Ahead Nero, and seems to be its way of saying this is TwinVQF v'.($thisfile_vqf['DSIZ'] + 1).'.0';
+					$this->warning('Invalid DSIZ value "'.$thisfile_vqf['DSIZ'].'". This is known to happen with VQF files encoded by Ahead Nero, and seems to be its way of saying this is TwinVQF v'.($thisfile_vqf['DSIZ'] + 1).'.0');
 					$info['audio']['encoder'] = 'Ahead Nero';
 					break;
 
 				default:
-					$info['warning'][] = 'Probable corrupted file - should be '.$thisfile_vqf['DSIZ'].' bytes, actually '.($info['avdataend'] - $info['avdataoffset'] - strlen('DATA'));
+					$this->warning('Probable corrupted file - should be '.$thisfile_vqf['DSIZ'].' bytes, actually '.($info['avdataend'] - $info['avdataoffset'] - strlen('DATA')));
 					break;
 			}
 		}

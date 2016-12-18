@@ -155,7 +155,7 @@ class getid3_monkey extends getid3_handler
 
 		if ($thisfile_monkeysaudio_raw['nVersion'] >= 3980) {
 			if ($thisfile_monkeysaudio_raw['cFileMD5'] === str_repeat("\x00", 16)) {
-				//$info['warning'][] = 'cFileMD5 is null';
+				//$this->warning('cFileMD5 is null');
 			} else {
 				$info['md5_data_source'] = '';
 				$md5 = $thisfile_monkeysaudio_raw['cFileMD5'];
