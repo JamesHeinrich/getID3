@@ -330,11 +330,13 @@ class getid3_matroska extends getid3_handler
 								break;
 
 							case 'A_AC3':
+							case 'A_EAC3':
 							case 'A_DTS':
 							case 'A_MPEG/L3':
 							case 'A_MPEG/L2':
 							case 'A_FLAC':
-								getid3_lib::IncludeDependency(GETID3_INCLUDEPATH.'module.audio.'.($track_info['dataformat'] == 'mp2' ? 'mp3' : $track_info['dataformat']).'.php', __FILE__, true);
+								$module_dataformat = ($track_info['dataformat'] == 'mp2' ? 'mp3' : ($track_info['dataformat'] == 'eac3' ? 'ac3' : $track_info['dataformat']));
+								getid3_lib::IncludeDependency(GETID3_INCLUDEPATH.'module.audio.'.$module_dataformat.'.php', __FILE__, true);
 
 								if (!isset($info['matroska']['track_data_offsets'][$trackarray['TrackNumber']])) {
 									$this->warning('Unable to parse audio data ['.basename(__FILE__).':'.__LINE__.'] because $info[matroska][track_data_offsets]['.$trackarray['TrackNumber'].'] not set');
@@ -352,7 +354,7 @@ class getid3_matroska extends getid3_handler
 								}
 
 								// analyze
-								$class = 'getid3_'.($track_info['dataformat'] == 'mp2' ? 'mp3' : $track_info['dataformat']);
+								$class = 'getid3_'.$module_dataformat;
 								$header_data_key = $track_info['dataformat'][0] == 'm' ? 'mpeg' : $track_info['dataformat'];
 								$getid3_audio = new $class($getid3_temp, __CLASS__);
 								if ($track_info['dataformat'] == 'flac') {
@@ -1526,6 +1528,7 @@ class getid3_matroska extends getid3_handler
 			$CodecIDlist['A_AAC']            = 'aac';
 			$CodecIDlist['A_AAC/MPEG2/LC']   = 'aac';
 			$CodecIDlist['A_AC3']            = 'ac3';
+			$CodecIDlist['A_EAC3']           = 'eac3';
 			$CodecIDlist['A_DTS']            = 'dts';
 			$CodecIDlist['A_FLAC']           = 'flac';
 			$CodecIDlist['A_MPEG/L1']        = 'mp1';
