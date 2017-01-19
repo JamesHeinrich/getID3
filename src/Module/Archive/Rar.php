@@ -39,13 +39,13 @@ class Rar extends \JamesHeinrich\GetID3\Module\Handler
 					rar_close($rp);
 					return true;
 				} else {
-					$info['error'][] = 'failed to rar_open('.$info['filename'].')';
+					$this->error('failed to rar_open('.$info['filename'].')');
 				}
 			} else {
-				$info['error'][] = 'RAR support does not appear to be available in this PHP installation';
+				$this->error('RAR support does not appear to be available in this PHP installation');
 			}
 		} else {
-			$info['error'][] = 'PHP-RAR processing has been disabled (set ' . get_class($this) . '->option_use_rar_extension=true to enable)';
+			$this->error('PHP-RAR processing has been disabled (set ' . get_class($this) . '->option_use_rar_extension=true to enable)');
 		}
 		return false;
 

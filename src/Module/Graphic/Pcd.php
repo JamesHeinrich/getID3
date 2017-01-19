@@ -47,7 +47,7 @@ class Pcd extends \JamesHeinrich\GetID3\Module\Handler
 
 		if ($this->ExtractData > 3) {
 
-			$info['error'][] = 'Cannot extract PSD image data for detail levels above BASE (level-3) because encrypted with Kodak-proprietary compression/encryption.';
+			$this->error('Cannot extract PSD image data for detail levels above BASE (level-3) because encrypted with Kodak-proprietary compression/encryption.');
 
 		} elseif ($this->ExtractData > 0) {
 

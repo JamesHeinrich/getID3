@@ -72,7 +72,7 @@ class Iso extends \JamesHeinrich\GetID3\Module\Handler
 		$thisfile_iso_primaryVD_raw['volume_descriptor_type']         = Utils::LittleEndian2Int(substr($ISOheader,    0, 1));
 		$thisfile_iso_primaryVD_raw['standard_identifier']            =                  substr($ISOheader,    1, 5);
 		if ($thisfile_iso_primaryVD_raw['standard_identifier'] != 'CD001') {
-			$info['error'][] = 'Expected "CD001" at offset ('.($thisfile_iso_primaryVD['offset'] + 1).'), found "'.$thisfile_iso_primaryVD_raw['standard_identifier'].'" instead';
+			$this->error('Expected "CD001" at offset ('.($thisfile_iso_primaryVD['offset'] + 1).'), found "'.$thisfile_iso_primaryVD_raw['standard_identifier'].'" instead');
 			unset($info['fileformat']);
 			unset($info['iso']);
 			return false;
@@ -126,7 +126,7 @@ class Iso extends \JamesHeinrich\GetID3\Module\Handler
 		$thisfile_iso_primaryVD['volume_effective_date_time']    = $this->ISOtimeText2UNIXtime($thisfile_iso_primaryVD_raw['volume_effective_date_time']);
 
 		if (($thisfile_iso_primaryVD_raw['volume_space_size'] * 2048) > $info['filesize']) {
-			$info['error'][] = 'Volume Space Size ('.($thisfile_iso_primaryVD_raw['volume_space_size'] * 2048).' bytes) is larger than the file size ('.$info['filesize'].' bytes) (truncated file?)';
+			$this->error('Volume Space Size ('.($thisfile_iso_primaryVD_raw['volume_space_size'] * 2048).' bytes) is larger than the file size ('.$info['filesize'].' bytes) (truncated file?)');
 		}
 
 		return true;
@@ -146,7 +146,7 @@ class Iso extends \JamesHeinrich\GetID3\Module\Handler
 		$thisfile_iso_supplementaryVD_raw['volume_descriptor_type'] = Utils::LittleEndian2Int(substr($ISOheader,    0, 1));
 		$thisfile_iso_supplementaryVD_raw['standard_identifier']    =                  substr($ISOheader,    1, 5);
 		if ($thisfile_iso_supplementaryVD_raw['standard_identifier'] != 'CD001') {
-			$info['error'][] = 'Expected "CD001" at offset ('.($thisfile_iso_supplementaryVD['offset'] + 1).'), found "'.$thisfile_iso_supplementaryVD_raw['standard_identifier'].'" instead';
+			$this->error('Expected "CD001" at offset ('.($thisfile_iso_supplementaryVD['offset'] + 1).'), found "'.$thisfile_iso_supplementaryVD_raw['standard_identifier'].'" instead');
 			unset($info['fileformat']);
 			unset($info['iso']);
 			return false;
@@ -205,7 +205,7 @@ class Iso extends \JamesHeinrich\GetID3\Module\Handler
 		$thisfile_iso_supplementaryVD['volume_effective_date_time']     = $this->ISOtimeText2UNIXtime($thisfile_iso_supplementaryVD_raw['volume_effective_date_time']);
 
 		if (($thisfile_iso_supplementaryVD_raw['volume_space_size'] * $thisfile_iso_supplementaryVD_raw['logical_block_size']) > $info['filesize']) {
-			$info['error'][] = 'Volume Space Size ('.($thisfile_iso_supplementaryVD_raw['volume_space_size'] * $thisfile_iso_supplementaryVD_raw['logical_block_size']).' bytes) is larger than the file size ('.$info['filesize'].' bytes) (truncated file?)';
+			$this->error('Volume Space Size ('.($thisfile_iso_supplementaryVD_raw['volume_space_size'] * $thisfile_iso_supplementaryVD_raw['logical_block_size']).' bytes) is larger than the file size ('.$info['filesize'].' bytes) (truncated file?)');
 		}
 
 		return true;
@@ -228,7 +228,7 @@ class Iso extends \JamesHeinrich\GetID3\Module\Handler
 		}
 
 		if (($PathTableLocation * 2048) > $info['filesize']) {
-			$info['error'][] = 'Path Table Location specifies an offset ('.($PathTableLocation * 2048).') beyond the end-of-file ('.$info['filesize'].')';
+			$this->error('Path Table Location specifies an offset ('.($PathTableLocation * 2048).') beyond the end-of-file ('.$info['filesize'].')');
 			return false;
 		}
 

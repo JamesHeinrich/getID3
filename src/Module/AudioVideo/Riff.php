@@ -194,7 +194,7 @@ class Riff extends \JamesHeinrich\GetID3\Module\Handler
 					$thisfile_riff_audio[$streamindex] = self::parseWAVEFORMATex($thisfile_riff_WAVE['fmt '][0]['data']);
 					$thisfile_audio['wformattag'] = $thisfile_riff_audio[$streamindex]['raw']['wFormatTag'];
 					if (!isset($thisfile_riff_audio[$streamindex]['bitrate']) || ($thisfile_riff_audio[$streamindex]['bitrate'] == 0)) {
-						$info['error'][] = 'Corrupt RIFF file: bitrate_audio == zero';
+						$this->error('Corrupt RIFF file: bitrate_audio == zero');
 						return false;
 					}
 					$thisfile_riff_raw['fmt '] = $thisfile_riff_audio[$streamindex]['raw'];
@@ -203,7 +203,7 @@ class Riff extends \JamesHeinrich\GetID3\Module\Handler
 
 					$thisfile_audio = Utils::array_merge_noclobber($thisfile_audio, $thisfile_riff_audio[$streamindex]);
 					if (substr($thisfile_audio['codec'], 0, strlen('unknown: 0x')) == 'unknown: 0x') {
-						$info['warning'][] = 'Audio codec = '.$thisfile_audio['codec'];
+						$this->warning('Audio codec = '.$thisfile_audio['codec']);
 					}
 					$thisfile_audio['bitrate'] = $thisfile_riff_audio[$streamindex]['bitrate'];
 
@@ -306,10 +306,10 @@ class Riff extends \JamesHeinrich\GetID3\Module\Handler
 							list($dummy, $bext_timestamp['hour'], $bext_timestamp['minute'], $bext_timestamp['second']) = $matches_bext_time;
 							$thisfile_riff_WAVE_bext_0['origin_date_unix'] = gmmktime($bext_timestamp['hour'], $bext_timestamp['minute'], $bext_timestamp['second'], $bext_timestamp['month'], $bext_timestamp['day'], $bext_timestamp['year']);
 						} else {
-							$info['warning'][] = 'RIFF.WAVE.BEXT.origin_time is invalid';
+							$this->warning('RIFF.WAVE.BEXT.origin_time is invalid');
 						}
 					} else {
-						$info['warning'][] = 'RIFF.WAVE.BEXT.origin_date is invalid';
+						$this->warning('RIFF.WAVE.BEXT.origin_date is invalid');
 					}
 					$thisfile_riff['comments']['author'][] = $thisfile_riff_WAVE_bext_0['author'];
 					$thisfile_riff['comments']['title'][]  = $thisfile_riff_WAVE_bext_0['title'];
@@ -389,10 +389,10 @@ class Riff extends \JamesHeinrich\GetID3\Module\Handler
 						$SNDM_thisTagOffset += $SNDM_thisTagDataSize;
 
 						if ($SNDM_thisTagSize != (4 + 4 + 2 + 2 + $SNDM_thisTagDataSize)) {
-							$info['warning'][] = 'RIFF.WAVE.SNDM.data contains tag not expected length (expected: '.$SNDM_thisTagSize.', found: '.(4 + 4 + 2 + 2 + $SNDM_thisTagDataSize).') at offset '.$SNDM_startoffset.' (file offset '.($thisfile_riff_WAVE_SNDM_0['offset'] + $SNDM_startoffset).')';
+							$this->warning('RIFF.WAVE.SNDM.data contains tag not expected length (expected: '.$SNDM_thisTagSize.', found: '.(4 + 4 + 2 + 2 + $SNDM_thisTagDataSize).') at offset '.$SNDM_startoffset.' (file offset '.($thisfile_riff_WAVE_SNDM_0['offset'] + $SNDM_startoffset).')');
 							break;
 						} elseif ($SNDM_thisTagSize <= 0) {
-							$info['warning'][] = 'RIFF.WAVE.SNDM.data contains zero-size tag at offset '.$SNDM_startoffset.' (file offset '.($thisfile_riff_WAVE_SNDM_0['offset'] + $SNDM_startoffset).')';
+							$this->warning('RIFF.WAVE.SNDM.data contains zero-size tag at offset '.$SNDM_startoffset.' (file offset '.($thisfile_riff_WAVE_SNDM_0['offset'] + $SNDM_startoffset).')');
 							break;
 						}
 						$SNDM_startoffset += $SNDM_thisTagSize;
@@ -401,7 +401,7 @@ class Riff extends \JamesHeinrich\GetID3\Module\Handler
 						if ($parsedkey = self::waveSNDMtagLookup($SNDM_thisTagKey)) {
 							$thisfile_riff_WAVE_SNDM_0['parsed'][$parsedkey] = $SNDM_thisTagDataText;
 						} else {
-							$info['warning'][] = 'RIFF.WAVE.SNDM contains unknown tag "'.$SNDM_thisTagKey.'" at offset '.$SNDM_startoffset.' (file offset '.($thisfile_riff_WAVE_SNDM_0['offset'] + $SNDM_startoffset).')';
+							$this->warning('RIFF.WAVE.SNDM contains unknown tag "'.$SNDM_thisTagKey.'" at offset '.$SNDM_startoffset.' (file offset '.($thisfile_riff_WAVE_SNDM_0['offset'] + $SNDM_startoffset).')');
 						}
 					}
 
@@ -574,7 +574,7 @@ class Riff extends \JamesHeinrich\GetID3\Module\Handler
 								// byte, in which case - skip warning
 							} else {
 								// Short by more than one byte, throw warning
-								$info['warning'][] = 'Probably truncated file - expecting '.$thisfile_riff[$RIFFsubtype]['data'][0]['size'].' bytes of data, only found '.($info['filesize'] - $info['avdataoffset']).' (short by '.($thisfile_riff[$RIFFsubtype]['data'][0]['size'] - ($info['filesize'] - $info['avdataoffset'])).' bytes)';
+								$this->warning('Probably truncated file - expecting '.$thisfile_riff[$RIFFsubtype]['data'][0]['size'].' bytes of data, only found '.($info['filesize'] - $info['avdataoffset']).' (short by '.($thisfile_riff[$RIFFsubtype]['data'][0]['size'] - ($info['filesize'] - $info['avdataoffset'])).' bytes)');
 								$info['avdataend'] = $info['filesize'];
 							}
 							break;
@@ -583,11 +583,11 @@ class Riff extends \JamesHeinrich\GetID3\Module\Handler
 							if ((($info['avdataend'] - $info['filesize']) == 1) && (($thisfile_riff[$RIFFsubtype]['data'][0]['size'] % 2) == 0) && ((($info['filesize'] - $info['avdataoffset']) % 2) == 1)) {
 								// output file appears to be incorrectly *not* padded to nearest WORD boundary
 								// Output less severe warning
-								$info['warning'][] = 'File should probably be padded to nearest WORD boundary, but it is not (expecting '.$thisfile_riff[$RIFFsubtype]['data'][0]['size'].' bytes of data, only found '.($info['filesize'] - $info['avdataoffset']).' therefore short by '.($thisfile_riff[$RIFFsubtype]['data'][0]['size'] - ($info['filesize'] - $info['avdataoffset'])).' bytes)';
+								$this->warning('File should probably be padded to nearest WORD boundary, but it is not (expecting '.$thisfile_riff[$RIFFsubtype]['data'][0]['size'].' bytes of data, only found '.($info['filesize'] - $info['avdataoffset']).' therefore short by '.($thisfile_riff[$RIFFsubtype]['data'][0]['size'] - ($info['filesize'] - $info['avdataoffset'])).' bytes)');
 								$info['avdataend'] = $info['filesize'];
 							} else {
 								// Short by more than one byte, throw warning
-								$info['warning'][] = 'Probably truncated file - expecting '.$thisfile_riff[$RIFFsubtype]['data'][0]['size'].' bytes of data, only found '.($info['filesize'] - $info['avdataoffset']).' (short by '.($thisfile_riff[$RIFFsubtype]['data'][0]['size'] - ($info['filesize'] - $info['avdataoffset'])).' bytes)';
+								$this->warning('Probably truncated file - expecting '.$thisfile_riff[$RIFFsubtype]['data'][0]['size'].' bytes of data, only found '.($info['filesize'] - $info['avdataoffset']).' (short by '.($thisfile_riff[$RIFFsubtype]['data'][0]['size'] - ($info['filesize'] - $info['avdataoffset'])).' bytes)');
 								$info['avdataend'] = $info['filesize'];
 							}
 							break;
@@ -596,7 +596,7 @@ class Riff extends \JamesHeinrich\GetID3\Module\Handler
 				if (!empty($info['mpeg']['audio']['LAME']['audio_bytes'])) {
 					if ((($info['avdataend'] - $info['avdataoffset']) - $info['mpeg']['audio']['LAME']['audio_bytes']) == 1) {
 						$info['avdataend']--;
-						$info['warning'][] = 'Extra null byte at end of MP3 data assumed to be RIFF padding and therefore ignored';
+						$this->warning('Extra null byte at end of MP3 data assumed to be RIFF padding and therefore ignored');
 					}
 				}
 				if (isset($thisfile_audio_dataformat) && ($thisfile_audio_dataformat == 'ac3')) {
@@ -623,7 +623,7 @@ class Riff extends \JamesHeinrich\GetID3\Module\Handler
 						$info['avdataend'] = $thisfile_riff['AVI ']['movi']['offset'] + $thisfile_riff['AVI ']['movi']['size'];
 					}
 					if ($info['avdataend'] > $info['filesize']) {
-						$info['warning'][] = 'Probably truncated file - expecting '.($info['avdataend'] - $info['avdataoffset']).' bytes of data, only found '.($info['filesize'] - $info['avdataoffset']).' (short by '.($info['avdataend'] - $info['filesize']).' bytes)';
+						$this->warning('Probably truncated file - expecting '.($info['avdataend'] - $info['avdataoffset']).' bytes of data, only found '.($info['filesize'] - $info['avdataoffset']).' (short by '.($info['avdataend'] - $info['filesize']).' bytes)');
 						$info['avdataend'] = $info['filesize'];
 					}
 				}
@@ -664,7 +664,7 @@ class Riff extends \JamesHeinrich\GetID3\Module\Handler
 
 					$thisfile_riff_raw_avih['dwMicroSecPerFrame']    = $this->EitherEndian2Int(substr($avihData,  0, 4)); // frame display rate (or 0L)
 					if ($thisfile_riff_raw_avih['dwMicroSecPerFrame'] == 0) {
-						$info['error'][] = 'Corrupt RIFF file: avih.dwMicroSecPerFrame == zero';
+						$this->error('Corrupt RIFF file: avih.dwMicroSecPerFrame == zero');
 						return false;
 					}
 
@@ -862,7 +862,7 @@ class Riff extends \JamesHeinrich\GetID3\Module\Handler
 											break;
 
 										default:
-											$info['warning'][] = 'Unhandled fccType for stream ('.$i.'): "'.$strhfccType.'"';
+											$this->warning('Unhandled fccType for stream ('.$i.'): "'.$strhfccType.'"');
 											break;
 
 									}
@@ -967,7 +967,7 @@ class Riff extends \JamesHeinrich\GetID3\Module\Handler
 							// structures rounded to 2-byte boundary, but dumb encoders
 							// forget to pad end of file to make this actually work
 						} else {
-							$info['warning'][] = 'Probable truncated AIFF file: expecting '.$thisfile_riff[$RIFFsubtype]['SSND'][0]['size'].' bytes of audio data, only '.($info['filesize'] - $info['avdataoffset']).' bytes found';
+							$this->warning('Probable truncated AIFF file: expecting '.$thisfile_riff[$RIFFsubtype]['SSND'][0]['size'].' bytes of audio data, only '.($info['filesize'] - $info['avdataoffset']).' bytes found');
 						}
 						$info['avdataend'] = $info['filesize'];
 					}
@@ -1024,7 +1024,7 @@ class Riff extends \JamesHeinrich\GetID3\Module\Handler
 					}
 					$thisfile_audio['sample_rate']     = $thisfile_riff_audio['sample_rate'];
 					if ($thisfile_audio['sample_rate'] == 0) {
-						$info['error'][] = 'Corrupted AIFF file: sample_rate == zero';
+						$this->error('Corrupted AIFF file: sample_rate == zero');
 						return false;
 					}
 					$info['playtime_seconds'] = $thisfile_riff_audio['total_samples'] / $thisfile_audio['sample_rate'];
@@ -1083,7 +1083,7 @@ class Riff extends \JamesHeinrich\GetID3\Module\Handler
 					$info['avdataoffset'] = $thisfile_riff[$RIFFsubtype]['BODY'][0]['offset'] + 8;
 					$info['avdataend']    = $info['avdataoffset'] + $thisfile_riff[$RIFFsubtype]['BODY'][0]['size'];
 					if ($info['avdataend'] > $info['filesize']) {
-						$info['warning'][] = 'Probable truncated AIFF file: expecting '.$thisfile_riff[$RIFFsubtype]['BODY'][0]['size'].' bytes of audio data, only '.($info['filesize'] - $info['avdataoffset']).' bytes found';
+						$this->warning('Probable truncated AIFF file: expecting '.$thisfile_riff[$RIFFsubtype]['BODY'][0]['size'].' bytes of audio data, only '.($info['filesize'] - $info['avdataoffset']).' bytes found');
 					}
 				}
 
@@ -1115,7 +1115,7 @@ class Riff extends \JamesHeinrich\GetID3\Module\Handler
 							break;
 
 						default:
-							$info['warning'][] = 'Unexpected sCompression value in 8SVX.VHDR chunk - expecting 0 or 1, found "'.sCompression.'"';
+							$this->warning('Unexpected sCompression value in 8SVX.VHDR chunk - expecting 0 or 1, found "'.sCompression.'"');
 							break;
 					}
 				}
@@ -1133,7 +1133,7 @@ class Riff extends \JamesHeinrich\GetID3\Module\Handler
 							break;
 
 						default:
-							$info['warning'][] = 'Unexpected value in 8SVX.CHAN chunk - expecting 2 or 4 or 6, found "'.$ChannelsIndex.'"';
+							$this->warning('Unexpected value in 8SVX.CHAN chunk - expecting 2 or 4 or 6, found "'.$ChannelsIndex.'"');
 							break;
 					}
 
@@ -1171,9 +1171,16 @@ class Riff extends \JamesHeinrich\GetID3\Module\Handler
 				}
 				break;
 
+			case 'WEBP':
+				// https://developers.google.com/speed/webp/docs/riff_container
+				$info['fileformat'] = 'webp';
+				$info['mime_type']  = 'image/webp';
+
+$this->error('WebP image parsing not supported in this version of getID3()');
+				break;
 
 			default:
-				$info['error'][] = 'Unknown RIFF type: expecting one of (WAVE|RMP3|AVI |CDDA|AIFF|AIFC|8SVX|CDXA), found "'.$RIFFsubtype.'" instead';
+				$this->error('Unknown RIFF type: expecting one of (WAVE|RMP3|AVI |CDDA|AIFF|AIFC|8SVX|CDXA|WEBP), found "'.$RIFFsubtype.'" instead');
 				//unset($info['fileformat']);
 		}
 
@@ -1186,7 +1193,7 @@ class Riff extends \JamesHeinrich\GetID3\Module\Handler
 				foreach ($ID3v2_keys_bad as $ID3v2_key_bad) {
 					if (isset($thisfile_riff[$RIFFsubtype][$ID3v2_key_bad]) && !array_key_exists($ID3v2_key_good, $thisfile_riff[$RIFFsubtype])) {
 						$thisfile_riff[$RIFFsubtype][$ID3v2_key_good] = $thisfile_riff[$RIFFsubtype][$ID3v2_key_bad];
-						$info['warning'][] = 'mapping "'.$ID3v2_key_bad.'" chunk to "'.$ID3v2_key_good.'"';
+						$this->warning('mapping "'.$ID3v2_key_bad.'" chunk to "'.$ID3v2_key_good.'"');
 					}
 				}
 
@@ -1507,7 +1514,7 @@ class Riff extends \JamesHeinrich\GetID3\Module\Handler
 											$info['ac3']     = $getid3_temp->info['ac3'];
 											if (!empty($getid3_temp->info['warning'])) {
 												foreach ($getid3_temp->info['warning'] as $key => $value) {
-													$info['warning'][] = $value;
+													$this->warning($value);
 												}
 											}
 										}

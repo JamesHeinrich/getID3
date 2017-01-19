@@ -15,6 +15,7 @@ use JamesHeinrich\GetID3\Utils;
 //                                                             //
 // module.audio.aa.php                                         //
 // module for analyzing Audible Audiobook files                //
+// dependencies: NONE                                          //
 //                                                            ///
 /////////////////////////////////////////////////////////////////
 
@@ -29,7 +30,7 @@ class Amr extends \JamesHeinrich\GetID3\Module\Handler
 
 		$magic = '#!AMR'."\x0A";
 		if (substr($AMRheader, 0, 6) != $magic) {
-			$info['error'][] = 'Expecting "'.Utils::PrintHexBytes($magic).'" at offset '.$info['avdataoffset'].', found "'.Utils::PrintHexBytes(substr($AMRheader, 0, 6)).'"';
+			$this->error('Expecting "'.Utils::PrintHexBytes($magic).'" at offset '.$info['avdataoffset'].', found "'.Utils::PrintHexBytes(substr($AMRheader, 0, 6)).'"');
 			return false;
 		}
 
@@ -53,7 +54,6 @@ class Amr extends \JamesHeinrich\GetID3\Module\Handler
 			$AMR_frame_header = ord(substr($buffer, 0, 1));
 			$codec_mode_request = ($AMR_frame_header & 0x78) >> 3; // The 2nd bit through 5th bit (counting the most significant bit as the first bit) comprise the CMR (Codec Mode Request), values 0-7 being valid for AMR. The top bit of the CMR can actually be ignored, though it is used when AMR forms RTP payloads. The lower 3-bits of the header are reserved and are not used. Viewing the header from most significant bit to least significant bit, the encoding is XCCCCXXX, where Xs are reserved (typically 0) and the Cs are the CMR.
 			if ($codec_mode_request > 7) {
-				$info['error'][] = '';
 				break;
 			}
 			$thisfile_amr['frame_mode_count'][$codec_mode_request]++;

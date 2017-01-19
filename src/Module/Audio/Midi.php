@@ -48,7 +48,7 @@ class Midi extends \JamesHeinrich\GetID3\Module\Handler
 		$offset = 0;
 		$MIDIheaderID = substr($MIDIdata, $offset, 4); // 'MThd'
 		if ($MIDIheaderID !== self::MAGIC_MTHD) {
-			$info['error'][] = 'Expecting "' . Utils::PrintHexBytes(self::MAGIC_MTHD) . '" at offset '.$info['avdataoffset'].', found "'.Utils::PrintHexBytes($MIDIheaderID).'"';
+			$this->error('Expecting "' . Utils::PrintHexBytes(self::MAGIC_MTHD) . '" at offset '.$info['avdataoffset'].', found "'.Utils::PrintHexBytes($MIDIheaderID).'"');
 			unset($info['fileformat']);
 			return false;
 		}
@@ -67,8 +67,8 @@ class Midi extends \JamesHeinrich\GetID3\Module\Handler
 				if ($buffer = $this->fread($this->getid3->fread_buffer_size())) {
 					$MIDIdata .= $buffer;
 				} else {
-					$info['warning'][] = 'only processed '.($i - 1).' of '.$thisfile_midi_raw['tracks'].' tracks';
-					$info['error'][] = 'Unabled to read more file data at '.$this->ftell().' (trying to seek to : '.$offset.'), was expecting at least 8 more bytes';
+					$this->warning('only processed '.($i - 1).' of '.$thisfile_midi_raw['tracks'].' tracks');
+					$this->error('Unabled to read more file data at '.$this->ftell().' (trying to seek to : '.$offset.'), was expecting at least 8 more bytes');
 					return false;
 				}
 			}
@@ -81,13 +81,13 @@ class Midi extends \JamesHeinrich\GetID3\Module\Handler
 				$trackdataarray[$i] = substr($MIDIdata, $offset, $tracksize);
 				$offset += $tracksize;
 			} else {
-				$info['error'][] = 'Expecting "' . Utils::PrintHexBytes(self::MAGIC_MTRK) . '" at '.($offset - 4).', found "'.Utils::PrintHexBytes($trackID).'" instead';
+                $this->error('Expecting "' . Utils::PrintHexBytes(self::MAGIC_MTRK) . '" at '.($offset - 4).', found "'.Utils::PrintHexBytes($trackID).'" instead');
 				return false;
 			}
 		}
 
 		if (!isset($trackdataarray) || !is_array($trackdataarray)) {
-			$info['error'][] = 'Cannot find MIDI track information';
+			$this->error('Cannot find MIDI track information');
 			unset($thisfile_midi);
 			unset($info['fileformat']);
 			return false;
@@ -237,7 +237,7 @@ class Midi extends \JamesHeinrich\GetID3\Module\Handler
 							case 0x51: // Tempo: microseconds / quarter note
 								$CurrentMicroSecondsPerBeat = Utils::BigEndian2Int(substr($METAeventData, 0, $METAeventLength));
 								if ($CurrentMicroSecondsPerBeat == 0) {
-									$info['error'][] = 'Corrupt MIDI file: CurrentMicroSecondsPerBeat == zero';
+									$this->error('Corrupt MIDI file: CurrentMicroSecondsPerBeat == zero');
 									return false;
 								}
 								$thisfile_midi_raw['events'][$tracknumber][$CumulativeDeltaTime]['us_qnote'] = $CurrentMicroSecondsPerBeat;
@@ -280,13 +280,13 @@ class Midi extends \JamesHeinrich\GetID3\Module\Handler
 								break;
 
 							default:
-								$info['warning'][] = 'Unhandled META Event Command: '.$METAeventCommand;
+								$this->warning('Unhandled META Event Command: '.$METAeventCommand);
 								break;
 						}
 
 					} else {
 
-						$info['warning'][] = 'Unhandled MIDI Event ID: '.$MIDIevents[$tracknumber][$eventid]['eventid'].' + Channel ID: '.$MIDIevents[$tracknumber][$eventid]['channel'];
+						$this->warning('Unhandled MIDI Event ID: '.$MIDIevents[$tracknumber][$eventid]['eventid'].' + Channel ID: '.$MIDIevents[$tracknumber][$eventid]['channel']);
 
 					}
 				}
@@ -306,7 +306,7 @@ class Midi extends \JamesHeinrich\GetID3\Module\Handler
 				if ($thisfile_midi['totalticks'] > $tickoffset) {
 
 					if ($thisfile_midi_raw['ticksperqnote'] == 0) {
-						$info['error'][] = 'Corrupt MIDI file: ticksperqnote == zero';
+						$this->error('Corrupt MIDI file: ticksperqnote == zero');
 						return false;
 					}
 
@@ -319,7 +319,7 @@ class Midi extends \JamesHeinrich\GetID3\Module\Handler
 			if ($thisfile_midi['totalticks'] > $previoustickoffset) {
 
 				if ($thisfile_midi_raw['ticksperqnote'] == 0) {
-					$info['error'][] = 'Corrupt MIDI file: ticksperqnote == zero';
+					$this->error('Corrupt MIDI file: ticksperqnote == zero');
 					return false;
 				}
 

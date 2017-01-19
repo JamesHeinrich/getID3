@@ -24,7 +24,7 @@ class Par2 extends \JamesHeinrich\GetID3\Module\Handler
 
 		$info['fileformat'] = 'par2';
 
-		$info['error'][] = 'PAR2 parsing not enabled in this version of getID3()';
+		$this->error('PAR2 parsing not enabled in this version of getID3()');
 		return false;
 
 	}

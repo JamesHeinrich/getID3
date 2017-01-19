@@ -30,7 +30,7 @@ class Voc extends \JamesHeinrich\GetID3\Module\Handler
 
 		$magic = 'Creative Voice File';
 		if (substr($VOCheader, 0, 19) != $magic) {
-			$info['error'][] = 'Expecting "'.Utils::PrintHexBytes($magic).'" at offset '.$info['avdataoffset'].', found "'.Utils::PrintHexBytes(substr($VOCheader, 0, 19)).'"';
+			$this->error('Expecting "'.Utils::PrintHexBytes($magic).'" at offset '.$info['avdataoffset'].', found "'.Utils::PrintHexBytes(substr($VOCheader, 0, 19)).'"');
 			return false;
 		}
 
@@ -140,7 +140,7 @@ class Voc extends \JamesHeinrich\GetID3\Module\Handler
 					break;
 
 				default:
-					$info['warning'][] = 'Unhandled block type "'.$BlockType.'" at offset '.$BlockOffset;
+					$this->warning('Unhandled block type "'.$BlockType.'" at offset '.$BlockOffset);
 					$this->fseek($BlockSize, SEEK_CUR);
 					break;
 			}

@@ -35,7 +35,7 @@ class Tta extends \JamesHeinrich\GetID3\Module\Handler
 		$info['tta']['magic'] = substr($ttaheader, 0, 3);
 		$magic = 'TTA';
 		if ($info['tta']['magic'] != $magic) {
-			$info['error'][] = 'Expecting "'.Utils::PrintHexBytes($magic).'" at offset '.$info['avdataoffset'].', found "'.Utils::PrintHexBytes($info['tta']['magic']).'"';
+			$this->error('Expecting "'.Utils::PrintHexBytes($magic).'" at offset '.$info['avdataoffset'].', found "'.Utils::PrintHexBytes($info['tta']['magic']).'"');
 			unset($info['fileformat']);
 			unset($info['audio']);
 			unset($info['tta']);
@@ -93,7 +93,7 @@ class Tta extends \JamesHeinrich\GetID3\Module\Handler
 				break;
 
 			default:
-				$info['error'][] = 'This version of getID3() ['.$this->getid3->version().'] only knows how to handle TTA v1 and v2 - it may not work correctly with this file which appears to be TTA v'.$ttaheader{3};
+				$this->error('This version of getID3() ['.$this->getid3->version().'] only knows how to handle TTA v1 and v2 - it may not work correctly with this file which appears to be TTA v'.$ttaheader{3});
 				return false;
 				break;
 		}

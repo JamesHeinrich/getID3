@@ -49,7 +49,7 @@ class Bmp extends \JamesHeinrich\GetID3\Module\Handler
 
 		$magic = 'BM';
 		if ($thisfile_bmp_header_raw['identifier'] != $magic) {
-			$info['error'][] = 'Expecting "'.Utils::PrintHexBytes($magic).'" at offset '.$info['avdataoffset'].', found "'.Utils::PrintHexBytes($thisfile_bmp_header_raw['identifier']).'"';
+			$this->error('Expecting "'.Utils::PrintHexBytes($magic).'" at offset '.$info['avdataoffset'].', found "'.Utils::PrintHexBytes($thisfile_bmp_header_raw['identifier']).'"');
 			unset($info['fileformat']);
 			unset($info['bmp']);
 			return false;
@@ -89,7 +89,7 @@ class Bmp extends \JamesHeinrich\GetID3\Module\Handler
 			$thisfile_bmp['type_os']      = 'Windows';
 			$thisfile_bmp['type_version'] = 5;
 		} else {
-			$info['error'][] = 'Unknown BMP subtype (or not a BMP file)';
+			$this->error('Unknown BMP subtype (or not a BMP file)');
 			unset($info['fileformat']);
 			unset($info['bmp']);
 			return false;
@@ -286,7 +286,7 @@ class Bmp extends \JamesHeinrich\GetID3\Module\Handler
 
 		} else {
 
-			$info['error'][] = 'Unknown BMP format in header.';
+			$this->error('Unknown BMP format in header.');
 			return false;
 
 		}
@@ -409,7 +409,7 @@ class Bmp extends \JamesHeinrich\GetID3\Module\Handler
 							break;
 
 						default:
-							$info['error'][] = 'Unknown bits-per-pixel value ('.$thisfile_bmp_header_raw['bits_per_pixel'].') - cannot read pixel data';
+							$this->error('Unknown bits-per-pixel value ('.$thisfile_bmp_header_raw['bits_per_pixel'].') - cannot read pixel data');
 							break;
 					}
 					break;
@@ -484,7 +484,7 @@ class Bmp extends \JamesHeinrich\GetID3\Module\Handler
 							break;
 
 						default:
-							$info['error'][] = 'Unknown bits-per-pixel value ('.$thisfile_bmp_header_raw['bits_per_pixel'].') - cannot read pixel data';
+							$this->error('Unknown bits-per-pixel value ('.$thisfile_bmp_header_raw['bits_per_pixel'].') - cannot read pixel data');
 							break;
 					}
 					break;
@@ -573,7 +573,7 @@ class Bmp extends \JamesHeinrich\GetID3\Module\Handler
 							break;
 
 						default:
-							$info['error'][] = 'Unknown bits-per-pixel value ('.$thisfile_bmp_header_raw['bits_per_pixel'].') - cannot read pixel data';
+							$this->error('Unknown bits-per-pixel value ('.$thisfile_bmp_header_raw['bits_per_pixel'].') - cannot read pixel data');
 							break;
 					}
 					break;
@@ -613,14 +613,14 @@ class Bmp extends \JamesHeinrich\GetID3\Module\Handler
 							break;
 
 						default:
-							$info['error'][] = 'Unknown bits-per-pixel value ('.$thisfile_bmp_header_raw['bits_per_pixel'].') - cannot read pixel data';
+							$this->error('Unknown bits-per-pixel value ('.$thisfile_bmp_header_raw['bits_per_pixel'].') - cannot read pixel data');
 							break;
 					}
 					break;
 
 
 				default: // unhandled compression type
-					$info['error'][] = 'Unknown/unhandled compression type value ('.$thisfile_bmp_header_raw['compression'].') - cannot decompress pixel data';
+					$this->error('Unknown/unhandled compression type value ('.$thisfile_bmp_header_raw['compression'].') - cannot decompress pixel data');
 					break;
 			}
 		}

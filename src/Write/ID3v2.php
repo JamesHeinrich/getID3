@@ -815,7 +815,7 @@ class ID3v2
 					// Counter         $xx xx xx xx (xx ...)
 					if (!$this->IsWithinBitRange($source_data_array['rating'], 8, false)) {
 						$this->errors[] = 'Invalid Rating byte in '.$frame_name.' ('.$source_data_array['rating'].') (range = 0 to 255)';
-					} elseif (!IsValidEmail($source_data_array['email'])) {
+					} elseif (!$this->IsValidEmail($source_data_array['email'])) {
 						$this->errors[] = 'Invalid Email in '.$frame_name.' ('.$source_data_array['email'].')';
 					} else {
 						$framedata .= str_replace("\x00", '', $source_data_array['email'])."\x00";
@@ -1183,7 +1183,6 @@ class ID3v2
 			$PreviousFrames = array();
 			return true;
 		}
-
 		if ($this->majorversion == 4) {
 			switch ($frame_name) {
 				case 'UFID':
@@ -1744,14 +1743,14 @@ class ID3v2
 		return false;
 	}
 
-	public function ID3v2IsValidRGADname($RGADname) {
+	public static function ID3v2IsValidRGADname($RGADname) {
 		if (($RGADname >= 0) && ($RGADname <= 2)) {
 			return true;
 		}
 		return false;
 	}
 
-	public function ID3v2IsValidRGADoriginator($RGADoriginator) {
+	public static function ID3v2IsValidRGADoriginator($RGADoriginator) {
 		if (($RGADoriginator >= 0) && ($RGADoriginator <= 3)) {
 			return true;
 		}
@@ -1759,14 +1758,19 @@ class ID3v2
 	}
 
 	public function ID3v2IsValidTextEncoding($textencodingbyte) {
+		// 0 = ISO-8859-1
+		// 1 = UTF-16 with BOM
+		// 2 = UTF-16BE without BOM
+		// 3 = UTF-8
 		static $ID3v2IsValidTextEncoding_cache = array(
-			2 => array(true, true),
-			3 => array(true, true),
-			4 => array(true, true, true, true));
+			2 => array(true, true),              // ID3v2.2 - allow 0=ISO-8859-1, 1=UTF-16
+			3 => array(true, true),              // ID3v2.3 - allow 0=ISO-8859-1, 1=UTF-16
+			4 => array(true, true, true, true),  // ID3v2.4 - allow 0=ISO-8859-1, 1=UTF-16, 2=UTF-16BE, 3=UTF-8
+		);
 		return isset($ID3v2IsValidTextEncoding_cache[$this->majorversion][$textencodingbyte]);
 	}
 
-	public function Unsynchronise($data) {
+	public static function Unsynchronise($data) {
 		// Whenever a false synchronisation is found within the tag, one zeroed
 		// byte is inserted after the first false synchronisation byte. The
 		// format of a correct sync that should be altered by ID3 encoders is as
@@ -1835,14 +1839,11 @@ class ID3v2
 		}
 	}
 
-	public function IsValidMIMEstring($mimestring) {
-		if ((strlen($mimestring) >= 3) && (strpos($mimestring, '/') > 0) && (strpos($mimestring, '/') < (strlen($mimestring) - 1))) {
-			return true;
-		}
-		return false;
+	public static function IsValidMIMEstring($mimestring) {
+		return preg_match('#^.+/.+$#', $mimestring);
 	}
 
-	public function IsWithinBitRange($number, $maxbits, $signed=false) {
+	public static function IsWithinBitRange($number, $maxbits, $signed=false) {
 		if ($signed) {
 			if (($number > (0 - pow(2, $maxbits - 1))) && ($number <= pow(2, $maxbits - 1))) {
 				return true;
@@ -1855,18 +1856,15 @@ class ID3v2
 		return false;
 	}
 
-	public function safe_parse_url($url) {
-		$parts = @parse_url($url);
-		$parts['scheme'] = (isset($parts['scheme']) ? $parts['scheme'] : '');
-		$parts['host']   = (isset($parts['host'])   ? $parts['host']   : '');
-		$parts['user']   = (isset($parts['user'])   ? $parts['user']   : '');
-		$parts['pass']   = (isset($parts['pass'])   ? $parts['pass']   : '');
-		$parts['path']   = (isset($parts['path'])   ? $parts['path']   : '');
-		$parts['query']  = (isset($parts['query'])  ? $parts['query']  : '');
-		return $parts;
+	public static function IsValidEmail($email) {
+		if (function_exists('filter_var')) {
+			return filter_var($email, FILTER_VALIDATE_EMAIL);
+		}
+		// VERY crude email validation
+		return preg_match('#^[^ ]+@[a-z\\-\\.]+\\.[a-z]{2,}$#', $email);
 	}
 
-	public function IsValidURL($url, $allowUserPass=false) {
+	public static function IsValidURL($url, $allowUserPass=false) {
 		if ($url == '') {
 			return false;
 		}
@@ -1877,6 +1875,10 @@ class ID3v2
 				return false;
 			}
 		}
+		// 2016-06-08: relax URL checking to avoid falsely rejecting valid URLs, leave URL validation to the user
+		// http://www.getid3.org/phpBB3/viewtopic.php?t=1926
+		return true;
+		/*
 		if ($parts = $this->safe_parse_url($url)) {
 			if (($parts['scheme'] != 'http') && ($parts['scheme'] != 'https') && ($parts['scheme'] != 'ftp') && ($parts['scheme'] != 'gopher')) {
 				return false;
@@ -1895,6 +1897,18 @@ class ID3v2
 			}
 		}
 		return false;
+		*/
+	}
+
+	public static function safe_parse_url($url) {
+		$parts = @parse_url($url);
+		$parts['scheme'] = (isset($parts['scheme']) ? $parts['scheme'] : '');
+		$parts['host']   = (isset($parts['host'])   ? $parts['host']   : '');
+		$parts['user']   = (isset($parts['user'])   ? $parts['user']   : '');
+		$parts['pass']   = (isset($parts['pass'])   ? $parts['pass']   : '');
+		$parts['path']   = (isset($parts['path'])   ? $parts['path']   : '');
+		$parts['query']  = (isset($parts['query'])  ? $parts['query']  : '');
+		return $parts;
 	}
 
 	public static function ID3v2ShortFrameNameLookup($majorversion, $long_description) {
@@ -1903,150 +1917,189 @@ class ID3v2
 		if (empty($ID3v2ShortFrameNameLookup)) {
 
 			// The following are unique to ID3v2.2
-			$ID3v2ShortFrameNameLookup[2]['comment']                                          = 'COM';
-			$ID3v2ShortFrameNameLookup[2]['album']                                            = 'TAL';
-			$ID3v2ShortFrameNameLookup[2]['beats_per_minute']                                 = 'TBP';
-			$ID3v2ShortFrameNameLookup[2]['composer']                                         = 'TCM';
-			$ID3v2ShortFrameNameLookup[2]['genre']                                            = 'TCO';
-			$ID3v2ShortFrameNameLookup[2]['itunescompilation']                                = 'TCP';
-			$ID3v2ShortFrameNameLookup[2]['copyright']                                        = 'TCR';
-			$ID3v2ShortFrameNameLookup[2]['encoded_by']                                       = 'TEN';
-			$ID3v2ShortFrameNameLookup[2]['language']                                         = 'TLA';
-			$ID3v2ShortFrameNameLookup[2]['length']                                           = 'TLE';
-			$ID3v2ShortFrameNameLookup[2]['original_artist']                                  = 'TOA';
-			$ID3v2ShortFrameNameLookup[2]['original_filename']                                = 'TOF';
-			$ID3v2ShortFrameNameLookup[2]['original_lyricist']                                = 'TOL';
-			$ID3v2ShortFrameNameLookup[2]['original_album_title']                             = 'TOT';
-			$ID3v2ShortFrameNameLookup[2]['artist']                                           = 'TP1';
-			$ID3v2ShortFrameNameLookup[2]['band']                                             = 'TP2';
-			$ID3v2ShortFrameNameLookup[2]['conductor']                                        = 'TP3';
-			$ID3v2ShortFrameNameLookup[2]['remixer']                                          = 'TP4';
-			$ID3v2ShortFrameNameLookup[2]['publisher']                                        = 'TPB';
-			$ID3v2ShortFrameNameLookup[2]['isrc']                                             = 'TRC';
-			$ID3v2ShortFrameNameLookup[2]['tracknumber']                                      = 'TRK';
-			$ID3v2ShortFrameNameLookup[2]['track_number']                                     = 'TRK';
-			$ID3v2ShortFrameNameLookup[2]['size']                                             = 'TSI';
-			$ID3v2ShortFrameNameLookup[2]['encoder_settings']                                 = 'TSS';
-			$ID3v2ShortFrameNameLookup[2]['description']                                      = 'TT1';
-			$ID3v2ShortFrameNameLookup[2]['title']                                            = 'TT2';
-			$ID3v2ShortFrameNameLookup[2]['subtitle']                                         = 'TT3';
-			$ID3v2ShortFrameNameLookup[2]['lyricist']                                         = 'TXT';
-			$ID3v2ShortFrameNameLookup[2]['user_text']                                        = 'TXX';
-			$ID3v2ShortFrameNameLookup[2]['year']                                             = 'TYE';
-			$ID3v2ShortFrameNameLookup[2]['unique_file_identifier']                           = 'UFI';
-			$ID3v2ShortFrameNameLookup[2]['unsynchronised_lyrics']                            = 'ULT';
-			$ID3v2ShortFrameNameLookup[2]['url_file']                                         = 'WAF';
-			$ID3v2ShortFrameNameLookup[2]['url_artist']                                       = 'WAR';
-			$ID3v2ShortFrameNameLookup[2]['url_source']                                       = 'WAS';
-			$ID3v2ShortFrameNameLookup[2]['copyright_information']                            = 'WCP';
-			$ID3v2ShortFrameNameLookup[2]['url_publisher']                                    = 'WPB';
-			$ID3v2ShortFrameNameLookup[2]['url_user']                                         = 'WXX';
+			$ID3v2ShortFrameNameLookup[2]['recommended_buffer_size']           = 'BUF';
+			$ID3v2ShortFrameNameLookup[2]['comment']                           = 'COM';
+			$ID3v2ShortFrameNameLookup[2]['audio_encryption']                  = 'CRA';
+			$ID3v2ShortFrameNameLookup[2]['encrypted_meta_frame']              = 'CRM';
+			$ID3v2ShortFrameNameLookup[2]['equalisation']                      = 'EQU';
+			$ID3v2ShortFrameNameLookup[2]['event_timing_codes']                = 'ETC';
+			$ID3v2ShortFrameNameLookup[2]['general_encapsulated_object']       = 'GEO';
+			$ID3v2ShortFrameNameLookup[2]['involved_people_list']              = 'IPL';
+			$ID3v2ShortFrameNameLookup[2]['linked_information']                = 'LNK';
+			$ID3v2ShortFrameNameLookup[2]['music_cd_identifier']               = 'MCI';
+			$ID3v2ShortFrameNameLookup[2]['mpeg_location_lookup_table']        = 'MLL';
+			$ID3v2ShortFrameNameLookup[2]['attached_picture']                  = 'PIC';
+			$ID3v2ShortFrameNameLookup[2]['popularimeter']                     = 'POP';
+			$ID3v2ShortFrameNameLookup[2]['reverb']                            = 'REV';
+			$ID3v2ShortFrameNameLookup[2]['relative_volume_adjustment']        = 'RVA';
+			$ID3v2ShortFrameNameLookup[2]['synchronised_lyric']                = 'SLT';
+			$ID3v2ShortFrameNameLookup[2]['synchronised_tempo_codes']          = 'STC';
+			$ID3v2ShortFrameNameLookup[2]['album']                             = 'TAL';
+			$ID3v2ShortFrameNameLookup[2]['beats_per_minute']                  = 'TBP';
+			$ID3v2ShortFrameNameLookup[2]['bpm']                               = 'TBP';
+			$ID3v2ShortFrameNameLookup[2]['composer']                          = 'TCM';
+			$ID3v2ShortFrameNameLookup[2]['genre']                             = 'TCO';
+			$ID3v2ShortFrameNameLookup[2]['part_of_a_compilation']             = 'TCP';
+			$ID3v2ShortFrameNameLookup[2]['copyright_message']                 = 'TCR';
+			$ID3v2ShortFrameNameLookup[2]['date']                              = 'TDA';
+			$ID3v2ShortFrameNameLookup[2]['playlist_delay']                    = 'TDY';
+			$ID3v2ShortFrameNameLookup[2]['encoded_by']                        = 'TEN';
+			$ID3v2ShortFrameNameLookup[2]['file_type']                         = 'TFT';
+			$ID3v2ShortFrameNameLookup[2]['time']                              = 'TIM';
+			$ID3v2ShortFrameNameLookup[2]['initial_key']                       = 'TKE';
+			$ID3v2ShortFrameNameLookup[2]['language']                          = 'TLA';
+			$ID3v2ShortFrameNameLookup[2]['length']                            = 'TLE';
+			$ID3v2ShortFrameNameLookup[2]['media_type']                        = 'TMT';
+			$ID3v2ShortFrameNameLookup[2]['original_artist']                   = 'TOA';
+			$ID3v2ShortFrameNameLookup[2]['original_filename']                 = 'TOF';
+			$ID3v2ShortFrameNameLookup[2]['original_lyricist']                 = 'TOL';
+			$ID3v2ShortFrameNameLookup[2]['original_year']                     = 'TOR';
+			$ID3v2ShortFrameNameLookup[2]['original_album']                    = 'TOT';
+			$ID3v2ShortFrameNameLookup[2]['artist']                            = 'TP1';
+			$ID3v2ShortFrameNameLookup[2]['band']                              = 'TP2';
+			$ID3v2ShortFrameNameLookup[2]['conductor']                         = 'TP3';
+			$ID3v2ShortFrameNameLookup[2]['remixer']                           = 'TP4';
+			$ID3v2ShortFrameNameLookup[2]['part_of_a_set']                     = 'TPA';
+			$ID3v2ShortFrameNameLookup[2]['publisher']                         = 'TPB';
+			$ID3v2ShortFrameNameLookup[2]['isrc']                              = 'TRC';
+			$ID3v2ShortFrameNameLookup[2]['recording_dates']                   = 'TRD';
+			$ID3v2ShortFrameNameLookup[2]['tracknumber']                       = 'TRK';
+			$ID3v2ShortFrameNameLookup[2]['track_number']                      = 'TRK';
+			$ID3v2ShortFrameNameLookup[2]['album_artist_sort_order']           = 'TS2';
+			$ID3v2ShortFrameNameLookup[2]['album_sort_order']                  = 'TSA';
+			$ID3v2ShortFrameNameLookup[2]['composer_sort_order']               = 'TSC';
+			$ID3v2ShortFrameNameLookup[2]['size']                              = 'TSI';
+			$ID3v2ShortFrameNameLookup[2]['performer_sort_order']              = 'TSP';
+			$ID3v2ShortFrameNameLookup[2]['encoder_settings']                  = 'TSS';
+			$ID3v2ShortFrameNameLookup[2]['title_sort_order']                  = 'TST';
+			$ID3v2ShortFrameNameLookup[2]['content_group_description']         = 'TT1';
+			$ID3v2ShortFrameNameLookup[2]['title']                             = 'TT2';
+			$ID3v2ShortFrameNameLookup[2]['subtitle']                          = 'TT3';
+			$ID3v2ShortFrameNameLookup[2]['lyricist']                          = 'TXT';
+			$ID3v2ShortFrameNameLookup[2]['text']                              = 'TXX';
+			$ID3v2ShortFrameNameLookup[2]['year']                              = 'TYE';
+			$ID3v2ShortFrameNameLookup[2]['unique_file_identifier']            = 'UFI';
+			$ID3v2ShortFrameNameLookup[2]['unsychronised_lyric']               = 'ULT';
+			$ID3v2ShortFrameNameLookup[2]['url_file']                          = 'WAF';
+			$ID3v2ShortFrameNameLookup[2]['url_artist']                        = 'WAR';
+			$ID3v2ShortFrameNameLookup[2]['url_source']                        = 'WAS';
+			$ID3v2ShortFrameNameLookup[2]['commercial_information']            = 'WCM';
+			$ID3v2ShortFrameNameLookup[2]['copyright']                         = 'WCP';
+			$ID3v2ShortFrameNameLookup[2]['url_publisher']                     = 'WPB';
+			$ID3v2ShortFrameNameLookup[2]['url_user']                          = 'WXX';
 
 			// The following are common to ID3v2.3 and ID3v2.4
-			$ID3v2ShortFrameNameLookup[3]['audio_encryption']                                 = 'AENC';
-			$ID3v2ShortFrameNameLookup[3]['attached_picture']                                 = 'APIC';
-			$ID3v2ShortFrameNameLookup[3]['picture']                                          = 'APIC';
-			$ID3v2ShortFrameNameLookup[3]['comment']                                          = 'COMM';
-			$ID3v2ShortFrameNameLookup[3]['commercial']                                       = 'COMR';
-			$ID3v2ShortFrameNameLookup[3]['encryption_method_registration']                   = 'ENCR';
-			$ID3v2ShortFrameNameLookup[3]['event_timing_codes']                               = 'ETCO';
-			$ID3v2ShortFrameNameLookup[3]['general_encapsulated_object']                      = 'GEOB';
-			$ID3v2ShortFrameNameLookup[3]['group_identification_registration']                = 'GRID';
-			$ID3v2ShortFrameNameLookup[3]['linked_information']                               = 'LINK';
-			$ID3v2ShortFrameNameLookup[3]['music_cd_identifier']                              = 'MCDI';
-			$ID3v2ShortFrameNameLookup[3]['mpeg_location_lookup_table']                       = 'MLLT';
-			$ID3v2ShortFrameNameLookup[3]['ownership']                                        = 'OWNE';
-			$ID3v2ShortFrameNameLookup[3]['play_counter']                                     = 'PCNT';
-			$ID3v2ShortFrameNameLookup[3]['popularimeter']                                    = 'POPM';
-			$ID3v2ShortFrameNameLookup[3]['position_synchronisation']                         = 'POSS';
-			$ID3v2ShortFrameNameLookup[3]['private']                                          = 'PRIV';
-			$ID3v2ShortFrameNameLookup[3]['recommended_buffer_size']                          = 'RBUF';
-			$ID3v2ShortFrameNameLookup[3]['reverb']                                           = 'RVRB';
-			$ID3v2ShortFrameNameLookup[3]['synchronised_lyrics']                              = 'SYLT';
-			$ID3v2ShortFrameNameLookup[3]['synchronised_tempo_codes']                         = 'SYTC';
-			$ID3v2ShortFrameNameLookup[3]['album']                                            = 'TALB';
-			$ID3v2ShortFrameNameLookup[3]['beats_per_minute']                                 = 'TBPM';
-			$ID3v2ShortFrameNameLookup[3]['itunescompilation']                                = 'TCMP';
-			$ID3v2ShortFrameNameLookup[3]['composer']                                         = 'TCOM';
-			$ID3v2ShortFrameNameLookup[3]['genre']                                            = 'TCON';
-			$ID3v2ShortFrameNameLookup[3]['copyright']                                        = 'TCOP';
-			$ID3v2ShortFrameNameLookup[3]['playlist_delay']                                   = 'TDLY';
-			$ID3v2ShortFrameNameLookup[3]['encoded_by']                                       = 'TENC';
-			$ID3v2ShortFrameNameLookup[3]['lyricist']                                         = 'TEXT';
-			$ID3v2ShortFrameNameLookup[3]['file_type']                                        = 'TFLT';
-			$ID3v2ShortFrameNameLookup[3]['content_group_description']                        = 'TIT1';
-			$ID3v2ShortFrameNameLookup[3]['title']                                            = 'TIT2';
-			$ID3v2ShortFrameNameLookup[3]['subtitle']                                         = 'TIT3';
-			$ID3v2ShortFrameNameLookup[3]['initial_key']                                      = 'TKEY';
-			$ID3v2ShortFrameNameLookup[3]['language']                                         = 'TLAN';
-			$ID3v2ShortFrameNameLookup[3]['length']                                           = 'TLEN';
-			$ID3v2ShortFrameNameLookup[3]['media_type']                                       = 'TMED';
-			$ID3v2ShortFrameNameLookup[3]['original_album_title']                             = 'TOAL';
-			$ID3v2ShortFrameNameLookup[3]['original_filename']                                = 'TOFN';
-			$ID3v2ShortFrameNameLookup[3]['original_lyricist']                                = 'TOLY';
-			$ID3v2ShortFrameNameLookup[3]['original_artist']                                  = 'TOPE';
-			$ID3v2ShortFrameNameLookup[3]['file_owner']                                       = 'TOWN';
-			$ID3v2ShortFrameNameLookup[3]['artist']                                           = 'TPE1';
-			$ID3v2ShortFrameNameLookup[3]['band']                                             = 'TPE2';
-			$ID3v2ShortFrameNameLookup[3]['conductor']                                        = 'TPE3';
-			$ID3v2ShortFrameNameLookup[3]['remixer']                                          = 'TPE4';
-			$ID3v2ShortFrameNameLookup[3]['part_of_a_set']                                    = 'TPOS';
-			$ID3v2ShortFrameNameLookup[3]['publisher']                                        = 'TPUB';
-			$ID3v2ShortFrameNameLookup[3]['tracknumber']                                      = 'TRCK';
-			$ID3v2ShortFrameNameLookup[3]['track_number']                                     = 'TRCK';
-			$ID3v2ShortFrameNameLookup[3]['internet_radio_station_name']                      = 'TRSN';
-			$ID3v2ShortFrameNameLookup[3]['internet_radio_station_owner']                     = 'TRSO';
-			$ID3v2ShortFrameNameLookup[3]['isrc']                                             = 'TSRC';
-			$ID3v2ShortFrameNameLookup[3]['encoder_settings']                                 = 'TSSE';
-			$ID3v2ShortFrameNameLookup[3]['user_text']                                        = 'TXXX';
-			$ID3v2ShortFrameNameLookup[3]['unique_file_identifier']                           = 'UFID';
-			$ID3v2ShortFrameNameLookup[3]['terms_of_use']                                     = 'USER';
-			$ID3v2ShortFrameNameLookup[3]['unsynchronised_lyrics']                            = 'USLT';
-			$ID3v2ShortFrameNameLookup[3]['commercial']                                       = 'WCOM';
-			$ID3v2ShortFrameNameLookup[3]['copyright_information']                            = 'WCOP';
-			$ID3v2ShortFrameNameLookup[3]['url_file']                                         = 'WOAF';
-			$ID3v2ShortFrameNameLookup[3]['url_artist']                                       = 'WOAR';
-			$ID3v2ShortFrameNameLookup[3]['url_source']                                       = 'WOAS';
-			$ID3v2ShortFrameNameLookup[3]['url_station']                                      = 'WORS';
-			$ID3v2ShortFrameNameLookup[3]['payment']                                          = 'WPAY';
-			$ID3v2ShortFrameNameLookup[3]['url_publisher']                                    = 'WPUB';
-			$ID3v2ShortFrameNameLookup[3]['url_user']                                         = 'WXXX';
+			$ID3v2ShortFrameNameLookup[3]['audio_encryption']                  = 'AENC';
+			$ID3v2ShortFrameNameLookup[3]['attached_picture']                  = 'APIC';
+			$ID3v2ShortFrameNameLookup[3]['picture']                           = 'APIC';
+			$ID3v2ShortFrameNameLookup[3]['comment']                           = 'COMM';
+			$ID3v2ShortFrameNameLookup[3]['commercial_frame']                  = 'COMR';
+			$ID3v2ShortFrameNameLookup[3]['encryption_method_registration']    = 'ENCR';
+			$ID3v2ShortFrameNameLookup[3]['event_timing_codes']                = 'ETCO';
+			$ID3v2ShortFrameNameLookup[3]['general_encapsulated_object']       = 'GEOB';
+			$ID3v2ShortFrameNameLookup[3]['group_identification_registration'] = 'GRID';
+			$ID3v2ShortFrameNameLookup[3]['linked_information']                = 'LINK';
+			$ID3v2ShortFrameNameLookup[3]['music_cd_identifier']               = 'MCDI';
+			$ID3v2ShortFrameNameLookup[3]['mpeg_location_lookup_table']        = 'MLLT';
+			$ID3v2ShortFrameNameLookup[3]['ownership_frame']                   = 'OWNE';
+			$ID3v2ShortFrameNameLookup[3]['play_counter']                      = 'PCNT';
+			$ID3v2ShortFrameNameLookup[3]['popularimeter']                     = 'POPM';
+			$ID3v2ShortFrameNameLookup[3]['position_synchronisation_frame']    = 'POSS';
+			$ID3v2ShortFrameNameLookup[3]['private_frame']                     = 'PRIV';
+			$ID3v2ShortFrameNameLookup[3]['recommended_buffer_size']           = 'RBUF';
+			$ID3v2ShortFrameNameLookup[3]['replay_gain_adjustment']            = 'RGAD';
+			$ID3v2ShortFrameNameLookup[3]['reverb']                            = 'RVRB';
+			$ID3v2ShortFrameNameLookup[3]['synchronised_lyric']                = 'SYLT';
+			$ID3v2ShortFrameNameLookup[3]['synchronised_tempo_codes']          = 'SYTC';
+			$ID3v2ShortFrameNameLookup[3]['album']                             = 'TALB';
+			$ID3v2ShortFrameNameLookup[3]['beats_per_minute']                  = 'TBPM';
+			$ID3v2ShortFrameNameLookup[3]['bpm']                               = 'TBPM';
+			$ID3v2ShortFrameNameLookup[3]['part_of_a_compilation']             = 'TCMP';
+			$ID3v2ShortFrameNameLookup[3]['composer']                          = 'TCOM';
+			$ID3v2ShortFrameNameLookup[3]['genre']                             = 'TCON';
+			$ID3v2ShortFrameNameLookup[3]['copyright_message']                 = 'TCOP';
+			$ID3v2ShortFrameNameLookup[3]['playlist_delay']                    = 'TDLY';
+			$ID3v2ShortFrameNameLookup[3]['encoded_by']                        = 'TENC';
+			$ID3v2ShortFrameNameLookup[3]['lyricist']                          = 'TEXT';
+			$ID3v2ShortFrameNameLookup[3]['file_type']                         = 'TFLT';
+			$ID3v2ShortFrameNameLookup[3]['content_group_description']         = 'TIT1';
+			$ID3v2ShortFrameNameLookup[3]['title']                             = 'TIT2';
+			$ID3v2ShortFrameNameLookup[3]['subtitle']                          = 'TIT3';
+			$ID3v2ShortFrameNameLookup[3]['initial_key']                       = 'TKEY';
+			$ID3v2ShortFrameNameLookup[3]['language']                          = 'TLAN';
+			$ID3v2ShortFrameNameLookup[3]['length']                            = 'TLEN';
+			$ID3v2ShortFrameNameLookup[3]['media_type']                        = 'TMED';
+			$ID3v2ShortFrameNameLookup[3]['original_album']                    = 'TOAL';
+			$ID3v2ShortFrameNameLookup[3]['original_filename']                 = 'TOFN';
+			$ID3v2ShortFrameNameLookup[3]['original_lyricist']                 = 'TOLY';
+			$ID3v2ShortFrameNameLookup[3]['original_artist']                   = 'TOPE';
+			$ID3v2ShortFrameNameLookup[3]['file_owner']                        = 'TOWN';
+			$ID3v2ShortFrameNameLookup[3]['artist']                            = 'TPE1';
+			$ID3v2ShortFrameNameLookup[3]['band']                              = 'TPE2';
+			$ID3v2ShortFrameNameLookup[3]['conductor']                         = 'TPE3';
+			$ID3v2ShortFrameNameLookup[3]['remixer']                           = 'TPE4';
+			$ID3v2ShortFrameNameLookup[3]['part_of_a_set']                     = 'TPOS';
+			$ID3v2ShortFrameNameLookup[3]['publisher']                         = 'TPUB';
+			$ID3v2ShortFrameNameLookup[3]['tracknumber']                       = 'TRCK';
+			$ID3v2ShortFrameNameLookup[3]['track_number']                      = 'TRCK';
+			$ID3v2ShortFrameNameLookup[3]['internet_radio_station_name']       = 'TRSN';
+			$ID3v2ShortFrameNameLookup[3]['internet_radio_station_owner']      = 'TRSO';
+			$ID3v2ShortFrameNameLookup[3]['album_artist_sort_order']           = 'TSO2';
+			$ID3v2ShortFrameNameLookup[3]['album_sort_order']                  = 'TSOA';
+			$ID3v2ShortFrameNameLookup[3]['composer_sort_order']               = 'TSOC';
+			$ID3v2ShortFrameNameLookup[3]['performer_sort_order']              = 'TSOP';
+			$ID3v2ShortFrameNameLookup[3]['title_sort_order']                  = 'TSOT';
+			$ID3v2ShortFrameNameLookup[3]['isrc']                              = 'TSRC';
+			$ID3v2ShortFrameNameLookup[3]['encoder_settings']                  = 'TSSE';
+			$ID3v2ShortFrameNameLookup[3]['text']                              = 'TXXX';
+			$ID3v2ShortFrameNameLookup[3]['unique_file_identifier']            = 'UFID';
+			$ID3v2ShortFrameNameLookup[3]['terms_of_use']                      = 'USER';
+			$ID3v2ShortFrameNameLookup[3]['unsychronised_lyric']               = 'USLT';
+			$ID3v2ShortFrameNameLookup[3]['commercial_information']            = 'WCOM';
+			$ID3v2ShortFrameNameLookup[3]['copyright']                         = 'WCOP';
+			$ID3v2ShortFrameNameLookup[3]['url_file']                          = 'WOAF';
+			$ID3v2ShortFrameNameLookup[3]['url_artist']                        = 'WOAR';
+			$ID3v2ShortFrameNameLookup[3]['url_source']                        = 'WOAS';
+			$ID3v2ShortFrameNameLookup[3]['url_station']                       = 'WORS';
+			$ID3v2ShortFrameNameLookup[3]['url_payment']                       = 'WPAY';
+			$ID3v2ShortFrameNameLookup[3]['url_publisher']                     = 'WPUB';
+			$ID3v2ShortFrameNameLookup[3]['url_user']                          = 'WXXX';
 
 			// The above are common to ID3v2.3 and ID3v2.4
 			// so copy them to ID3v2.4 before adding specifics for 2.3 and 2.4
 			$ID3v2ShortFrameNameLookup[4] = $ID3v2ShortFrameNameLookup[3];
 
 			// The following are unique to ID3v2.3
-			$ID3v2ShortFrameNameLookup[3]['equalisation']                                     = 'EQUA';
-			$ID3v2ShortFrameNameLookup[3]['involved_people_list']                             = 'IPLS';
-			$ID3v2ShortFrameNameLookup[3]['relative_volume_adjustment']                       = 'RVAD';
-			$ID3v2ShortFrameNameLookup[3]['date']                                             = 'TDAT';
-			$ID3v2ShortFrameNameLookup[3]['time']                                             = 'TIME';
-			$ID3v2ShortFrameNameLookup[3]['original_release_year']                            = 'TORY';
-			$ID3v2ShortFrameNameLookup[3]['recording_dates']                                  = 'TRDA';
-			$ID3v2ShortFrameNameLookup[3]['size']                                             = 'TSIZ';
-			$ID3v2ShortFrameNameLookup[3]['year']                                             = 'TYER';
+			$ID3v2ShortFrameNameLookup[3]['equalisation']                      = 'EQUA';
+			$ID3v2ShortFrameNameLookup[3]['involved_people_list']              = 'IPLS';
+			$ID3v2ShortFrameNameLookup[3]['relative_volume_adjustment']        = 'RVAD';
+			$ID3v2ShortFrameNameLookup[3]['date']                              = 'TDAT';
+			$ID3v2ShortFrameNameLookup[3]['time']                              = 'TIME';
+			$ID3v2ShortFrameNameLookup[3]['original_year']                     = 'TORY';
+			$ID3v2ShortFrameNameLookup[3]['recording_dates']                   = 'TRDA';
+			$ID3v2ShortFrameNameLookup[3]['size']                              = 'TSIZ';
+			$ID3v2ShortFrameNameLookup[3]['year']                              = 'TYER';
 
 
 			// The following are unique to ID3v2.4
-			$ID3v2ShortFrameNameLookup[4]['audio_seek_point_index']                           = 'ASPI';
-			$ID3v2ShortFrameNameLookup[4]['equalisation']                                     = 'EQU2';
-			$ID3v2ShortFrameNameLookup[4]['relative_volume_adjustment']                       = 'RVA2';
-			$ID3v2ShortFrameNameLookup[4]['seek']                                             = 'SEEK';
-			$ID3v2ShortFrameNameLookup[4]['signature']                                        = 'SIGN';
-			$ID3v2ShortFrameNameLookup[4]['encoding_time']                                    = 'TDEN';
-			$ID3v2ShortFrameNameLookup[4]['original_release_time']                            = 'TDOR';
-			$ID3v2ShortFrameNameLookup[4]['recording_time']                                   = 'TDRC';
-			$ID3v2ShortFrameNameLookup[4]['release_time']                                     = 'TDRL';
-			$ID3v2ShortFrameNameLookup[4]['tagging_time']                                     = 'TDTG';
-			$ID3v2ShortFrameNameLookup[4]['involved_people_list']                             = 'TIPL';
-			$ID3v2ShortFrameNameLookup[4]['musician_credits_list']                            = 'TMCL';
-			$ID3v2ShortFrameNameLookup[4]['mood']                                             = 'TMOO';
-			$ID3v2ShortFrameNameLookup[4]['produced_notice']                                  = 'TPRO';
-			$ID3v2ShortFrameNameLookup[4]['album_sort_order']                                 = 'TSOA';
-			$ID3v2ShortFrameNameLookup[4]['performer_sort_order']                             = 'TSOP';
-			$ID3v2ShortFrameNameLookup[4]['title_sort_order']                                 = 'TSOT';
-			$ID3v2ShortFrameNameLookup[4]['set_subtitle']                                     = 'TSST';
+			$ID3v2ShortFrameNameLookup[4]['audio_seek_point_index']            = 'ASPI';
+			$ID3v2ShortFrameNameLookup[4]['equalisation']                      = 'EQU2';
+			$ID3v2ShortFrameNameLookup[4]['relative_volume_adjustment']        = 'RVA2';
+			$ID3v2ShortFrameNameLookup[4]['seek_frame']                        = 'SEEK';
+			$ID3v2ShortFrameNameLookup[4]['signature_frame']                   = 'SIGN';
+			$ID3v2ShortFrameNameLookup[4]['encoding_time']                     = 'TDEN';
+			$ID3v2ShortFrameNameLookup[4]['original_release_time']             = 'TDOR';
+			$ID3v2ShortFrameNameLookup[4]['recording_time']                    = 'TDRC';
+			$ID3v2ShortFrameNameLookup[4]['release_time']                      = 'TDRL';
+			$ID3v2ShortFrameNameLookup[4]['tagging_time']                      = 'TDTG';
+			$ID3v2ShortFrameNameLookup[4]['involved_people_list']              = 'TIPL';
+			$ID3v2ShortFrameNameLookup[4]['musician_credits_list']             = 'TMCL';
+			$ID3v2ShortFrameNameLookup[4]['mood']                              = 'TMOO';
+			$ID3v2ShortFrameNameLookup[4]['produced_notice']                   = 'TPRO';
+			$ID3v2ShortFrameNameLookup[4]['album_sort_order']                  = 'TSOA';
+			$ID3v2ShortFrameNameLookup[4]['performer_sort_order']              = 'TSOP';
+			$ID3v2ShortFrameNameLookup[4]['title_sort_order']                  = 'TSOT';
+			$ID3v2ShortFrameNameLookup[4]['set_subtitle']                      = 'TSST';
 		}
 		return (isset($ID3v2ShortFrameNameLookup[$majorversion][strtolower($long_description)]) ? $ID3v2ShortFrameNameLookup[$majorversion][strtolower($long_description)] : '');
 

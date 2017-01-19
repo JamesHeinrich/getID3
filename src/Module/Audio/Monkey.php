@@ -42,7 +42,7 @@ class Monkey extends \JamesHeinrich\GetID3\Module\Handler
 		$thisfile_monkeysaudio_raw['magic'] = substr($MACheaderData, 0, 4);
 		$magic = 'MAC ';
 		if ($thisfile_monkeysaudio_raw['magic'] != $magic) {
-			$info['error'][] = 'Expecting "'.Utils::PrintHexBytes($magic).'" at offset '.$info['avdataoffset'].', found "'.Utils::PrintHexBytes($thisfile_monkeysaudio_raw['magic']).'"';
+			$this->error('Expecting "'.Utils::PrintHexBytes($magic).'" at offset '.$info['avdataoffset'].', found "'.Utils::PrintHexBytes($thisfile_monkeysaudio_raw['magic']).'"');
 			unset($info['fileformat']);
 			return false;
 		}
@@ -115,7 +115,7 @@ class Monkey extends \JamesHeinrich\GetID3\Module\Handler
 		$info['audio']['channels']               = $thisfile_monkeysaudio['channels'];
 		$thisfile_monkeysaudio['sample_rate']            = $thisfile_monkeysaudio_raw['nSampleRate'];
 		if ($thisfile_monkeysaudio['sample_rate'] == 0) {
-			$info['error'][] = 'Corrupt MAC file: frequency == zero';
+			$this->error('Corrupt MAC file: frequency == zero');
 			return false;
 		}
 		$info['audio']['sample_rate']            = $thisfile_monkeysaudio['sample_rate'];
@@ -130,14 +130,14 @@ class Monkey extends \JamesHeinrich\GetID3\Module\Handler
 		}
 		$thisfile_monkeysaudio['playtime']               = $thisfile_monkeysaudio['samples'] / $thisfile_monkeysaudio['sample_rate'];
 		if ($thisfile_monkeysaudio['playtime'] == 0) {
-			$info['error'][] = 'Corrupt MAC file: playtime == zero';
+			$this->error('Corrupt MAC file: playtime == zero');
 			return false;
 		}
 		$info['playtime_seconds']                = $thisfile_monkeysaudio['playtime'];
 		$thisfile_monkeysaudio['compressed_size']        = $info['avdataend'] - $info['avdataoffset'];
 		$thisfile_monkeysaudio['uncompressed_size']      = $thisfile_monkeysaudio['samples'] * $thisfile_monkeysaudio['channels'] * ($thisfile_monkeysaudio['bits_per_sample'] / 8);
 		if ($thisfile_monkeysaudio['uncompressed_size'] == 0) {
-			$info['error'][] = 'Corrupt MAC file: uncompressed_size == zero';
+			$this->error('Corrupt MAC file: uncompressed_size == zero');
 			return false;
 		}
 		$thisfile_monkeysaudio['compression_ratio']      = $thisfile_monkeysaudio['compressed_size'] / ($thisfile_monkeysaudio['uncompressed_size'] + $thisfile_monkeysaudio_raw['nHeaderDataBytes']);
@@ -158,7 +158,7 @@ class Monkey extends \JamesHeinrich\GetID3\Module\Handler
 
 		if ($thisfile_monkeysaudio_raw['nVersion'] >= 3980) {
 			if ($thisfile_monkeysaudio_raw['cFileMD5'] === str_repeat("\x00", 16)) {
-				//$info['warning'][] = 'cFileMD5 is null';
+				//$this->warning('cFileMD5 is null');
 			} else {
 				$info['md5_data_source'] = '';
 				$md5 = $thisfile_monkeysaudio_raw['cFileMD5'];

@@ -100,7 +100,7 @@ class Flv extends \JamesHeinrich\GetID3\Module\Handler
 		$TypeFlags                          = Utils::BigEndian2Int(substr($FLVheader, 4, 1));
 
 		if ($info['flv']['header']['signature'] != self::magic) {
-			$info['error'][] = 'Expecting "'.Utils::PrintHexBytes(self::magic).'" at offset '.$info['avdataoffset'].', found "'.Utils::PrintHexBytes($info['flv']['header']['signature']).'"';
+			$this->error('Expecting "'.Utils::PrintHexBytes(self::magic).'" at offset '.$info['avdataoffset'].', found "'.Utils::PrintHexBytes($info['flv']['header']['signature']).'"');
 			unset($info['flv'], $info['fileformat']);
 			return false;
 		}
@@ -548,7 +548,7 @@ class AMFReader {
 			// Long string
 			default:
 				$value = '(unknown or unsupported data type)';
-			break;
+				break;
 		}
 
 		return $value;

@@ -43,7 +43,7 @@ class OptimFrog extends \JamesHeinrich\GetID3\Module\Handler
 
 		}
 
-		$info['error'][] = 'Expecting "*RIFF" or "OFR " at offset '.$info['avdataoffset'].', found "'.Utils::PrintHexBytes($OFRheader).'"';
+		$this->error('Expecting "*RIFF" or "OFR " at offset '.$info['avdataoffset'].', found "'.Utils::PrintHexBytes($OFRheader).'"');
 		unset($info['fileformat']);
 		return false;
 	}
@@ -132,7 +132,7 @@ class OptimFrog extends \JamesHeinrich\GetID3\Module\Handler
 							break;
 
 						default:
-							$info['warning'][] = '"'.$BlockName.'" contains more data than expected (expected 12 or 15 bytes, found '.$BlockSize.' bytes)';
+							$this->warning('"'.$BlockName.'" contains more data than expected (expected 12 or 15 bytes, found '.$BlockSize.' bytes)');
 							break;
 					}
 					$BlockData .= $this->fread($BlockSize);
@@ -256,7 +256,7 @@ class OptimFrog extends \JamesHeinrich\GetID3\Module\Handler
 
 					$thisfile_ofr_thisblock['offset'] = $BlockOffset;
 					$thisfile_ofr_thisblock['size']   = $BlockSize;
-					$info['warning'][] = 'APEtag processing inside OptimFROG not supported in this version ('.$this->getid3->version().') of getID3()';
+					$this->warning('APEtag processing inside OptimFROG not supported in this version ('.$this->getid3->version().') of getID3()');
 
 					$this->fseek($BlockSize, SEEK_CUR);
 					break;
@@ -276,7 +276,7 @@ class OptimFrog extends \JamesHeinrich\GetID3\Module\Handler
 
 					} else {
 
-						$info['warning'][] = 'Expecting block size of 16 in "MD5 " chunk, found '.$BlockSize.' instead';
+						$this->warning('Expecting block size of 16 in "MD5 " chunk, found '.$BlockSize.' instead');
 						$this->fseek($BlockSize, SEEK_CUR);
 
 					}
@@ -287,7 +287,7 @@ class OptimFrog extends \JamesHeinrich\GetID3\Module\Handler
 					$thisfile_ofr_thisblock['offset'] = $BlockOffset;
 					$thisfile_ofr_thisblock['size']   = $BlockSize;
 
-					$info['warning'][] = 'Unhandled OptimFROG block type "'.$BlockName.'" at offset '.$thisfile_ofr_thisblock['offset'];
+					$this->warning('Unhandled OptimFROG block type "'.$BlockName.'" at offset '.$thisfile_ofr_thisblock['offset']);
 					$this->fseek($BlockSize, SEEK_CUR);
 					break;
 			}

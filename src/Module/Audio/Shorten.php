@@ -30,7 +30,7 @@ class Shorten extends \JamesHeinrich\GetID3\Module\Handler
 		$ShortenHeader = $this->fread(8);
 		$magic = 'ajkg';
 		if (substr($ShortenHeader, 0, 4) != $magic) {
-			$info['error'][] = 'Expecting "'.Utils::PrintHexBytes($magic).'" at offset '.$info['avdataoffset'].', found "'.Utils::PrintHexBytes(substr($ShortenHeader, 0, 4)).'"';
+			$this->error('Expecting "'.Utils::PrintHexBytes($magic).'" at offset '.$info['avdataoffset'].', found "'.Utils::PrintHexBytes(substr($ShortenHeader, 0, 4)).'"');
 			return false;
 		}
 		$info['fileformat']            = 'shn';
@@ -51,7 +51,7 @@ class Shorten extends \JamesHeinrich\GetID3\Module\Handler
 			$magic = 'SEEK';
 			if ($SeekTableMagic != $magic) {
 
-				$info['error'][] = 'Expecting "'.Utils::PrintHexBytes($magic).'" at offset '.$info['shn']['seektable']['offset'].', found "'.Utils::PrintHexBytes($SeekTableMagic).'"';
+				$this->error('Expecting "'.Utils::PrintHexBytes($magic).'" at offset '.$info['shn']['seektable']['offset'].', found "'.Utils::PrintHexBytes($SeekTableMagic).'"');
 				return false;
 
 			} else {
@@ -122,7 +122,7 @@ class Shorten extends \JamesHeinrich\GetID3\Module\Handler
 			$RequiredFiles = array('shorten.exe', 'cygwin1.dll', 'head.exe');
 			foreach ($RequiredFiles as $required_file) {
 				if (!is_readable(Utils::getHelperAppDirectory() . $required_file)) {
-					$info['error'][] = Utils::getHelperAppDirectory() . $required_file . ' does not exist';
+					$this->error(Utils::getHelperAppDirectory() . $required_file . ' does not exist');
 					return false;
 				}
 			}
@@ -136,7 +136,7 @@ class Shorten extends \JamesHeinrich\GetID3\Module\Handler
 				$shorten_present = file_exists('/usr/local/bin/shorten') || `which shorten`;
 			}
 			if (!$shorten_present) {
-				$info['error'][] = 'shorten binary was not found in path or /usr/local/bin';
+				$this->error('shorten binary was not found in path or /usr/local/bin');
 				return false;
 			}
 			$commandline = (file_exists('/usr/local/bin/shorten') ? '/usr/local/bin/' : '' ) . 'shorten -x '.escapeshellarg($info['filenamepath']).' - | head -c 64';
@@ -158,7 +158,7 @@ class Shorten extends \JamesHeinrich\GetID3\Module\Handler
 
 			} else {
 
-				$info['error'][] = 'shorten failed to decode DATA chunk to expected location, cannot determine playtime';
+				$this->error('shorten failed to decode DATA chunk to expected location, cannot determine playtime');
 				return false;
 
 			}
@@ -167,7 +167,7 @@ class Shorten extends \JamesHeinrich\GetID3\Module\Handler
 
 		} else {
 
-			$info['error'][] = 'shorten failed to decode file to WAV for parsing';
+			$this->error('shorten failed to decode file to WAV for parsing');
 			return false;
 
 		}

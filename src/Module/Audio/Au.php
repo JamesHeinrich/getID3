@@ -29,7 +29,7 @@ class Au extends \JamesHeinrich\GetID3\Module\Handler
 
 		$magic = '.snd';
 		if (substr($AUheader, 0, 4) != $magic) {
-			$info['error'][] = 'Expecting "'.Utils::PrintHexBytes($magic).'" (".snd") at offset '.$info['avdataoffset'].', found "'.Utils::PrintHexBytes(substr($AUheader, 0, 4)).'"';
+			$this->error('Expecting "'.Utils::PrintHexBytes($magic).'" (".snd") at offset '.$info['avdataoffset'].', found "'.Utils::PrintHexBytes(substr($AUheader, 0, 4)).'"');
 			return false;
 		}
 
@@ -64,7 +64,7 @@ class Au extends \JamesHeinrich\GetID3\Module\Handler
 		$info['audio']['channels']     = $thisfile_au['channels'];
 
 		if (($info['avdataoffset'] + $thisfile_au['data_size']) > $info['avdataend']) {
-			$info['warning'][] = 'Possible truncated file - expecting "'.$thisfile_au['data_size'].'" bytes of audio data, only found '.($info['avdataend'] - $info['avdataoffset']).' bytes"';
+			$this->warning('Possible truncated file - expecting "'.$thisfile_au['data_size'].'" bytes of audio data, only found '.($info['avdataend'] - $info['avdataoffset']).' bytes"');
 		}
 
 		$info['playtime_seconds'] = $thisfile_au['data_size'] / ($thisfile_au['sample_rate'] * $thisfile_au['channels'] * ($thisfile_au['used_bits_per_sample'] / 8));

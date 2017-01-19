@@ -96,7 +96,7 @@ class Svg extends \JamesHeinrich\GetID3\Module\Handler
 
 			return true;
 		}
-		$info['error'][] = 'Did not find expected <svg> tag';
+		$this->error('Did not find expected <svg> tag');
 		return false;
 	}
 

@@ -38,6 +38,7 @@ class Gif extends \JamesHeinrich\GetID3\Module\Handler
 
 		$magic = 'GIF';
 		if ($info['gif']['header']['raw']['identifier'] != $magic) {
+			$this->error('Expecting "'.Utils::PrintHexBytes($magic).'" at offset '.$info['avdataoffset'].', found "'.Utils::PrintHexBytes($info['gif']['header']['raw']['identifier']).'"');
 			$info['error'][] = 'Expecting "'.Utils::PrintHexBytes($magic).'" at offset '.$info['avdataoffset'].', found "'.Utils::PrintHexBytes($info['gif']['header']['raw']['identifier']).'"';
 			unset($info['fileformat']);
 			unset($info['gif']);
@@ -112,7 +113,7 @@ class Gif extends \JamesHeinrich\GetID3\Module\Handler
 //
 //					if ($ImageDescriptor['flags']['use_local_color_map']) {
 //
-//						$info['warning'][] = 'This version of getID3() cannot parse local color maps for GIFs';
+//						$this->warning('This version of getID3() cannot parse local color maps for GIFs');
 //						return true;
 //
 //					}

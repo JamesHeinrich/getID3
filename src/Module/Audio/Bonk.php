@@ -34,7 +34,7 @@ class Bonk extends \JamesHeinrich\GetID3\Module\Handler
 
 		if (!Utils::intValueSupported($thisfile_bonk['dataend'])) {
 
-			$info['warning'][] = 'Unable to parse BONK file from end (v0.6+ preferred method) because PHP filesystem functions only support up to '.round(PHP_INT_MAX / 1073741824).'GB';
+			$this->warning('Unable to parse BONK file from end (v0.6+ preferred method) because PHP filesystem functions only support up to '.round(PHP_INT_MAX / 1073741824).'GB');
 
 		} else {
 
@@ -47,7 +47,7 @@ class Bonk extends \JamesHeinrich\GetID3\Module\Handler
 				$BonkTagOffset = $this->ftell();
 				$TagHeaderTest = $this->fread(5);
 				if (($TagHeaderTest{0} != "\x00") || (substr($PossibleBonkTag, 4, 4) != strtolower(substr($PossibleBonkTag, 4, 4)))) {
-					$info['error'][] = 'Expecting "'.Utils::PrintHexBytes("\x00".strtoupper(substr($PossibleBonkTag, 4, 4))).'" at offset '.$BonkTagOffset.', found "'.Utils::PrintHexBytes($TagHeaderTest).'"';
+					$this->error('Expecting "'.Utils::PrintHexBytes("\x00".strtoupper(substr($PossibleBonkTag, 4, 4))).'" at offset '.$BonkTagOffset.', found "'.Utils::PrintHexBytes($TagHeaderTest).'"');
 					return false;
 				}
 				$BonkTagName = substr($TagHeaderTest, 1, 4);
@@ -209,7 +209,7 @@ class Bonk extends \JamesHeinrich\GetID3\Module\Handler
 				break;
 
 			default:
-				$info['warning'][] = 'Unexpected Bonk tag "'.$BonkTagName.'" at offset '.$info['bonk'][$BonkTagName]['offset'];
+				$this->warning('Unexpected Bonk tag "'.$BonkTagName.'" at offset '.$info['bonk'][$BonkTagName]['offset']);
 				break;
 
 		}

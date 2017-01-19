@@ -69,14 +69,25 @@ class Jpg extends \JamesHeinrich\GetID3\Module\Handler
 				if (isset($imageinfo['APP1'])) {
 					if (function_exists('exif_read_data')) {
 						if (substr($imageinfo['APP1'], 0, 4) == 'Exif') {
-//$info['warning'][] = 'known issue: https://bugs.php.net/bug.php?id=62523';
+//$this->warning('known issue: https://bugs.php.net/bug.php?id=62523');
 //return false;
+							set_error_handler(function($errno, $errstr, $errfile, $errline, array $errcontext) {
+								if (!(error_reporting() & $errno)) {
+									// error is not specified in the error_reporting setting, so we ignore it
+									return false;
+								}
+
+								$errcontext['info']['warning'][] = 'Error parsing EXIF data ('.$errstr.')';
+							});
+
 							$info['jpg']['exif'] = exif_read_data($info['filenamepath'], null, true, false);
+
+							restore_error_handler();
 						} else {
-							$info['warning'][] = 'exif_read_data() cannot parse non-EXIF data in APP1 (expected "Exif", found "'.substr($imageinfo['APP1'], 0, 4).'")';
+							$this->warning('exif_read_data() cannot parse non-EXIF data in APP1 (expected "Exif", found "'.substr($imageinfo['APP1'], 0, 4).'")');
 						}
 					} else {
-						$info['warning'][] = 'EXIF parsing only available when ' . (Utils::isWindows() ? 'php_exif.dll enabled' : 'compiled with --enable-exif');
+						$this->warning('EXIF parsing only available when ' . (Utils::isWindows() ? 'php_exif.dll enabled' : 'compiled with --enable-exif'));
 					}
 				}
 				$returnOK = true;
@@ -154,7 +165,7 @@ class Jpg extends \JamesHeinrich\GetID3\Module\Handler
 					list($subsection, $tagname) = explode(':', $key);
 					$info['xmp'][$subsection][$tagname] = $this->CastAsAppropriate($value);
 				} else {
-					$info['warning'][] = 'XMP: expecting "<subsection>:<tagname>", found "'.$key.'"';
+					$this->warning('XMP: expecting "<subsection>:<tagname>", found "'.$key.'"');
 				}
 			}
 		}

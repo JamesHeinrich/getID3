@@ -27,13 +27,13 @@ class Szip extends \JamesHeinrich\GetID3\Module\Handler
 		$this->fseek($info['avdataoffset']);
 		$SZIPHeader = $this->fread(6);
 		if (substr($SZIPHeader, 0, 4) != "SZ\x0A\x04") {
-			$info['error'][] = 'Expecting "53 5A 0A 04" at offset '.$info['avdataoffset'].', found "' . Utils::PrintHexBytes(substr($SZIPHeader, 0, 4)) . '"';
+            $this->error('Expecting "53 5A 0A 04" at offset '.$info['avdataoffset'].', found "' . Utils::PrintHexBytes(substr($SZIPHeader, 0, 4)) . '"');
 			return false;
 		}
 		$info['fileformat']            = 'szip';
 		$info['szip']['major_version'] = Utils::BigEndian2Int(substr($SZIPHeader, 4, 1));
 		$info['szip']['minor_version'] = Utils::BigEndian2Int(substr($SZIPHeader, 5, 1));
-$info['error'][] = 'SZIP parsing not enabled in this version of getID3() ['.$this->getid3->version().']';
+$this->error('SZIP parsing not enabled in this version of getID3() ['.$this->getid3->version().']');
 return false;
 
 		while (!$this->feof()) {

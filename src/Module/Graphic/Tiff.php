@@ -35,7 +35,7 @@ class Tiff extends \JamesHeinrich\GetID3\Module\Handler
 				$info['tiff']['byte_order'] = 'Motorola';
 				break;
 			default:
-				$info['error'][] = 'Invalid TIFF byte order identifier ('.substr($TIFFheader, 0, 2).') at offset '.$info['avdataoffset'];
+				$this->error('Invalid TIFF byte order identifier ('.substr($TIFFheader, 0, 2).') at offset '.$info['avdataoffset']);
 				return false;
 				break;
 		}

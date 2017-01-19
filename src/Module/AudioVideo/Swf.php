@@ -45,7 +45,7 @@ class Swf extends \JamesHeinrich\GetID3\Module\Handler
 				break;
 
 			default:
-				$info['error'][] = 'Expecting "FWS" or "CWS" at offset '.$info['avdataoffset'].', found "'.Utils::PrintHexBytes($info['swf']['header']['signature']).'"';
+				$this->error('Expecting "FWS" or "CWS" at offset '.$info['avdataoffset'].', found "'.Utils::PrintHexBytes($info['swf']['header']['signature']).'"');
 				unset($info['swf']);
 				unset($info['fileformat']);
 				return false;
@@ -60,7 +60,7 @@ class Swf extends \JamesHeinrich\GetID3\Module\Handler
 			if ($decompressed = @gzuncompress($SWFfileData)) {
 				$SWFfileData = $SWFHead.$decompressed;
 			} else {
-				$info['error'][] = 'Error decompressing compressed SWF data ('.strlen($SWFfileData).' bytes compressed, should be '.($info['swf']['header']['length'] - 8).' bytes uncompressed)';
+				$this->error('Error decompressing compressed SWF data ('.strlen($SWFfileData).' bytes compressed, should be '.($info['swf']['header']['length'] - 8).' bytes uncompressed)');
 				return false;
 			}
 		}

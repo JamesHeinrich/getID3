@@ -42,7 +42,7 @@ class Gzip extends \JamesHeinrich\GetID3\Module\Handler
 		//+---+---+---+---+---+---+---+---+---+---+
 
 		if ($info['php_memory_limit'] && ($info['filesize'] > $info['php_memory_limit'])) {
-			$info['error'][] = 'File is too large ('.number_format($info['filesize']).' bytes) to read into memory (limit: '.number_format($info['php_memory_limit'] / 1048576).'MB)';
+			$this->error('File is too large ('.number_format($info['filesize']).' bytes) to read into memory (limit: '.number_format($info['php_memory_limit'] / 1048576).'MB)');
 			return false;
 		}
 		$this->fseek(0);
@@ -102,7 +102,7 @@ class Gzip extends \JamesHeinrich\GetID3\Module\Handler
 
 			$thisInfo['os'] = $this->get_os_type($thisInfo['raw']['os']);
 			if (!$thisInfo['os']) {
-				$info['error'][] = 'Read error on gzip file';
+				$this->error('Read error on gzip file');
 				return false;
 			}
 
@@ -218,7 +218,7 @@ class Gzip extends \JamesHeinrich\GetID3\Module\Handler
 						case 'tar':
 							if (($temp_tar_filename = tempnam(Utils::getTempDirectory(), 'getID3')) === false) {
 								// can't find anywhere to create a temp file, abort
-								$info['error'][] = 'Unable to create temp file to parse TAR inside GZIP file';
+								$this->error('Unable to create temp file to parse TAR inside GZIP file');
 								break;
 							}
 							if ($fp_temp_tar = fopen($temp_tar_filename, 'w+b')) {
@@ -232,7 +232,7 @@ class Gzip extends \JamesHeinrich\GetID3\Module\Handler
 								unset($getid3_temp, $getid3_tar);
 								unlink($temp_tar_filename);
 							} else {
-								$info['error'][] = 'Unable to fopen() temp file to parse TAR inside GZIP file';
+								$this->error('Unable to fopen() temp file to parse TAR inside GZIP file');
 								break;
 							}
 							break;

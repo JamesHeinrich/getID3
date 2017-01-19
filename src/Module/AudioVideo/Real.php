@@ -55,7 +55,7 @@ class Real extends \JamesHeinrich\GetID3\Module\Handler
 					}
 					return true;
 				}
-				$info['error'][] = 'There was a problem parsing this RealAudio file. Please submit it for analysis to info@getid3.org';
+				$this->error('There was a problem parsing this RealAudio file. Please submit it for analysis to info@getid3.org');
 				unset($info['bitrate']);
 				unset($info['playtime_seconds']);
 				return false;
@@ -69,7 +69,7 @@ class Real extends \JamesHeinrich\GetID3\Module\Handler
 			$thisfile_real_chunks_currentchunk['offset'] = $this->ftell() - 8;
 			$thisfile_real_chunks_currentchunk['length'] = $ChunkSize;
 			if (($thisfile_real_chunks_currentchunk['offset'] + $thisfile_real_chunks_currentchunk['length']) > $info['avdataend']) {
-				$info['warning'][] = 'Chunk "'.$thisfile_real_chunks_currentchunk['name'].'" at offset '.$thisfile_real_chunks_currentchunk['offset'].' claims to be '.$thisfile_real_chunks_currentchunk['length'].' bytes long, which is beyond end of file';
+				$this->warning('Chunk "'.$thisfile_real_chunks_currentchunk['name'].'" at offset '.$thisfile_real_chunks_currentchunk['offset'].' claims to be '.$thisfile_real_chunks_currentchunk['length'].' bytes long, which is beyond end of file');
 				return false;
 			}
 
@@ -100,7 +100,7 @@ class Real extends \JamesHeinrich\GetID3\Module\Handler
 							break;
 
 						default:
-							//$info['warning'][] = 'Expected .RMF-object_version to be "0", actual value is "'.$thisfile_real_chunks_currentchunk['object_version'].'" (should not be a problem)';
+							//$this->warning('Expected .RMF-object_version to be "0", actual value is "'.$thisfile_real_chunks_currentchunk['object_version'].'" (should not be a problem)');
 							break;
 
 					}
@@ -356,7 +356,7 @@ class Real extends \JamesHeinrich\GetID3\Module\Handler
 					break;
 
 				default:
-					$info['warning'][] = 'Unhandled RealMedia chunk "'.$ChunkName.'" at offset '.$thisfile_real_chunks_currentchunk['offset'];
+					$this->warning('Unhandled RealMedia chunk "'.$ChunkName.'" at offset '.$thisfile_real_chunks_currentchunk['offset']);
 					break;
 			}
 			$ChunkCounter++;

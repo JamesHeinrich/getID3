@@ -52,7 +52,7 @@ class GetID3
 	protected $startup_error   = '';
 	protected $startup_warning = '';
 
-	const VERSION           = '1.9.9-20150318';
+	const VERSION           = '1.9.13-201701161937';
 	const FREAD_BUFFER_SIZE = 32768;
 
 	const ATTACHMENTS_NONE   = false;
@@ -64,7 +64,7 @@ class GetID3
 		// Check for PHP version
 		$required_php_version = '5.3.0';
 		if (version_compare(PHP_VERSION, $required_php_version, '<')) {
-			$this->startup_error .= 'getID3() requires PHP v'.$required_php_version.' or higher - you are running v'.PHP_VERSION;
+			$this->startup_error .= 'getID3() requires PHP v'.$required_php_version.' or higher - you are running v'.PHP_VERSION."\n";
 			return false;
 		}
 
@@ -80,13 +80,16 @@ class GetID3
 		if ($this->memory_limit <= 0) {
 			// memory limits probably disabled
 		} elseif ($this->memory_limit <= 4194304) {
-			$this->startup_error .= 'PHP has less than 4MB available memory and will very likely run out. Increase memory_limit in php.ini';
+			$this->startup_error .= 'PHP has less than 4MB available memory and will very likely run out. Increase memory_limit in php.ini'."\n";
 		} elseif ($this->memory_limit <= 12582912) {
-			$this->startup_warning .= 'PHP has less than 12MB available memory and might run out if all modules are loaded. Increase memory_limit in php.ini';
+			$this->startup_warning .= 'PHP has less than 12MB available memory and might run out if all modules are loaded. Increase memory_limit in php.ini'."\n";
 		}
 
-		if (intval(ini_get('mbstring.func_overload')) > 0) {
-			$this->warning('WARNING: php.ini contains "mbstring.func_overload = '.ini_get('mbstring.func_overload').'", this may break things.');
+		if (($mbstring_func_overload = ini_get('mbstring.func_overload')) && ($mbstring_func_overload & 0x02)) {
+			// http://php.net/manual/en/mbstring.overload.php
+			// "mbstring.func_overload in php.ini is a positive value that represents a combination of bitmasks specifying the categories of functions to be overloaded. It should be set to 1 to overload the mail() function. 2 for string functions, 4 for regular expression functions"
+			// getID3 cannot run when string functions are overloaded. It doesn't matter if mail() or ereg* functions are overloaded since getID3 does not use those.
+			$this->startup_error .= 'WARNING: php.ini contains "mbstring.func_overload = '.ini_get('mbstring.func_overload').'", getID3 cannot run with this setting (bitmask 2 (string functions) cannot be set). Recommended to disable entirely.'."\n";
 		}
 
 		if ($this->option_max_2gb_check === null) {
@@ -124,7 +127,9 @@ class GetID3
 				throw new Exception($this->startup_error);
 			}
 			if (!empty($this->startup_warning)) {
-				$this->warning($this->startup_warning);
+				foreach (explode("\n", $this->startup_warning) as $startup_warning) {
+					$this->warning($startup_warning);
+				}
 			}
 
 			// init result array and set parameters
@@ -134,7 +139,7 @@ class GetID3
 			$this->info['php_memory_limit'] = (($this->memory_limit > 0) ? $this->memory_limit : false);
 
 			// remote files not supported
-			if (preg_match('/^(ht|f)tp:\/\//', $filename)) {
+			if (preg_match('#^(ht|f)tp://#', $filename)) {
 				throw new Exception('Remote files are not supported - please copy the file locally first');
 			}
 
@@ -170,6 +175,17 @@ class GetID3
 			$this->info['filename']     = Utils::mb_basename($filename);
 			$this->info['filenamepath'] = $this->info['filepath'].'/'.$this->info['filename'];
 
+			// set more parameters
+			$this->info['avdataoffset']        = 0;
+			$this->info['avdataend']           = $this->info['filesize'];
+			$this->info['fileformat']          = '';                // filled in later
+			$this->info['audio']['dataformat'] = '';                // filled in later, unset if not used
+			$this->info['video']['dataformat'] = '';                // filled in later, unset if not used
+			$this->info['tags']                = array();           // filled in later, unset if not used
+			$this->info['error']               = array();           // filled in later, unset if not used
+			$this->info['warning']             = array();           // filled in later, unset if not used
+			$this->info['comments']            = array();           // filled in later, unset if not used
+			$this->info['encoding']            = $this->encoding;   // required by id3v2 and iso modules - can be unset at the end if desired
 
 			// option_max_2gb_check
 			if ($this->option_max_2gb_check) {
@@ -195,18 +211,6 @@ class GetID3
 						$this->warning('File is larger than '.round(PHP_INT_MAX / 1073741824).'GB (filesystem reports it as '.number_format($real_filesize, 3).'GB) and is not properly supported by PHP.');
 				}
 			}
-
-			// set more parameters
-			$this->info['avdataoffset']        = 0;
-			$this->info['avdataend']           = $this->info['filesize'];
-			$this->info['fileformat']          = '';                // filled in later
-			$this->info['audio']['dataformat'] = '';                // filled in later, unset if not used
-			$this->info['video']['dataformat'] = '';                // filled in later, unset if not used
-			$this->info['tags']                = array();           // filled in later, unset if not used
-			$this->info['error']               = array();           // filled in later, unset if not used
-			$this->info['warning']             = array();           // filled in later, unset if not used
-			$this->info['comments']            = array();           // filled in later, unset if not used
-			$this->info['encoding']            = $this->encoding;   // required by id3v2 and iso modules - can be unset at the end if desired
 
 			return true;
 
@@ -294,14 +298,14 @@ class GetID3
 			// set mime type
 			$this->info['mime_type'] = $determined_format['mime_type'];
 
-			// module requires iconv support
+			// module requires mb_convert_encoding/iconv support
 			// Check encoding/iconv support
-			if (!empty($determined_format['iconv_req']) && !function_exists('iconv') && !in_array($this->encoding, array('ISO-8859-1', 'UTF-8', 'UTF-16LE', 'UTF-16BE', 'UTF-16'))) {
-				$errormessage = 'iconv() support is required for this module ('.$determined_format['include'].') for encodings other than ISO-8859-1, UTF-8, UTF-16LE, UTF16-BE, UTF-16. ';
+			if (!empty($determined_format['iconv_req']) && !function_exists('mb_convert_encoding') && !function_exists('iconv') && !in_array($this->encoding, array('ISO-8859-1', 'UTF-8', 'UTF-16LE', 'UTF-16BE', 'UTF-16'))) {
+				$errormessage = 'mb_convert_encoding() or iconv() support is required for this module ('.$determined_format['include'].') for encodings other than ISO-8859-1, UTF-8, UTF-16LE, UTF16-BE, UTF-16. ';
 				if (Utils::isWindows()) {
-					$errormessage .= 'PHP does not have iconv() support. Please enable php_iconv.dll in php.ini, and copy iconv.dll from c:/php/dlls to c:/windows/system32';
+					$errormessage .= 'PHP does not have mb_convert_encoding() or iconv() support. Please enable php_mbstring.dll / php_iconv.dll in php.ini, and copy php_mbstring.dll / iconv.dll from c:/php/dlls to c:/windows/system32';
 				} else {
-					$errormessage .= 'PHP is not compiled with iconv() support. Please recompile with the --with-iconv switch';
+					$errormessage .= 'PHP is not compiled with mb_convert_encoding() or iconv() support. Please recompile with the --enable-mbstring / --with-iconv switch';
 				}
 				return $this->error($errormessage);
 			}
@@ -430,7 +434,7 @@ class GetID3
 
 				// AC-3   - audio      - Dolby AC-3 / Dolby Digital
 				'ac3'  => array(
-							'pattern'   => '^\x0B\x77',
+							'pattern'   => '^\\x0B\\x77',
 							'module'    => 'Audio\\Ac3',
 							'mime_type' => 'audio/ac3',
 						),
@@ -446,14 +450,14 @@ class GetID3
 /*
 				// AA   - audio       - Audible Audiobook
 				'aa'   => array(
-							'pattern'   => '^.{4}\x57\x90\x75\x36',
+							'pattern'   => '^.{4}\\x57\\x90\\x75\\x36',
 							'module'    => 'Audio\\Aa',
 							'mime_type' => 'audio/audible',
 						),
 */
 				// AAC  - audio       - Advanced Audio Coding (AAC) - ADTS format (very similar to MP3)
 				'adts' => array(
-							'pattern'   => '^\xFF[\xF0-\xF1\xF8-\xF9]',
+							'pattern'   => '^\\xFF[\\xF0-\\xF1\\xF8-\\xF9]',
 							'module'    => 'Audio\\Aac',
 							'mime_type' => 'application/octet-stream',
 							'fail_ape'  => 'WARNING',
@@ -462,14 +466,14 @@ class GetID3
 
 				// AU   - audio       - NeXT/Sun AUdio (AU)
 				'au'   => array(
-							'pattern'   => '^\.snd',
+							'pattern'   => '^\\.snd',
 							'module'    => 'Audio\\Au',
 							'mime_type' => 'audio/basic',
 						),
 
 				// AMR  - audio       - Adaptive Multi Rate
 				'amr'  => array(
-							'pattern'   => '^\x23\x21AMR\x0A', // #!AMR[0A]
+							'pattern'   => '^\\x23\\x21AMR\\x0A', // #!AMR[0A]
 							'module'    => 'Audio\\Amr',
 							'mime_type' => 'audio/amr',
 						),
@@ -483,21 +487,28 @@ class GetID3
 
 				// BONK - audio       - Bonk v0.9+
 				'bonk' => array(
-							'pattern'   => '^\x00(BONK|INFO|META| ID3)',
+							'pattern'   => '^\\x00(BONK|INFO|META| ID3)',
 							'module'    => 'Audio\\Bonk',
 							'mime_type' => 'audio/xmms-bonk',
 						),
 
+				// DSF  - audio       - Direct Stream Digital (DSD) Storage Facility files (DSF) - https://en.wikipedia.org/wiki/Direct_Stream_Digital
+				'dsf'  => array(
+							'pattern'   => '^DSD ',  // including trailing space: 44 53 44 20
+							'module'    => 'Audio\\Dsf',
+							'mime_type' => 'audio/dsd',
+						),
+
 				// DSS  - audio       - Digital Speech Standard
 				'dss'  => array(
-							'pattern'   => '^[\x02-\x03]ds[s2]',
+							'pattern'   => '^[\\x02-\\x06]ds[s2]',
 							'module'    => 'Audio\\Dss',
 							'mime_type' => 'application/octet-stream',
 						),
 
 				// DTS  - audio       - Dolby Theatre System
 				'dts'  => array(
-							'pattern'   => '^\x7F\xFE\x80\x01',
+							'pattern'   => '^\\x7F\\xFE\\x80\\x01',
 							'module'    => 'Audio\\Dts',
 							'mime_type' => 'audio/dts',
 						),
@@ -572,21 +583,21 @@ class GetID3
 
 				// MPC  - audio       - Musepack / MPEGplus
 				'mpc'  => array(
-							'pattern'   => '^(MPCK|MP\+|[\x00\x01\x10\x11\x40\x41\x50\x51\x80\x81\x90\x91\xC0\xC1\xD0\xD1][\x20-37][\x00\x20\x40\x60\x80\xA0\xC0\xE0])',
+							'pattern'   => '^(MPCK|MP\\+|[\\x00\\x01\\x10\\x11\\x40\\x41\\x50\\x51\\x80\\x81\\x90\\x91\\xC0\\xC1\\xD0\\xD1][\\x20-\\x37][\\x00\\x20\\x40\\x60\\x80\\xA0\\xC0\\xE0])',
 							'module'    => 'Audio\\Mpc',
 							'mime_type' => 'audio/x-musepack',
 						),
 
 				// MP3  - audio       - MPEG-audio Layer 3 (very similar to AAC-ADTS)
 				'mp3'  => array(
-							'pattern'   => '^\xFF[\xE2-\xE7\xF2-\xF7\xFA-\xFF][\x00-\x0B\x10-\x1B\x20-\x2B\x30-\x3B\x40-\x4B\x50-\x5B\x60-\x6B\x70-\x7B\x80-\x8B\x90-\x9B\xA0-\xAB\xB0-\xBB\xC0-\xCB\xD0-\xDB\xE0-\xEB\xF0-\xFB]',
+							'pattern'   => '^\\xFF[\\xE2-\\xE7\\xF2-\\xF7\\xFA-\\xFF][\\x00-\\x0B\\x10-\\x1B\\x20-\\x2B\\x30-\\x3B\\x40-\\x4B\\x50-\\x5B\\x60-\\x6B\\x70-\\x7B\\x80-\\x8B\\x90-\\x9B\\xA0-\\xAB\\xB0-\\xBB\\xC0-\\xCB\\xD0-\\xDB\\xE0-\\xEB\\xF0-\\xFB]',
 							'module'    => 'Audio\\Mp3',
 							'mime_type' => 'audio/mpeg',
 						),
 
 				// OFR  - audio       - OptimFROG
 				'ofr'  => array(
-							'pattern'   => '^(\*RIFF|OFR)',
+							'pattern'   => '^(\\*RIFF|OFR)',
 							'module'    => 'Audio\\OptimFrog',
 							'mime_type' => 'application/octet-stream',
 						),
@@ -609,7 +620,7 @@ class GetID3
 
 				// TTA  - audio       - TTA Lossless Audio Compressor (http://tta.corecodec.org)
 				'tta'  => array(
-							'pattern'   => '^TTA',  // could also be '^TTA(\x01|\x02|\x03|2|1)'
+							'pattern'   => '^TTA',  // could also be '^TTA(\\x01|\\x02|\\x03|2|1)'
 							'module'    => 'Audio\\Tta',
 							'mime_type' => 'application/octet-stream',
 						),
@@ -640,7 +651,7 @@ class GetID3
 
 				// ASF  - audio/video - Advanced Streaming Format, Windows Media Video, Windows Media Audio
 				'asf'  => array(
-							'pattern'   => '^\x30\x26\xB2\x75\x8E\x66\xCF\x11\xA6\xD9\x00\xAA\x00\x62\xCE\x6C',
+							'pattern'   => '^\\x30\\x26\\xB2\\x75\\x8E\\x66\\xCF\\x11\\xA6\\xD9\\x00\\xAA\\x00\\x62\\xCE\\x6C',
 							'module'    => 'AudioVideo\\Asf',
 							'mime_type' => 'video/x-ms-asf',
 							'iconv_req' => false,
@@ -655,21 +666,21 @@ class GetID3
 
 				// FLV  - audio/video - FLash Video
 				'flv' => array(
-							'pattern'   => '^FLV\x01',
+							'pattern'   => '^FLV[\\x01]',
 							'module'    => 'AudioVideo\\Flv',
 							'mime_type' => 'video/x-flv',
 						),
 
 				// MKAV - audio/video - Mastroka
 				'matroska' => array(
-							'pattern'   => '^\x1A\x45\xDF\xA3',
+							'pattern'   => '^\\x1A\\x45\\xDF\\xA3',
 							'module'    => 'AudioVideo\\Matroska',
 							'mime_type' => 'video/x-matroska', // may also be audio/x-matroska
 						),
 
 				// MPEG - audio/video - MPEG (Moving Pictures Experts Group)
 				'mpeg' => array(
-							'pattern'   => '^\x00\x00\x01(\xBA|\xB3)',
+							'pattern'   => '^\\x00\\x00\\x01[\\xB3\\xBA]',
 							'module'    => 'AudioVideo\\Mpeg',
 							'mime_type' => 'video/mpeg',
 						),
@@ -701,13 +712,13 @@ class GetID3
 				'riff' => array(
 							'pattern'   => '^(RIFF|SDSS|FORM)',
 							'module'    => 'AudioVideo\\Riff',
-							'mime_type' => 'audio/x-wave',
+							'mime_type' => 'audio/x-wav',
 							'fail_ape'  => 'WARNING',
 						),
 
 				// Real - audio/video - RealAudio, RealVideo
 				'real' => array(
-							'pattern'   => '^(\\.RMF|\\.ra)',
+							'pattern'   => '^\\.(RMF|ra)',
 							'module'    => 'AudioVideo\\Real',
 							'mime_type' => 'audio/x-realaudio',
 						),
@@ -721,7 +732,7 @@ class GetID3
 
 				// TS - audio/video - MPEG-2 Transport Stream
 				'ts' => array(
-							'pattern'   => '^(\x47.{187}){10,}', // packets are 188 bytes long and start with 0x47 "G".  Check for at least 10 packets matching this pattern
+							'pattern'   => '^(\\x47.{187}){10,}', // packets are 188 bytes long and start with 0x47 "G".  Check for at least 10 packets matching this pattern
 							'module'    => 'AudioVideo\\Ts',
 							'mime_type' => 'video/MP2T',
 						),
@@ -749,7 +760,7 @@ class GetID3
 
 				// JPEG - still image - Joint Photographic Experts Group (JPEG)
 				'jpg'  => array(
-							'pattern'   => '^\xFF\xD8\xFF',
+							'pattern'   => '^\\xFF\\xD8\\xFF',
 							'module'    => 'Graphic\\Jpg',
 							'mime_type' => 'image/jpeg',
 							'fail_id3'  => 'ERROR',
@@ -758,7 +769,7 @@ class GetID3
 
 				// PCD  - still image - Kodak Photo CD
 				'pcd'  => array(
-							'pattern'   => '^.{2048}PCD_IPI\x00',
+							'pattern'   => '^.{2048}PCD_IPI\\x00',
 							'module'    => 'Graphic\\Pcd',
 							'mime_type' => 'image/x-photo-cd',
 							'fail_id3'  => 'ERROR',
@@ -768,7 +779,7 @@ class GetID3
 
 				// PNG  - still image - Portable Network Graphics (PNG)
 				'png'  => array(
-							'pattern'   => '^\x89\x50\x4E\x47\x0D\x0A\x1A\x0A',
+							'pattern'   => '^\\x89\\x50\\x4E\\x47\\x0D\\x0A\\x1A\\x0A',
 							'module'    => 'Graphic\\Png',
 							'mime_type' => 'image/png',
 							'fail_id3'  => 'ERROR',
@@ -778,7 +789,7 @@ class GetID3
 
 				// SVG  - still image - Scalable Vector Graphics (SVG)
 				'svg'  => array(
-							'pattern'   => '(<!DOCTYPE svg PUBLIC |xmlns="http:\/\/www\.w3\.org\/2000\/svg")',
+							'pattern'   => '(<!DOCTYPE svg PUBLIC |xmlns="http://www\\.w3\\.org/2000/svg")',
 							'module'    => 'Graphic\\Svg',
 							'mime_type' => 'image/svg+xml',
 							'fail_id3'  => 'ERROR',
@@ -788,7 +799,7 @@ class GetID3
 
 				// TIFF - still image - Tagged Information File Format (TIFF)
 				'tiff' => array(
-							'pattern'   => '^(II\x2A\x00|MM\x00\x2A)',
+							'pattern'   => '^(II\\x2A\\x00|MM\\x00\\x2A)',
 							'module'    => 'Graphic\\Tiff',
 							'mime_type' => 'image/tiff',
 							'fail_id3'  => 'ERROR',
@@ -798,7 +809,7 @@ class GetID3
 
 				// EFAX - still image - eFax (TIFF derivative)
 				'efax'  => array(
-							'pattern'   => '^\xDC\xFE',
+							'pattern'   => '^\\xDC\\xFE',
 							'module'    => 'Graphic\\Efax',
 							'mime_type' => 'image/efax',
 							'fail_id3'  => 'ERROR',
@@ -820,7 +831,7 @@ class GetID3
 
 				// RAR  - data        - RAR compressed data
 				'rar'  => array(
-							'pattern'   => '^Rar\!',
+							'pattern'   => '^Rar\\!',
 							'module'    => 'Archive\\Rar',
 							'mime_type' => 'application/octet-stream',
 							'fail_id3'  => 'ERROR',
@@ -829,7 +840,7 @@ class GetID3
 
 				// SZIP - audio/data  - SZIP compressed data
 				'szip' => array(
-							'pattern'   => '^SZ\x0A\x04',
+							'pattern'   => '^SZ\\x0A\\x04',
 							'module'    => 'Archive\\Szip',
 							'mime_type' => 'application/octet-stream',
 							'fail_id3'  => 'ERROR',
@@ -838,7 +849,7 @@ class GetID3
 
 				// TAR  - data        - TAR compressed data
 				'tar'  => array(
-							'pattern'   => '^.{100}[0-9\x20]{7}\x00[0-9\x20]{7}\x00[0-9\x20]{7}\x00[0-9\x20\x00]{12}[0-9\x20\x00]{12}',
+							'pattern'   => '^.{100}[0-9\\x20]{7}\\x00[0-9\\x20]{7}\\x00[0-9\\x20]{7}\\x00[0-9\\x20\\x00]{12}[0-9\\x20\\x00]{12}',
 							'module'    => 'Archive\\Tar',
 							'mime_type' => 'application/x-tar',
 							'fail_id3'  => 'ERROR',
@@ -847,7 +858,7 @@ class GetID3
 
 				// GZIP  - data        - GZIP compressed data
 				'gz'  => array(
-							'pattern'   => '^\x1F\x8B\x08',
+							'pattern'   => '^\\x1F\\x8B\\x08',
 							'module'    => 'Archive\\Gzip',
 							'mime_type' => 'application/x-gzip',
 							'fail_id3'  => 'ERROR',
@@ -856,7 +867,7 @@ class GetID3
 
 				// ZIP  - data         - ZIP compressed data
 				'zip'  => array(
-							'pattern'   => '^PK\x03\x04',
+							'pattern'   => '^PK\\x03\\x04',
 							'module'    => 'Archive\\Zip',
 							'mime_type' => 'application/zip',
 							'fail_id3'  => 'ERROR',
@@ -868,7 +879,7 @@ class GetID3
 
 				// PAR2 - data        - Parity Volume Set Specification 2.0
 				'par2' => array (
-							'pattern'   => '^PAR2\x00PKT',
+							'pattern'   => '^PAR2\\x00PKT',
 							'module'    => 'Misc\\Par2',
 							'mime_type' => 'application/octet-stream',
 							'fail_id3'  => 'ERROR',
@@ -877,7 +888,7 @@ class GetID3
 
 				// PDF  - data        - Portable Document Format
 				'pdf'  => array(
-							'pattern'   => '^\x25PDF',
+							'pattern'   => '^\\x25PDF',
 							'module'    => 'Misc\\Pdf',
 							'mime_type' => 'application/pdf',
 							'fail_id3'  => 'ERROR',
@@ -886,7 +897,7 @@ class GetID3
 
 				// MSOFFICE  - data   - ZIP compressed data
 				'msoffice' => array(
-							'pattern'   => '^\xD0\xCF\x11\xE0\xA1\xB1\x1A\xE1', // D0CF11E == DOCFILE == Microsoft Office Document
+							'pattern'   => '^\\xD0\\xCF\\x11\\xE0\\xA1\\xB1\\x1A\\xE1', // D0CF11E == DOCFILE == Microsoft Office Document
 							'module'    => 'Misc\\MsOffice',
 							'mime_type' => 'application/octet-stream',
 							'fail_id3'  => 'ERROR',
@@ -924,13 +935,13 @@ class GetID3
 		}
 
 
-		if (preg_match('#\.mp[123a]$#i', $filename)) {
+		if (preg_match('#\\.mp[123a]$#i', $filename)) {
 			// Too many mp3 encoders on the market put gabage in front of mpeg files
 			// use assume format on these if format detection failed
 			$GetFileFormatArray = $this->GetFileFormatArray();
 			$info = $GetFileFormatArray['mp3'];
 			return $info;
-		} elseif (preg_match('/\.cue$/i', $filename) && preg_match('#FILE "[^"]+" (BINARY|MOTOROLA|AIFF|WAVE|MP3)#', $filedata)) {
+		} elseif (preg_match('#\\.cue$#i', $filename) && preg_match('#FILE "[^"]+" (BINARY|MOTOROLA|AIFF|WAVE|MP3)#', $filedata)) {
 			// there's not really a useful consistent "magic" at the beginning of .cue files to identify them
 			// so until I think of something better, just go by filename if all other format checks fail
 			// and verify there's at least one instance of "TRACK xx AUDIO" in the file
@@ -1030,13 +1041,14 @@ class GetID3
 					continue;
 				}
 
+				$this->CharConvert($this->info['tags'][$tag_name], $this->info[$comment_name]['encoding']);           // only copy gets converted!
+
 				if ($this->option_tags_html) {
 					foreach ($this->info['tags'][$tag_name] as $tag_key => $valuearray) {
-						$this->info['tags_html'][$tag_name][$tag_key] = Utils::recursiveMultiByteCharString2HTML($valuearray, $encoding);
+						$this->info['tags_html'][$tag_name][$tag_key] = Utils::recursiveMultiByteCharString2HTML($valuearray, $this->info[$comment_name]['encoding']);
 					}
 				}
 
-				$this->CharConvert($this->info['tags'][$tag_name], $encoding);           // only copy gets converted!
 			}
 
 		}
@@ -1153,8 +1165,8 @@ class GetID3
 
 			if (!empty($VorbisCommentError)) {
 
-				$this->info['warning'][]         = 'Failed making system call to vorbiscomment(.exe) - '.$algorithm.'_data will be incorrect. If vorbiscomment is unavailable, please download from http://www.vorbis.com/download.psp and put in the getID3() directory. Error returned: '.$VorbisCommentError;
-				$this->info[$algorithm.'_data']  = false;
+				$this->warning('Failed making system call to vorbiscomment(.exe) - '.$algorithm.'_data will be incorrect. If vorbiscomment is unavailable, please download from http://www.vorbis.com/download.psp and put in the getID3() directory. Error returned: '.$VorbisCommentError);
+				$this->info[$algorithm.'_data'] = false;
 
 			} else {
 

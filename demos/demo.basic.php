@@ -48,7 +48,10 @@ GetID3\Utils::CopyTagsToComments($ThisFileInfo);
 //echo $ThisFileInfo['audio']['bitrate'];           // audio bitrate
 //echo $ThisFileInfo['playtime_string'];            // playtime in minutes:seconds, formatted string
 
-/*
- if you want to see ALL the output, uncomment this line:
-*/
-//echo '<pre>'.htmlentities(print_r($ThisFileInfo, true)).'</pre>';
+/* if you want to see all the tag data (from all tag formats), uncomment this line: */
+//echo '<pre>'.htmlentities(print_r($ThisFileInfo['comments'], true), ENT_SUBSTITUTE).'</pre>';
+
+/* if you want to see ALL the output, uncomment this line: */
+//echo '<pre>'.htmlentities(print_r($ThisFileInfo, true), ENT_SUBSTITUTE).'</pre>';
+
+

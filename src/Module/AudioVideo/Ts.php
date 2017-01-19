@@ -28,7 +28,7 @@ class Ts extends \JamesHeinrich\GetID3\Module\Handler
 		$TSheader = $this->fread(19);
 		$magic = "\x47";
 		if (substr($TSheader, 0, 1) != $magic) {
-			$info['error'][] = 'Expecting "'.Utils::PrintHexBytes($magic).'" at '.$info['avdataoffset'].', found '.Utils::PrintHexBytes(substr($TSheader, 0, 1)).' instead.';
+			$this->error('Expecting "'.Utils::PrintHexBytes($magic).'" at '.$info['avdataoffset'].', found '.Utils::PrintHexBytes(substr($TSheader, 0, 1)).' instead.');
 			return false;
 		}
 		$info['fileformat'] = 'ts';
@@ -69,7 +69,7 @@ class Ts extends \JamesHeinrich\GetID3\Module\Handler
 			}
 		}
 
-$info['error'][] = 'MPEG Transport Stream (.ts) parsing not enabled in this version of getID3() ['.$this->getid3->version().']';
+$this->error('MPEG Transport Stream (.ts) parsing not enabled in this version of getID3() ['.$this->getid3->version().']');
 return false;
 
 	}
