@@ -243,7 +243,7 @@ class Matroska extends \JamesHeinrich\GetID3\Module\Handler
         try {
             $this->parseEBML($info);
         } catch (\Exception $e) {
-            $info['error'][] = 'EBML parser: '.$e->getMessage();
+            $this->error('EBML parser: '.$e->getMessage());
         }
 
         // calculate playtime
@@ -337,10 +337,13 @@ class Matroska extends \JamesHeinrich\GetID3\Module\Handler
                                 break;
 
                             case 'A_AC3':
+                            case 'A_EAC3':
                             case 'A_DTS':
                             case 'A_MPEG/L3':
                             case 'A_MPEG/L2':
                             case 'A_FLAC':
+                                $module_dataformat = ($track_info['dataformat'] == 'mp2' ? 'mp3' : ($track_info['dataformat'] == 'eac3' ? 'ac3' : $track_info['dataformat']));
+
                                 if (!isset($info['matroska']['track_data_offsets'][$trackarray['TrackNumber']])) {
                                     $this->warning('Unable to parse audio data ['.basename(__FILE__).':'.__LINE__.'] because $info[matroska][track_data_offsets]['.$trackarray['TrackNumber'].'] not set');
                                     break;
@@ -357,7 +360,7 @@ class Matroska extends \JamesHeinrich\GetID3\Module\Handler
                                 }
 
                                 // analyze
-                                $class = ucfirst($track_info['dataformat'] == 'mp2' ? 'mp3' : $track_info['dataformat']);
+                                $class = ucfirst($module_dataformat);
                                 $header_data_key = $track_info['dataformat'][0] == 'm' ? 'mpeg' : $track_info['dataformat'];
                                 $getid3_audio = new $class($getid3_temp, __CLASS__);
                                 if ($track_info['dataformat'] == 'flac') {
@@ -458,6 +461,7 @@ class Matroska extends \JamesHeinrich\GetID3\Module\Handler
 
                             default:
                                 $this->warning('Unhandled audio type "'.(isset($trackarray['CodecID']) ? $trackarray['CodecID'] : '').'"');
+                                break;
                         }
 
                         $info['audio']['streams'][] = $track_info;
@@ -526,6 +530,7 @@ class Matroska extends \JamesHeinrich\GetID3\Module\Handler
 
                             default:
                                 $this->unhandledElement('header', __LINE__, $element_data);
+                                break;
                         }
 
                         unset($element_data['offset'], $element_data['end']);
@@ -564,15 +569,21 @@ class Matroska extends \JamesHeinrich\GetID3\Module\Handler
 
                                                     default:
                                                         $this->unhandledElement('seekhead.seek', __LINE__, $sub_seek_entry);                                                }
+                                                        break;
                                             }
 
-                                            if ($seek_entry['target_id'] != self::ID_CLUSTER || !self::$hide_clusters) { // collect clusters only if required
+                                            if (!isset($seek_entry['target_id'])) {
+                                                $this->warning('seek_entry[target_id] unexpectedly not set at '.$seek_entry['offset']);
+                                                break;
+                                            }
+                                            if (($seek_entry['target_id'] != self::ID_CLUSTER) || !self::$hide_clusters) { // collect clusters only if required
                                                 $info['matroska']['seek'][] = $seek_entry;
                                             }
                                             break;
 
                                         default:
                                             $this->unhandledElement('seekhead', __LINE__, $seek_entry);
+                                            break;
                                     }
                                 }
                                 break;
@@ -655,6 +666,7 @@ class Matroska extends \JamesHeinrich\GetID3\Module\Handler
 
                                                                 default:
                                                                     $this->unhandledElement('track.video', __LINE__, $sub_subelement);
+                                                                    break;
                                                             }
                                                         }
                                                         break;
@@ -680,6 +692,7 @@ class Matroska extends \JamesHeinrich\GetID3\Module\Handler
 
                                                                 default:
                                                                     $this->unhandledElement('track.audio', __LINE__, $sub_subelement);
+                                                                    break;
                                                             }
                                                         }
                                                         break;
@@ -715,6 +728,7 @@ class Matroska extends \JamesHeinrich\GetID3\Module\Handler
 
                                                                                         default:
                                                                                             $this->unhandledElement('track.contentencodings.contentencoding.contentcompression', __LINE__, $sub_sub_sub_subelement);
+                                                                                            break;
                                                                                     }
                                                                                 }
                                                                                 break;
@@ -738,24 +752,28 @@ class Matroska extends \JamesHeinrich\GetID3\Module\Handler
 
                                                                                         default:
                                                                                             $this->unhandledElement('track.contentencodings.contentencoding.contentcompression', __LINE__, $sub_sub_sub_subelement);
+                                                                                            break;
                                                                                     }
                                                                                 }
                                                                                 break;
 
                                                                             default:
                                                                                 $this->unhandledElement('track.contentencodings.contentencoding', __LINE__, $sub_sub_subelement);
+                                                                                break;
                                                                         }
                                                                     }
                                                                     break;
 
                                                                 default:
                                                                     $this->unhandledElement('track.contentencodings', __LINE__, $sub_subelement);
+                                                                    break;
                                                             }
                                                         }
                                                         break;
 
                                                     default:
                                                         $this->unhandledElement('track', __LINE__, $subelement);
+                                                        break;
                                                 }
                                             }
 
@@ -764,6 +782,7 @@ class Matroska extends \JamesHeinrich\GetID3\Module\Handler
 
                                         default:
                                             $this->unhandledElement('tracks', __LINE__, $track_entry);
+                                            break;
                                     }
                                 }
                                 break;
@@ -827,6 +846,7 @@ class Matroska extends \JamesHeinrich\GetID3\Module\Handler
 
                                                     default:
                                                         $this->unhandledElement('info.chaptertranslate', __LINE__, $sub_subelement);
+                                                        break;
                                                 }
                                             }
                                             $info_entry[$subelement['id_name']] = $chaptertranslate_entry;
@@ -834,6 +854,7 @@ class Matroska extends \JamesHeinrich\GetID3\Module\Handler
 
                                         default:
                                             $this->unhandledElement('info', __LINE__, $subelement);
+                                            break;
                                     }
                                 }
                                 $info['matroska']['info'][] = $info_entry;
@@ -870,6 +891,7 @@ class Matroska extends \JamesHeinrich\GetID3\Module\Handler
 
                                                                 default:
                                                                     $this->unhandledElement('cues.cuepoint.cuetrackpositions', __LINE__, $sub_sub_subelement);
+                                                                    break;
                                                             }
                                                         }
                                                         $cuepoint_entry[$sub_subelement['id_name']][] = $cuetrackpositions_entry;
@@ -881,6 +903,7 @@ class Matroska extends \JamesHeinrich\GetID3\Module\Handler
 
                                                     default:
                                                         $this->unhandledElement('cues.cuepoint', __LINE__, $sub_subelement);
+                                                        break;
                                                 }
                                             }
                                             $cues_entry[] = $cuepoint_entry;
@@ -888,6 +911,7 @@ class Matroska extends \JamesHeinrich\GetID3\Module\Handler
 
                                         default:
                                             $this->unhandledElement('cues', __LINE__, $subelement);
+                                            break;
                                     }
                                 }
                                 $info['matroska']['cues'] = $cues_entry;
@@ -929,6 +953,7 @@ class Matroska extends \JamesHeinrich\GetID3\Module\Handler
 
                                                                 default:
                                                                     $this->unhandledElement('tags.tag.targets', __LINE__, $sub_sub_subelement);
+                                                                    break;
                                                             }
                                                         }
                                                         $tag_entry[$sub_subelement['id_name']] = $targets_entry;
@@ -940,6 +965,7 @@ class Matroska extends \JamesHeinrich\GetID3\Module\Handler
 
                                                     default:
                                                         $this->unhandledElement('tags.tag', __LINE__, $sub_subelement);
+                                                        break;
                                                 }
                                             }
                                             $tags_entry[] = $tag_entry;
@@ -947,6 +973,7 @@ class Matroska extends \JamesHeinrich\GetID3\Module\Handler
 
                                         default:
                                             $this->unhandledElement('tags', __LINE__, $subelement);
+                                            break;
                                     }
                                 }
                                 $info['matroska']['tags'] = $tags_entry;
@@ -987,6 +1014,7 @@ class Matroska extends \JamesHeinrich\GetID3\Module\Handler
 
                                                     default:
                                                         $this->unhandledElement('attachments.attachedfile', __LINE__, $sub_subelement);
+                                                        break;
                                                 }
                                             }
                                             $info['matroska']['attachments'][] = $attachedfile_entry;
@@ -994,6 +1022,7 @@ class Matroska extends \JamesHeinrich\GetID3\Module\Handler
 
                                         default:
                                             $this->unhandledElement('attachments', __LINE__, $subelement);
+                                            break;
                                     }
                                 }
                                 break;
@@ -1053,6 +1082,7 @@ class Matroska extends \JamesHeinrich\GetID3\Module\Handler
 
                                                                             default:
                                                                                 $this->unhandledElement('chapters.editionentry.chapteratom.chaptertrack', __LINE__, $sub_sub_sub_subelement);
+                                                                                break;
                                                                         }
                                                                     }
                                                                     $chapteratom_entry[$sub_sub_subelement['id_name']][] = $chaptertrack_entry;
@@ -1072,6 +1102,7 @@ class Matroska extends \JamesHeinrich\GetID3\Module\Handler
 
                                                                             default:
                                                                                 $this->unhandledElement('chapters.editionentry.chapteratom.chapterdisplay', __LINE__, $sub_sub_sub_subelement);
+                                                                                break;
                                                                         }
                                                                     }
                                                                     $chapteratom_entry[$sub_sub_subelement['id_name']][] = $chapterdisplay_entry;
@@ -1079,6 +1110,7 @@ class Matroska extends \JamesHeinrich\GetID3\Module\Handler
 
                                                                 default:
                                                                     $this->unhandledElement('chapters.editionentry.chapteratom', __LINE__, $sub_sub_subelement);
+                                                                    break;
                                                             }
                                                         }
                                                         $editionentry_entry[$sub_subelement['id_name']][] = $chapteratom_entry;
@@ -1086,6 +1118,7 @@ class Matroska extends \JamesHeinrich\GetID3\Module\Handler
 
                                                     default:
                                                         $this->unhandledElement('chapters.editionentry', __LINE__, $sub_subelement);
+                                                        break;
                                                 }
                                             }
                                             $info['matroska']['chapters'][] = $editionentry_entry;
@@ -1093,6 +1126,7 @@ class Matroska extends \JamesHeinrich\GetID3\Module\Handler
 
                                         default:
                                             $this->unhandledElement('chapters', __LINE__, $subelement);
+                                            break;
                                     }
                                 }
                                 break;
@@ -1121,6 +1155,7 @@ class Matroska extends \JamesHeinrich\GetID3\Module\Handler
 
                                                     default:
                                                         $this->unhandledElement('cluster.silenttracks', __LINE__, $sub_subelement);
+                                                        break;
                                                 }
                                             }
                                             $cluster_entry[$subelement['id_name']][] = $cluster_silent_tracks;
@@ -1151,6 +1186,7 @@ class Matroska extends \JamesHeinrich\GetID3\Module\Handler
 
                                                     default:
                                                         $this->unhandledElement('clusters.blockgroup', __LINE__, $sub_subelement);
+                                                        break;
                                                 }
                                             }
                                             $cluster_entry[$subelement['id_name']][] = $cluster_block_group;
@@ -1162,6 +1198,7 @@ class Matroska extends \JamesHeinrich\GetID3\Module\Handler
 
                                         default:
                                             $this->unhandledElement('cluster', __LINE__, $subelement);
+                                            break;
                                     }
                                     $this->current_offset = $subelement['end'];
                                 }
@@ -1183,12 +1220,14 @@ class Matroska extends \JamesHeinrich\GetID3\Module\Handler
 
                             default:
                                 $this->unhandledElement('segment', __LINE__, $element_data);
+                                break;
                         }
                     }
                     break;
 
                 default:
                     $this->unhandledElement('root', __LINE__, $top_element);
+                    break;
             }
         }
     }
@@ -1348,6 +1387,7 @@ class Matroska extends \JamesHeinrich\GetID3\Module\Handler
 
                 default:
                     $this->unhandledElement('tag.simpletag', __LINE__, $element);
+                    break;
             }
         }
 
@@ -1506,6 +1546,7 @@ class Matroska extends \JamesHeinrich\GetID3\Module\Handler
                 'A_AAC'            => 'aac',
                 'A_AAC/MPEG2/LC'   => 'aac',
                 'A_AC3'            => 'ac3',
+                'A_EAC3'           => 'eac3',
                 'A_DTS'            => 'dts',
                 'A_FLAC'           => 'flac',
                 'A_MPEG/L1'        => 'mp1',

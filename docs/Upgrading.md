@@ -14,6 +14,7 @@ getid3_lib                          Utils
 getid3_writetags                    Writer
 getID3_cached_dbm                   Cache\Dbm
 getID3_cached_mysql                 Cache\Mysql
+getID3_cached_mysqli                Cache\Mysqli
 getID3_cached_sqlite3               Cache\Sqlite3
 getid3_gzip                         Module\Archive\Gzip
 getid3_rar                          Module\Archive\Rar

@@ -1,4 +1,11 @@
 <?php
+
+namespace JamesHeinrich\GetID3\Module\Audio;
+
+use JamesHeinrich\GetID3\GetID3;
+use JamesHeinrich\GetID3\Module\Tag\ID3v2;
+use JamesHeinrich\GetID3\Utils;
+
 /////////////////////////////////////////////////////////////////
 /// getID3() by James Heinrich <info@getid3.org>               //
 //  available at http://getid3.sourceforge.net                 //
@@ -10,13 +17,10 @@
 //                                                             //
 // module.audio.dsf.php                                        //
 // module for analyzing dsf/DSF Audio files                    //
-// dependencies: module.tag.id3v2.php                          //
 //                                                            ///
 /////////////////////////////////////////////////////////////////
 
-getid3_lib::IncludeDependency(GETID3_INCLUDEPATH.'module.tag.id3v2.php', __FILE__, true);
-
-class getid3_dsf extends getid3_handler
+class Dsf extends \JamesHeinrich\GetID3\Module\Handler
 {
 
 	public function Analyze() {
@@ -35,17 +39,17 @@ class getid3_dsf extends getid3_handler
 		$headeroffset += 4;
 		$magic = 'DSD ';
 		if ($info['dsf']['dsd']['magic'] != $magic) {
-			$this->error('Expecting "'.getid3_lib::PrintHexBytes($magic).'" at offset '.$info['avdataoffset'].', found "'.getid3_lib::PrintHexBytes($info['dsf']['dsd']['magic']).'"');
+			$this->error('Expecting "'.Utils::PrintHexBytes($magic).'" at offset '.$info['avdataoffset'].', found "'.Utils::PrintHexBytes($info['dsf']['dsd']['magic']).'"');
 			unset($info['fileformat']);
 			unset($info['audio']);
 			unset($info['dsf']);
 			return false;
 		}
-		$info['dsf']['dsd']['dsd_chunk_size']     = getid3_lib::LittleEndian2Int(substr($dsfheader, $headeroffset, 8)); // should be 28
+		$info['dsf']['dsd']['dsd_chunk_size']     = Utils::LittleEndian2Int(substr($dsfheader, $headeroffset, 8)); // should be 28
 		$headeroffset += 8;
-		$info['dsf']['dsd']['dsf_file_size']      = getid3_lib::LittleEndian2Int(substr($dsfheader, $headeroffset, 8));
+		$info['dsf']['dsd']['dsf_file_size']      = Utils::LittleEndian2Int(substr($dsfheader, $headeroffset, 8));
 		$headeroffset += 8;
-		$info['dsf']['dsd']['meta_chunk_offset']  = getid3_lib::LittleEndian2Int(substr($dsfheader, $headeroffset, 8));
+		$info['dsf']['dsd']['meta_chunk_offset']  = Utils::LittleEndian2Int(substr($dsfheader, $headeroffset, 8));
 		$headeroffset += 8;
 
 
@@ -53,33 +57,33 @@ class getid3_dsf extends getid3_handler
 		$headeroffset += 4;
 		$magic = 'fmt ';
 		if ($info['dsf']['fmt']['magic'] != $magic) {
-			$this->error('Expecting "'.getid3_lib::PrintHexBytes($magic).'" at offset '.$headeroffset.', found "'.getid3_lib::PrintHexBytes($info['dsf']['fmt']['magic']).'"');
+			$this->error('Expecting "'.Utils::PrintHexBytes($magic).'" at offset '.$headeroffset.', found "'.Utils::PrintHexBytes($info['dsf']['fmt']['magic']).'"');
 			return false;
 		}
-		$info['dsf']['fmt']['fmt_chunk_size']     = getid3_lib::LittleEndian2Int(substr($dsfheader, $headeroffset, 8));  // usually 52 bytes
+		$info['dsf']['fmt']['fmt_chunk_size']     = Utils::LittleEndian2Int(substr($dsfheader, $headeroffset, 8));  // usually 52 bytes
 		$headeroffset += 8;
 		$dsfheader .= $this->fread($info['dsf']['fmt']['fmt_chunk_size'] - 12 + 12);  // we have already read the entire DSD chunk, plus 12 bytes of FMT. We now want to read the size of FMT, plus 12 bytes into the next chunk to get magic and size.
 		if (strlen($dsfheader) != ($info['dsf']['dsd']['dsd_chunk_size'] + $info['dsf']['fmt']['fmt_chunk_size'] + 12)) {
 			$this->error('Expecting '.($info['dsf']['dsd']['dsd_chunk_size'] + $info['dsf']['fmt']['fmt_chunk_size']).' bytes header, found '.strlen($dsfheader).' bytes');
 			return false;
 		}
-		$info['dsf']['fmt']['format_version']     = getid3_lib::LittleEndian2Int(substr($dsfheader, $headeroffset, 4));  // usually "1"
+		$info['dsf']['fmt']['format_version']     = Utils::LittleEndian2Int(substr($dsfheader, $headeroffset, 4));  // usually "1"
 		$headeroffset += 4;
-		$info['dsf']['fmt']['format_id']          = getid3_lib::LittleEndian2Int(substr($dsfheader, $headeroffset, 4));  // usually "0" = "DSD Raw"
+		$info['dsf']['fmt']['format_id']          = Utils::LittleEndian2Int(substr($dsfheader, $headeroffset, 4));  // usually "0" = "DSD Raw"
 		$headeroffset += 4;
-		$info['dsf']['fmt']['channel_type_id']    = getid3_lib::LittleEndian2Int(substr($dsfheader, $headeroffset, 4));
+		$info['dsf']['fmt']['channel_type_id']    = Utils::LittleEndian2Int(substr($dsfheader, $headeroffset, 4));
 		$headeroffset += 4;
-		$info['dsf']['fmt']['channels']           = getid3_lib::LittleEndian2Int(substr($dsfheader, $headeroffset, 4));
+		$info['dsf']['fmt']['channels']           = Utils::LittleEndian2Int(substr($dsfheader, $headeroffset, 4));
 		$headeroffset += 4;
-		$info['dsf']['fmt']['sample_rate']        = getid3_lib::LittleEndian2Int(substr($dsfheader, $headeroffset, 4));
+		$info['dsf']['fmt']['sample_rate']        = Utils::LittleEndian2Int(substr($dsfheader, $headeroffset, 4));
 		$headeroffset += 4;
-		$info['dsf']['fmt']['bits_per_sample']    = getid3_lib::LittleEndian2Int(substr($dsfheader, $headeroffset, 4));
+		$info['dsf']['fmt']['bits_per_sample']    = Utils::LittleEndian2Int(substr($dsfheader, $headeroffset, 4));
 		$headeroffset += 4;
-		$info['dsf']['fmt']['sample_count']       = getid3_lib::LittleEndian2Int(substr($dsfheader, $headeroffset, 8));
+		$info['dsf']['fmt']['sample_count']       = Utils::LittleEndian2Int(substr($dsfheader, $headeroffset, 8));
 		$headeroffset += 8;
-		$info['dsf']['fmt']['channel_block_size'] = getid3_lib::LittleEndian2Int(substr($dsfheader, $headeroffset, 4));
+		$info['dsf']['fmt']['channel_block_size'] = Utils::LittleEndian2Int(substr($dsfheader, $headeroffset, 4));
 		$headeroffset += 4;
-		$info['dsf']['fmt']['reserved']           = getid3_lib::LittleEndian2Int(substr($dsfheader, $headeroffset, 4)); // zero-filled
+		$info['dsf']['fmt']['reserved']           = Utils::LittleEndian2Int(substr($dsfheader, $headeroffset, 4)); // zero-filled
 		$headeroffset += 4;
 
 
@@ -87,17 +91,19 @@ class getid3_dsf extends getid3_handler
 		$headeroffset += 4;
 		$magic = 'data';
 		if ($info['dsf']['data']['magic'] != $magic) {
-			$this->error('Expecting "'.getid3_lib::PrintHexBytes($magic).'" at offset '.$headeroffset.', found "'.getid3_lib::PrintHexBytes($info['dsf']['data']['magic']).'"');
+			$this->error('Expecting "'.Utils::PrintHexBytes($magic).'" at offset '.$headeroffset.', found "'.Utils::PrintHexBytes($info['dsf']['data']['magic']).'"');
 			return false;
 		}
-		$info['dsf']['data']['data_chunk_size']    = getid3_lib::LittleEndian2Int(substr($dsfheader, $headeroffset, 8));
+		$info['dsf']['data']['data_chunk_size']    = Utils::LittleEndian2Int(substr($dsfheader, $headeroffset, 8));
 		$headeroffset += 8;
 		$info['avdataoffset'] = $headeroffset;
 		$info['avdataend']    = $info['avdataoffset'] + $info['dsf']['data']['data_chunk_size'];
 
 
 		if ($info['dsf']['dsd']['meta_chunk_offset'] > 0) {
-			$getid3_id3v2 = new getid3_id3v2($this->getid3);
+			$getid3_temp = new GetID3;
+			$getid3_temp->openfile($this->getid3->filename);
+			$getid3_id3v2 = new ID3v2($getid3_temp);
 			$getid3_id3v2->StartingOffset = $info['dsf']['dsd']['meta_chunk_offset'];
 			$getid3_id3v2->Analyze();
 			unset($getid3_id3v2);

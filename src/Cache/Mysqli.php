@@ -1,4 +1,9 @@
 <?php
+
+namespace JamesHeinrich\GetID3\Cache;
+
+use JamesHeinrich\GetID3\GetID3;
+
 /////////////////////////////////////////////////////////////////
 /// getID3() by James Heinrich <info@getid3.org>               //
 //  available at http://getid3.sourceforge.net                 //
@@ -25,18 +30,15 @@
 *
 *    Normal getID3 usage (example):
 *
-*       require_once 'getid3/getid3.php';
-*       $getID3 = new getID3;
+*       $getID3 = new GetID3;
 *       $getID3->encoding = 'UTF-8';
 *       $info1 = $getID3->analyze('file1.flac');
 *       $info2 = $getID3->analyze('file2.wv');
 *
 *    getID3_cached usage:
 *
-*       require_once 'getid3/getid3.php';
-*       require_once 'getid3/getid3/extension.cache.mysqli.php';
 *       // 5th parameter (tablename) is optional, default is 'getid3_cache'
-*       $getID3 = new getID3_cached_mysqli('localhost', 'database', 'username', 'password', 'tablename');
+*       $getID3 = new \JamesHeinrich\GetID3\Cache\Mysqli('localhost', 'database', 'username', 'password', 'tablename');
 *       $getID3->encoding = 'UTF-8';
 *       $info1 = $getID3->analyze('file1.flac');
 *       $info2 = $getID3->analyze('file2.wv');
@@ -70,7 +72,7 @@
 *   Frequent updates                    mysqli
 */
 
-class getID3_cached_mysqli extends getID3
+class Mysqli extends GetID3
 {
 	// private vars
 	private $mysqli;
@@ -82,7 +84,7 @@ class getID3_cached_mysqli extends getID3
 
 		// Check for mysqli support
 		if (!function_exists('mysqli_connect')) {
-			throw new Exception('PHP not compiled with mysqli support.');
+			throw new \Exception('PHP not compiled with mysqli support.');
 		}
 
 		// Connect to database
@@ -93,7 +95,7 @@ class getID3_cached_mysqli extends getID3
 
 		// Select database
 		if (!$this->mysqli->select_db($database)) {
-			throw new Exception('Cannot use database '.$database);
+			throw new \Exception('Cannot use database '.$database);
 		}
 
 		// Set table
@@ -106,14 +108,14 @@ class getID3_cached_mysqli extends getID3
 		$version = '';
 		$SQLquery  = 'SELECT `value`';
 		$SQLquery .= ' FROM `'.$this->mysqli->real_escape_string($this->table).'`';
-		$SQLquery .= ' WHERE (`filename` = \''.$this->mysqli->real_escape_string(getID3::VERSION).'\')';
+		$SQLquery .= ' WHERE (`filename` = \''.$this->mysqli->real_escape_string(GetID3::VERSION).'\')';
 		$SQLquery .= ' AND (`filesize` = -1)';
 		$SQLquery .= ' AND (`filetime` = -1)';
 		$SQLquery .= ' AND (`analyzetime` = -1)';
 		if ($this->cursor = $this->mysqli->query($SQLquery)) {
 			list($version) = $this->cursor->fetch_array();
 		}
-		if ($version != getID3::VERSION) {
+		if ($version != GetID3::VERSION) {
 			$this->clear_cache();
 		}
 
@@ -124,7 +126,7 @@ class getID3_cached_mysqli extends getID3
 	// public: clear cache
 	public function clear_cache() {
 		$this->mysqli->query('DELETE FROM `'.$this->mysqli->real_escape_string($this->table).'`');
-		$this->mysqli->query('INSERT INTO `'.$this->mysqli->real_escape_string($this->table).'` (`filename`, `filesize`, `filetime`, `analyzetime`, `value`) VALUES (\''.getID3::VERSION.'\', -1, -1, -1, \''.getID3::VERSION.'\')');
+		$this->mysqli->query('INSERT INTO `'.$this->mysqli->real_escape_string($this->table).'` (`filename`, `filesize`, `filetime`, `analyzetime`, `value`) VALUES (\'' . GetID3::VERSION . '\', -1, -1, -1, \'' . GetID3::VERSION . '\')');
 	}
 
 

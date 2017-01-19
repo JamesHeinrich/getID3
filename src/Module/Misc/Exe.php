@@ -36,18 +36,18 @@ class Exe extends \JamesHeinrich\GetID3\Module\Handler
 		$info['fileformat'] = 'exe';
 		$info['exe']['mz']['magic'] = 'MZ';
 
-		$info['exe']['mz']['raw']['last_page_size']          = getid3_lib::LittleEndian2Int(substr($EXEheader,  2, 2));
-		$info['exe']['mz']['raw']['page_count']              = getid3_lib::LittleEndian2Int(substr($EXEheader,  4, 2));
-		$info['exe']['mz']['raw']['relocation_count']        = getid3_lib::LittleEndian2Int(substr($EXEheader,  6, 2));
-		$info['exe']['mz']['raw']['header_paragraphs']       = getid3_lib::LittleEndian2Int(substr($EXEheader,  8, 2));
-		$info['exe']['mz']['raw']['min_memory_paragraphs']   = getid3_lib::LittleEndian2Int(substr($EXEheader, 10, 2));
-		$info['exe']['mz']['raw']['max_memory_paragraphs']   = getid3_lib::LittleEndian2Int(substr($EXEheader, 12, 2));
-		$info['exe']['mz']['raw']['initial_ss']              = getid3_lib::LittleEndian2Int(substr($EXEheader, 14, 2));
-		$info['exe']['mz']['raw']['initial_sp']              = getid3_lib::LittleEndian2Int(substr($EXEheader, 16, 2));
-		$info['exe']['mz']['raw']['checksum']                = getid3_lib::LittleEndian2Int(substr($EXEheader, 18, 2));
-		$info['exe']['mz']['raw']['cs_ip']                   = getid3_lib::LittleEndian2Int(substr($EXEheader, 20, 4));
-		$info['exe']['mz']['raw']['relocation_table_offset'] = getid3_lib::LittleEndian2Int(substr($EXEheader, 24, 2));
-		$info['exe']['mz']['raw']['overlay_number']          = getid3_lib::LittleEndian2Int(substr($EXEheader, 26, 2));
+		$info['exe']['mz']['raw']['last_page_size']          = Utils::LittleEndian2Int(substr($EXEheader,  2, 2));
+		$info['exe']['mz']['raw']['page_count']              = Utils::LittleEndian2Int(substr($EXEheader,  4, 2));
+		$info['exe']['mz']['raw']['relocation_count']        = Utils::LittleEndian2Int(substr($EXEheader,  6, 2));
+		$info['exe']['mz']['raw']['header_paragraphs']       = Utils::LittleEndian2Int(substr($EXEheader,  8, 2));
+		$info['exe']['mz']['raw']['min_memory_paragraphs']   = Utils::LittleEndian2Int(substr($EXEheader, 10, 2));
+		$info['exe']['mz']['raw']['max_memory_paragraphs']   = Utils::LittleEndian2Int(substr($EXEheader, 12, 2));
+		$info['exe']['mz']['raw']['initial_ss']              = Utils::LittleEndian2Int(substr($EXEheader, 14, 2));
+		$info['exe']['mz']['raw']['initial_sp']              = Utils::LittleEndian2Int(substr($EXEheader, 16, 2));
+		$info['exe']['mz']['raw']['checksum']                = Utils::LittleEndian2Int(substr($EXEheader, 18, 2));
+		$info['exe']['mz']['raw']['cs_ip']                   = Utils::LittleEndian2Int(substr($EXEheader, 20, 4));
+		$info['exe']['mz']['raw']['relocation_table_offset'] = Utils::LittleEndian2Int(substr($EXEheader, 24, 2));
+		$info['exe']['mz']['raw']['overlay_number']          = Utils::LittleEndian2Int(substr($EXEheader, 26, 2));
 
 		$info['exe']['mz']['byte_size']          = (($info['exe']['mz']['raw']['page_count'] - 1)) * 512 + $info['exe']['mz']['raw']['last_page_size'];
 		$info['exe']['mz']['header_size']        = $info['exe']['mz']['raw']['header_paragraphs'] * 16;

@@ -95,6 +95,11 @@ class GetID3
 		if ($this->option_max_2gb_check === null) {
 			$this->option_max_2gb_check = (PHP_INT_MAX <= 2147483647);
 		}
+
+		if (!empty($this->startup_error)) {
+			echo $this->startup_error;
+			throw new Exception($this->startup_error);
+		}
 	}
 
 	public function version() {

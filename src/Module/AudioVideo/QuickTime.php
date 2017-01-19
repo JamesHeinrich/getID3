@@ -1538,8 +1538,8 @@ if (!empty($atom_structure['sample_description_table'][$i]['width']) && !empty($
 			case 'meta': // METAdata atom
 				// https://developer.apple.com/library/mac/documentation/QuickTime/QTFF/Metadata/Metadata.html
 
-				$atom_structure['version']   =          getid3_lib::BigEndian2Int(substr($atom_data, 0, 1));
-				$atom_structure['flags_raw'] =          getid3_lib::BigEndian2Int(substr($atom_data, 1, 3));
+				$atom_structure['version']   =          Utils::BigEndian2Int(substr($atom_data, 0, 1));
+				$atom_structure['flags_raw'] =          Utils::BigEndian2Int(substr($atom_data, 1, 3));
 				$atom_structure['subatoms']  = $this->QuicktimeParseContainerAtom($atom_data, $baseoffset + 8, $atomHierarchy, $ParseAllPossibleAtoms);
 				break;
 
@@ -1560,12 +1560,12 @@ if (!empty($atom_structure['sample_description_table'][$i]['width']) && !empty($
 				// https://developer.apple.com/library/mac/documentation/QuickTime/QTFF/Metadata/Metadata.html#//apple_ref/doc/uid/TP40000939-CH1-SW21
 				// The metadata item keys atom holds a list of the metadata keys that may be present in the metadata atom.
 				// This list is indexed starting with 1; 0 is a reserved index value. The metadata item keys atom is a full atom with an atom type of "keys".
-				$atom_structure['version']       = getid3_lib::BigEndian2Int(substr($atom_data,  0, 1));
-				$atom_structure['flags_raw']     = getid3_lib::BigEndian2Int(substr($atom_data,  1, 3));
-				$atom_structure['entry_count']   = getid3_lib::BigEndian2Int(substr($atom_data,  4, 4));
+				$atom_structure['version']       = Utils::BigEndian2Int(substr($atom_data,  0, 1));
+				$atom_structure['flags_raw']     = Utils::BigEndian2Int(substr($atom_data,  1, 3));
+				$atom_structure['entry_count']   = Utils::BigEndian2Int(substr($atom_data,  4, 4));
 				$keys_atom_offset = 8;
 				for ($i = 1; $i <= $atom_structure['entry_count']; $i++) {
-					$atom_structure['keys'][$i]['key_size']      = getid3_lib::BigEndian2Int(substr($atom_data, $keys_atom_offset + 0, 4));
+					$atom_structure['keys'][$i]['key_size']      = Utils::BigEndian2Int(substr($atom_data, $keys_atom_offset + 0, 4));
 					$atom_structure['keys'][$i]['key_namespace'] =                           substr($atom_data, $keys_atom_offset + 4, 4);
 					$atom_structure['keys'][$i]['key_value']     =                           substr($atom_data, $keys_atom_offset + 8, $atom_structure['keys'][$i]['key_size'] - 8);
 					$keys_atom_offset += $atom_structure['keys'][$i]['key_size']; // key_size includes the 4+4 bytes for key_size and key_namespace
