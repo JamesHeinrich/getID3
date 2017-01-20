@@ -530,6 +530,18 @@ throw new Exception('$this->overwrite_tags=false is known to be buggy in this ve
 						return false;
 					}
 					break;
+					
+				case 'TXXX':
+					foreach ($valuearray as $key => $txxx_data_array) {
+                                            if (isset($txxx_data_array['description']) &&
+                                                    isset($txxx_data_array['data'])) {
+                                                            $tag_data_id3v2['TXXX'][] = $txxx_data_array;
+                                            } else {
+                                                    $this->errors[] = 'ID3v2 TXXX data is not properly structured';
+                                                    return false;
+                                            }
+                                        }
+					break;
 
 				case '':
 					$this->errors[] = 'ID3v2: Skipping "'.$tag_key.'" because cannot match it to a known ID3v2 frame type';
