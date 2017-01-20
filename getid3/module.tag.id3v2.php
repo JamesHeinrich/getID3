@@ -1010,8 +1010,6 @@ class getid3_id3v2 extends getid3_handler
 			if (!empty($parsedFrame['framenameshort']) && !empty($parsedFrame['data'])) {
 				$info['id3v2']['comments'][$parsedFrame['framenameshort']][] = getid3_lib::iconv_fallback($parsedFrame['encoding'], $info['id3v2']['encoding'], $parsedFrame['data']);
 			}
-			unset($parsedFrame['data']);
-
 
 		} elseif ((($id3v2_majorversion >= 3) && ($parsedFrame['frame_name'] == 'SYLT')) || // 4.9   SYLT Synchronised lyric/text
 				(($id3v2_majorversion == 2) && ($parsedFrame['frame_name'] == 'SLT'))) {     // 4.10  SLT  Synchronised lyric/text
