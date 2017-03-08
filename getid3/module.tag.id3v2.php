@@ -132,7 +132,12 @@ class getid3_id3v2 extends getid3_handler
 		}
 		if ($sizeofframes > 0) {
 
-			$framedata = $this->fread($sizeofframes); // read all frames from file into $framedata variable
+                        $previouslength = 0;
+                        $framedata = $this->fread($sizeofframes); // read all frames from file into $framedata variable
+                        while ((strlen($framedata) < $sizeofframes) && ($previouslength != strlen($framedata))) {
+                                $previouslength = strlen($framedata);
+                                $framedata = $framedata.$this->fread($sizeofframes-strlen($framedata));
+                        }
 
 			//    if entire frame data is unsynched, de-unsynch it now (ID3v2.3.x)
 			if (!empty($thisfile_id3v2_flags['unsynch']) && ($id3v2_majorversion <= 3)) {
