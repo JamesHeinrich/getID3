@@ -18,6 +18,13 @@
 Version History
 ===============
 
+1.9.14: [2017-03-27] James Heinrich
+    Â» Add experimental support for E-AC3
+    * bugfix (G:105): RIFF.WAVE.iXML multiple TIMESTAMP_SAMPLE_RATE
+    * bugfix (G:95): improperly initialized error/warning keys
+    * bugfix (G:94): ID3v2 write support for TXXX
+    * bugfix (G:93): all errors or warnings should pass through class method
+
 1.9.13: [2016-12-14] James Heinrich
     * bugfix (G:89): ID3v2.4 custom genres with slashes
     * bugfix (G:88): large QuickTime files exceed PHP memory limit
