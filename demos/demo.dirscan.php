@@ -11,7 +11,7 @@ require __DIR__ . "/../vendor/autoload.php";
 //          also https://github.com/JamesHeinrich/getID3                       //
 /////////////////////////////////////////////////////////////////////////////////
 ///                                                                            //
-// getid3.dirscan.php - tool for batch media file processing with getID3()     //
+// demo.dirscan.php - tool for batch media file processing with getID3()       //
 //                                                                            ///
 /////////////////////////////////////////////////////////////////////////////////
 ///                                                                            //
@@ -24,11 +24,11 @@ require __DIR__ . "/../vendor/autoload.php";
 * use like so for the default sqlite3 database, which is hidden:
 *
 * cd <path you want to start scanning from>
-* php <path to getid3 files>/getid3.dirscan.php
+* php <path to getid3 files>/demo.dirscan.php
 *
 * or
 *
-* php <path to getid3 files>/getid3.dirscan.php <dir to scan> <file ext in csv list>
+* php <path to getid3 files>/demo.dirscan.php <dir to scan> <file ext in csv list>
 *
 * Supported Cache Types    (this extension)
 *
