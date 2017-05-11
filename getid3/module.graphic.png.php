@@ -434,11 +434,46 @@ class getid3_png extends getid3_handler
 					$thisfile_png_chunk_type_text[$idatinformationfieldindex]['header'] = $chunk;
 					break;
 
-
 				case 'IEND': // Image Trailer
 					$thisfile_png_chunk_type_text['header'] = $chunk;
 					break;
 
+				case 'acTL': // Animation Control chunk
+					// https://wiki.mozilla.org/APNG_Specification#.60acTL.60:_The_Animation_Control_Chunk
+					$thisfile_png['animation']['num_frames'] = getid3_lib::BigEndian2Int(substr($chunk['data'], 0, 4)); // Number of frames
+					$thisfile_png['animation']['num_plays']  = getid3_lib::BigEndian2Int(substr($chunk['data'], 4, 4)); // Number of times to loop this APNG.  0 indicates infinite looping.
+
+					unset($chunk['data']);
+					$thisfile_png_chunk_type_text['header'] = $chunk;
+					break;
+
+				case 'fcTL': // Frame Control chunk
+					// https://wiki.mozilla.org/APNG_Specification#.60fcTL.60:_The_Frame_Control_Chunk
+					$fcTL = array();
+					$fcTL['sequence_number'] = getid3_lib::BigEndian2Int(substr($chunk['data'],  0, 4)); // Sequence number of the animation chunk, starting from 0
+					$fcTL['width']           = getid3_lib::BigEndian2Int(substr($chunk['data'],  4, 4)); // Width of the following frame
+					$fcTL['height']          = getid3_lib::BigEndian2Int(substr($chunk['data'],  8, 4)); // Height of the following frame
+					$fcTL['x_offset']        = getid3_lib::BigEndian2Int(substr($chunk['data'], 12, 4)); // X position at which to render the following frame
+					$fcTL['y_offset']        = getid3_lib::BigEndian2Int(substr($chunk['data'], 16, 4)); // Y position at which to render the following frame
+					$fcTL['delay_num']       = getid3_lib::BigEndian2Int(substr($chunk['data'], 20, 2)); // Frame delay fraction numerator
+					$fcTL['delay_den']       = getid3_lib::BigEndian2Int(substr($chunk['data'], 22, 2)); // Frame delay fraction numerator
+					$fcTL['dispose_op']      = getid3_lib::BigEndian2Int(substr($chunk['data'], 23, 1)); // Type of frame area disposal to be done after rendering this frame
+					$fcTL['blend_op']        = getid3_lib::BigEndian2Int(substr($chunk['data'], 23, 1)); // Type of frame area rendering for this frame
+					if ($fcTL['delay_den']) {
+						$fcTL['delay'] = $fcTL['delay_num'] / $fcTL['delay_den'];
+					}
+					$thisfile_png['animation']['fcTL'][$fcTL['sequence_number']] = $fcTL;
+
+					unset($chunk['data']);
+					$thisfile_png_chunk_type_text['header'] = $chunk;
+					break;
+
+				case 'fdAT': // Frame Data chunk
+					// https://wiki.mozilla.org/APNG_Specification#.60fcTL.60:_The_Frame_Control_Chunk
+					// "The `fdAT` chunk has the same purpose as an `IDAT` chunk. It has the same structure as an `IDAT` chunk, except preceded by a sequence number."
+					unset($chunk['data']);
+					$thisfile_png_chunk_type_text['header'] = $chunk;
+					break;
 
 				default:
 					//unset($chunk['data']);
@@ -447,7 +482,13 @@ class getid3_png extends getid3_handler
 					break;
 			}
 		}
-
+		if (!empty($thisfile_png['animation']['num_frames']) && !empty($thisfile_png['animation']['fcTL'])) {
+			$info['video']['dataformat'] = 'apng';
+			$info['playtime_seconds'] = 0;
+			foreach ($thisfile_png['animation']['fcTL'] as $seqno => $fcTL) {
+				$info['playtime_seconds'] += $fcTL['delay'];
+			}
+		}
 		return true;
 	}
 
