@@ -293,6 +293,9 @@ class getid3_lib
 		return self::BigEndian2Int(strrev($byteword), false, $signed);
 	}
 
+	public static function LittleEndian2Bin($byteword) {
+		return self::BigEndian2Bin(strrev($byteword));
+	}
 
 	public static function BigEndian2Bin($byteword) {
 		$binvalue = '';
