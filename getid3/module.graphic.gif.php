@@ -14,6 +14,8 @@
 //                                                            ///
 /////////////////////////////////////////////////////////////////
 
+// https://www.w3.org/Graphics/GIF/spec-gif89a.txt
+// http://www.matthewflickinger.com/lab/whatsinagif/bits_and_bytes.asp
 
 class getid3_gif extends getid3_handler
 {
@@ -78,91 +80,102 @@ class getid3_gif extends getid3_handler
 			$info['gif']['header']['aspect_ratio'] = ($info['gif']['header']['raw']['aspect_ratio'] + 15) / 64;
 		}
 
-//		if ($info['gif']['header']['flags']['global_color_table']) {
-//			$GIFcolorTable = $this->fread(3 * $info['gif']['header']['global_color_size']);
-//			$offset = 0;
-//			for ($i = 0; $i < $info['gif']['header']['global_color_size']; $i++) {
-//				$red   = getid3_lib::LittleEndian2Int(substr($GIFcolorTable, $offset++, 1));
-//				$green = getid3_lib::LittleEndian2Int(substr($GIFcolorTable, $offset++, 1));
-//				$blue  = getid3_lib::LittleEndian2Int(substr($GIFcolorTable, $offset++, 1));
-//				$info['gif']['global_color_table'][$i] = (($red << 16) | ($green << 8) | ($blue));
-//			}
-//		}
-//
-//		// Image Descriptor
-//		while (!feof($this->getid3->fp)) {
-//			$NextBlockTest = $this->fread(1);
-//			switch ($NextBlockTest) {
-//
-//				case ',': // ',' - Image separator character
-//
-//					$ImageDescriptorData = $NextBlockTest.$this->fread(9);
-//					$ImageDescriptor = array();
-//					$ImageDescriptor['image_left']   = getid3_lib::LittleEndian2Int(substr($ImageDescriptorData, 1, 2));
-//					$ImageDescriptor['image_top']    = getid3_lib::LittleEndian2Int(substr($ImageDescriptorData, 3, 2));
-//					$ImageDescriptor['image_width']  = getid3_lib::LittleEndian2Int(substr($ImageDescriptorData, 5, 2));
-//					$ImageDescriptor['image_height'] = getid3_lib::LittleEndian2Int(substr($ImageDescriptorData, 7, 2));
-//					$ImageDescriptor['flags_raw']    = getid3_lib::LittleEndian2Int(substr($ImageDescriptorData, 9, 1));
-//					$ImageDescriptor['flags']['use_local_color_map'] = (bool) ($ImageDescriptor['flags_raw'] & 0x80);
-//					$ImageDescriptor['flags']['image_interlaced']    = (bool) ($ImageDescriptor['flags_raw'] & 0x40);
-//					$info['gif']['image_descriptor'][] = $ImageDescriptor;
-//
-//					if ($ImageDescriptor['flags']['use_local_color_map']) {
-//
-//						$this->warning('This version of getID3() cannot parse local color maps for GIFs');
-//						return true;
-//
-//					}
-//echo 'Start of raster data: '.$this->ftell().'<BR>';
-//					$RasterData = array();
-//					$RasterData['code_size']        = getid3_lib::LittleEndian2Int($this->fread(1));
-//					$RasterData['block_byte_count'] = getid3_lib::LittleEndian2Int($this->fread(1));
-//					$info['gif']['raster_data'][count($info['gif']['image_descriptor']) - 1] = $RasterData;
-//
-//					$CurrentCodeSize = $RasterData['code_size'] + 1;
-//					for ($i = 0; $i < pow(2, $RasterData['code_size']); $i++) {
-//						$DefaultDataLookupTable[$i] = chr($i);
-//					}
-//					$DefaultDataLookupTable[pow(2, $RasterData['code_size']) + 0] = ''; // Clear Code
-//					$DefaultDataLookupTable[pow(2, $RasterData['code_size']) + 1] = ''; // End Of Image Code
-//
-//
-//					$NextValue = $this->GetLSBits($CurrentCodeSize);
-//					echo 'Clear Code: '.$NextValue.'<BR>';
-//
-//					$NextValue = $this->GetLSBits($CurrentCodeSize);
-//					echo 'First Color: '.$NextValue.'<BR>';
-//
-//					$Prefix = $NextValue;
-//$i = 0;
-//					while ($i++ < 20) {
-//						$NextValue = $this->GetLSBits($CurrentCodeSize);
-//						echo $NextValue.'<BR>';
-//					}
-//return true;
-//					break;
-//
-//				case '!':
-//					// GIF Extension Block
-//					$ExtensionBlockData = $NextBlockTest.$this->fread(2);
-//					$ExtensionBlock = array();
-//					$ExtensionBlock['function_code']  = getid3_lib::LittleEndian2Int(substr($ExtensionBlockData, 1, 1));
-//					$ExtensionBlock['byte_length']    = getid3_lib::LittleEndian2Int(substr($ExtensionBlockData, 2, 1));
-//					$ExtensionBlock['data']           = $this->fread($ExtensionBlock['byte_length']);
-//					$info['gif']['extension_blocks'][] = $ExtensionBlock;
-//					break;
-//
-//				case ';':
-//					$info['gif']['terminator_offset'] = $this->ftell() - 1;
-//					// GIF Terminator
-//					break;
-//
-//				default:
-//					break;
-//
-//
-//			}
-//		}
+		if ($info['gif']['header']['flags']['global_color_table']) {
+			$GIFcolorTable = $this->fread(3 * $info['gif']['header']['global_color_size']);
+			$offset = 0;
+			for ($i = 0; $i < $info['gif']['header']['global_color_size']; $i++) {
+				$red   = getid3_lib::LittleEndian2Int(substr($GIFcolorTable, $offset++, 1));
+				$green = getid3_lib::LittleEndian2Int(substr($GIFcolorTable, $offset++, 1));
+				$blue  = getid3_lib::LittleEndian2Int(substr($GIFcolorTable, $offset++, 1));
+				$info['gif']['global_color_table'][$i] = (($red << 16) | ($green << 8) | ($blue));
+			}
+		}
+
+		// Image Descriptor
+		while (!feof($this->getid3->fp)) {
+			$NextBlockTest = $this->fread(1);
+			switch ($NextBlockTest) {
+
+/*
+				case ',': // ',' - Image separator character
+					$ImageDescriptorData = $NextBlockTest.$this->fread(9);
+					$ImageDescriptor = array();
+					$ImageDescriptor['image_left']   = getid3_lib::LittleEndian2Int(substr($ImageDescriptorData, 1, 2));
+					$ImageDescriptor['image_top']    = getid3_lib::LittleEndian2Int(substr($ImageDescriptorData, 3, 2));
+					$ImageDescriptor['image_width']  = getid3_lib::LittleEndian2Int(substr($ImageDescriptorData, 5, 2));
+					$ImageDescriptor['image_height'] = getid3_lib::LittleEndian2Int(substr($ImageDescriptorData, 7, 2));
+					$ImageDescriptor['flags_raw']    = getid3_lib::LittleEndian2Int(substr($ImageDescriptorData, 9, 1));
+					$ImageDescriptor['flags']['use_local_color_map'] = (bool) ($ImageDescriptor['flags_raw'] & 0x80);
+					$ImageDescriptor['flags']['image_interlaced']    = (bool) ($ImageDescriptor['flags_raw'] & 0x40);
+					$info['gif']['image_descriptor'][] = $ImageDescriptor;
+
+					if ($ImageDescriptor['flags']['use_local_color_map']) {
+
+						$this->warning('This version of getID3() cannot parse local color maps for GIFs');
+						return true;
+
+					}
+					$RasterData = array();
+					$RasterData['code_size']        = getid3_lib::LittleEndian2Int($this->fread(1));
+					$RasterData['block_byte_count'] = getid3_lib::LittleEndian2Int($this->fread(1));
+					$info['gif']['raster_data'][count($info['gif']['image_descriptor']) - 1] = $RasterData;
+
+					$CurrentCodeSize = $RasterData['code_size'] + 1;
+					for ($i = 0; $i < pow(2, $RasterData['code_size']); $i++) {
+						$DefaultDataLookupTable[$i] = chr($i);
+					}
+					$DefaultDataLookupTable[pow(2, $RasterData['code_size']) + 0] = ''; // Clear Code
+					$DefaultDataLookupTable[pow(2, $RasterData['code_size']) + 1] = ''; // End Of Image Code
+
+					$NextValue = $this->GetLSBits($CurrentCodeSize);
+					echo 'Clear Code: '.$NextValue.'<BR>';
+
+					$NextValue = $this->GetLSBits($CurrentCodeSize);
+					echo 'First Color: '.$NextValue.'<BR>';
+
+					$Prefix = $NextValue;
+					$i = 0;
+					while ($i++ < 20) {
+						$NextValue = $this->GetLSBits($CurrentCodeSize);
+						echo $NextValue.'<br>';
+					}
+					echo 'escaping<br>';
+					return true;
+					break;
+*/
+
+				case '!':
+					// GIF Extension Block
+					$ExtensionBlockData = $NextBlockTest.$this->fread(2);
+					$ExtensionBlock = array();
+					$ExtensionBlock['function_code']  = getid3_lib::LittleEndian2Int(substr($ExtensionBlockData, 1, 1));
+					$ExtensionBlock['byte_length']    = getid3_lib::LittleEndian2Int(substr($ExtensionBlockData, 2, 1));
+					$ExtensionBlock['data']           = (($ExtensionBlock['byte_length'] > 0) ? $this->fread($ExtensionBlock['byte_length']) : null);
+
+					if (substr($ExtensionBlock['data'], 0, 11) == 'NETSCAPE2.0') { // Netscape Application Block (NAB)
+						$ExtensionBlock['data'] .= $this->fread(4);
+						if (substr($ExtensionBlock['data'], 11, 2) == "\x03\x01") {
+							$info['gif']['animation']['animated']   = true;
+							$info['gif']['animation']['loop_count'] = getid3_lib::LittleEndian2Int(substr($ExtensionBlock['data'], 13, 2));
+						} else {
+							$this->warning('Expecting 03 01 at offset '.($this->ftell() - 4).', found "'.getid3_lib::PrintHexBytes(substr($ExtensionBlock['data'], 11, 2)).'"');
+						}
+					}
+
+					$info['gif']['extension_blocks'][] = $ExtensionBlock;
+					break;
+
+				case ';':
+					$info['gif']['terminator_offset'] = $this->ftell() - 1;
+					// GIF Terminator
+					break;
+
+				default:
+					break;
+
+
+			}
+		}
 
 		return true;
 	}
