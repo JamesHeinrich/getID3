@@ -52,6 +52,7 @@ class getid3_writetags
 	public $tagformats         = array();        // array of tag formats to write ('id3v1', 'id3v2.2', 'id2v2.3', 'id3v2.4', 'ape', 'vorbiscomment', 'metaflac', 'real')
 	public $tag_data           = array(array()); // 2-dimensional array of tag data (ex: $data['ARTIST'][0] = 'Elvis')
 	public $tag_encoding       = 'ISO-8859-1';   // text encoding used for tag data ('ISO-8859-1', 'UTF-8', 'UTF-16', 'UTF-16LE', 'UTF-16BE', )
+	public $tag_encoding_id3v1 = 'ISO-8859-1';   // text encoding used for id3v1 tag data ('ISO-8859-1', 'GBK', 'EUC-JP', 'EUC-KR', etc.)
 	public $overwrite_tags     = true;          // if true will erase existing tag data and write only passed data; if false will merge passed data with existing tag data
 	public $remove_other_tags  = false;          // if true will erase remove all existing tags and only write those passed in $tagformats; if false will ignore any tags not mentioned in $tagformats
 
@@ -454,18 +455,16 @@ throw new Exception('$this->overwrite_tags=false is known to be buggy in this ve
 		$tag_data_id3v1['genreid'] = 255;
 		if (!empty($this->tag_data['GENRE'])) {
 			foreach ($this->tag_data['GENRE'] as $key => $value) {
-				if (getid3_id3v1::LookupGenreID($value) !== false) {
-					$tag_data_id3v1['genreid'] = getid3_id3v1::LookupGenreID($value);
-					break;
-				}
+				$tag_data_id3v1['genreid'] = $value;
+				break;
 			}
 		}
-		$tag_data_id3v1['title']   =        getid3_lib::iconv_fallback($this->tag_encoding, 'ISO-8859-1', implode(' ', (isset($this->tag_data['TITLE']      ) ? $this->tag_data['TITLE']       : array())));
-		$tag_data_id3v1['artist']  =        getid3_lib::iconv_fallback($this->tag_encoding, 'ISO-8859-1', implode(' ', (isset($this->tag_data['ARTIST']     ) ? $this->tag_data['ARTIST']      : array())));
-		$tag_data_id3v1['album']   =        getid3_lib::iconv_fallback($this->tag_encoding, 'ISO-8859-1', implode(' ', (isset($this->tag_data['ALBUM']      ) ? $this->tag_data['ALBUM']       : array())));
-		$tag_data_id3v1['year']    =        getid3_lib::iconv_fallback($this->tag_encoding, 'ISO-8859-1', implode(' ', (isset($this->tag_data['YEAR']       ) ? $this->tag_data['YEAR']        : array())));
-		$tag_data_id3v1['comment'] =        getid3_lib::iconv_fallback($this->tag_encoding, 'ISO-8859-1', implode(' ', (isset($this->tag_data['COMMENT']    ) ? $this->tag_data['COMMENT']     : array())));
-		$tag_data_id3v1['track']   = intval(getid3_lib::iconv_fallback($this->tag_encoding, 'ISO-8859-1', implode(' ', (isset($this->tag_data['TRACKNUMBER']) ? $this->tag_data['TRACKNUMBER'] : array()))));
+		$tag_data_id3v1['title']   =        getid3_lib::iconv_fallback($this->tag_encoding, $this->tag_encoding_id3v1, implode(' ', (isset($this->tag_data['TITLE']      ) ? $this->tag_data['TITLE']       : array())));
+		$tag_data_id3v1['artist']  =        getid3_lib::iconv_fallback($this->tag_encoding, $this->tag_encoding_id3v1, implode(' ', (isset($this->tag_data['ARTIST']     ) ? $this->tag_data['ARTIST']      : array())));
+		$tag_data_id3v1['album']   =        getid3_lib::iconv_fallback($this->tag_encoding, $this->tag_encoding_id3v1, implode(' ', (isset($this->tag_data['ALBUM']      ) ? $this->tag_data['ALBUM']       : array())));
+		$tag_data_id3v1['year']    =        getid3_lib::iconv_fallback($this->tag_encoding, $this->tag_encoding_id3v1, implode(' ', (isset($this->tag_data['YEAR']       ) ? $this->tag_data['YEAR']        : array())));
+		$tag_data_id3v1['comment'] =        getid3_lib::iconv_fallback($this->tag_encoding, $this->tag_encoding_id3v1, implode(' ', (isset($this->tag_data['COMMENT']    ) ? $this->tag_data['COMMENT']     : array())));
+		$tag_data_id3v1['track']   = intval(getid3_lib::iconv_fallback($this->tag_encoding, $this->tag_encoding_id3v1, implode(' ', (isset($this->tag_data['TRACKNUMBER']) ? $this->tag_data['TRACKNUMBER'] : array()))));
 		if ($tag_data_id3v1['track'] <= 0) {
 			$tag_data_id3v1['track'] = '';
 		}
