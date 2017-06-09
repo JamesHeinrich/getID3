@@ -52,7 +52,7 @@ class GetID3
 	protected $startup_error   = '';
 	protected $startup_warning = '';
 
-	const VERSION           = '1.9.14-201705111715';
+	const VERSION           = '1.9.14-201706091118';
 	const FREAD_BUFFER_SIZE = 32768;
 
 	const ATTACHMENTS_NONE   = false;
@@ -70,10 +70,10 @@ class GetID3
 
 		// Check memory
 		$this->memory_limit = ini_get('memory_limit');
-		if (preg_match('#([0-9]+)M#i', $this->memory_limit, $matches)) {
+		if (preg_match('#([0-9]+) ?M#i', $this->memory_limit, $matches)) {
 			// could be stored as "16M" rather than 16777216 for example
 			$this->memory_limit = $matches[1] * 1048576;
-		} elseif (preg_match('#([0-9]+)G#i', $this->memory_limit, $matches)) { // The 'G' modifier is available since PHP 5.1.0
+		} elseif (preg_match('#([0-9]+) ?G#i', $this->memory_limit, $matches)) { // The 'G' modifier is available since PHP 5.1.0
 			// could be stored as "2G" rather than 2147483648 for example
 			$this->memory_limit = $matches[1] * 1073741824;
 		}
