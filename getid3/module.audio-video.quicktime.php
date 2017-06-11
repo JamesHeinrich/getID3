@@ -722,6 +722,9 @@ class getid3_quicktime extends getid3_handler
 				$atom_structure['version']        = getid3_lib::BigEndian2Int(substr($atom_data,  0, 1));
 				$atom_structure['flags_raw']      = getid3_lib::BigEndian2Int(substr($atom_data,  1, 3)); // hardcoded: 0x0000
 				$atom_structure['number_entries'] = getid3_lib::BigEndian2Int(substr($atom_data,  4, 4));
+				if ($atom_structure['number_entries'] >= 0x08000000) {
+					$atom_structure['number_entries'] -= 0x08000000;
+				}
 				$stsdEntriesDataOffset = 8;
 				for ($i = 0; $i < $atom_structure['number_entries']; $i++) {
 					$atom_structure['sample_description_table'][$i]['size']             = getid3_lib::BigEndian2Int(substr($atom_data, $stsdEntriesDataOffset, 4));
