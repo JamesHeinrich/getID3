@@ -726,6 +726,20 @@ class QuickTime extends \JamesHeinrich\GetID3\Module\Handler
 				$atom_structure['version']        = Utils::BigEndian2Int(substr($atom_data,  0, 1));
 				$atom_structure['flags_raw']      = Utils::BigEndian2Int(substr($atom_data,  1, 3)); // hardcoded: 0x0000
 				$atom_structure['number_entries'] = Utils::BigEndian2Int(substr($atom_data,  4, 4));
+
+				// see: https://github.com/JamesHeinrich/getID3/issues/111
+				// Some corrupt files have been known to have high bits set in the number_entries field
+				// This field shouldn't really need to be 32-bits, values stores are likely in the range 1-100000
+				// Workaround: mask off the upper byte and throw a warning if it's nonzero
+				if ($atom_structure['number_entries'] > 0x000FFFFF) {
+					if ($atom_structure['number_entries'] > 0x00FFFFFF) {
+						$this->warning('"stsd" atom contains improbably large number_entries (0x'.Utils::PrintHexBytes(substr($atom_data, 4, 4), true, false).' = '.$atom_structure['number_entries'].'), probably in error. Ignoring upper byte and interpreting this as 0x'.Utils::PrintHexBytes(substr($atom_data, 5, 3), true, false).' = '.($atom_structure['number_entries'] & 0x00FFFFFF));
+						$atom_structure['number_entries'] = ($atom_structure['number_entries'] & 0x00FFFFFF);
+					} else {
+						$this->warning('"stsd" atom contains improbably large number_entries (0x'.Utils::PrintHexBytes(substr($atom_data, 4, 4), true, false).' = '.$atom_structure['number_entries'].'), probably in error. Please report this to info@getid3.org referencing bug report #111');
+					}
+				}
+
 				$stsdEntriesDataOffset = 8;
 				for ($i = 0; $i < $atom_structure['number_entries']; $i++) {
 					$atom_structure['sample_description_table'][$i]['size']             = Utils::BigEndian2Int(substr($atom_data, $stsdEntriesDataOffset, 4));
