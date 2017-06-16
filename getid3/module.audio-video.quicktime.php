@@ -1695,7 +1695,18 @@ if (!empty($atom_structure['sample_description_table'][$i]['width']) && !empty($
 					$this->warning('QuickTime atom "'.$atomname.'" is zero bytes long at offset '.$baseoffset);
 				}
 				break;
-
+		            
+			    case 'loci':// LocationInformation
+		                $info['quicktime']['comments']['gps_flags'] = getid3_lib::BigEndian2Int(substr($atom_data, 0, 4));
+		                $info['quicktime']['comments']['gps_lang'] = getid3_lib::BigEndian2Int(substr($atom_data, 4, 2));
+		                $loffset = 0;
+		                $info['quicktime']['comments']['gps_location'] = $this->LociString(substr($atom_data, 6), $loffset);
+		                $loci_data=substr($atom_data, 6 + $loffset);
+		                $info['quicktime']['comments']['gps_role'] = getid3_lib::BigEndian2Int(substr($loci_data, 0, 1));
+		                $info['quicktime']['comments']['gps_longitude'] = getid3_lib::FixedPoint16_16(substr($loci_data, 1, 4));
+		                $info['quicktime']['comments']['gps_latitude'] = getid3_lib::FixedPoint16_16(substr($loci_data, 5, 4));
+		                $info['quicktime']['comments']['gps_altitude'] = getid3_lib::FixedPoint16_16(substr($loci_data, 9, 4));
+		                break;
 			default:
 				$this->warning('Unknown QuickTime atom type: "'.preg_replace('#[^a-zA-Z0-9 _\\-]#', '?', $atomname).'" ('.trim(getid3_lib::PrintHexBytes($atomname)).') at offset '.$baseoffset);
 				$atom_structure['data'] = $atom_data;
@@ -2528,6 +2539,27 @@ echo 'QuicktimeParseNikonNCTG()::unknown $data_size_type: '.$data_size_type.'<br
 		return true;
 	}
 
+    public function LociString($lstring, &$count) {
+        // Loci strings are UTF-8 or UTF-16 and null (x00/x0000) terminated. UTF-16 has a BOM
+        // Also need to return the number of bytes the string occupied so additional fields can be extracted
+        $len = strlen($lstring);
+        if ($len == 0) {
+            $count = 0;
+            return '';
+        }
+        if ($lstring[0] == "\x00") {
+            $count = 1;
+            return '';
+        }
+        //check for BOM
+        if ($len > 2 && $lstring[0] == "\xFE" && $lstring[1] == "\xFF") {
+            //UTF-16
+            throw new UnexpectedValueException();
+        } else {
+            //UTF-8
+            throw new UnexpectedValueException();
+        }
+    }
 	public function NoNullString($nullterminatedstring) {
 		// remove the single null terminator on null terminated strings
 		if (substr($nullterminatedstring, strlen($nullterminatedstring) - 1, 1) === "\x00") {
