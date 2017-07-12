@@ -55,7 +55,7 @@ class ApeTag
 		}
 
 		if ($APEtag = $this->GenerateAPEtag()) {
-			if (is_writable($this->filename) && is_file($this->filename) && ($fp = fopen($this->filename, 'a+b'))) {
+			if (getID3::is_writable($this->filename) && is_file($this->filename) && ($fp = fopen($this->filename, 'a+b'))) {
 				$oldignoreuserabort = ignore_user_abort(true);
 				flock($fp, LOCK_EX);
 
@@ -94,7 +94,7 @@ class ApeTag
 		$getID3 = new GetID3;
 		$ThisFileInfo = $getID3->analyze($this->filename);
 		if (isset($ThisFileInfo['ape']['tag_offset_start']) && isset($ThisFileInfo['ape']['tag_offset_end'])) {
-			if (is_writable($this->filename) && is_file($this->filename) && ($fp = fopen($this->filename, 'a+b'))) {
+			if (getID3::is_writable($this->filename) && is_file($this->filename) && ($fp = fopen($this->filename, 'a+b'))) {
 
 				flock($fp, LOCK_EX);
 				$oldignoreuserabort = ignore_user_abort(true);

@@ -1461,7 +1461,7 @@ class ID3v2 extends \JamesHeinrich\GetID3\Module\Handler
 */
 					} elseif (is_string($this->getid3->option_save_attachments)) {
 						$dir = rtrim(str_replace(array('/', '\\'), DIRECTORY_SEPARATOR, $this->getid3->option_save_attachments), DIRECTORY_SEPARATOR);
-						if (!is_dir($dir) || !is_writable($dir)) {
+						if (!is_dir($dir) || !getID3::is_writable($dir)) {
 							// cannot write, skip
 							$this->warning('attachment at '.$frame_offset.' cannot be saved to "'.$dir.'" (not writable)');
 							unset($parsedFrame['data']);
@@ -1471,7 +1471,7 @@ class ID3v2 extends \JamesHeinrich\GetID3\Module\Handler
 					// if we get this far, must be OK
 					if (is_string($this->getid3->option_save_attachments)) {
 						$destination_filename = $dir.DIRECTORY_SEPARATOR.md5($info['filenamepath']).'_'.$frame_offset;
-						if (!file_exists($destination_filename) || is_writable($destination_filename)) {
+						if (!file_exists($destination_filename) || getID3::is_writable($destination_filename)) {
 							file_put_contents($destination_filename, $parsedFrame['data']);
 						} else {
 							$this->warning('attachment at '.$frame_offset.' cannot be saved to "'.$destination_filename.'" (not writable)');

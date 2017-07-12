@@ -30,7 +30,7 @@ class Real
 
 	public function WriteReal() {
 		// File MUST be writeable - CHMOD(646) at least
-		if (is_writeable($this->filename) && is_file($this->filename) && ($fp_source = fopen($this->filename, 'r+b'))) {
+		if (getID3::is_writable($this->filename) && is_file($this->filename) && ($fp_source = fopen($this->filename, 'r+b'))) {
 
 			// Initialize getID3 engine
 			$getID3 = new GetID3;
@@ -214,7 +214,7 @@ class Real
 
 	public function RemoveReal() {
 		// File MUST be writeable - CHMOD(646) at least
-		if (is_writeable($this->filename) && is_file($this->filename) && ($fp_source = fopen($this->filename, 'r+b'))) {
+		if (getID3::is_writable($this->filename) && is_file($this->filename) && ($fp_source = fopen($this->filename, 'r+b'))) {
 
 			// Initialize getID3 engine
 			$getID3 = new GetID3;
