@@ -776,10 +776,10 @@ class ID3v2 extends \JamesHeinrich\GetID3\Module\Handler
 			$parsedFrame['encodingid']  = $frame_textencoding;
 			$parsedFrame['encoding']    = $this->TextEncodingNameLookup($frame_textencoding);
 
-			$parsedFrame['url']         = $frame_urldata;
-			$parsedFrame['description'] = $frame_description;
+			$parsedFrame['url']         = $frame_urldata;     // always ISO-8859-1
+			$parsedFrame['description'] = $frame_description; // according to the frame text encoding
 			if (!empty($parsedFrame['framenameshort']) && $parsedFrame['url']) {
-				$info['id3v2']['comments'][$parsedFrame['framenameshort']][] = Utils::iconv_fallback($parsedFrame['encoding'], $info['id3v2']['encoding'], $parsedFrame['url']);
+				$info['id3v2']['comments'][$parsedFrame['framenameshort']][] = Utils::iconv_fallback('ISO-8859-1', $info['id3v2']['encoding'], $parsedFrame['url']);
 			}
 			unset($parsedFrame['data']);
 
@@ -791,9 +791,9 @@ class ID3v2 extends \JamesHeinrich\GetID3\Module\Handler
 			// described in 4.3.2.>
 			// URL              <text string>
 
-			$parsedFrame['url'] = trim($parsedFrame['data']);
+			$parsedFrame['url'] = trim($parsedFrame['data']); // always ISO-8859-1
 			if (!empty($parsedFrame['framenameshort']) && $parsedFrame['url']) {
-				$info['id3v2']['comments'][$parsedFrame['framenameshort']][] = $parsedFrame['url'];
+				$info['id3v2']['comments'][$parsedFrame['framenameshort']][] = Utils::iconv_fallback('ISO-8859-1', $info['id3v2']['encoding'], $parsedFrame['url']);
 			}
 			unset($parsedFrame['data']);
 
