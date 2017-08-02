@@ -437,18 +437,19 @@ class getid3_mp3 extends getid3_handler
 		// and $cc... is the audio data
 
 		$head4 = substr($headerstring, 0, 4);
+		$head4_key = getid3_lib::PrintHexBytes($head4, true, false, false);
 		static $MPEGaudioHeaderDecodeCache = array();
-		if (isset($MPEGaudioHeaderDecodeCache[$head4])) {
-			$MPEGheaderRawArray = $MPEGaudioHeaderDecodeCache[$head4];
+		if (isset($MPEGaudioHeaderDecodeCache[$head4_key])) {
+			$MPEGheaderRawArray = $MPEGaudioHeaderDecodeCache[$head4_key];
 		} else {
 			$MPEGheaderRawArray = self::MPEGaudioHeaderDecode($head4);
-			$MPEGaudioHeaderDecodeCache[$head4] = $MPEGheaderRawArray;
+			$MPEGaudioHeaderDecodeCache[$head4_key] = $MPEGheaderRawArray;
 		}
 
 		static $MPEGaudioHeaderValidCache = array();
-		if (!isset($MPEGaudioHeaderValidCache[$head4])) { // Not in cache
-			//$MPEGaudioHeaderValidCache[$head4] = self::MPEGaudioHeaderValid($MPEGheaderRawArray, false, true);  // allow badly-formatted freeformat (from LAME 3.90 - 3.93.1)
-			$MPEGaudioHeaderValidCache[$head4] = self::MPEGaudioHeaderValid($MPEGheaderRawArray, false, false);
+		if (!isset($MPEGaudioHeaderValidCache[$head4_key])) { // Not in cache
+			//$MPEGaudioHeaderValidCache[$head4_key] = self::MPEGaudioHeaderValid($MPEGheaderRawArray, false, true);  // allow badly-formatted freeformat (from LAME 3.90 - 3.93.1)
+			$MPEGaudioHeaderValidCache[$head4_key] = self::MPEGaudioHeaderValid($MPEGheaderRawArray, false, false);
 		}
 
 		// shortcut
@@ -458,7 +459,7 @@ class getid3_mp3 extends getid3_handler
 		$thisfile_mpeg_audio = &$info['mpeg']['audio'];
 
 
-		if ($MPEGaudioHeaderValidCache[$head4]) {
+		if ($MPEGaudioHeaderValidCache[$head4_key]) {
 			$thisfile_mpeg_audio['raw'] = $MPEGheaderRawArray;
 		} else {
 			$this->error('Invalid MPEG audio header ('.getid3_lib::PrintHexBytes($head4).') at offset '.$offset);

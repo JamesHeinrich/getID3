@@ -30,7 +30,7 @@ class getid3_write_id3v1
 
 	public function WriteID3v1() {
 		// File MUST be writeable - CHMOD(646) at least
-		if (!empty($this->filename) && is_readable($this->filename) && is_writable($this->filename) && is_file($this->filename)) {
+		if (!empty($this->filename) && is_readable($this->filename) && getID3::is_writable($this->filename) && is_file($this->filename)) {
 			$this->setRealFileSize();
 			if (($this->filesize <= 0) || !getid3_lib::intValueSupported($this->filesize)) {
 				$this->errors[] = 'Unable to WriteID3v1('.$this->filename.') because filesize ('.$this->filesize.') is larger than '.round(PHP_INT_MAX / 1073741824).'GB';
@@ -90,7 +90,7 @@ class getid3_write_id3v1
 
 	public function RemoveID3v1() {
 		// File MUST be writeable - CHMOD(646) at least
-		if (!empty($this->filename) && is_readable($this->filename) && is_writable($this->filename) && is_file($this->filename)) {
+		if (!empty($this->filename) && is_readable($this->filename) && getID3::is_writable($this->filename) && is_file($this->filename)) {
 			$this->setRealFileSize();
 			if (($this->filesize <= 0) || !getid3_lib::intValueSupported($this->filesize)) {
 				$this->errors[] = 'Unable to RemoveID3v1('.$this->filename.') because filesize ('.$this->filesize.') is larger than '.round(PHP_INT_MAX / 1073741824).'GB';

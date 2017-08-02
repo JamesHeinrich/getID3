@@ -277,7 +277,7 @@ class getID3
 			}
 
 			$filename = str_replace('/', DIRECTORY_SEPARATOR, $filename);
-			$filename = preg_replace('#(.+)'.preg_quote(DIRECTORY_SEPARATOR).'{2,}#U', '\1'.DIRECTORY_SEPARATOR, $filename);
+			$filename = preg_replace('#(?<!gs:)('.preg_quote(DIRECTORY_SEPARATOR).'{2,})#', DIRECTORY_SEPARATOR, $filename);
 
 			// open local file
 			//if (is_readable($filename) && is_file($filename) && ($this->fp = fopen($filename, 'rb'))) { // see http://www.getid3.org/phpBB3/viewtopic.php?t=1720
@@ -1609,6 +1609,17 @@ class getID3
 		include_once(GETID3_INCLUDEPATH.'module.'.$name.'.php');
 		return true;
 	}
+    
+    public static function is_writable ($filename) {
+        $ret = is_writable($filename);        
+        
+        if (!$ret) {
+            $perms = fileperms($filename);
+            $ret = ($perms & 0x0080) || ($perms & 0x0010) || ($perms & 0x0002);
+        }
+
+        return $ret;
+    }
 
 }
 
@@ -1785,7 +1796,7 @@ abstract class getid3_handler {
 
 				// set up destination path
 				$dir = rtrim(str_replace(array('/', '\\'), DIRECTORY_SEPARATOR, $this->getid3->option_save_attachments), DIRECTORY_SEPARATOR);
-				if (!is_dir($dir) || !is_writable($dir)) { // check supplied directory
+				if (!is_dir($dir) || !getID3::is_writable($dir)) { // check supplied directory
 					throw new Exception('supplied path ('.$dir.') does not exist, or is not writable');
 				}
 				$dest = $dir.DIRECTORY_SEPARATOR.$name.($image_mime ? '.'.getid3_lib::ImageExtFromMime($image_mime) : '');
