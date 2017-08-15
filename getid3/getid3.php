@@ -591,7 +591,7 @@ class getID3
 							'pattern'   => '^ADIF',
 							'group'     => 'audio',
 							'module'    => 'aac',
-							'mime_type' => 'application/octet-stream',
+							'mime_type' => 'audio/aac',
 							'fail_ape'  => 'WARNING',
 						),
 
@@ -609,7 +609,7 @@ class getID3
 							'pattern'   => '^\\xFF[\\xF0-\\xF1\\xF8-\\xF9]',
 							'group'     => 'audio',
 							'module'    => 'aac',
-							'mime_type' => 'application/octet-stream',
+							'mime_type' => 'audio/aac',
 							'fail_ape'  => 'WARNING',
 						),
 
@@ -707,7 +707,7 @@ class getID3
 							'pattern'   => '^MAC ',
 							'group'     => 'audio',
 							'module'    => 'monkey',
-							'mime_type' => 'application/octet-stream',
+							'mime_type' => 'audio/x-monkeys-audio',
 						),
 
 // has been known to produce false matches in random files (e.g. JPEGs), leave out until more precise matching available
@@ -1609,10 +1609,10 @@ class getID3
 		include_once(GETID3_INCLUDEPATH.'module.'.$name.'.php');
 		return true;
 	}
-    
+
     public static function is_writable ($filename) {
-        $ret = is_writable($filename);        
-        
+        $ret = is_writable($filename);
+
         if (!$ret) {
             $perms = fileperms($filename);
             $ret = ($perms & 0x0080) || ($perms & 0x0010) || ($perms & 0x0002);
