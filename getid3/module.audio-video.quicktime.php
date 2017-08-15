@@ -193,6 +193,9 @@ class getid3_quicktime extends getid3_handler
 		if (empty($info['video']['dataformat']) && !empty($info['quicktime']['video'])) {
 			$info['video']['dataformat'] = 'quicktime';
 		}
+		if (isset($info['video']) && ($info['mime_type'] == 'audio/mp4') && empty($info['video']['resolution_x']) && empty($info['video']['resolution_y']))  {
+			unset($info['video']);
+		}
 
 		return true;
 	}
@@ -1695,7 +1698,7 @@ if (!empty($atom_structure['sample_description_table'][$i]['width']) && !empty($
 					$this->warning('QuickTime atom "'.$atomname.'" is zero bytes long at offset '.$baseoffset);
 				}
 				break;
-		            
+
 			case 'loci':// 3GP location (El Loco)
                                 $info['quicktime']['comments']['gps_flags'] = getid3_lib::BigEndian2Int(substr($atom_data, 0, 4));
                                 $info['quicktime']['comments']['gps_lang'] = getid3_lib::BigEndian2Int(substr($atom_data, 4, 2));
@@ -1709,7 +1712,7 @@ if (!empty($atom_structure['sample_description_table'][$i]['width']) && !empty($
                                 $info['quicktime']['comments']['gps_body'] = $this->LociString(substr($loci_data, 13), $loffset);
                                 $info['quicktime']['comments']['gps_notes'] = $this->LociString(substr($loci_data, 13 + $loffset), $loffset);
                                 break;
-                            
+
 			default:
 				$this->warning('Unknown QuickTime atom type: "'.preg_replace('#[^a-zA-Z0-9 _\\-]#', '?', $atomname).'" ('.trim(getid3_lib::PrintHexBytes($atomname)).') at offset '.$baseoffset);
 				$atom_structure['data'] = $atom_data;
@@ -2571,10 +2574,10 @@ echo 'QuicktimeParseNikonNCTG()::unknown $data_size_type: '.$data_size_type.'<br
                 }else {
                     return '';
                 }
-                
+
             }
         }
-        
+
 	public function NoNullString($nullterminatedstring) {
 		// remove the single null terminator on null terminated strings
 		if (substr($nullterminatedstring, strlen($nullterminatedstring) - 1, 1) === "\x00") {
