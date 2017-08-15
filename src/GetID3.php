@@ -448,7 +448,7 @@ class GetID3
 				'adif' => array(
 							'pattern'   => '^ADIF',
 							'module'    => 'Audio\\Aac',
-							'mime_type' => 'application/octet-stream',
+							'mime_type' => 'audio/aac',
 							'fail_ape'  => 'WARNING',
 						),
 
@@ -464,7 +464,7 @@ class GetID3
 				'adts' => array(
 							'pattern'   => '^\\xFF[\\xF0-\\xF1\\xF8-\\xF9]',
 							'module'    => 'Audio\\Aac',
-							'mime_type' => 'application/octet-stream',
+							'mime_type' => 'audio/aac',
 							'fail_ape'  => 'WARNING',
 						),
 
@@ -550,7 +550,7 @@ class GetID3
 				'mac'  => array(
 							'pattern'   => '^MAC ',
 							'module'    => 'Audio\\Monkey',
-							'mime_type' => 'application/octet-stream',
+							'mime_type' => 'audio/x-monkeys-audio',
 						),
 
 // has been known to produce false matches in random files (e.g. JPEGs), leave out until more precise matching available
