@@ -52,7 +52,7 @@ class AudioInfo {
 	* Constructor
 	*/
 
-	function AudioInfo() {
+	function __construct() {
 
 		// Initialize getID3 engine
 		$this->getID3 = new GetID3\GetID3;
