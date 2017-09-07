@@ -184,7 +184,7 @@ class Mysql extends GetID3
 		$SQLquery .= ', `filetime` INT(11) NOT NULL DEFAULT \'0\'';
 		$SQLquery .= ', `analyzetime` INT(11) NOT NULL DEFAULT \'0\'';
 		$SQLquery .= ', `value` LONGTEXT NOT NULL';
-		$SQLquery .= ', PRIMARY KEY (`filename`, `filesize`, `filetime`)) ENGINE=MyISAM CHARACTER SET=latin1 COLLATE=latin1_general_ci';
+		$SQLquery .= ', PRIMARY KEY (`filename`, `filesize`, `filetime`))';
 		$this->cursor = mysql_query($SQLquery, $this->connection);
 		echo mysql_error($this->connection);
 	}
