@@ -26,6 +26,14 @@ if (!defined('ENT_SUBSTITUTE')) { // PHP5.3 adds ENT_IGNORE, PHP5.4 adds ENT_SUB
 	define('ENT_SUBSTITUTE', (defined('ENT_IGNORE') ? ENT_IGNORE : 8));
 }
 
+/*
+http://www.getid3.org/phpBB3/viewtopic.php?t=2114
+If you are running into a the problem where filenames with special characters are being handled
+incorrectly by external helper programs (e.g. metaflac), notably with the special characters removed,
+and you are passing in the filename in UTF8 (typically via a HTML form), try uncommenting this line:
+*/
+//setlocale(LC_CTYPE, 'en_US.UTF-8');
+
 // attempt to define temp dir as something flexible but reliable
 $temp_dir = ini_get('upload_tmp_dir');
 if ($temp_dir && (!is_dir($temp_dir) || !is_readable($temp_dir))) {
@@ -112,7 +120,7 @@ class getID3
 	protected $startup_error   = '';
 	protected $startup_warning = '';
 
-	const VERSION           = '1.9.14-201709070901';
+	const VERSION           = '1.9.14-201709150948';
 	const FREAD_BUFFER_SIZE = 32768;
 
 	const ATTACHMENTS_NONE   = false;
@@ -1372,7 +1380,6 @@ class getID3
 
 				} else {
 
-					$commandline = 'vorbiscomment -w -c "'.$empty.'" "'.$file.'" "'.$temp.'" 2>&1';
 					$commandline = 'vorbiscomment -w -c '.escapeshellarg($empty).' '.escapeshellarg($file).' '.escapeshellarg($temp).' 2>&1';
 					$VorbisCommentError = `$commandline`;
 
