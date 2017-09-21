@@ -361,6 +361,7 @@ class Riff extends \JamesHeinrich\GetID3\Module\Handler
 					}
 					$thisfile_riff_WAVE_cart_0['url']              =                 trim(substr($thisfile_riff_WAVE_cart_0['data'],  748, 1024));
 					$thisfile_riff_WAVE_cart_0['tag_text']         = explode("\r\n", trim(substr($thisfile_riff_WAVE_cart_0['data'], 1772)));
+					$thisfile_riff['comments']['tag_text'][]       =                      substr($thisfile_riff_WAVE_cart_0['data'], 1772);
 
 					$thisfile_riff['comments']['artist'][] = $thisfile_riff_WAVE_cart_0['artist'];
 					$thisfile_riff['comments']['title'][]  = $thisfile_riff_WAVE_cart_0['title'];
