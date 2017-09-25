@@ -69,31 +69,23 @@ if (isset($_POST['WriteTags'])) {
 		if (!empty($_FILES['userfile']['tmp_name'])) {
 			if (in_array('id3v2.4', $tagwriter->tagformats) || in_array('id3v2.3', $tagwriter->tagformats) || in_array('id3v2.2', $tagwriter->tagformats)) {
 				if (is_uploaded_file($_FILES['userfile']['tmp_name'])) {
-					ob_start();
-					if ($fd = fopen($_FILES['userfile']['tmp_name'], 'rb')) {
-						ob_end_clean();
-						$APICdata = fread($fd, filesize($_FILES['userfile']['tmp_name']));
-						fclose ($fd);
+					if ($APICdata = file_get_contents($_FILES['userfile']['tmp_name'])) {
 
-						list($APIC_width, $APIC_height, $APIC_imageTypeID) = GetImageSize($_FILES['userfile']['tmp_name']);
-						$imagetypes = array(1=>'gif', 2=>'jpeg', 3=>'png');
-						if (isset($imagetypes[$APIC_imageTypeID])) {
+						if ($exif_imagetype = exif_imagetype($_FILES['userfile']['tmp_name'])) {
 
 							$TagData['attached_picture'][0]['data']          = $APICdata;
 							$TagData['attached_picture'][0]['picturetypeid'] = $_POST['APICpictureType'];
 							$TagData['attached_picture'][0]['description']   = $_FILES['userfile']['name'];
-							$TagData['attached_picture'][0]['mime']          = 'image/'.$imagetypes[$APIC_imageTypeID];
+							$TagData['attached_picture'][0]['mime']          = image_type_to_mime_type($exif_imagetype),
 
 						} else {
 							echo '<b>invalid image format (only GIF, JPEG, PNG)</b><br>';
 						}
 					} else {
-						$errormessage = ob_get_contents();
-						ob_end_clean();
-						echo '<b>cannot open '.$_FILES['userfile']['tmp_name'].'</b><br>';
+						echo '<b>cannot open '.htmlentities($_FILES['userfile']['tmp_name']).'</b><br>';
 					}
 				} else {
-					echo '<b>!is_uploaded_file('.$_FILES['userfile']['tmp_name'].')</b><br>';
+					echo '<b>!is_uploaded_file('.htmlentities($_FILES['userfile']['tmp_name']).')</b><br>';
 				}
 			} else {
 				echo '<b>WARNING:</b> Can only embed images for ID3v2<br>';
@@ -104,10 +96,10 @@ if (isset($_POST['WriteTags'])) {
 		if ($tagwriter->WriteTags()) {
 			echo 'Successfully wrote tags<BR>';
 			if (!empty($tagwriter->warnings)) {
-				echo 'There were some warnings:<BLOCKQUOTE STYLE="background-color:#FFCC33; padding: 10px;">'.implode('<br><br>', $tagwriter->warnings).'</BLOCKQUOTE>';
+				echo 'There were some warnings:<blockquote style="background-color: #FFCC33; padding: 10px;">'.implode('<br><br>', $tagwriter->warnings).'</div>';
 			}
 		} else {
-			echo 'Failed to write tags!<BLOCKQUOTE STYLE="background-color:#FF9999; padding: 10px;">'.implode('<br><br>', $tagwriter->errors).'</BLOCKQUOTE>';
+			echo 'Failed to write tags!<div style="background-color: #FF9999; padding: 10px;">'.implode('<br><br>', $tagwriter->errors).'</div>';
 		}
 
 	} else {
