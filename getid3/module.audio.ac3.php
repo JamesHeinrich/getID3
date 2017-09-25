@@ -439,7 +439,9 @@ $thisfile_ac3['bitrate'] = round(($thisfile_ac3['bitrate'] * 1.05) / 16000) * 16
 		}
 		$info['audio']['bitrate'] = $thisfile_ac3['bitrate'];
 
-		$thisfile_ac3['service_type'] = self::serviceTypeLookup($thisfile_ac3_raw_bsi['bsmod'], $thisfile_ac3_raw_bsi['acmod']);
+		if (isset($thisfile_ac3_raw_bsi['bsmod']) && isset($thisfile_ac3_raw_bsi['acmod'])) {
+			$thisfile_ac3['service_type'] = self::serviceTypeLookup($thisfile_ac3_raw_bsi['bsmod'], $thisfile_ac3_raw_bsi['acmod']);
+		}
 		$ac3_coding_mode = self::audioCodingModeLookup($thisfile_ac3_raw_bsi['acmod']);
 		foreach($ac3_coding_mode as $key => $value) {
 			$thisfile_ac3[$key] = $value;
