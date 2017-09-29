@@ -1700,18 +1700,38 @@ if (!empty($atom_structure['sample_description_table'][$i]['width']) && !empty($
 				break;
 
 			case 'loci':// 3GP location (El Loco)
-                                $info['quicktime']['comments']['gps_flags'] = getid3_lib::BigEndian2Int(substr($atom_data, 0, 4));
-                                $info['quicktime']['comments']['gps_lang'] = getid3_lib::BigEndian2Int(substr($atom_data, 4, 2));
-                                $loffset = 0;
-                                $info['quicktime']['comments']['gps_location'] = $this->LociString(substr($atom_data, 6), $loffset);
-                                $loci_data=substr($atom_data, 6 + $loffset);
-                                $info['quicktime']['comments']['gps_role'] = getid3_lib::BigEndian2Int(substr($loci_data, 0, 1));
-                                $info['quicktime']['comments']['gps_longitude'] = getid3_lib::FixedPoint16_16(substr($loci_data, 1, 4));
-                                $info['quicktime']['comments']['gps_latitude'] = getid3_lib::FixedPoint16_16(substr($loci_data, 5, 4));
-                                $info['quicktime']['comments']['gps_altitude'] = getid3_lib::FixedPoint16_16(substr($loci_data, 9, 4));
-                                $info['quicktime']['comments']['gps_body'] = $this->LociString(substr($loci_data, 13), $loffset);
-                                $info['quicktime']['comments']['gps_notes'] = $this->LociString(substr($loci_data, 13 + $loffset), $loffset);
-                                break;
+				$loffset = 0;
+				$info['quicktime']['comments']['gps_flags']     =   getid3_lib::BigEndian2Int(substr($atom_data, 0, 4));
+				$info['quicktime']['comments']['gps_lang']      =   getid3_lib::BigEndian2Int(substr($atom_data, 4, 2));
+				$info['quicktime']['comments']['gps_location']  =           $this->LociString(substr($atom_data, 6), $loffset);
+				$loci_data = substr($atom_data, 6 + $loffset);
+				$info['quicktime']['comments']['gps_role']      =   getid3_lib::BigEndian2Int(substr($loci_data, 0, 1));
+				$info['quicktime']['comments']['gps_longitude'] = getid3_lib::FixedPoint16_16(substr($loci_data, 1, 4));
+				$info['quicktime']['comments']['gps_latitude']  = getid3_lib::FixedPoint16_16(substr($loci_data, 5, 4));
+				$info['quicktime']['comments']['gps_altitude']  = getid3_lib::FixedPoint16_16(substr($loci_data, 9, 4));
+				$info['quicktime']['comments']['gps_body']      =           $this->LociString(substr($loci_data, 13           ), $loffset);
+				$info['quicktime']['comments']['gps_notes']     =           $this->LociString(substr($loci_data, 13 + $loffset), $loffset);
+				break;
+
+			case 'chpl': // CHaPter List
+				// https://www.adobe.com/content/dam/Adobe/en/devnet/flv/pdfs/video_file_format_spec_v10.pdf
+				$chpl_version = getid3_lib::BigEndian2Int(substr($atom_data, 4, 1)); // Expected to be 0
+				$chpl_flags   = getid3_lib::BigEndian2Int(substr($atom_data, 5, 3)); // Reserved, set to 0
+				$chpl_count   = getid3_lib::BigEndian2Int(substr($atom_data, 8, 1));
+				$chpl_offset = 9;
+				for ($i = 0; $i < $chpl_count; $i++) {
+					if (($chpl_offset + 9) >= strlen($atom_data)) {
+						$this->warning('QuickTime chapter '.$i.' extends beyond end of "chpl" atom');
+						break;
+					}
+					$info['quicktime']['chapters'][$i]['timestamp'] = getid3_lib::BigEndian2Int(substr($atom_data, $chpl_offset, 8)) / 10000000; // timestamps are stored as 100-nanosecond units
+					$chpl_offset += 8;
+					$chpl_title_size = getid3_lib::BigEndian2Int(substr($atom_data, $chpl_offset, 1));
+					$chpl_offset += 1;
+					$info['quicktime']['chapters'][$i]['title']     =                           substr($atom_data, $chpl_offset, $chpl_title_size);
+					$chpl_offset += $chpl_title_size;
+				}
+				break;
 
 			default:
 				$this->warning('Unknown QuickTime atom type: "'.preg_replace('#[^a-zA-Z0-9 _\\-]#', '?', $atomname).'" ('.trim(getid3_lib::PrintHexBytes($atomname)).') at offset '.$baseoffset);
