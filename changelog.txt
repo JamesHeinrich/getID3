@@ -18,6 +18,21 @@
 Version History
 ===============
 
+1.9.15: [2017-10-26] James Heinrich :: 1.9.15-201709291043
+    Â» (G:108) add basic APNG support
+    Â» (G:107) add basic WebP support
+    * return RIFF.WAV.CART comments in merged comments section
+    * add support for QuickTime 'loci' chunk
+    * bugfix: (#2124) support for Quicktime/MP4 "chpl" (CHaPter List) atom
+    * bugfix: (G:128) undefinied bsmod in module.ac3
+    * bugfix: (#2114) possible issue with UTF8 filenames and metaflac
+    * bugfix: (G:123) remove MySQL engine and collation from create table
+    * bugfix: (#2066) fix AAC MIME type, remove video key for audio-only files
+    * bugfix: (G:111) QuickTime stsd number_entries deadlock
+    * bugfix: (G:110) PHP memory limit with space
+    * bugfix: (G:109) improved animated GIF support
+    * bugfix: (#1966) GPS track in QuickTime
+
 1.9.14: [2017-03-27] James Heinrich
     Â» Add experimental support for E-AC3
     * bugfix (G:105): RIFF.WAVE.iXML multiple TIMESTAMP_SAMPLE_RATE
