@@ -120,7 +120,7 @@ class getID3
 	protected $startup_error   = '';
 	protected $startup_warning = '';
 
-	const VERSION           = '1.9.15-201709291043';
+	const VERSION           = '1.9.15-201711090023';
 	const FREAD_BUFFER_SIZE = 32768;
 
 	const ATTACHMENTS_NONE   = false;
@@ -285,7 +285,7 @@ class getID3
 			}
 
 			$filename = str_replace('/', DIRECTORY_SEPARATOR, $filename);
-			$filename = preg_replace('#(?<!gs:)('.preg_quote(DIRECTORY_SEPARATOR).'{2,})#', DIRECTORY_SEPARATOR, $filename);
+			//$filename = preg_replace('#(?<!gs:)('.preg_quote(DIRECTORY_SEPARATOR).'{2,})#', DIRECTORY_SEPARATOR, $filename);
 
 			// open local file
 			//if (is_readable($filename) && is_file($filename) && ($this->fp = fopen($filename, 'rb'))) { // see http://www.getid3.org/phpBB3/viewtopic.php?t=1720
