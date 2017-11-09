@@ -103,7 +103,7 @@ if (isset($_REQUEST['filename'])) {
 		$listdirectory = str_replace(DIRECTORY_SEPARATOR, '/', $listdirectory.'/');
 	}
 
-	if (strstr($_REQUEST['filename'], 'http://') || strstr($_REQUEST['filename'], 'ftp://')) {
+	if (preg_match('#^(ht|f)tp://#', $_REQUEST['filename'])) {
 		echo '<i>Cannot browse remote filesystems</i><br>';
 	} else {
 		echo 'Browse: <a href="'.htmlentities($_SERVER['PHP_SELF'].'?listdirectory='.urlencode($listdirectory), ENT_QUOTES | ENT_SUBSTITUTE, $PageEncoding).'">' . GetID3\Utils::iconv_fallback('ISO-8859-1', $PageEncoding, $listdirectory) . '</a><br>';
@@ -117,14 +117,8 @@ if (isset($_REQUEST['filename'])) {
 } else {
 
 	$listdirectory = (isset($_REQUEST['listdirectory']) ? $_REQUEST['listdirectory'] : '.');
-	$listdirectory = realpath($listdirectory); // get rid of /../../ references
-	$currentfulldir = $listdirectory.'/';
-
-	if (GetID3\Utils::isWindows()) {
-		// this mostly just gives a consistant look to Windows and *nix filesystems
-		// (windows uses \ as directory seperator, *nix uses /)
-		$currentfulldir = str_replace(DIRECTORY_SEPARATOR, '/', $listdirectory.'/');
-	}
+	$listdirectory = GetID3\Utils::truepath($listdirectory); // get rid of /../../ references
+	$currentfulldir = str_replace(DIRECTORY_SEPARATOR, '/', $listdirectory).'/'; // this mostly just gives a consistant look to Windows and *nix filesystems: (Windows uses \ as directory seperator, *nix uses /)
 
 	ob_start();
 	if ($handle = opendir($listdirectory)) {
@@ -384,7 +378,8 @@ if (isset($_REQUEST['filename'])) {
 	} else {
 		$errormessage = ob_get_contents();
 		ob_end_clean();
-		echo '<b>ERROR: Could not open directory: <u>'.$currentfulldir.'</u></b><br>';
+		echo '<b>ERROR: Could not open directory: <u>'.htmlentities($currentfulldir, ENT_QUOTES | ENT_SUBSTITUTE, $PageEncoding).'</u></b><br>';
+		//echo $errormessage.'<br>'; // uncomment for debugging
 	}
 }
 echo PoweredBygetID3().'<br clear="all">';
