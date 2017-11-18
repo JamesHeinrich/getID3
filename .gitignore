@@ -169,9 +169,8 @@ pip-log.txt
 .DS_Store
 demos/php_error.log
 
-
-#############
-## composer
-#############
+# Composer
 /vendor
 /composer.lock
+/composer.local.json
+/composer.phar

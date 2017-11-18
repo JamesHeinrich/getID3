@@ -25,10 +25,10 @@
         "ext-exif": "EXIF extension is required for graphic modules."
     },
     "require-dev": {
-        "jakub-onderka/php-parallel-lint": "0.9.2",
+        "jakub-onderka/php-parallel-lint": "0.9.2"
     },
     "scripts": {
-        "lint": "parallel-lint --exclude vendor",
+        "lint": "parallel-lint --exclude vendor .",
         "test": [
             "composer lint"
         ]
