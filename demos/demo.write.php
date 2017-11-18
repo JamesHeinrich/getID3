@@ -76,7 +76,7 @@ if (isset($_POST['WriteTags'])) {
 							$TagData['attached_picture'][0]['data']          = $APICdata;
 							$TagData['attached_picture'][0]['picturetypeid'] = $_POST['APICpictureType'];
 							$TagData['attached_picture'][0]['description']   = $_FILES['userfile']['name'];
-							$TagData['attached_picture'][0]['mime']          = image_type_to_mime_type($exif_imagetype),
+							$TagData['attached_picture'][0]['mime']          = image_type_to_mime_type($exif_imagetype);
 
 						} else {
 							echo '<b>invalid image format (only GIF, JPEG, PNG)</b><br>';
