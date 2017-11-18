@@ -1373,6 +1373,17 @@ if (!empty($atom_structure['sample_description_table'][$i]['width']) && !empty($
 						break;
 					}
 				}
+				if (substr($atom_data, $mdat_offset, 4) == 'GPRO') {
+					$GOPRO_chunk_length = getid3_lib::LittleEndian2Int(substr($atom_data, $mdat_offset + 4, 4));
+					$GOPRO_offset = 8;
+					$atom_structure['GPRO']['raw'] = substr($atom_data, $mdat_offset + 8, $GOPRO_chunk_length - 8);
+					$atom_structure['GPRO']['firmware'] = substr($atom_structure['GPRO']['raw'],  0, 15);
+					$atom_structure['GPRO']['unknown1'] = substr($atom_structure['GPRO']['raw'], 15, 16);
+					$atom_structure['GPRO']['unknown2'] = substr($atom_structure['GPRO']['raw'], 31, 32);
+					$atom_structure['GPRO']['unknown3'] = substr($atom_structure['GPRO']['raw'], 63, 16);
+					$atom_structure['GPRO']['camera']   = substr($atom_structure['GPRO']['raw'], 79, 32);
+					$info['quicktime']['camera']['model'] = rtrim($atom_structure['GPRO']['camera'], "\x00");
+				}
 
 				// check to see if it looks like chapter titles, in the form of unterminated strings with a leading 16-bit size field
 				while (($mdat_offset < (strlen($atom_data) - 8))
@@ -1389,7 +1400,6 @@ if (!empty($atom_structure['sample_description_table'][$i]['width']) && !empty($
 							$mdat_offset += 12;
 						}
 				}
-
 
 				if (($atomsize > 8) && (!isset($info['avdataend_tmp']) || ($info['quicktime'][$atomname]['size'] > ($info['avdataend_tmp'] - $info['avdataoffset'])))) {
 
@@ -1733,8 +1743,16 @@ if (!empty($atom_structure['sample_description_table'][$i]['width']) && !empty($
 				}
 				break;
 
+			case 'FIRM': // FIRMware version(?), seen on GoPro Hero4
+				$info['quicktime']['camera']['firmware'] = $atom_data;
+				break;
+
+			case 'CAME': // FIRMware version(?), seen on GoPro Hero4
+				$info['quicktime']['camera']['serial_hash'] = unpack('H*', $atom_data);
+				break;
+
 			default:
-				$this->warning('Unknown QuickTime atom type: "'.preg_replace('#[^a-zA-Z0-9 _\\-]#', '?', $atomname).'" ('.trim(getid3_lib::PrintHexBytes($atomname)).') at offset '.$baseoffset);
+				$this->warning('Unknown QuickTime atom type: "'.preg_replace('#[^a-zA-Z0-9 _\\-]#', '?', $atomname).'" ('.trim(getid3_lib::PrintHexBytes($atomname)).'), '.$atomsize.' bytes at offset '.$baseoffset);
 				$atom_structure['data'] = $atom_data;
 				break;
 		}
