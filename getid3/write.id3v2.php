@@ -1979,7 +1979,7 @@ class getid3_write_id3v2
 			$ID3v2ShortFrameNameLookup[2]['text']                              = 'TXX';
 			$ID3v2ShortFrameNameLookup[2]['year']                              = 'TYE';
 			$ID3v2ShortFrameNameLookup[2]['unique_file_identifier']            = 'UFI';
-			$ID3v2ShortFrameNameLookup[2]['unsychronised_lyric']               = 'ULT';
+			$ID3v2ShortFrameNameLookup[2]['unsynchronised_lyric']              = 'ULT';
 			$ID3v2ShortFrameNameLookup[2]['url_file']                          = 'WAF';
 			$ID3v2ShortFrameNameLookup[2]['url_artist']                        = 'WAR';
 			$ID3v2ShortFrameNameLookup[2]['url_source']                        = 'WAS';
@@ -2054,7 +2054,7 @@ class getid3_write_id3v2
 			$ID3v2ShortFrameNameLookup[3]['text']                              = 'TXXX';
 			$ID3v2ShortFrameNameLookup[3]['unique_file_identifier']            = 'UFID';
 			$ID3v2ShortFrameNameLookup[3]['terms_of_use']                      = 'USER';
-			$ID3v2ShortFrameNameLookup[3]['unsychronised_lyric']               = 'USLT';
+			$ID3v2ShortFrameNameLookup[3]['unsynchronised_lyric']              = 'USLT';
 			$ID3v2ShortFrameNameLookup[3]['commercial_information']            = 'WCOM';
 			$ID3v2ShortFrameNameLookup[3]['copyright']                         = 'WCOP';
 			$ID3v2ShortFrameNameLookup[3]['url_file']                          = 'WOAF';

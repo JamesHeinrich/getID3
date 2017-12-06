@@ -3354,7 +3354,7 @@ class getid3_id3v2 extends getid3_handler
 			TYER	Year
 			UFI	Unique file identifier
 			UFID	Unique file identifier
-			ULT	Unsychronised lyric/text transcription
+			ULT	Unsynchronised lyric/text transcription
 			USER	Terms of use
 			USLT	Unsynchronised lyric/text transcription
 			WAF	Official audio file webpage
@@ -3538,7 +3538,7 @@ class getid3_id3v2 extends getid3_handler
 			TYER	year
 			UFI	unique_file_identifier
 			UFID	unique_file_identifier
-			ULT	unsychronised_lyric
+			ULT	unsynchronised_lyric
 			USER	terms_of_use
 			USLT	unsynchronised_lyric
 			WAF	url_file
