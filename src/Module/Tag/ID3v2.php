@@ -3356,7 +3356,7 @@ class ID3v2 extends \JamesHeinrich\GetID3\Module\Handler
 			TYER	Year
 			UFI	Unique file identifier
 			UFID	Unique file identifier
-			ULT	Unsychronised lyric/text transcription
+			ULT	Unsynchronised lyric/text transcription
 			USER	Terms of use
 			USLT	Unsynchronised lyric/text transcription
 			WAF	Official audio file webpage
@@ -3540,7 +3540,7 @@ class ID3v2 extends \JamesHeinrich\GetID3\Module\Handler
 			TYER	year
 			UFI	unique_file_identifier
 			UFID	unique_file_identifier
-			ULT	unsychronised_lyric
+			ULT	unsynchronised_lyric
 			USER	terms_of_use
 			USLT	unsynchronised_lyric
 			WAF	url_file
