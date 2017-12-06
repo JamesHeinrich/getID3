@@ -940,7 +940,7 @@ if (!empty($atom_structure['sample_description_table'][$i]['width']) && !empty($
 
 				$max_stts_entries_to_scan = ($info['php_memory_limit'] ? min(floor($this->getid3->memory_limit / 10000), $atom_structure['number_entries']) : $atom_structure['number_entries']);
 				if ($max_stts_entries_to_scan < $atom_structure['number_entries']) {
-					$this->warning('QuickTime atom "stts" has '.$atom_structure['number_entries'].' but only scanning the first '.$max_stts_entries_to_scan.' entries due to limited PHP memory available ('.floor($atom_structure['number_entries'] / 1048576).'MB).');
+					$this->warning('QuickTime atom "stts" has '.$atom_structure['number_entries'].' but only scanning the first '.$max_stts_entries_to_scan.' entries due to limited PHP memory available ('.floor($this->getid3->memory_limit / 1048576).'MB).');
 				}
 				for ($i = 0; $i < $max_stts_entries_to_scan; $i++) {
 					$atom_structure['time_to_sample_table'][$i]['sample_count']    = Utils::BigEndian2Int(substr($atom_data, $sttsEntriesDataOffset, 4));
