@@ -1298,6 +1298,19 @@ if (!empty($atom_structure['sample_description_table'][$i]['width']) && !empty($
 				$atom_structure['creation_time_unix']  = Utils::DateMac2Unix($atom_structure['creation_time']);
 				$atom_structure['modify_time_unix']    = Utils::DateMac2Unix($atom_structure['modify_time']);
 
+				// http://www.getid3.org/phpBB3/viewtopic.php?t=1908
+				// attempt to compute rotation from matrix values
+				// 2017-Dec-28: uncertain if 90/270 are correctly oriented; values returned by FixedPoint16_16 should perhaps be -1 instead of 65535(?)
+				if (!isset($info['video']['rotate'])) {
+					switch ($atom_structure['matrix_a'].':'.$atom_structure['matrix_b'].':'.$atom_structure['matrix_c'].':'.$atom_structure['matrix_d']) {
+						case '1:0:0:1':         $info['quicktime']['video']['rotate'] = $info['video']['rotate'] =   0; break;
+						case '0:1:65535:0':     $info['quicktime']['video']['rotate'] = $info['video']['rotate'] =  90; break;
+						case '65535:0:0:65535': $info['quicktime']['video']['rotate'] = $info['video']['rotate'] = 180; break;
+						case '0:65535:1:0':     $info['quicktime']['video']['rotate'] = $info['video']['rotate'] = 270; break;
+						default: break;
+					}
+				}
+
 				if ($atom_structure['flags']['enabled'] == 1) {
 					if (!isset($info['video']['resolution_x']) || !isset($info['video']['resolution_y'])) {
 						$info['video']['resolution_x'] = $atom_structure['width'];
