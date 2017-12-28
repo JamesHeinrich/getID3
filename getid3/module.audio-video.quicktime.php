@@ -1751,6 +1751,26 @@ if (!empty($atom_structure['sample_description_table'][$i]['width']) && !empty($
 				$info['quicktime']['camera']['serial_hash'] = unpack('H*', $atom_data);
 				break;
 
+			case 'dscp':
+			case 'rcif':
+				// http://www.getid3.org/phpBB3/viewtopic.php?t=1908
+				if (substr($atom_data, 0, 7) == "\x00\x00\x00\x00\x55\xC4".'{') {
+					if ($json_decoded = @json_decode(rtrim(substr($atom_data, 6), "\x00"), true)) {
+						$info['quicktime']['camera'][$atomname] = $json_decoded;
+						if (($atomname == 'rcif') && isset($info['quicktime']['camera']['rcif']['wxcamera']['rotate'])) {
+							$info['video']['rotate'] = $info['quicktime']['video']['rotate'] = $info['quicktime']['camera']['rcif']['wxcamera']['rotate'];
+						}
+					} else {
+						$this->warning('Failed to JSON decode atom "'.$atomname.'"');
+						$atom_structure['data'] = $atom_data;
+					}
+					unset($json_decoded);
+				} else {
+					$this->warning('Expecting 55 C4 7B at start of atom "'.$atomname.'", found '.getid3_lib::PrintHexBytes(substr($atom_data, 4, 3)).' instead');
+					$atom_structure['data'] = $atom_data;
+				}
+				break;
+
 			default:
 				$this->warning('Unknown QuickTime atom type: "'.preg_replace('#[^a-zA-Z0-9 _\\-]#', '?', $atomname).'" ('.trim(getid3_lib::PrintHexBytes($atomname)).'), '.$atomsize.' bytes at offset '.$baseoffset);
 				$atom_structure['data'] = $atom_data;
