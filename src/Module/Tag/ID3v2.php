@@ -532,7 +532,7 @@ class ID3v2 extends \JamesHeinrich\GetID3\Module\Handler
 		foreach ($genre_elements as $element) {
 			$element = trim($element);
 			if ($element) {
-				if (preg_match('#^[0-9]{1,3}#', $element)) {
+				if (preg_match('#^[0-9]{1,3}$#', $element)) {
 					$clean_genres[] = ID3v1::LookupGenreName($element);
 				} else {
 					$clean_genres[] = str_replace('((', '(', $element);
