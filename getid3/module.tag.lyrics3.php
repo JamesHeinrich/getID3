@@ -96,7 +96,7 @@ class getid3_lyrics3 extends getid3_handler
 
 		}
 
-		if (isset($lyrics3offset)) {
+		if (isset($lyrics3offset) && isset($lyrics3version) && isset($lyrics3size)) {
 			$info['avdataend'] = $lyrics3offset;
 			$this->getLyrics3Data($lyrics3offset, $lyrics3version, $lyrics3size);
 
@@ -259,6 +259,7 @@ class getid3_lyrics3 extends getid3_handler
 
 	public function Lyrics3LyricsTimestampParse(&$Lyrics3data) {
 		$lyricsarray = explode("\r\n", $Lyrics3data['raw']['LYR']);
+		$notimestamplyricsarray = array();
 		foreach ($lyricsarray as $key => $lyricline) {
 			$regs = array();
 			unset($thislinetimestamps);

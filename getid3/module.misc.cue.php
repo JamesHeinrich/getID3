@@ -236,6 +236,7 @@ class getid3_cue extends getid3_handler
 	{
 		$type = strtolower(substr($line, 0, strpos($line, ' ')));
 		$line =            substr($line, strpos($line, ' ') + 1);
+		$number = 0;
 
 		if ($type == 'index')
 		{

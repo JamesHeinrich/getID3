@@ -35,7 +35,7 @@ class getid3_mp3 extends getid3_handler
 		if (!$this->getOnlyMPEGaudioInfo($info['avdataoffset'])) {
 			if ($this->allow_bruteforce) {
 				$this->error('Rescanning file in BruteForce mode');
-				$this->getOnlyMPEGaudioInfoBruteForce($this->getid3->fp, $info);
+				$this->getOnlyMPEGaudioInfoBruteForce();
 			}
 		}
 
@@ -178,7 +178,7 @@ class getid3_mp3 extends getid3_handler
 
 			$encoder_options = 'VBR q'.$thisfile_mpeg_audio['VBR_quality'];
 
-		} elseif (!empty($thisfile_mpeg_audio_lame['preset_used']) && (!in_array($thisfile_mpeg_audio_lame['preset_used_id'], $NamedPresetBitrates))) {
+		} elseif (!empty($thisfile_mpeg_audio_lame['preset_used']) && isset($thisfile_mpeg_audio_lame['preset_used_id']) && (!in_array($thisfile_mpeg_audio_lame['preset_used_id'], $NamedPresetBitrates))) {
 
 			$encoder_options = $thisfile_mpeg_audio_lame['preset_used'];
 
@@ -1417,6 +1417,7 @@ class getid3_mp3 extends getid3_handler
 			}
 
 			if (($header{$SynchSeekOffset} == "\xFF") && ($header{($SynchSeekOffset + 1)} > "\xE0")) { // synch detected
+				$FirstFrameAVDataOffset = null;
 				if (!isset($FirstFrameThisfileInfo) && !isset($info['mpeg']['audio'])) {
 					$FirstFrameThisfileInfo = $info;
 					$FirstFrameAVDataOffset = $avdataoffset + $SynchSeekOffset;
@@ -1893,8 +1894,8 @@ class getid3_mp3 extends getid3_handler
 
 	public static function XingVBRidOffset($version, $channelmode) {
 		static $XingVBRidOffsetCache = array();
-		if (empty($XingVBRidOffset)) {
-			$XingVBRidOffset = array (
+		if (empty($XingVBRidOffsetCache)) {
+            $XingVBRidOffsetCache = array (
 				'1'   => array ('mono'          => 0x15, // 4 + 17 = 21
 								'stereo'        => 0x24, // 4 + 32 = 36
 								'joint stereo'  => 0x24,
@@ -1914,7 +1915,7 @@ class getid3_mp3 extends getid3_handler
 							   )
 			);
 		}
-		return $XingVBRidOffset[$version][$channelmode];
+		return $XingVBRidOffsetCache[$version][$channelmode];
 	}
 
 	public static function LAMEvbrMethodLookup($VBRmethodID) {

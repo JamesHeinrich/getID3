@@ -75,6 +75,7 @@ class getID3_cached_mysqli extends getID3
 	// private vars
 	private $mysqli;
 	private $cursor;
+	private $table;
 
 
 	// public: constructor - see top of this file for cache type and cache_options
@@ -131,6 +132,7 @@ class getID3_cached_mysqli extends getID3
 	// public: analyze file
 	public function analyze($filename, $filesize=null, $original_filename='') {
 
+        $filetime = 0;
 		if (file_exists($filename)) {
 
 			// Short-hands

@@ -129,6 +129,7 @@ class getid3_write_real
 
 	public function GenerateRMFchunk(&$chunks) {
 		$oldCONTexists = false;
+		$chunkNameKeys = array();
 		foreach ($chunks as $key => $chunk) {
 			$chunkNameKeys[$chunk['name']] = $key;
 			if ($chunk['name'] == 'CONT') {
@@ -149,6 +150,7 @@ class getid3_write_real
 		$old_CONT_length = 0;
 		$old_DATA_offset = 0;
 		$old_INDX_offset = 0;
+		$chunkNameKeys = array();
 		foreach ($chunks as $key => $chunk) {
 			$chunkNameKeys[$chunk['name']] = $key;
 			if ($chunk['name'] == 'CONT') {

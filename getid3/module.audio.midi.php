@@ -284,6 +284,7 @@ class getid3_midi extends getid3_handler
 				}
 			}
 			$previoustickoffset = null;
+			$prevmicrosecondsperbeat = null;
 
 			ksort($MicroSecondsPerQuarterNoteAfter);
 			foreach ($MicroSecondsPerQuarterNoteAfter as $tickoffset => $microsecondsperbeat) {

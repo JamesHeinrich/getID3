@@ -1572,7 +1572,7 @@ class getID3
 	public function CalculateReplayGain() {
 		if (isset($this->info['replay_gain'])) {
 			if (!isset($this->info['replay_gain']['reference_volume'])) {
-				$this->info['replay_gain']['reference_volume'] = (double) 89.0;
+				$this->info['replay_gain']['reference_volume'] = 89.0;
 			}
 			if (isset($this->info['replay_gain']['track']['adjustment'])) {
 				$this->info['replay_gain']['track']['volume'] = $this->info['replay_gain']['reference_volume'] - $this->info['replay_gain']['track']['adjustment'];
@@ -1834,6 +1834,9 @@ abstract class getid3_handler {
 			// close and remove dest file if created
 			if (isset($fp_dest) && is_resource($fp_dest)) {
 				fclose($fp_dest);
+			}
+
+			if (isset($dest) && file_exists($dest)) {
 				unlink($dest);
 			}
 

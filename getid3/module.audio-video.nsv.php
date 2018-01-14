@@ -212,11 +212,11 @@ class getid3_nsv extends getid3_handler
 		}
 		static $NSVframerateLookup = array();
 		if (empty($NSVframerateLookup)) {
-			$NSVframerateLookup[129] = (float) 29.970;
-			$NSVframerateLookup[131] = (float) 23.976;
-			$NSVframerateLookup[133] = (float) 14.985;
-			$NSVframerateLookup[197] = (float) 59.940;
-			$NSVframerateLookup[199] = (float) 47.952;
+			$NSVframerateLookup[129] = 29.970;
+			$NSVframerateLookup[131] = 23.976;
+			$NSVframerateLookup[133] = 14.985;
+			$NSVframerateLookup[197] = 59.940;
+			$NSVframerateLookup[199] = 47.952;
 		}
 		return (isset($NSVframerateLookup[$framerateindex]) ? $NSVframerateLookup[$framerateindex] : false);
 	}

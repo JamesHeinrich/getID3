@@ -236,7 +236,7 @@ class getid3_wavpack extends getid3_handler
 
 
 						case 0x22: // ID_RIFF_TRAILER
-							$metablockRIFFfooter = $metablockRIFFheader.$metablock['data'];
+							$metablockRIFFfooter = isset($metablockRIFFheader) ? $metablockRIFFheader : ''.$metablock['data'];
 							getid3_lib::IncludeDependency(GETID3_INCLUDEPATH.'module.audio-video.riff.php', __FILE__, true);
 
 							$startoffset = $metablock['offset'] + ($metablock['large_block'] ? 4 : 2);
