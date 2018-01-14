@@ -51,7 +51,7 @@ class Zip extends \JamesHeinrich\GetID3\Module\Handler
 
 					$this->fseek($info['zip']['end_central_directory']['directory_offset']);
 					$info['zip']['entries_count'] = 0;
-					while ($centraldirectoryentry = $this->ZIPparseCentralDirectory($this->getid3->fp)) {
+					while ($centraldirectoryentry = $this->ZIPparseCentralDirectory()) {
 						$info['zip']['central_directory'][] = $centraldirectoryentry;
 						$info['zip']['entries_count']++;
 						$info['zip']['compressed_size']   += $centraldirectoryentry['compressed_size'];
@@ -153,7 +153,7 @@ class Zip extends \JamesHeinrich\GetID3\Module\Handler
 		}
 
 		$info['zip']['entries_count']     = 0;
-		while ($centraldirectoryentry = $this->ZIPparseCentralDirectory($this->getid3->fp)) {
+		while ($centraldirectoryentry = $this->ZIPparseCentralDirectory()) {
 			$info['zip']['central_directory'][] = $centraldirectoryentry;
 			$info['zip']['entries_count']++;
 			$info['zip']['compressed_size']   += $centraldirectoryentry['compressed_size'];
@@ -383,6 +383,7 @@ class Zip extends \JamesHeinrich\GetID3\Module\Handler
 
 	public static function ZIPparseGeneralPurposeFlags($flagbytes, $compressionmethod) {
 		// https://users.cs.jmu.edu/buchhofp/forensics/formats/pkzip-printable.html
+		$ParsedFlags = array();
 		$ParsedFlags['encrypted']               = (bool) ($flagbytes & 0x0001);
 		//                                                             0x0002 -- see below
 		//                                                             0x0004 -- see below

@@ -531,6 +531,7 @@ class Bmp extends \JamesHeinrich\GetID3\Module\Handler
 											// high- and low-order 4 bits, one color index for each pixel. In absolute mode,
 											// each run must be aligned on a word boundary.
 											unset($paletteindexes);
+											$paletteindexes = array();
 											for ($i = 0; $i < ceil($secondbyte / 2); $i++) {
 												$paletteindexbyte = Utils::LittleEndian2Int(substr($BMPpixelData, $pixeldataoffset++, 1));
 												$paletteindexes[] = ($paletteindexbyte & 0xF0) >> 4;
@@ -636,15 +637,15 @@ class Bmp extends \JamesHeinrich\GetID3\Module\Handler
 			return false;
 		}
 		set_time_limit(intval(round($BMPinfo['resolution_x'] * $BMPinfo['resolution_y'] / 10000)));
-		if ($im = ImageCreateTrueColor($BMPinfo['resolution_x'], $BMPinfo['resolution_y'])) {
+		if ($im = imagecreatetruecolor($BMPinfo['resolution_x'], $BMPinfo['resolution_y'])) {
 			for ($row = 0; $row < $BMPinfo['resolution_y']; $row++) {
 				for ($col = 0; $col < $BMPinfo['resolution_x']; $col++) {
 					if (isset($BMPinfo['bmp']['data'][$row][$col])) {
 						$red   = ($BMPinfo['bmp']['data'][$row][$col] & 0x00FF0000) >> 16;
 						$green = ($BMPinfo['bmp']['data'][$row][$col] & 0x0000FF00) >> 8;
 						$blue  = ($BMPinfo['bmp']['data'][$row][$col] & 0x000000FF);
-						$pixelcolor = ImageColorAllocate($im, $red, $green, $blue);
-						ImageSetPixel($im, $col, $row, $pixelcolor);
+						$pixelcolor = imagecolorallocate($im, $red, $green, $blue);
+						imagesetpixel($im, $col, $row, $pixelcolor);
 					} else {
 						//echo 'ERROR: no data for pixel '.$row.' x '.$col.'<BR>';
 						//return false;
@@ -653,12 +654,12 @@ class Bmp extends \JamesHeinrich\GetID3\Module\Handler
 			}
 			if (headers_sent()) {
 				echo 'plotted '.($BMPinfo['resolution_x'] * $BMPinfo['resolution_y']).' pixels in '.(time() - $starttime).' seconds<BR>';
-				ImageDestroy($im);
+				imagedestroy($im);
 				exit;
 			} else {
 				header('Content-type: image/png');
-				ImagePNG($im);
-				ImageDestroy($im);
+				imagepng($im);
+				imagedestroy($im);
 				return true;
 			}
 		}

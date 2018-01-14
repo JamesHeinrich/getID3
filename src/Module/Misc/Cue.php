@@ -237,6 +237,7 @@ class Cue extends \JamesHeinrich\GetID3\Module\Handler
 	{
 		$type = strtolower(substr($line, 0, strpos($line, ' ')));
 		$line =            substr($line, strpos($line, ' ') + 1);
+		$number = 0;
 
 		if ($type == 'index')
 		{

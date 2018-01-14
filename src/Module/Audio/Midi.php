@@ -295,6 +295,7 @@ class Midi extends \JamesHeinrich\GetID3\Module\Handler
 				}
 			}
 			$previoustickoffset = null;
+			$prevmicrosecondsperbeat = null;
 
 			ksort($MicroSecondsPerQuarterNoteAfter);
 			foreach ($MicroSecondsPerQuarterNoteAfter as $tickoffset => $microsecondsperbeat) {

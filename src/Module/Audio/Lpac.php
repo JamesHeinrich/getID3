@@ -28,7 +28,8 @@ class Lpac extends \JamesHeinrich\GetID3\Module\Handler
 
 		$this->fseek($info['avdataoffset']);
 		$LPACheader = $this->fread(14);
-		if (substr($LPACheader, 0, 4) != 'LPAC') {
+		$StreamMarker = substr($LPACheader, 0, 4);
+		if ($StreamMarker != 'LPAC') {
 			$this->error('Expected "LPAC" at offset '.$info['avdataoffset'].', found "'.$StreamMarker.'"');
 			return false;
 		}

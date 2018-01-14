@@ -578,8 +578,8 @@ $thisfile_ac3['bitrate'] = round(($thisfile_ac3['bitrate'] * 1.05) / 16000) * 16
 		$lookup = array(
 			'ch1'=>(bool) ($acmod == 0),
 			'ch2'=>(bool) ($acmod == 0),
-			'left'=>(bool) ($acmod > 1),
-			'right'=>(bool) ($acmod > 1),
+			'left'=>($acmod > 1),
+			'right'=>($acmod > 1),
 			'center'=>(bool) ($acmod & 0x01),
 			'surround_mono'=>false,
 			'surround_left'=>false,

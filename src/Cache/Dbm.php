@@ -74,8 +74,36 @@ use JamesHeinrich\GetID3\GetID3;
 
 class Dbm extends GetID3
 {
+    /**
+     * @var resource
+     */
+    private $dba;
 
-	// public: constructor - see top of this file for cache type and cache_options
+    /**
+     * @var resource|bool
+     */
+    private $lock;
+
+    /**
+     * @var string
+     */
+    private $cache_type;
+
+    /**
+     * @var string
+     */
+    private $dbm_filename;
+
+    /**
+     * constructor - see top of this file for cache type and cache_options
+     *
+     * @param string $cache_type
+     * @param string $dbm_filename
+     * @param string $lock_filename
+     *
+     * @throws Exception
+     * @throws getid3_exception
+     */
 	public function __construct($cache_type, $dbm_filename, $lock_filename) {
 
 		// Check for dba extension
@@ -181,7 +209,7 @@ class Dbm extends GetID3
 
 
 	// public: analyze file
-	public function analyze($filename) {
+	public function analyze($filename, $filesize=null, $original_filename='') {
 
 		if (file_exists($filename)) {
 
@@ -201,7 +229,7 @@ class Dbm extends GetID3
 		$result = parent::analyze($filename);
 
 		// Save result
-		if (file_exists($filename)) {
+		if (isset($key) && file_exists($filename)) {
 			dba_insert($key, serialize($result), $this->dba);
 		}
 

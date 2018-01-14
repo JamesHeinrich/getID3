@@ -53,7 +53,7 @@ class Rkau extends \JamesHeinrich\GetID3\Module\Handler
 		$this->RKAUqualityLookup($info['rkau']);
 
 		$info['rkau']['raw']['flags']            = Utils::LittleEndian2Int(substr($RKAUHeader, 15, 1));
-		$info['rkau']['flags']['joint_stereo']   = (bool) (!($info['rkau']['raw']['flags'] & 0x01));
+		$info['rkau']['flags']['joint_stereo']   = !($info['rkau']['raw']['flags'] & 0x01);
 		$info['rkau']['flags']['streaming']      =  (bool)  ($info['rkau']['raw']['flags'] & 0x02);
 		$info['rkau']['flags']['vrq_lossy_mode'] =  (bool)  ($info['rkau']['raw']['flags'] & 0x04);
 

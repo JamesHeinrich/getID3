@@ -39,7 +39,7 @@ class Mp3 extends \JamesHeinrich\GetID3\Module\Handler
 		if (!$this->getOnlyMPEGaudioInfo($info['avdataoffset'])) {
 			if ($this->allow_bruteforce) {
 				$this->error('Rescanning file in BruteForce mode');
-				$this->getOnlyMPEGaudioInfoBruteForce($this->getid3->fp, $info);
+				$this->getOnlyMPEGaudioInfoBruteForce();
 			}
 		}
 
@@ -182,7 +182,7 @@ class Mp3 extends \JamesHeinrich\GetID3\Module\Handler
 
 			$encoder_options = 'VBR q'.$thisfile_mpeg_audio['VBR_quality'];
 
-		} elseif (!empty($thisfile_mpeg_audio_lame['preset_used']) && (!in_array($thisfile_mpeg_audio_lame['preset_used_id'], $NamedPresetBitrates))) {
+		} elseif (!empty($thisfile_mpeg_audio_lame['preset_used']) && isset($thisfile_mpeg_audio_lame['preset_used_id']) && (!in_array($thisfile_mpeg_audio_lame['preset_used_id'], $NamedPresetBitrates))) {
 
 			$encoder_options = $thisfile_mpeg_audio_lame['preset_used'];
 
@@ -1421,6 +1421,7 @@ class Mp3 extends \JamesHeinrich\GetID3\Module\Handler
 			}
 
 			if (($header{$SynchSeekOffset} == "\xFF") && ($header{($SynchSeekOffset + 1)} > "\xE0")) { // synch detected
+				$FirstFrameAVDataOffset = null;
 				if (!isset($FirstFrameThisfileInfo) && !isset($info['mpeg']['audio'])) {
 					$FirstFrameThisfileInfo = $info;
 					$FirstFrameAVDataOffset = $avdataoffset + $SynchSeekOffset;
@@ -1897,8 +1898,8 @@ class Mp3 extends \JamesHeinrich\GetID3\Module\Handler
 
 	public static function XingVBRidOffset($version, $channelmode) {
 		static $XingVBRidOffsetCache = array();
-		if (empty($XingVBRidOffset)) {
-			$XingVBRidOffset = array (
+		if (empty($XingVBRidOffsetCache)) {
+            $XingVBRidOffsetCache = array (
 				'1'   => array ('mono'          => 0x15, // 4 + 17 = 21
 								'stereo'        => 0x24, // 4 + 32 = 36
 								'joint stereo'  => 0x24,
@@ -1918,7 +1919,7 @@ class Mp3 extends \JamesHeinrich\GetID3\Module\Handler
 							   )
 			);
 		}
-		return $XingVBRidOffset[$version][$channelmode];
+		return $XingVBRidOffsetCache[$version][$channelmode];
 	}
 
 	public static function LAMEvbrMethodLookup($VBRmethodID) {

@@ -352,6 +352,7 @@ class Utils
 			return 0;
 		}
 		$signbit = $bitword{0};
+		$floatvalue = 0;
 
 		switch (strlen($byteword) * 8) {
 			case 32:

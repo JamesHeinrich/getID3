@@ -571,6 +571,7 @@ class AMFReader {
 //		$highestIndex = $this->stream->readLong();
 
 		$data = array();
+		$key = null;
 
 		while ($key = $this->stream->readUTF()) {
 			$data[$key] = $this->readData();
@@ -588,6 +589,7 @@ class AMFReader {
 		$highestIndex = $this->stream->readLong();
 
 		$data = array();
+		$key = null;
 
 		while ($key = $this->stream->readUTF()) {
 			if (is_numeric($key)) {

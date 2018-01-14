@@ -111,6 +111,7 @@ class Jpg extends \JamesHeinrich\GetID3\Module\Handler
 		if (isset($info['jpg']['exif']['GPS'])) {
 
 			if (isset($info['jpg']['exif']['GPS']['GPSVersion'])) {
+				$version_subparts = array();
 				for ($i = 0; $i < 4; $i++) {
 					$version_subparts[$i] = ord(substr($info['jpg']['exif']['GPS']['GPSVersion'], $i, 1));
 				}
@@ -134,6 +135,7 @@ class Jpg extends \JamesHeinrich\GetID3\Module\Handler
 
 			if (isset($info['jpg']['exif']['GPS']['GPSLatitude']) && is_array($info['jpg']['exif']['GPS']['GPSLatitude'])) {
 				$direction_multiplier = ((isset($info['jpg']['exif']['GPS']['GPSLatitudeRef']) && ($info['jpg']['exif']['GPS']['GPSLatitudeRef'] == 'S')) ? -1 : 1);
+				$computed_latitude = array();
 				foreach ($info['jpg']['exif']['GPS']['GPSLatitude'] as $key => $value) {
 					$computed_latitude[$key] = Utils::DecimalizeFraction($value);
 				}
@@ -142,6 +144,7 @@ class Jpg extends \JamesHeinrich\GetID3\Module\Handler
 
 			if (isset($info['jpg']['exif']['GPS']['GPSLongitude']) && is_array($info['jpg']['exif']['GPS']['GPSLongitude'])) {
 				$direction_multiplier = ((isset($info['jpg']['exif']['GPS']['GPSLongitudeRef']) && ($info['jpg']['exif']['GPS']['GPSLongitudeRef'] == 'W')) ? -1 : 1);
+				$computed_longitude = array();
 				foreach ($info['jpg']['exif']['GPS']['GPSLongitude'] as $key => $value) {
 					$computed_longitude[$key] = Utils::DecimalizeFraction($value);
 				}

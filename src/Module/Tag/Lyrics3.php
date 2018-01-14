@@ -101,7 +101,7 @@ class Lyrics3 extends \JamesHeinrich\GetID3\Module\Handler
 
 		}
 
-		if (isset($lyrics3offset)) {
+		if (isset($lyrics3offset) && isset($lyrics3version) && isset($lyrics3size)) {
 			$info['avdataend'] = $lyrics3offset;
 			$this->getLyrics3Data($lyrics3offset, $lyrics3version, $lyrics3size);
 
@@ -263,6 +263,7 @@ class Lyrics3 extends \JamesHeinrich\GetID3\Module\Handler
 
 	public function Lyrics3LyricsTimestampParse(&$Lyrics3data) {
 		$lyricsarray = explode("\r\n", $Lyrics3data['raw']['LYR']);
+		$notimestamplyricsarray = array();
 		foreach ($lyricsarray as $key => $lyricline) {
 			$regs = array();
 			unset($thislinetimestamps);

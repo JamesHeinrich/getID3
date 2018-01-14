@@ -779,6 +779,7 @@ $this->warning('Ogg Theora (v3) not fully supported in this version of getID3 ['
 
 
 	public static function OggPageSegmentLength($OggInfoArray, $SegmentNumber=1) {
+		$segmentlength = 0;
 		for ($i = 0; $i < $SegmentNumber; $i++) {
 			$segmentlength = 0;
 			foreach ($OggInfoArray['segment_table'] as $key => $value) {

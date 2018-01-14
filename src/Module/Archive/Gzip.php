@@ -49,6 +49,7 @@ class Gzip extends \JamesHeinrich\GetID3\Module\Handler
 		$buffer = $this->fread($info['filesize']);
 
 		$arr_members = explode("\x1F\x8B\x08", $buffer);
+		$num_members = 0;
 		while (true) {
 			$is_wrong_members = false;
 			$num_members = intval(count($arr_members));

@@ -79,6 +79,7 @@ class ID3v1
 		$getID3->option_tag_id3v1  = true;
 		$ThisFileInfo = $getID3->analyze($this->filename);
 		if (isset($ThisFileInfo['tags']['id3v1'])) {
+			$id3v1data = array();
 			foreach ($ThisFileInfo['tags']['id3v1'] as $key => $value) {
 				$id3v1data[$key] = implode(',', $value);
 			}

@@ -44,7 +44,7 @@ return false;
 		$info['audio']['bitrate_mode'] = 'cbr'; // is it?
 		$thisfile_aa['encoding']       = 'ISO-8859-1';
 
-		$thisfile_aa['filesize'] = Utils::BigEndian2Int(substr($AUheader,  0, 4));
+		$thisfile_aa['filesize'] = Utils::BigEndian2Int(substr($AAheader,  0, 4));
 		if ($thisfile_aa['filesize'] > ($info['avdataend'] - $info['avdataoffset'])) {
 			$this->warning('Possible truncated file - expecting "'.$thisfile_aa['filesize'].'" bytes of data, only found '.($info['avdataend'] - $info['avdataoffset']).' bytes"');
 		}

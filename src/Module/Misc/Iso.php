@@ -281,6 +281,7 @@ class Iso extends \JamesHeinrich\GetID3\Module\Handler
 
 		$this->fseek($directorydata['location_bytes']);
 		$DirectoryRecordData = $this->fread(1);
+		$DirectoryRecord = array();
 
 		while (ord($DirectoryRecordData{0}) > 33) {
 

@@ -240,7 +240,7 @@ class WavPack extends \JamesHeinrich\GetID3\Module\Handler
 
 
 						case 0x22: // ID_RIFF_TRAILER
-							$metablockRIFFfooter = $metablockRIFFheader.$metablock['data'];
+							$metablockRIFFfooter = isset($metablockRIFFheader) ? $metablockRIFFheader : ''.$metablock['data'];
 
 							$startoffset = $metablock['offset'] + ($metablock['large_block'] ? 4 : 2);
 							$getid3_temp = new GetID3;

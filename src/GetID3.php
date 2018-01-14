@@ -1423,7 +1423,7 @@ class getID3
 	public function CalculateReplayGain() {
 		if (isset($this->info['replay_gain'])) {
 			if (!isset($this->info['replay_gain']['reference_volume'])) {
-				$this->info['replay_gain']['reference_volume'] = (double) 89.0;
+				$this->info['replay_gain']['reference_volume'] = 89.0;
 			}
 			if (isset($this->info['replay_gain']['track']['adjustment'])) {
 				$this->info['replay_gain']['track']['volume'] = $this->info['replay_gain']['reference_volume'] - $this->info['replay_gain']['track']['adjustment'];

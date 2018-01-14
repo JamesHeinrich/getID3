@@ -1081,6 +1081,7 @@ class Riff extends \JamesHeinrich\GetID3\Module\Handler
 				$thisfile_audio_dataformat         = '8svx';
 				$thisfile_audio['bits_per_sample'] = 8;
 				$thisfile_audio['channels']        = 1; // overridden below, if need be
+				$ActualBitsPerSample               = 0;
 
 				if (isset($thisfile_riff[$RIFFsubtype]['BODY'][0]['offset'])) {
 					$info['avdataoffset'] = $thisfile_riff[$RIFFsubtype]['BODY'][0]['offset'] + 8;
@@ -1118,7 +1119,7 @@ class Riff extends \JamesHeinrich\GetID3\Module\Handler
 							break;
 
 						default:
-							$this->warning('Unexpected sCompression value in 8SVX.VHDR chunk - expecting 0 or 1, found "'.sCompression.'"');
+							$this->warning('Unexpected sCompression value in 8SVX.VHDR chunk - expecting 0 or 1, found "'.$thisfile_riff_RIFFsubtype_VHDR_0['sCompression'].'"');
 							break;
 					}
 				}
@@ -1731,7 +1732,7 @@ class Riff extends \JamesHeinrich\GetID3\Module\Handler
 							//	break;
 
 							default:
-								if (!empty($LISTchunkParent) && (($RIFFchunk[$chunkname][$thisindex]['offset'] + $RIFFchunk[$chunkname][$thisindex]['size']) <= $LISTchunkMaxOffset)) {
+								if (!empty($LISTchunkParent) && isset($LISTchunkMaxOffset) && (($RIFFchunk[$chunkname][$thisindex]['offset'] + $RIFFchunk[$chunkname][$thisindex]['size']) <= $LISTchunkMaxOffset)) {
 									$RIFFchunk[$LISTchunkParent][$chunkname][$thisindex]['offset'] = $RIFFchunk[$chunkname][$thisindex]['offset'];
 									$RIFFchunk[$LISTchunkParent][$chunkname][$thisindex]['size']   = $RIFFchunk[$chunkname][$thisindex]['size'];
 									unset($RIFFchunk[$chunkname][$thisindex]['offset']);
@@ -2013,6 +2014,7 @@ class Riff extends \JamesHeinrich\GetID3\Module\Handler
 			 5 => 'NC-17',
 		);
 
+		$parsed              = array();
 		$parsed['title']     =        trim(substr($DIVXTAG,   0, 32));
 		$parsed['artist']    =        trim(substr($DIVXTAG,  32, 28));
 		$parsed['year']      = intval(trim(substr($DIVXTAG,  60,  4)));
@@ -2028,8 +2030,8 @@ class Riff extends \JamesHeinrich\GetID3\Module\Handler
 		if (!$raw) {
 			unset($parsed['genre_id'], $parsed['rating_id']);
 			foreach ($parsed as $key => $value) {
-				if (!$value === '') {
-					unset($parsed['key']);
+				if (empty($value)) {
+					unset($parsed[$key]);
 				}
 			}
 		}

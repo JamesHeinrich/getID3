@@ -2341,6 +2341,7 @@ class QuickTime extends \JamesHeinrich\GetID3\Module\Handler
 		);
 
 		$offset = 0;
+		$data = null;
 		$datalength = strlen($atom_data);
 		$parsed = array();
 		while ($offset < $datalength) {

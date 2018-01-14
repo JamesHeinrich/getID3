@@ -268,6 +268,10 @@ class ID3v2 extends \JamesHeinrich\GetID3\Module\Handler
 					}
 					break; // skip rest of ID3v2 header
 				}
+				$frame_header = null;
+				$frame_name   = null;
+				$frame_size   = null;
+				$frame_flags  = null;
 				if ($id3v2_majorversion == 2) {
 					// Frame ID  $xx xx xx (three characters)
 					// Size      $xx xx xx (24-bit integer)
@@ -433,7 +437,7 @@ class ID3v2 extends \JamesHeinrich\GetID3\Module\Handler
 				$thisfile_id3v2['minorversion_footer'] = ord($footer{4});
 			}
 			if ($thisfile_id3v2['majorversion_footer'] <= 4) {
-				$id3_flags = ord(substr($footer{5}));
+				$id3_flags = ord($footer{5});
 				$thisfile_id3v2_flags['unsynch_footer']  = (bool) ($id3_flags & 0x80);
 				$thisfile_id3v2_flags['extfoot_footer']  = (bool) ($id3_flags & 0x40);
 				$thisfile_id3v2_flags['experim_footer']  = (bool) ($id3_flags & 0x20);
@@ -935,6 +939,7 @@ class ID3v2 extends \JamesHeinrich\GetID3\Module\Handler
 			$parsedFrame['bitsforbytesdeviation']   = Utils::BigEndian2Int(substr($parsedFrame['data'], 8, 1));
 			$parsedFrame['bitsformsdeviation']      = Utils::BigEndian2Int(substr($parsedFrame['data'], 9, 1));
 			$parsedFrame['data'] = substr($parsedFrame['data'], 10);
+			$deviationbitstream = '';
 			while ($frame_offset < strlen($parsedFrame['data'])) {
 				$deviationbitstream .= Utils::BigEndian2Bin(substr($parsedFrame['data'], $frame_offset++, 1));
 			}
@@ -1418,9 +1423,9 @@ class ID3v2 extends \JamesHeinrich\GetID3\Module\Handler
 				$parsedFrame['encoding']         = $this->TextEncodingNameLookup($frame_textencoding);
 
 				if ($id3v2_majorversion == 2) {
-					$parsedFrame['imagetype']    = $frame_imagetype;
+					$parsedFrame['imagetype']    = isset($frame_imagetype) ? $frame_imagetype : null;
 				} else {
-					$parsedFrame['mime']         = $frame_mimetype;
+					$parsedFrame['mime']         = isset($frame_mimetype) ? $frame_mimetype : null;
 				}
 				$parsedFrame['picturetypeid']    = $frame_picturetype;
 				$parsedFrame['picturetype']      = $this->APICPictureTypeLookup($frame_picturetype);
@@ -1448,6 +1453,7 @@ class ID3v2 extends \JamesHeinrich\GetID3\Module\Handler
 						unset($parsedFrame['data']);
 						break;
 					}
+					$dir = '';
 					if ($this->getid3->option_save_attachments === true) {
 						// great
 /*
