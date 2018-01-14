@@ -135,7 +135,7 @@ class getID3
 		$required_php_version = '5.3.0';
 		if (version_compare(PHP_VERSION, $required_php_version, '<')) {
 			$this->startup_error .= 'getID3() requires PHP v'.$required_php_version.' or higher - you are running v'.PHP_VERSION."\n";
-			return false;
+			return;
 		}
 
 		// Check memory

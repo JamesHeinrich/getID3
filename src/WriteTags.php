@@ -68,6 +68,7 @@ class WriteTags
 		}
 
 		$TagFormatsToRemove = array();
+		$AllowedTagFormats = array();
 		if (filesize($this->filename) == 0) {
 
 			// empty file special case - allow any tag format, don't check existing format

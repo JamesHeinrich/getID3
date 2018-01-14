@@ -50,6 +50,7 @@ class Riff extends \JamesHeinrich\GetID3\Module\Handler
 		$thisfile_audio_dataformat = &$thisfile_audio['dataformat'];
 		$thisfile_riff_audio       = &$thisfile_riff['audio'];
 		$thisfile_riff_video       = &$thisfile_riff['video'];
+        $thisfile_riff_WAVE        = array();
 
 		$Original['avdataoffset'] = $info['avdataoffset'];
 		$Original['avdataend']    = $info['avdataend'];
@@ -410,7 +411,6 @@ class Riff extends \JamesHeinrich\GetID3\Module\Handler
 						'tracktitle'=>'title',
 						'category'  =>'genre',
 						'cdtitle'   =>'album',
-						'tracktitle'=>'title',
 					);
 					foreach ($tagmapping as $fromkey => $tokey) {
 						if (isset($thisfile_riff_WAVE_SNDM_0['parsed'][$fromkey])) {
@@ -872,7 +872,7 @@ class Riff extends \JamesHeinrich\GetID3\Module\Handler
 								}
 							}
 
-							if (isset($thisfile_riff_raw_strf_strhfccType_streamindex['fourcc'])) {
+							if (isset($thisfile_riff_raw_strf_strhfccType_streamindex) && isset($thisfile_riff_raw_strf_strhfccType_streamindex['fourcc'])) {
 
 								$thisfile_video['fourcc'] = $thisfile_riff_raw_strf_strhfccType_streamindex['fourcc'];
 								if (self::fourccLookup($thisfile_video['fourcc'])) {

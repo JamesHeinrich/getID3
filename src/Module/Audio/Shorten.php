@@ -42,7 +42,7 @@ class Shorten extends \JamesHeinrich\GetID3\Module\Handler
 
 		$this->fseek($info['avdataend'] - 12);
 		$SeekTableSignatureTest = $this->fread(12);
-		$info['shn']['seektable']['present'] = (bool) (substr($SeekTableSignatureTest, 4, 8) == 'SHNAMPSK');
+		$info['shn']['seektable']['present'] = substr($SeekTableSignatureTest, 4, 8) == 'SHNAMPSK';
 		if ($info['shn']['seektable']['present']) {
 			$info['shn']['seektable']['length'] = Utils::LittleEndian2Int(substr($SeekTableSignatureTest, 0, 4));
 			$info['shn']['seektable']['offset'] = $info['avdataend'] - $info['shn']['seektable']['length'];

@@ -72,17 +72,17 @@ class Aac extends \JamesHeinrich\GetID3\Module\Handler
 			$bitoffset += 32;
 			$info['aac']['header']['mpeg_version']        = 4;
 
-			$info['aac']['header']['copyright']           = (bool) (substr($AACheaderBitstream, $bitoffset, 1) == '1');
+			$info['aac']['header']['copyright']           = substr($AACheaderBitstream, $bitoffset, 1) == '1';
 			$bitoffset += 1;
 			if ($info['aac']['header']['copyright']) {
 				$info['aac']['header']['copyright_id']    = Utils::Bin2String(substr($AACheaderBitstream, $bitoffset, 72));
 				$bitoffset += 72;
 			}
-			$info['aac']['header']['original_copy']       = (bool) (substr($AACheaderBitstream, $bitoffset, 1) == '1');
+			$info['aac']['header']['original_copy']       = substr($AACheaderBitstream, $bitoffset, 1) == '1';
 			$bitoffset += 1;
-			$info['aac']['header']['home']                = (bool) (substr($AACheaderBitstream, $bitoffset, 1) == '1');
+			$info['aac']['header']['home']                = substr($AACheaderBitstream, $bitoffset, 1) == '1';
 			$bitoffset += 1;
-			$info['aac']['header']['is_vbr']              = (bool) (substr($AACheaderBitstream, $bitoffset, 1) == '1');
+			$info['aac']['header']['is_vbr']              = substr($AACheaderBitstream, $bitoffset, 1) == '1';
 			$bitoffset += 1;
 			if ($info['aac']['header']['is_vbr']) {
 				$info['audio']['bitrate_mode']            = 'vbr';

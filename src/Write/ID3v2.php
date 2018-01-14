@@ -226,6 +226,7 @@ class ID3v2
 
 
 	public function GenerateID3v2TagFlags($flags) {
+		$flag = null;
 		switch ($this->majorversion) {
 			case 4:
 				// %abcd0000
@@ -260,7 +261,9 @@ class ID3v2
 
 
 	public function GenerateID3v2FrameFlags($TagAlter=false, $FileAlter=false, $ReadOnly=false, $Compression=false, $Encryption=false, $GroupingIdentity=false, $Unsynchronisation=false, $DataLengthIndicator=false) {
-		switch ($this->majorversion) {
+		$flag1 = null;
+		$flag2 = null;
+	    switch ($this->majorversion) {
 			case 4:
 				// %0abc0000 %0h00kmnp
 				$flag1  = '0';

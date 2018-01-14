@@ -55,7 +55,7 @@ class Cue extends \JamesHeinrich\GetID3\Module\Handler
 	/**
 	* Parses a cue sheet file.
 	*
-	* @param string $filename - The filename for the cue sheet to open.
+	* @param string $filedata
 	*/
 	public function readCueSheet(&$filedata)
 	{

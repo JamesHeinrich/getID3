@@ -576,8 +576,8 @@ $thisfile_ac3['bitrate'] = round(($thisfile_ac3['bitrate'] * 1.05) / 16000) * 16
 
 	public static function channelsEnabledLookup($acmod, $lfeon) {
 		$lookup = array(
-			'ch1'=>(bool) ($acmod == 0),
-			'ch2'=>(bool) ($acmod == 0),
+			'ch1'=>($acmod == 0),
+			'ch2'=>($acmod == 0),
 			'left'=>($acmod > 1),
 			'right'=>($acmod > 1),
 			'center'=>(bool) ($acmod & 0x01),
