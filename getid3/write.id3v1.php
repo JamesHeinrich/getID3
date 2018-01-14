@@ -25,7 +25,6 @@ class getid3_write_id3v1
 	public $errors   = array(); // any critical errors will be stored here
 
 	public function __construct() {
-		return true;
 	}
 
 	public function WriteID3v1() {

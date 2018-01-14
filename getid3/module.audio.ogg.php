@@ -489,7 +489,7 @@ $this->warning('Ogg Theora (v3) not fully supported in this version of getID3 ['
 				return false;
 			}
 			if ((($filedataoffset + 28) > strlen($filedata)) || (strlen($filedata) < 28)) {
-				if ($this->feof() || (($filedata .= $this->fread($this->getid3->fread_buffer_size())) === false)) {
+				if ($this->feof() || (($filedata .= $this->fread($this->getid3->fread_buffer_size())) === '')) {
 					// get some more data, unless eof, in which case fail
 					return false;
 				}
@@ -533,8 +533,10 @@ $this->warning('Ogg Theora (v3) not fully supported in this version of getID3 ['
 		$info = &$this->getid3->info;
 
 		$OriginalOffset = $this->ftell();
+		$commentdata = null;
 		$commentdataoffset = 0;
 		$VorbisCommentPage = 1;
+		$CommentStartOffset = 0;
 
 		switch ($info['audio']['dataformat']) {
 			case 'vorbis':

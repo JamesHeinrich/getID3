@@ -24,7 +24,6 @@ class getid3_write_real
 	public $paddedlength      = 512;     // minimum length of CONT tag in bytes
 
 	public function __construct() {
-		return true;
 	}
 
 	public function WriteReal() {
@@ -45,6 +44,7 @@ class getid3_write_real
 				fclose($fp_source);
 				return false;
 			}
+			$oldChunkInfo = array();
 			foreach ($OldThisFileInfo['real']['chunks'] as $chunknumber => $chunkarray) {
 				$oldChunkInfo[$chunkarray['name']] = $chunkarray;
 			}

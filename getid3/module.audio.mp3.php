@@ -164,6 +164,8 @@ class getid3_mp3 extends getid3_handler
 	public function GuessEncoderOptions() {
 		// shortcuts
 		$info = &$this->getid3->info;
+		$thisfile_mpeg_audio = array();
+		$thisfile_mpeg_audio_lame = array();
 		if (!empty($info['mpeg']['audio'])) {
 			$thisfile_mpeg_audio = &$info['mpeg']['audio'];
 			if (!empty($thisfile_mpeg_audio['LAME'])) {
@@ -1441,7 +1443,7 @@ class getid3_mp3 extends getid3_handler
 							$info['audio']['dataformat'] = 'mp3';
 							break;
 					}
-					if (isset($FirstFrameThisfileInfo['mpeg']['audio']['bitrate_mode']) && ($FirstFrameThisfileInfo['mpeg']['audio']['bitrate_mode'] == 'vbr')) {
+					if (isset($FirstFrameThisfileInfo) && isset($FirstFrameThisfileInfo['mpeg']['audio']['bitrate_mode']) && ($FirstFrameThisfileInfo['mpeg']['audio']['bitrate_mode'] == 'vbr')) {
 						if (!(abs($info['audio']['bitrate'] - $FirstFrameThisfileInfo['audio']['bitrate']) <= 1)) {
 							// If there is garbage data between a valid VBR header frame and a sequence
 							// of valid MPEG-audio frames the VBR data is no longer discarded.

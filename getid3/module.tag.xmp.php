@@ -81,8 +81,8 @@ class Image_XMP
 	* Reads all the JPEG header segments from an JPEG image file into an array
 	*
 	* @param string $filename - the filename of the JPEG file to read
-	* @return array $headerdata - Array of JPEG header segments
-	* @return boolean FALSE - if headers could not be read
+	* @return array|boolean  $headerdata - Array of JPEG header segments,
+	*                        FALSE - if headers could not be read
 	*/
 	public function _get_jpeg_header_data($filename)
 	{
@@ -192,8 +192,8 @@ class Image_XMP
 	* Retrieves XMP information from an APP1 JPEG segment and returns the raw XML text as a string.
 	*
 	* @param string $filename - the filename of the JPEG file to read
-	* @return string $xmp_data - the string of raw XML text
-	* @return boolean FALSE - if an APP 1 XMP segment could not be found, or if an error occured
+	* @return string|boolean $xmp_data - the string of raw XML text,
+	*                        FALSE - if an APP 1 XMP segment could not be found, or if an error occured
 	*/
 	public function _get_XMP_text($filename)
 	{
@@ -224,9 +224,9 @@ class Image_XMP
 	* Parses a string containing XMP data (XML), and returns an array
 	* which contains all the XMP (XML) information.
 	*
-	* @param string $xml_text - a string containing the XMP data (XML) to be parsed
-	* @return array $xmp_array - an array containing all xmp details retrieved.
-	* @return boolean FALSE - couldn't parse the XMP data
+	* @param string $xmltext - a string containing the XMP data (XML) to be parsed
+	* @return array|boolean $xmp_array - an array containing all xmp details retrieved,
+	*                       FALSE - couldn't parse the XMP data.
 	*/
 	public function read_XMP_array_from_text($xmltext)
 	{
@@ -398,7 +398,7 @@ class Image_XMP
 	/**
 	* Constructor
 	*
-	* @param string - Name of the image file to access and extract XMP information from.
+	* @param string $sFilename - Name of the image file to access and extract XMP information from.
 	*/
 	public function __construct($sFilename)
 	{
@@ -410,8 +410,11 @@ class Image_XMP
 			$xmp_data = $this->_get_XMP_text($sFilename);
 			if ($xmp_data)
 			{
-				$this->_aXMP = $this->read_XMP_array_from_text($xmp_data);
-				$this->_bXMPParse = true;
+				$aXMP = $this->read_XMP_array_from_text($xmp_data);
+				if ($aXMP !== false) {
+					$this->_aXMP = (array) $aXMP;
+					$this->_bXMPParse = true;
+				}
 			}
 		}
 	}
