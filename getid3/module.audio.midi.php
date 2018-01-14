@@ -88,6 +88,7 @@ class getid3_midi extends getid3_handler
 			$CurrentMicroSecondsPerBeat       = 500000; // 120 beats per minute;  60,000,000 microseconds per minute -> 500,000 microseconds per beat
 			$CurrentBeatsPerMinute            = 120;    // 120 beats per minute;  60,000,000 microseconds per minute -> 500,000 microseconds per beat
 			$MicroSecondsPerQuarterNoteAfter  = array ();
+			$MIDIevents                       = array();
 
 			foreach ($trackdataarray as $tracknumber => $trackdata) {
 
@@ -284,6 +285,7 @@ class getid3_midi extends getid3_handler
 				}
 			}
 			$previoustickoffset = null;
+			$prevmicrosecondsperbeat = null;
 
 			ksort($MicroSecondsPerQuarterNoteAfter);
 			foreach ($MicroSecondsPerQuarterNoteAfter as $tickoffset => $microsecondsperbeat) {

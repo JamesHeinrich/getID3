@@ -44,6 +44,7 @@ class getid3_gzip extends getid3_handler {
 		$buffer = $this->fread($info['filesize']);
 
 		$arr_members = explode("\x1F\x8B\x08", $buffer);
+		$num_members = 0;
 		while (true) {
 			$is_wrong_members = false;
 			$num_members = intval(count($arr_members));
@@ -199,7 +200,7 @@ class getid3_gzip extends getid3_handler {
 					$inflated = gzinflate($cdata);
 
 					// Calculate CRC32 for inflated content
-					$thisInfo['crc32_valid'] = (bool) (sprintf('%u', crc32($inflated)) == $thisInfo['crc32']);
+					$thisInfo['crc32_valid'] = sprintf('%u', crc32($inflated)) == $thisInfo['crc32'];
 
 					// determine format
 					$formattest = substr($inflated, 0, 32774);

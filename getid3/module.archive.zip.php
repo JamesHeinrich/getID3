@@ -48,7 +48,7 @@ class getid3_zip extends getid3_handler
 
 					$this->fseek($info['zip']['end_central_directory']['directory_offset']);
 					$info['zip']['entries_count'] = 0;
-					while ($centraldirectoryentry = $this->ZIPparseCentralDirectory($this->getid3->fp)) {
+					while ($centraldirectoryentry = $this->ZIPparseCentralDirectory()) {
 						$info['zip']['central_directory'][] = $centraldirectoryentry;
 						$info['zip']['entries_count']++;
 						$info['zip']['compressed_size']   += $centraldirectoryentry['compressed_size'];
@@ -150,7 +150,7 @@ class getid3_zip extends getid3_handler
 		}
 
 		$info['zip']['entries_count']     = 0;
-		while ($centraldirectoryentry = $this->ZIPparseCentralDirectory($this->getid3->fp)) {
+		while ($centraldirectoryentry = $this->ZIPparseCentralDirectory()) {
 			$info['zip']['central_directory'][] = $centraldirectoryentry;
 			$info['zip']['entries_count']++;
 			$info['zip']['compressed_size']   += $centraldirectoryentry['compressed_size'];
@@ -265,7 +265,7 @@ class getid3_zip extends getid3_handler
 			$DataDescriptor = $this->fread(16);
 			$LocalFileHeader['data_descriptor']['signature']         = getid3_lib::LittleEndian2Int(substr($DataDescriptor,  0, 4));
 			if ($LocalFileHeader['data_descriptor']['signature'] != 0x08074B50) { // "PK\x07\x08"
-				$this->getid3->warning[] = 'invalid Local File Header Data Descriptor Signature at offset '.($this->ftell() - 16).' - expecting 08 07 4B 50, found '.getid3_lib::PrintHexBytes($LocalFileHeader['data_descriptor']['signature']);
+				$this->getid3->warning('invalid Local File Header Data Descriptor Signature at offset '.($this->ftell() - 16).' - expecting 08 07 4B 50, found '.getid3_lib::PrintHexBytes($LocalFileHeader['data_descriptor']['signature']));
 				$this->fseek($LocalFileHeader['offset']); // seek back to where filepointer originally was so it can be handled properly
 				return false;
 			}
@@ -380,6 +380,7 @@ class getid3_zip extends getid3_handler
 
 	public static function ZIPparseGeneralPurposeFlags($flagbytes, $compressionmethod) {
 		// https://users.cs.jmu.edu/buchhofp/forensics/formats/pkzip-printable.html
+		$ParsedFlags = array();
 		$ParsedFlags['encrypted']               = (bool) ($flagbytes & 0x0001);
 		//                                                             0x0002 -- see below
 		//                                                             0x0004 -- see below

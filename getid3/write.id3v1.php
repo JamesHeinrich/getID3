@@ -25,7 +25,6 @@ class getid3_write_id3v1
 	public $errors   = array(); // any critical errors will be stored here
 
 	public function __construct() {
-		return true;
 	}
 
 	public function WriteID3v1() {
@@ -79,6 +78,7 @@ class getid3_write_id3v1
 		$getID3->option_tag_id3v1  = true;
 		$ThisFileInfo = $getID3->analyze($this->filename);
 		if (isset($ThisFileInfo['tags']['id3v1'])) {
+			$id3v1data = array();
 			foreach ($ThisFileInfo['tags']['id3v1'] as $key => $value) {
 				$id3v1data[$key] = implode(',', $value);
 			}

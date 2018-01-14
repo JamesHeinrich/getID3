@@ -148,6 +148,8 @@ class getid3_lib
 
 	public static function Float2String($floatvalue, $bits) {
 		// http://www.scri.fsu.edu/~jac/MAD3401/Backgrnd/ieee-expl.html
+        $exponentbits = 0;
+		$fractionbits = 0;
 		switch ($bits) {
 			case 32:
 				$exponentbits = 8;
@@ -192,6 +194,9 @@ class getid3_lib
 			return 0;
 		}
 		$signbit = $bitword{0};
+		$floatvalue = 0;
+		$exponentbits = 0;
+		$fractionbits = 0;
 
 		switch (strlen($byteword) * 8) {
 			case 32:
@@ -564,6 +569,10 @@ class getid3_lib
 	// self::md5_data() - returns md5sum for a file from startuing position to absolute end position
 	public static function hash_data($file, $offset, $end, $algorithm) {
 		static $tempdir = '';
+		$windows_call = null;
+		$unix_call = null;
+		$hash_length = null;
+		$hash_function = null;
 		if (!self::intValueSupported($end)) {
 			return false;
 		}

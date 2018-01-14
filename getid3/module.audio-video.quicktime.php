@@ -2337,6 +2337,7 @@ class getid3_quicktime extends getid3_handler
 		);
 
 		$offset = 0;
+		$data = null;
 		$datalength = strlen($atom_data);
 		$parsed = array();
 		while ($offset < $datalength) {
