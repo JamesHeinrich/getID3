@@ -14,17 +14,25 @@ php:
 
 sudo: false
 
+matrix:
+  include:
+    - php: 7.1
+      env: PHPSTAN=1
+
 env:
   - COMPOSER_OPTS=""
   - COMPOSER_OPTS="--prefer-lowest"
 
 install:
-  - composer self-update
   - composer update $COMPOSER_OPTS
+
+before_script:
+  - if [[ $PHPSTAN = 1 ]]; then composer require --dev phpstan/phpstan:^0.9; fi
 
 script:
   - phpunit
   - ./tests/lint.sh
+  - if [[ $PHPSTAN = 1 ]]; then vendor/bin/phpstan analyse -c phpstan.neon -l 4 getid3; fi
 
 git:
   depth: 5
