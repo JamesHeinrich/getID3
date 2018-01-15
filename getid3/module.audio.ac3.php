@@ -161,21 +161,21 @@ class getid3_ac3 extends getid3_handler
 			if ($thisfile_ac3_raw_bsi['flags']['timecod1'] & 0x01) {
 				$thisfile_ac3_raw_bsi['timecod1'] = $this->readHeaderBSI(14);            // 5.4.2.27 timecod1: Time code first half, 14 bits
 				$thisfile_ac3['timecode1'] = 0;
-				$thisfile_ac3['timecode1'] += (($thisfile_ac3_raw_bsi['timecod1'] & 0x3E00) >>  9) * 3600;  // The first 5 bits of this 14-bit field represent the time in hours, with valid values of 0–23
-				$thisfile_ac3['timecode1'] += (($thisfile_ac3_raw_bsi['timecod1'] & 0x01F8) >>  3) *   60;  // The next 6 bits represent the time in minutes, with valid values of 0–59
-				$thisfile_ac3['timecode1'] += (($thisfile_ac3_raw_bsi['timecod1'] & 0x0003) >>  0) *    8;  // The final 3 bits represents the time in 8 second increments, with valid values of 0–7 (representing 0, 8, 16, ... 56 seconds)
+				$thisfile_ac3['timecode1'] += (($thisfile_ac3_raw_bsi['timecod1'] & 0x3E00) >>  9) * 3600;  // The first 5 bits of this 14-bit field represent the time in hours, with valid values of 0ï¿½23
+				$thisfile_ac3['timecode1'] += (($thisfile_ac3_raw_bsi['timecod1'] & 0x01F8) >>  3) *   60;  // The next 6 bits represent the time in minutes, with valid values of 0ï¿½59
+				$thisfile_ac3['timecode1'] += (($thisfile_ac3_raw_bsi['timecod1'] & 0x0003) >>  0) *    8;  // The final 3 bits represents the time in 8 second increments, with valid values of 0ï¿½7 (representing 0, 8, 16, ... 56 seconds)
 			}
 			if ($thisfile_ac3_raw_bsi['flags']['timecod1'] & 0x02) {
 				$thisfile_ac3_raw_bsi['timecod2'] = $this->readHeaderBSI(14);            // 5.4.2.28 timecod2: Time code second half, 14 bits
 				$thisfile_ac3['timecode2'] = 0;
-				$thisfile_ac3['timecode2'] += (($thisfile_ac3_raw_bsi['timecod2'] & 0x3800) >> 11) *   1;              // The first 3 bits of this 14-bit field represent the time in seconds, with valid values from 0–7 (representing 0-7 seconds)
-				$thisfile_ac3['timecode2'] += (($thisfile_ac3_raw_bsi['timecod2'] & 0x07C0) >>  6) *  (1 / 30);        // The next 5 bits represents the time in frames, with valid values from 0–29 (one frame = 1/30th of a second)
-				$thisfile_ac3['timecode2'] += (($thisfile_ac3_raw_bsi['timecod2'] & 0x003F) >>  0) * ((1 / 30) / 60);  // The final 6 bits represents fractions of 1/64 of a frame, with valid values from 0–63
+				$thisfile_ac3['timecode2'] += (($thisfile_ac3_raw_bsi['timecod2'] & 0x3800) >> 11) *   1;              // The first 3 bits of this 14-bit field represent the time in seconds, with valid values from 0ï¿½7 (representing 0-7 seconds)
+				$thisfile_ac3['timecode2'] += (($thisfile_ac3_raw_bsi['timecod2'] & 0x07C0) >>  6) *  (1 / 30);        // The next 5 bits represents the time in frames, with valid values from 0ï¿½29 (one frame = 1/30th of a second)
+				$thisfile_ac3['timecode2'] += (($thisfile_ac3_raw_bsi['timecod2'] & 0x003F) >>  0) * ((1 / 30) / 60);  // The final 6 bits represents fractions of 1/64 of a frame, with valid values from 0ï¿½63
 			}
 
 			$thisfile_ac3_raw_bsi['flags']['addbsi'] = (bool) $this->readHeaderBSI(1);
 			if ($thisfile_ac3_raw_bsi['flags']['addbsi']) {
-				$thisfile_ac3_raw_bsi['addbsi_length'] = $this->readHeaderBSI(6) + 1; // This 6-bit code, which exists only if addbside is a 1, indicates the length in bytes of additional bit stream information. The valid range of addbsil is 0–63, indicating 1–64 additional bytes, respectively.
+				$thisfile_ac3_raw_bsi['addbsi_length'] = $this->readHeaderBSI(6) + 1; // This 6-bit code, which exists only if addbside is a 1, indicates the length in bytes of additional bit stream information. The valid range of addbsil is 0ï¿½63, indicating 1ï¿½64 additional bytes, respectively.
 
 				$this->AC3header['bsi'] .= getid3_lib::BigEndian2Bin($this->fread($thisfile_ac3_raw_bsi['addbsi_length']));
 
@@ -573,10 +573,10 @@ $thisfile_ac3['bitrate'] = round(($thisfile_ac3['bitrate'] * 1.05) / 16000) * 16
 
 	public static function channelsEnabledLookup($acmod, $lfeon) {
 		$lookup = array(
-			'ch1'=>(bool) ($acmod == 0),
-			'ch2'=>(bool) ($acmod == 0),
-			'left'=>(bool) ($acmod > 1),
-			'right'=>(bool) ($acmod > 1),
+			'ch1'=>($acmod == 0),
+			'ch2'=>($acmod == 0),
+			'left'=>($acmod > 1),
+			'right'=>($acmod > 1),
 			'center'=>(bool) ($acmod & 0x01),
 			'surround_mono'=>false,
 			'surround_left'=>false,

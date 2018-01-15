@@ -94,7 +94,6 @@ class getID3_cached_sqlite3 extends getID3 {
 	/**
 	* __construct()
 	* @param string $table holds name of sqlite table
-	* @return type
 	*/
 	public function __construct($table='getid3_cache', $hide=false) {
 		$this->table = $table; // Set table
@@ -106,7 +105,7 @@ class getID3_cached_sqlite3 extends getID3 {
 		$db = $this->db;
 		$this->create_table();   // Create cache table if not exists
 		$version = '';
-		$sql = $this->version_check;
+		$sql = $this->getQuery('version_check');
 		$stmt = $db->prepare($sql);
 		$stmt->bindValue(':filename', getID3::VERSION, SQLITE3_TEXT);
 		$result = $stmt->execute();
@@ -114,7 +113,7 @@ class getID3_cached_sqlite3 extends getID3 {
 		if ($version != getID3::VERSION) { // Check version number and clear cache if changed
 			$this->clear_cache();
 		}
-		return parent::__construct();
+		parent::__construct();
 	}
 
 	/**
@@ -127,7 +126,7 @@ class getID3_cached_sqlite3 extends getID3 {
 
 	/**
 	* hold the sqlite db
-	* @var SQLite Resource
+	* @var SQLite3 Resource
 	*/
 	private $db;
 
@@ -140,13 +139,13 @@ class getID3_cached_sqlite3 extends getID3 {
 	/**
 	* clear the cache
 	* @access private
-	* @return type
+	* @return SQLite3Result
 	*/
 	private function clear_cache() {
 		$db = $this->db;
-		$sql = $this->delete_cache;
+		$sql = $this->getQuery('delete_cache');
 		$db->exec($sql);
-		$sql = $this->set_version;
+		$sql = $this->getQuery('set_version');
 		$stmt = $db->prepare($sql);
 		$stmt->bindValue(':filename', getID3::VERSION, SQLITE3_TEXT);
 		$stmt->bindValue(':dirname', getID3::VERSION, SQLITE3_TEXT);
@@ -156,7 +155,7 @@ class getID3_cached_sqlite3 extends getID3 {
 
 	/**
 	* analyze file and cache them, if cached pull from the db
-	* @param type $filename
+	* @param string $filename
 	* @return boolean
 	*/
 	public function analyze($filename, $filesize=null, $original_filename='') {
@@ -171,7 +170,7 @@ class getID3_cached_sqlite3 extends getID3 {
 		$dirname  = dirname($filename);
 		// Lookup file
 		$db = $this->db;
-		$sql = $this->get_id3_data;
+		$sql = $this->getQuery('get_id3_data');
 		$stmt = $db->prepare($sql);
 		$stmt->bindValue(':filename', $filename,      SQLITE3_TEXT);
 		$stmt->bindValue(':filesize', $filesize_real, SQLITE3_INTEGER);
@@ -184,7 +183,7 @@ class getID3_cached_sqlite3 extends getID3 {
 		// if it hasn't been analyzed before, then do it now
 		$analysis = parent::analyze($filename, $filesize, $original_filename);
 		// Save result
-		$sql = $this->cache_file;
+		$sql = $this->getQuery('cache_file');
 		$stmt = $db->prepare($sql);
 		$stmt->bindValue(':filename', $filename,                           SQLITE3_TEXT);
 		$stmt->bindValue(':dirname',  $dirname,                            SQLITE3_TEXT);
@@ -199,11 +198,11 @@ class getID3_cached_sqlite3 extends getID3 {
 	/**
 	* create data base table
 	* this is almost the same as MySQL, with the exception of the dirname being added
-	* @return type
+	* @return bool
 	*/
 	private function create_table() {
 		$db = $this->db;
-		$sql = $this->make_table;
+		$sql = $this->getQuery('make_table');
 		return $db->exec($sql);
 	}
 
@@ -220,7 +219,7 @@ class getID3_cached_sqlite3 extends getID3 {
 	public function get_cached_dir($dir) {
 		$db = $this->db;
 		$rows = array();
-		$sql = $this->get_cached_dir;
+		$sql = $this->getQuery('get_cached_dir');
 		$stmt = $db->prepare($sql);
 		$stmt->bindValue(':dirname', $dir, SQLITE3_TEXT);
 		$res = $stmt->execute();
@@ -230,36 +229,50 @@ class getID3_cached_sqlite3 extends getID3 {
 		return $rows;
 	}
 
+    /**
+     * returns NULL if query is not found
+     *
+     * @param string $name
+     *
+     * @return null|string
+     */
+    public function getQuery($name)
+    {
+        switch ($name) {
+            case 'version_check':
+                return "SELECT val FROM $this->table WHERE filename = :filename AND filesize = '-1' AND filetime = '-1' AND analyzetime = '-1'";
+                break;
+            case 'delete_cache':
+                return "DELETE FROM $this->table";
+                break;
+            case 'set_version':
+                return "INSERT INTO $this->table (filename, dirname, filesize, filetime, analyzetime, val) VALUES (:filename, :dirname, -1, -1, -1, :val)";
+                break;
+            case 'get_id3_data':
+                return "SELECT val FROM $this->table WHERE filename = :filename AND filesize = :filesize AND filetime = :filetime";
+                break;
+            case 'cache_file':
+                return "INSERT INTO $this->table (filename, dirname, filesize, filetime, analyzetime, val) VALUES (:filename, :dirname, :filesize, :filetime, :atime, :val)";
+                break;
+            case 'make_table':
+                return "CREATE TABLE IF NOT EXISTS $this->table (filename VARCHAR(255) DEFAULT '', dirname VARCHAR(255) DEFAULT '', filesize INT(11) DEFAULT '0', filetime INT(11) DEFAULT '0', analyzetime INT(11) DEFAULT '0', val text, PRIMARY KEY (filename, filesize, filetime))";
+                break;
+            case 'get_cached_dir':
+                return "SELECT val FROM $this->table WHERE dirname = :dirname";
+                break;
+            default:
+                return null;
+        }
+	}
 	/**
 	* use the magical __get() for sql queries
 	*
 	* access as easy as $this->{case name}, returns NULL if query is not found
+	*
+	* @deprecated use getQuery() instead
 	*/
 	public function __get($name) {
-		switch($name) {
-			case 'version_check':
-				return "SELECT val FROM $this->table WHERE filename = :filename AND filesize = '-1' AND filetime = '-1' AND analyzetime = '-1'";
-				break;
-			case 'delete_cache':
-				return "DELETE FROM $this->table";
-				break;
-			case 'set_version':
-				return "INSERT INTO $this->table (filename, dirname, filesize, filetime, analyzetime, val) VALUES (:filename, :dirname, -1, -1, -1, :val)";
-				break;
-			case 'get_id3_data':
-				return "SELECT val FROM $this->table WHERE filename = :filename AND filesize = :filesize AND filetime = :filetime";
-				break;
-			case 'cache_file':
-				return "INSERT INTO $this->table (filename, dirname, filesize, filetime, analyzetime, val) VALUES (:filename, :dirname, :filesize, :filetime, :atime, :val)";
-				break;
-			case 'make_table':
-				return "CREATE TABLE IF NOT EXISTS $this->table (filename VARCHAR(255) DEFAULT '', dirname VARCHAR(255) DEFAULT '', filesize INT(11) DEFAULT '0', filetime INT(11) DEFAULT '0', analyzetime INT(11) DEFAULT '0', val text, PRIMARY KEY (filename, filesize, filetime))";
-				break;
-			case 'get_cached_dir':
-				return "SELECT val FROM $this->table WHERE dirname = :dirname";
-				break;
-		}
-		return null;
+		return $this->getQuery($name);
 	}
 
 }

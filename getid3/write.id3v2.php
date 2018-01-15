@@ -31,7 +31,6 @@ class getid3_write_id3v2
 	public $errors                      = array();  // any critical errors will be stored here
 
 	public function __construct() {
-		return true;
 	}
 
 	public function WriteID3v2() {
@@ -44,7 +43,6 @@ class getid3_write_id3v2
 			$OldThisFileInfo = $getID3->analyze($this->filename);
 			if (!getid3_lib::intValueSupported($OldThisFileInfo['filesize'])) {
 				$this->errors[] = 'Unable to write ID3v2 because file is larger than '.round(PHP_INT_MAX / 1073741824).'GB';
-				fclose($fp_source);
 				return false;
 			}
 			if ($this->merge_existing_data) {
@@ -227,6 +225,7 @@ class getid3_write_id3v2
 
 
 	public function GenerateID3v2TagFlags($flags) {
+		$flag = null;
 		switch ($this->majorversion) {
 			case 4:
 				// %abcd0000
@@ -261,7 +260,9 @@ class getid3_write_id3v2
 
 
 	public function GenerateID3v2FrameFlags($TagAlter=false, $FileAlter=false, $ReadOnly=false, $Compression=false, $Encryption=false, $GroupingIdentity=false, $Unsynchronisation=false, $DataLengthIndicator=false) {
-		switch ($this->majorversion) {
+		$flag1 = null;
+		$flag2 = null;
+	    switch ($this->majorversion) {
 			case 4:
 				// %0abc0000 %0h00kmnp
 				$flag1  = '0';
@@ -331,7 +332,7 @@ class getid3_write_id3v2
 					// Description       <text string according to encoding> $00 (00)
 					// Value             <text string according to encoding>
 					$source_data_array['encodingid'] = (isset($source_data_array['encodingid']) ? $source_data_array['encodingid'] : $this->id3v2_default_encodingid);
-					if (!$this->ID3v2IsValidTextEncoding($source_data_array['encodingid'], $this->majorversion)) {
+					if (!$this->ID3v2IsValidTextEncoding($source_data_array['encodingid'])) {
 						$this->errors[] = 'Invalid Text Encoding in '.$frame_name.' ('.$source_data_array['encodingid'].') for ID3v2.'.$this->majorversion;
 					} else {
 						$framedata .= chr($source_data_array['encodingid']);
@@ -346,9 +347,9 @@ class getid3_write_id3v2
 					// Description       <text string according to encoding> $00 (00)
 					// URL               <text string>
 					$source_data_array['encodingid'] = (isset($source_data_array['encodingid']) ? $source_data_array['encodingid'] : $this->id3v2_default_encodingid);
-					if (!$this->ID3v2IsValidTextEncoding($source_data_array['encodingid'], $this->majorversion)) {
+					if (!$this->ID3v2IsValidTextEncoding($source_data_array['encodingid'])) {
 						$this->errors[] = 'Invalid Text Encoding in '.$frame_name.' ('.$source_data_array['encodingid'].') for ID3v2.'.$this->majorversion;
-					} elseif (!isset($source_data_array['data']) || !$this->IsValidURL($source_data_array['data'], false, false)) {
+					} elseif (!isset($source_data_array['data']) || !$this->IsValidURL($source_data_array['data'], false)) {
 						//$this->errors[] = 'Invalid URL in '.$frame_name.' ('.$source_data_array['data'].')';
 						// probably should be an error, need to rewrite IsValidURL() to handle other encodings
 						$this->warnings[] = 'Invalid URL in '.$frame_name.' ('.$source_data_array['data'].')';
@@ -364,7 +365,7 @@ class getid3_write_id3v2
 					// Text encoding     $xx
 					// People list strings    <textstrings>
 					$source_data_array['encodingid'] = (isset($source_data_array['encodingid']) ? $source_data_array['encodingid'] : $this->id3v2_default_encodingid);
-					if (!$this->ID3v2IsValidTextEncoding($source_data_array['encodingid'], $this->majorversion)) {
+					if (!$this->ID3v2IsValidTextEncoding($source_data_array['encodingid'])) {
 						$this->errors[] = 'Invalid Text Encoding in '.$frame_name.' ('.$source_data_array['encodingid'].') for ID3v2.'.$this->majorversion;
 					} else {
 						$framedata .= chr($source_data_array['encodingid']);
@@ -397,13 +398,14 @@ class getid3_write_id3v2
 							if (!$this->ID3v2IsValidETCOevent($val['typeid'])) {
 								$this->errors[] = 'Invalid Event Type byte in '.$frame_name.' ('.$val['typeid'].')';
 							} elseif (($key != 'timestampformat') && ($key != 'flags')) {
-								if (($val['timestamp'] > 0) && ($previousETCOtimestamp >= $val['timestamp'])) {
+								if (($val['timestamp'] > 0) && isset($previousETCOtimestamp) && ($previousETCOtimestamp >= $val['timestamp'])) {
 									//   The 'Time stamp' is set to zero if directly at the beginning of the sound
 									//   or after the previous event. All events MUST be sorted in chronological order.
 									$this->errors[] = 'Out-of-order timestamp in '.$frame_name.' ('.$val['timestamp'].') for Event Type ('.$val['typeid'].')';
 								} else {
 									$framedata .= chr($val['typeid']);
 									$framedata .= getid3_lib::BigEndian2String($val['timestamp'], 4, false);
+									$previousETCOtimestamp = $val['timestamp'];
 								}
 							}
 						}
@@ -453,6 +455,7 @@ class getid3_write_id3v2
 					} else {
 						$this->errors[] = 'Invalid Bits For Milliseconds Deviation in '.$frame_name.' ('.$source_data_array['bitsformsdeviation'].')';
 					}
+					$unwrittenbitstream = '';
 					foreach ($source_data_array as $key => $val) {
 						if (($key != 'framesbetweenreferences') && ($key != 'bytesbetweenreferences') && ($key != 'msbetweenreferences') && ($key != 'bitsforbytesdeviation') && ($key != 'bitsformsdeviation') && ($key != 'flags')) {
 							$unwrittenbitstream .= str_pad(getid3_lib::Dec2Bin($val['bytedeviation']), $source_data_array['bitsforbytesdeviation'], '0', STR_PAD_LEFT);
@@ -617,7 +620,7 @@ class getid3_write_id3v2
 					if (!$this->IsWithinBitRange($source_data_array['bitsvolume'], 8, false)) {
 						$this->errors[] = 'Invalid Bits For Volume Description byte in '.$frame_name.' ('.$source_data_array['bitsvolume'].') (range = 1 to 255)';
 					} else {
-						$incdecflag .= '00';
+						$incdecflag  = '00';
 						$incdecflag .= $source_data_array['incdec']['right']     ? '1' : '0';     // a - Relative volume change, right
 						$incdecflag .= $source_data_array['incdec']['left']      ? '1' : '0';      // b - Relative volume change, left
 						$incdecflag .= $source_data_array['incdec']['rightrear'] ? '1' : '0'; // c - Relative volume change, right back
@@ -762,7 +765,7 @@ class getid3_write_id3v2
 						$this->errors[] = 'Invalid Picture Type byte in '.$frame_name.' ('.$source_data_array['picturetypeid'].') for ID3v2.'.$this->majorversion;
 					} elseif (($this->majorversion >= 3) && (!$this->ID3v2IsValidAPICimageformat($source_data_array['mime']))) {
 						$this->errors[] = 'Invalid MIME Type in '.$frame_name.' ('.$source_data_array['mime'].') for ID3v2.'.$this->majorversion;
-					} elseif (($source_data_array['mime'] == '-->') && (!$this->IsValidURL($source_data_array['data'], false, false))) {
+					} elseif (($source_data_array['mime'] == '-->') && (!$this->IsValidURL($source_data_array['data'], false))) {
 						//$this->errors[] = 'Invalid URL in '.$frame_name.' ('.$source_data_array['data'].')';
 						// probably should be an error, need to rewrite IsValidURL() to handle other encodings
 						$this->warnings[] = 'Invalid URL in '.$frame_name.' ('.$source_data_array['data'].')';
@@ -835,7 +838,7 @@ class getid3_write_id3v2
 						$this->errors[] = 'Invalid Offset To Next Tag in '.$frame_name;
 					} else {
 						$framedata .= getid3_lib::BigEndian2String($source_data_array['buffersize'], 3, false);
-						$flag .= '0000000';
+						$flag  = '0000000';
 						$flag .= $source_data_array['flags']['embededinfo'] ? '1' : '0';
 						$framedata .= chr(bindec($flag));
 						$framedata .= getid3_lib::BigEndian2String($source_data_array['nexttagoffset'], 4, false);
@@ -867,7 +870,7 @@ class getid3_write_id3v2
 					// ID and additional data         <text string(s)>
 					if (!getid3_id3v2::IsValidID3v2FrameName($source_data_array['frameid'], $this->majorversion)) {
 						$this->errors[] = 'Invalid Frame Identifier in '.$frame_name.' ('.$source_data_array['frameid'].')';
-					} elseif (!$this->IsValidURL($source_data_array['data'], true, false)) {
+					} elseif (!$this->IsValidURL($source_data_array['data'], true)) {
 						//$this->errors[] = 'Invalid URL in '.$frame_name.' ('.$source_data_array['data'].')';
 						// probably should be an error, need to rewrite IsValidURL() to handle other encodings
 						$this->warnings[] = 'Invalid URL in '.$frame_name.' ('.$source_data_array['data'].')';
@@ -966,9 +969,9 @@ class getid3_write_id3v2
 					$source_data_array['encodingid'] = (isset($source_data_array['encodingid']) ? $source_data_array['encodingid'] : $this->id3v2_default_encodingid);
 					if (!$this->ID3v2IsValidTextEncoding($source_data_array['encodingid'])) {
 						$this->errors[] = 'Invalid Text Encoding in '.$frame_name.' ('.$source_data_array['encodingid'].')';
-					} elseif (!$this->IsANumber($source_data_array['pricepaid']['value'], false)) {
+					} elseif (!getid3_id3v2::IsANumber($source_data_array['pricepaid']['value'], false)) {
 						$this->errors[] = 'Invalid Price Paid in '.$frame_name.' ('.$source_data_array['pricepaid']['value'].')';
-					} elseif (!$this->IsValidDateStampString($source_data_array['purchasedate'])) {
+					} elseif (!getid3_id3v2::IsValidDateStampString($source_data_array['purchasedate'])) {
 						$this->errors[] = 'Invalid Date Of Purchase in '.$frame_name.' ('.$source_data_array['purchasedate'].') (format = YYYYMMDD)';
 					} else {
 						$framedata .= chr($source_data_array['encodingid']);
@@ -992,9 +995,9 @@ class getid3_write_id3v2
 					$source_data_array['encodingid'] = (isset($source_data_array['encodingid']) ? $source_data_array['encodingid'] : $this->id3v2_default_encodingid);
 					if (!$this->ID3v2IsValidTextEncoding($source_data_array['encodingid'])) {
 						$this->errors[] = 'Invalid Text Encoding in '.$frame_name.' ('.$source_data_array['encodingid'].')';
-					} elseif (!$this->IsValidDateStampString($source_data_array['pricevaliduntil'])) {
+					} elseif (!getid3_id3v2::IsValidDateStampString($source_data_array['pricevaliduntil'])) {
 						$this->errors[] = 'Invalid Valid Until date in '.$frame_name.' ('.$source_data_array['pricevaliduntil'].') (format = YYYYMMDD)';
-					} elseif (!$this->IsValidURL($source_data_array['contacturl'], false, true)) {
+					} elseif (!$this->IsValidURL($source_data_array['contacturl'], false)) {
 						$this->errors[] = 'Invalid Contact URL in '.$frame_name.' ('.$source_data_array['contacturl'].') (allowed schemes: http, https, ftp, mailto)';
 					} elseif (!$this->ID3v2IsValidCOMRreceivedAs($source_data_array['receivedasid'])) {
 						$this->errors[] = 'Invalid Received As byte in '.$frame_name.' ('.$source_data_array['contacturl'].') (range = 0 to 8)';
@@ -1003,6 +1006,7 @@ class getid3_write_id3v2
 					} else {
 						$framedata .= chr($source_data_array['encodingid']);
 						unset($pricestring);
+						$pricestrings = array();
 						foreach ($source_data_array['price'] as $key => $val) {
 							if ($this->ID3v2IsValidPriceString($key.$val['value'])) {
 								$pricestrings[] = $key.$val['value'];
@@ -1155,7 +1159,7 @@ class getid3_write_id3v2
 					} elseif ($frame_name{0} == 'W') {
 						// 4.3. W???  URL link frames
 						// URL              <text string>
-						if (!$this->IsValidURL($source_data_array['data'], false, false)) {
+						if (!$this->IsValidURL($source_data_array['data'], false)) {
 							//$this->errors[] = 'Invalid URL in '.$frame_name.' ('.$source_data_array['data'].')';
 							// probably should be an error, need to rewrite IsValidURL() to handle other encodings
 							$this->warnings[] = 'Invalid URL in '.$frame_name.' ('.$source_data_array['data'].')';
@@ -1647,7 +1651,7 @@ class getid3_write_id3v2
 	public function ID3v2IsValidPriceString($pricestring) {
 		if (getid3_id3v2::LanguageLookup(substr($pricestring, 0, 3), true) == '') {
 			return false;
-		} elseif (!$this->IsANumber(substr($pricestring, 3), true)) {
+		} elseif (!getid3_id3v2::IsANumber(substr($pricestring, 3), true)) {
 			return false;
 		}
 		return true;

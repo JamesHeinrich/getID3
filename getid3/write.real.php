@@ -24,7 +24,6 @@ class getid3_write_real
 	public $paddedlength      = 512;     // minimum length of CONT tag in bytes
 
 	public function __construct() {
-		return true;
 	}
 
 	public function WriteReal() {
@@ -45,6 +44,7 @@ class getid3_write_real
 				fclose($fp_source);
 				return false;
 			}
+			$oldChunkInfo = array();
 			foreach ($OldThisFileInfo['real']['chunks'] as $chunknumber => $chunkarray) {
 				$oldChunkInfo[$chunkarray['name']] = $chunkarray;
 			}
@@ -129,6 +129,7 @@ class getid3_write_real
 
 	public function GenerateRMFchunk(&$chunks) {
 		$oldCONTexists = false;
+		$chunkNameKeys = array();
 		foreach ($chunks as $key => $chunk) {
 			$chunkNameKeys[$chunk['name']] = $key;
 			if ($chunk['name'] == 'CONT') {
@@ -149,6 +150,7 @@ class getid3_write_real
 		$old_CONT_length = 0;
 		$old_DATA_offset = 0;
 		$old_INDX_offset = 0;
+		$chunkNameKeys = array();
 		foreach ($chunks as $key => $chunk) {
 			$chunkNameKeys[$chunk['name']] = $key;
 			if ($chunk['name'] == 'CONT') {

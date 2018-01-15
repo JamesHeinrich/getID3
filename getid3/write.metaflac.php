@@ -27,7 +27,6 @@ class getid3_write_metaflac
 	private $pictures = array();
 
 	public function __construct() {
-		return true;
 	}
 
 	public function WriteMetaFLAC() {

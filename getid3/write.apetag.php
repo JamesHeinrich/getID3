@@ -27,7 +27,6 @@ class getid3_write_apetag
 	public $errors                     = array(); // any critical errors will be stored here
 
 	public function __construct() {
-		return true;
 	}
 
 	public function WriteAPEtag() {

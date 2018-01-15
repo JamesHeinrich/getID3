@@ -278,6 +278,7 @@ class getid3_iso extends getid3_handler
 
 		$this->fseek($directorydata['location_bytes']);
 		$DirectoryRecordData = $this->fread(1);
+		$DirectoryRecord = array();
 
 		while (ord($DirectoryRecordData{0}) > 33) {
 

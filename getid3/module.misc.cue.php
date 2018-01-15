@@ -54,7 +54,7 @@ class getid3_cue extends getid3_handler
 	/**
 	* Parses a cue sheet file.
 	*
-	* @param string $filename - The filename for the cue sheet to open.
+	* @param string $filedata
 	*/
 	public function readCueSheet(&$filedata)
 	{
@@ -236,6 +236,7 @@ class getid3_cue extends getid3_handler
 	{
 		$type = strtolower(substr($line, 0, strpos($line, ' ')));
 		$line =            substr($line, strpos($line, ' ') + 1);
+		$number = 0;
 
 		if ($type == 'index')
 		{

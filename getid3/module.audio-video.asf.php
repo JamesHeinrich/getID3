@@ -83,6 +83,8 @@ class getid3_asf extends getid3_handler {
 		$NextObjectOffset = $this->ftell();
 		$ASFHeaderData = $this->fread($thisfile_asf_headerobject['objectsize'] - 30);
 		$offset = 0;
+		$thisfile_asf_streambitratepropertiesobject = array();
+		$thisfile_asf_codeclistobject = array();
 
 		for ($HeaderObjectsCounter = 0; $HeaderObjectsCounter < $thisfile_asf_headerobject['headerobjects']; $HeaderObjectsCounter++) {
 			$NextObjectGUID = substr($ASFHeaderData, $offset, 16);
@@ -970,18 +972,18 @@ class getid3_asf extends getid3_handler {
 					break;
 			}
 		}
-		if (isset($thisfile_asf_streambitrateproperties['bitrate_records_count'])) {
+		if (isset($thisfile_asf_streambitratepropertiesobject['bitrate_records_count'])) {
 			$ASFbitrateAudio = 0;
 			$ASFbitrateVideo = 0;
-			for ($BitrateRecordsCounter = 0; $BitrateRecordsCounter < $thisfile_asf_streambitrateproperties['bitrate_records_count']; $BitrateRecordsCounter++) {
+			for ($BitrateRecordsCounter = 0; $BitrateRecordsCounter < $thisfile_asf_streambitratepropertiesobject['bitrate_records_count']; $BitrateRecordsCounter++) {
 				if (isset($thisfile_asf_codeclistobject['codec_entries'][$BitrateRecordsCounter])) {
 					switch ($thisfile_asf_codeclistobject['codec_entries'][$BitrateRecordsCounter]['type_raw']) {
 						case 1:
-							$ASFbitrateVideo += $thisfile_asf_streambitrateproperties['bitrate_records'][$BitrateRecordsCounter]['bitrate'];
+							$ASFbitrateVideo += $thisfile_asf_streambitratepropertiesobject['bitrate_records'][$BitrateRecordsCounter]['bitrate'];
 							break;
 
 						case 2:
-							$ASFbitrateAudio += $thisfile_asf_streambitrateproperties['bitrate_records'][$BitrateRecordsCounter]['bitrate'];
+							$ASFbitrateAudio += $thisfile_asf_streambitratepropertiesobject['bitrate_records'][$BitrateRecordsCounter]['bitrate'];
 							break;
 
 						default:

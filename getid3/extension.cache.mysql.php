@@ -78,6 +78,11 @@ class getID3_cached_mysql extends getID3
 	private $cursor;
 	private $connection;
 
+    /**
+     * @var string
+     */
+	private $table;
+
 
 	// public: constructor - see top of this file for cache type and cache_options
 	public function __construct($host, $database, $username, $password, $table='getid3_cache') {
@@ -136,6 +141,7 @@ class getID3_cached_mysql extends getID3
 	// public: analyze file
 	public function analyze($filename, $filesize=null, $original_filename='') {
 
+        $filetime = 0;
 		if (file_exists($filename)) {
 
 			// Short-hands
