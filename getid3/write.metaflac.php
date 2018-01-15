@@ -20,8 +20,11 @@ class getid3_write_metaflac
 
 	public $filename;
 	public $tag_data;
+
 	public $warnings = array(); // any non-critical errors will be stored here
 	public $errors   = array(); // any critical errors will be stored here
+
+	private $pictures = array();
 
 	public function __construct() {
 		return true;
@@ -34,8 +37,34 @@ class getid3_write_metaflac
 			return false;
 		}
 
+		$tempfilenames = array();
+
+
+		if (!empty($this->tag_data['ATTACHED_PICTURE'])) {
+			foreach ($this->tag_data['ATTACHED_PICTURE'] as $key => $picturedetails) {
+				$temppicturefilename = tempnam(GETID3_TEMP_DIR, 'getID3');
+				$tempfilenames[] = $temppicturefilename;
+				if (getID3::is_writable($temppicturefilename) && is_file($temppicturefilename) && ($fpcomments = fopen($temppicturefilename, 'wb'))) {
+					// https://xiph.org/flac/documentation_tools_flac.html#flac_options_picture
+					// [TYPE]|[MIME-TYPE]|[DESCRIPTION]|[WIDTHxHEIGHTxDEPTH[/COLORS]]|FILE
+					fwrite($fpcomments, $picturedetails['data']);
+					fclose($fpcomments);
+					$picture_typeid = (!empty($picturedetails['picturetypeid']) ? $this->ID3v2toFLACpictureTypes($picturedetails['picturetypeid']) : 3); // default to "3:Cover (front)"
+					$picture_mimetype = (!empty($picturedetails['mime']) ? $picturedetails['mime'] : ''); // should be auto-detected
+					$picture_width_height_depth = '';
+					$this->pictures[] = $picture_typeid.'|'.$picture_mimetype.'|'.preg_replace('#[^\x20-\x7B\x7D-\x7F]#', '', $picturedetails['description']).'|'.$picture_width_height_depth.'|'.$temppicturefilename;
+				} else {
+					$this->errors[] = 'failed to open temporary tags file, tags not written - fopen("'.$tempcommentsfilename.'", "wb")';
+					return false;
+				}
+			}
+			unset($this->tag_data['ATTACHED_PICTURE']);
+		}
+
+
 		// Create file with new comments
 		$tempcommentsfilename = tempnam(GETID3_TEMP_DIR, 'getID3');
+		$tempfilenames[] = $tempcommentsfilename;
 		if (getID3::is_writable($tempcommentsfilename) && is_file($tempcommentsfilename) && ($fpcomments = fopen($tempcommentsfilename, 'wb'))) {
 			foreach ($this->tag_data as $key => $value) {
 				foreach ($value as $commentdata) {
@@ -65,7 +94,13 @@ class getid3_write_metaflac
 				clearstatcache();
 				$timestampbeforewriting = filemtime($this->filename);
 
-				$commandline = GETID3_HELPERAPPSDIR.'metaflac.exe --no-utf8-convert --remove-all-tags --import-tags-from='.escapeshellarg($tempcommentsfilename).' '.escapeshellarg($this->filename).' 2>&1';
+				$commandline  = GETID3_HELPERAPPSDIR.'metaflac.exe --no-utf8-convert --remove-all-tags --import-tags-from='.escapeshellarg($tempcommentsfilename);
+				foreach ($this->pictures as $picturecommand) {
+					$commandline .= ' --import-picture-from='.escapeshellarg($picturecommand);
+				}
+				$commandline .= ' '.escapeshellarg($this->filename).' 2>&1';
+echo $commandline.'<br>';
+//exit;
 				$metaflacError = `$commandline`;
 
 				if (empty($metaflacError)) {
@@ -87,7 +122,9 @@ class getid3_write_metaflac
 		}
 
 		// Remove temporary comments file
-		unlink($tempcommentsfilename);
+		foreach ($tempfilenames as $tempfilename) {
+			unlink($tempfilename);
+		}
 		ignore_user_abort($oldignoreuserabort);
 
 		if (!empty($metaflacError)) {
@@ -146,6 +183,13 @@ class getid3_write_metaflac
 		return true;
 	}
 
+	public function ID3v2toFLACpictureTypes($id3v2_picture_typeid) {
+		// METAFLAC picture type list is identical to ID3v2 picture type list (as least up to 0x14 "Publisher/Studio logotype")
+		// http://id3.org/id3v2.4.0-frames (section 4.14)
+		// https://xiph.org/flac/documentation_tools_flac.html#flac_options_picture
+		//return (isset($ID3v2toFLACpictureTypes[$id3v2_picture_typeid]) ? $ID3v2toFLACpictureTypes[$id3v2_picture_typeid] : 3); // default: "3: Cover (front)"
+		return (($id3v2_picture_typeid <= 0x14) ? $id3v2_picture_typeid : 3); // default: "3: Cover (front)"
+	}
 
 	public function CleanmetaflacName($originalcommentname) {
 		// A case-insensitive field name that may consist of ASCII 0x20 through 0x7D, 0x3D ('=') excluded.
