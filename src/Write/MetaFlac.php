@@ -92,8 +92,6 @@ class MetaFlac
 					$commandline .= ' --import-picture-from='.escapeshellarg($picturecommand);
 				}
 				$commandline .= ' '.escapeshellarg($this->filename).' 2>&1';
-echo $commandline.'<br>';
-//exit;
 				$metaflacError = `$commandline`;
 
 				if (empty($metaflacError)) {
@@ -188,7 +186,6 @@ echo $commandline.'<br>';
 		// Thanks Chris Bolt <chris-getid3Øbolt*cx> for improving this function
 		// note: *reg_replace() replaces nulls with empty string (not space)
 		return strtoupper(preg_replace('#[^ -<>-}]#', ' ', str_replace("\x00", ' ', $originalcommentname)));
-
 	}
 
 }
