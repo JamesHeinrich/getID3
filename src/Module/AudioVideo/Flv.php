@@ -2,6 +2,7 @@
 
 namespace JamesHeinrich\GetID3\Module\AudioVideo;
 
+use JamesHeinrich\GetID3\Module\Handler;
 use JamesHeinrich\GetID3\Utils;
 
 /////////////////////////////////////////////////////////////////
@@ -56,7 +57,7 @@ use JamesHeinrich\GetID3\Utils;
 //                                                            ///
 /////////////////////////////////////////////////////////////////
 
-class Flv extends \JamesHeinrich\GetID3\Module\Handler
+class Flv extends Handler
 {
 	const magic = 'FLV';
 
@@ -159,7 +160,7 @@ class Flv extends \JamesHeinrich\GetID3\Module\Handler
 							// this code block contributed by: moysevichØgmail*com
 
 							$AVCPacketType = Utils::BigEndian2Int(substr($FLVvideoHeader, 0, 1));
-							if ($AVCPacketType == H264_AVC_SEQUENCE_HEADER) {
+							if ($AVCPacketType == self::H264_AVC_SEQUENCE_HEADER) {
 								//	read AVCDecoderConfigurationRecord
 								$configurationVersion       = Utils::BigEndian2Int(substr($FLVvideoHeader,  4, 1));
 								$AVCProfileIndication       = Utils::BigEndian2Int(substr($FLVvideoHeader,  5, 1));

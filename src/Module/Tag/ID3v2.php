@@ -2,6 +2,7 @@
 
 namespace JamesHeinrich\GetID3\Module\Tag;
 
+use JamesHeinrich\GetID3\Module\Handler;
 use JamesHeinrich\GetID3\Utils;
 
 /////////////////////////////////////////////////////////////////
@@ -18,7 +19,7 @@ use JamesHeinrich\GetID3\Utils;
 //                                                            ///
 /////////////////////////////////////////////////////////////////
 
-class ID3v2 extends \JamesHeinrich\GetID3\Module\Handler
+class ID3v2 extends Handler
 {
 	public $StartingOffset = 0;
 

@@ -29,10 +29,12 @@ namespace JamesHeinrich\GetID3\Module\Misc;
  * This is a PHP conversion of CueSharp 0.5 by Wyatt O'Day (wyday.com/cuesharp)
  */
 
+use JamesHeinrich\GetID3\Module\Handler;
+
 /**
  * A CueSheet class used to open and parse cuesheets.
  */
-class Cue extends \JamesHeinrich\GetID3\Module\Handler
+class Cue extends Handler
 {
 	public $cuesheet = array();
 
@@ -56,6 +58,8 @@ class Cue extends \JamesHeinrich\GetID3\Module\Handler
 	* Parses a cue sheet file.
 	*
 	* @param string $filedata
+	*
+	* @return array
 	*/
 	public function readCueSheet(&$filedata)
 	{

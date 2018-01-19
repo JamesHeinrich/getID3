@@ -3,6 +3,7 @@
 namespace JamesHeinrich\GetID3\Module\Tag;
 
 use JamesHeinrich\GetID3\GetID3;
+use JamesHeinrich\GetID3\Module\Handler;
 use JamesHeinrich\GetID3\Module\Tag\ApeTag;
 use JamesHeinrich\GetID3\Utils;
 
@@ -20,7 +21,7 @@ use JamesHeinrich\GetID3\Utils;
 //                                                            ///
 /////////////////////////////////////////////////////////////////
 
-class Lyrics3 extends \JamesHeinrich\GetID3\Module\Handler
+class Lyrics3 extends Handler
 {
 
 	public function Analyze() {

@@ -4,6 +4,7 @@ namespace JamesHeinrich\GetID3\Module\AudioVideo;
 
 use JamesHeinrich\GetID3\GetID3;
 use JamesHeinrich\GetID3\Module\Audio\Mp3;
+use JamesHeinrich\GetID3\Module\Handler;
 use JamesHeinrich\GetID3\Module\Tag\ID3v1;
 use JamesHeinrich\GetID3\Module\Tag\ID3v2;
 use JamesHeinrich\GetID3\Utils;
@@ -22,7 +23,7 @@ use JamesHeinrich\GetID3\Utils;
 //                                                            ///
 /////////////////////////////////////////////////////////////////
 
-class QuickTime extends \JamesHeinrich\GetID3\Module\Handler
+class QuickTime extends Handler
 {
 
 	public $ReturnAtomData        = true;

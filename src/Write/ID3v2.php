@@ -970,9 +970,9 @@ class ID3v2
 					$source_data_array['encodingid'] = (isset($source_data_array['encodingid']) ? $source_data_array['encodingid'] : $this->id3v2_default_encodingid);
 					if (!$this->ID3v2IsValidTextEncoding($source_data_array['encodingid'])) {
 						$this->errors[] = 'Invalid Text Encoding in '.$frame_name.' ('.$source_data_array['encodingid'].')';
-					} elseif (!getid3_id3v2::IsANumber($source_data_array['pricepaid']['value'], false)) {
+					} elseif (!Tag::IsANumber($source_data_array['pricepaid']['value'], false)) {
 						$this->errors[] = 'Invalid Price Paid in '.$frame_name.' ('.$source_data_array['pricepaid']['value'].')';
-					} elseif (!getid3_id3v2::IsValidDateStampString($source_data_array['purchasedate'])) {
+					} elseif (!Tag::IsValidDateStampString($source_data_array['purchasedate'])) {
 						$this->errors[] = 'Invalid Date Of Purchase in '.$frame_name.' ('.$source_data_array['purchasedate'].') (format = YYYYMMDD)';
 					} else {
 						$framedata .= chr($source_data_array['encodingid']);
@@ -996,7 +996,7 @@ class ID3v2
 					$source_data_array['encodingid'] = (isset($source_data_array['encodingid']) ? $source_data_array['encodingid'] : $this->id3v2_default_encodingid);
 					if (!$this->ID3v2IsValidTextEncoding($source_data_array['encodingid'])) {
 						$this->errors[] = 'Invalid Text Encoding in '.$frame_name.' ('.$source_data_array['encodingid'].')';
-					} elseif (!getid3_id3v2::IsValidDateStampString($source_data_array['pricevaliduntil'])) {
+					} elseif (!Tag::IsValidDateStampString($source_data_array['pricevaliduntil'])) {
 						$this->errors[] = 'Invalid Valid Until date in '.$frame_name.' ('.$source_data_array['pricevaliduntil'].') (format = YYYYMMDD)';
 					} elseif (!$this->IsValidURL($source_data_array['contacturl'], false)) {
 						$this->errors[] = 'Invalid Contact URL in '.$frame_name.' ('.$source_data_array['contacturl'].') (allowed schemes: http, https, ftp, mailto)';
@@ -1652,7 +1652,7 @@ class ID3v2
 	public function ID3v2IsValidPriceString($pricestring) {
 		if (Tag::LanguageLookup(substr($pricestring, 0, 3), true) == '') {
 			return false;
-		} elseif (!getid3_id3v2::IsANumber(substr($pricestring, 3), true)) {
+		} elseif (!Tag::IsANumber(substr($pricestring, 3), true)) {
 			return false;
 		}
 		return true;

@@ -9,6 +9,7 @@ use JamesHeinrich\GetID3\Module\Audio\Ac3;
 use JamesHeinrich\GetID3\Module\Audio\Dts;
 use JamesHeinrich\GetID3\Module\Audio\Mp3;
 use JamesHeinrich\GetID3\Module\Audio\Flac;
+use JamesHeinrich\GetID3\Module\Handler;
 use JamesHeinrich\GetID3\Utils;
 
 /////////////////////////////////////////////////////////////////
@@ -31,7 +32,7 @@ use JamesHeinrich\GetID3\Utils;
 * @todo Rewrite EBML parser to reduce it's size and honor default element values
 * @todo After rewrite implement stream size calculation, that will provide additional useful info and enable AAC/FLAC audio bitrate detection
 */
-class Matroska extends \JamesHeinrich\GetID3\Module\Handler
+class Matroska extends Handler
 {
     const ID_CHAPTERS =                   0x0043A770; // [10][43][A7][70] -- A system to define basic menus and partition data. For more detailed information, look at the Chapters Explanation.
     const ID_SEEKHEAD =                   0x014D9B74; // [11][4D][9B][74] -- Contains the position of other level 1 elements.
@@ -90,7 +91,7 @@ class Matroska extends \JamesHeinrich\GetID3\Module\Handler
     const ID_FILEDESCRIPTION =                0x067E; //         [46][7E] -- A human-friendly name for the attached file.
     const ID_FILEUID =                        0x06AE; //         [46][AE] -- Unique ID representing the file, as random as possible.
     const ID_CONTENTENCALGO =                 0x07E1; //         [47][E1] -- The encryption algorithm used. The value '0' means that the contents have not been encrypted but only signed. Predefined values:
-    const ID_CONTENTENCKEYID =                0x07E2; //         [47][E2] -- For public key algorithms this is the ID of the public key the the data was encrypted with.
+    const ID_CONTENTENCKEYID =                0x07E2; //         [47][E2] -- For public key algorithms this is the ID of the public key the data was encrypted with.
     const ID_CONTENTSIGNATURE =               0x07E3; //         [47][E3] -- A cryptographic signature of the contents.
     const ID_CONTENTSIGKEYID =                0x07E4; //         [47][E4] -- This is the ID of the private key the data was signed with.
     const ID_CONTENTSIGALGO =                 0x07E5; //         [47][E5] -- The algorithm used for the signature. A value of '0' means that the contents have not been signed but only encrypted. Predefined values:
@@ -1277,7 +1278,7 @@ class Matroska extends \JamesHeinrich\GetID3\Module\Handler
         } elseif (0x01 & $first_byte_int) {
             $length = 8;
         } else {
-            throw new \Exception('invalid EBML integer (leading 0x00) at '.$this->current_offset);
+            throw new Exception('invalid EBML integer (leading 0x00) at '.$this->current_offset);
         }
 
         // read

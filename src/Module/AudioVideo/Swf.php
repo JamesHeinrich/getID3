@@ -2,6 +2,7 @@
 
 namespace JamesHeinrich\GetID3\Module\AudioVideo;
 
+use JamesHeinrich\GetID3\Module\Handler;
 use JamesHeinrich\GetID3\Utils;
 
 /////////////////////////////////////////////////////////////////
@@ -18,7 +19,7 @@ use JamesHeinrich\GetID3\Utils;
 //                                                            ///
 /////////////////////////////////////////////////////////////////
 
-class Swf extends \JamesHeinrich\GetID3\Module\Handler
+class Swf extends Handler
 {
 	public $ReturnAllTagData = false;
 

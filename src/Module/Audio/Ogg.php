@@ -2,6 +2,7 @@
 
 namespace JamesHeinrich\GetID3\Module\Audio;
 
+use JamesHeinrich\GetID3\Module\Handler;
 use JamesHeinrich\GetID3\Utils;
 
 /////////////////////////////////////////////////////////////////
@@ -18,7 +19,7 @@ use JamesHeinrich\GetID3\Utils;
 //                                                            ///
 /////////////////////////////////////////////////////////////////
 
-class Ogg extends \JamesHeinrich\GetID3\Module\Handler
+class Ogg extends Handler
 {
 	// http://xiph.org/vorbis/doc/Vorbis_I_spec.html
 	public function Analyze() {

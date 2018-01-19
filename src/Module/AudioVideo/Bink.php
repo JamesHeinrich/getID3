@@ -2,6 +2,7 @@
 
 namespace JamesHeinrich\GetID3\Module\AudioVideo;
 
+use JamesHeinrich\GetID3\Module\Handler;
 use JamesHeinrich\GetID3\Utils;
 
 /////////////////////////////////////////////////////////////////
@@ -18,7 +19,7 @@ use JamesHeinrich\GetID3\Utils;
 //                                                            ///
 /////////////////////////////////////////////////////////////////
 
-class Bink extends \JamesHeinrich\GetID3\Module\Handler
+class Bink extends Handler
 {
 
 	public function Analyze() {

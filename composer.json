@@ -16,8 +16,7 @@
         "homepage": "https://github.com/duncan3dc",
         "role": "Developer"
     }],
-    "require":
-    {
+    "require": {
         "php": ">=5.4.0"
     },
     "suggest": {
@@ -25,7 +24,9 @@
         "ext-exif": "EXIF extension is required for graphic modules."
     },
     "require-dev": {
-        "jakub-onderka/php-parallel-lint": "0.9.2"
+        "phpunit/phpunit": "^4.8|^5.0",
+        "jakub-onderka/php-parallel-lint": "^0.9.2",
+        "phpstan/phpstan": "^0.9"
     },
     "scripts": {
         "lint": "parallel-lint --exclude vendor .",
@@ -35,5 +36,8 @@
     },
     "autoload": {
         "psr-4": {"JamesHeinrich\\GetID3\\": "src/"}
+    },
+    "autoload-dev": {
+        "psr-4": { "JamesHeinrich\\GetID3\\Tests\\": "tests/" }
     }
 }

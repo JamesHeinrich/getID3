@@ -2,6 +2,7 @@
 
 namespace JamesHeinrich\GetID3\Cache;
 
+use JamesHeinrich\GetID3\Exception;
 use JamesHeinrich\GetID3\GetID3;
 
 /////////////////////////////////////////////////////////////////
@@ -85,18 +86,18 @@ class Mysqli extends GetID3
 
 		// Check for mysqli support
 		if (!function_exists('mysqli_connect')) {
-			throw new \Exception('PHP not compiled with mysqli support.');
+			throw new Exception('PHP not compiled with mysqli support.');
 		}
 
 		// Connect to database
-		$this->mysqli = new mysqli($host, $username, $password);
+		$this->mysqli = new \mysqli($host, $username, $password);
 		if (!$this->mysqli) {
 			throw new Exception('mysqli_connect() failed - check permissions and spelling.');
 		}
 
 		// Select database
 		if (!$this->mysqli->select_db($database)) {
-			throw new \Exception('Cannot use database '.$database);
+			throw new Exception('Cannot use database '.$database);
 		}
 
 		// Set table

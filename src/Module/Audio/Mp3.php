@@ -2,6 +2,7 @@
 
 namespace JamesHeinrich\GetID3\Module\Audio;
 
+use JamesHeinrich\GetID3\Module\Handler;
 use JamesHeinrich\GetID3\Utils;
 
 /////////////////////////////////////////////////////////////////
@@ -19,7 +20,7 @@ use JamesHeinrich\GetID3\Utils;
 /////////////////////////////////////////////////////////////////
 
 
-class Mp3 extends \JamesHeinrich\GetID3\Module\Handler
+class Mp3 extends Handler
 {
 	/**
 	 * Number of frames to scan to determine if MPEG-audio sequence is valid.
@@ -443,7 +444,7 @@ class Mp3 extends \JamesHeinrich\GetID3\Module\Handler
 		// and $cc... is the audio data
 
 		$head4 = substr($headerstring, 0, 4);
-		$head4_key = getid3_lib::PrintHexBytes($head4, true, false, false);
+		$head4_key = Utils::PrintHexBytes($head4, true, false, false);
 		static $MPEGaudioHeaderDecodeCache = array();
 		if (isset($MPEGaudioHeaderDecodeCache[$head4_key])) {
 			$MPEGheaderRawArray = $MPEGaudioHeaderDecodeCache[$head4_key];

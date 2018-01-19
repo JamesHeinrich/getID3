@@ -2,6 +2,7 @@
 
 namespace JamesHeinrich\GetID3\Module\Graphic;
 
+use JamesHeinrich\GetID3\Module\Handler;
 use JamesHeinrich\GetID3\Utils;
 
 /////////////////////////////////////////////////////////////////
@@ -18,10 +19,11 @@ use JamesHeinrich\GetID3\Utils;
 //                                                            ///
 /////////////////////////////////////////////////////////////////
 
-// https://www.w3.org/Graphics/GIF/spec-gif89a.txt
-// http://www.matthewflickinger.com/lab/whatsinagif/bits_and_bytes.asp
-
-class Gif extends \JamesHeinrich\GetID3\Module\Handler
+/**
+ * @see https://www.w3.org/Graphics/GIF/spec-gif89a.txt
+ * @see http://www.matthewflickinger.com/lab/whatsinagif/bits_and_bytes.asp
+ */
+class Gif extends Handler
 {
 
 	public function Analyze() {

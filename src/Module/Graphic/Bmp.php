@@ -2,6 +2,7 @@
 
 namespace JamesHeinrich\GetID3\Module\Graphic;
 
+use JamesHeinrich\GetID3\Module\Handler;
 use JamesHeinrich\GetID3\Utils;
 
 /////////////////////////////////////////////////////////////////
@@ -18,7 +19,7 @@ use JamesHeinrich\GetID3\Utils;
 //                                                            ///
 /////////////////////////////////////////////////////////////////
 
-class Bmp extends \JamesHeinrich\GetID3\Module\Handler
+class Bmp extends Handler
 {
 	public $ExtractPalette = false;
 	public $ExtractData    = false;

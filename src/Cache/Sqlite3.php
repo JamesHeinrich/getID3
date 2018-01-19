@@ -93,6 +93,18 @@ use JamesHeinrich\GetID3\GetID3;
 */
 class Sqlite3 extends GetID3 {
 
+    /**
+     * hold the sqlite db
+     * @var \SQLite3 Resource
+     */
+    private $db;
+
+    /**
+     * table to use for caching
+     * @var string $table
+     */
+    private $table;
+
 	/**
 	* __construct()
 	* @param string $table holds name of sqlite table
@@ -103,7 +115,7 @@ class Sqlite3 extends GetID3 {
 		if ($hide) {
 			$file = dirname(__FILE__).'/.ht.'.basename(__FILE__, 'php').'sqlite';
 		}
-		$this->db = new SQLite3($file);
+		$this->db = new \SQLite3($file);
 		$db = $this->db;
 		$this->create_table();   // Create cache table if not exists
 		$version = '';
@@ -127,21 +139,9 @@ class Sqlite3 extends GetID3 {
 	}
 
 	/**
-	* hold the sqlite db
-	* @var SQLite3 Resource
-	*/
-	private $db;
-
-	/**
-	* table to use for caching
-	* @var string $table
-	*/
-	private $table;
-
-	/**
 	* clear the cache
 	* @access private
-	* @return SQLite3Result
+	* @return \SQLite3Result
 	*/
 	private function clear_cache() {
 		$db = $this->db;

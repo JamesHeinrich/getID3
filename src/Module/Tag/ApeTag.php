@@ -2,6 +2,7 @@
 
 namespace JamesHeinrich\GetID3\Module\Tag;
 
+use JamesHeinrich\GetID3\Module\Handler;
 use JamesHeinrich\GetID3\Utils;
 
 /////////////////////////////////////////////////////////////////
@@ -18,7 +19,7 @@ use JamesHeinrich\GetID3\Utils;
 //                                                            ///
 /////////////////////////////////////////////////////////////////
 
-class ApeTag extends \JamesHeinrich\GetID3\Module\Handler
+class ApeTag extends Handler
 {
 	public $inline_attachments = true; // true: return full data for all attachments; false: return no data for all attachments; integer: return data for attachments <= than this; string: save as file to this directory
 	public $overrideendoffset  = 0;
@@ -290,7 +291,7 @@ class ApeTag extends \JamesHeinrich\GetID3\Module\Handler
 							}
 						} elseif (is_string($this->inline_attachments)) {
 							$this->inline_attachments = rtrim(str_replace(array('/', '\\'), DIRECTORY_SEPARATOR, $this->inline_attachments), DIRECTORY_SEPARATOR);
-							if (!is_dir($this->inline_attachments) || !getID3::is_writable($this->inline_attachments)) {
+							if (!is_dir($this->inline_attachments) || !Utils::isWritable($this->inline_attachments)) {
 								// cannot write, skip
 								$this->warning('attachment at '.$thisfile_ape_items_current['offset'].' cannot be saved to "'.$this->inline_attachments.'" (not writable)');
 								unset($thisfile_ape_items_current['data']);
@@ -300,7 +301,7 @@ class ApeTag extends \JamesHeinrich\GetID3\Module\Handler
 						// if we get this far, must be OK
 						if (is_string($this->inline_attachments)) {
 							$destination_filename = $this->inline_attachments.DIRECTORY_SEPARATOR.md5($info['filenamepath']).'_'.$thisfile_ape_items_current['data_offset'];
-							if (!file_exists($destination_filename) || getID3::is_writable($destination_filename)) {
+							if (!file_exists($destination_filename) || Utils::isWritable($destination_filename)) {
 								file_put_contents($destination_filename, $thisfile_ape_items_current['data']);
 							} else {
 								$this->warning('attachment at '.$thisfile_ape_items_current['offset'].' cannot be saved to "'.$destination_filename.'" (not writable)');

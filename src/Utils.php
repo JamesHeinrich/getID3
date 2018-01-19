@@ -163,7 +163,7 @@ class Utils
 						}
 					}
 				} else {
-					$this->startup_warning .= 'The path to getid3 must not have any spaces in it - use 8dot3 naming convention if neccesary. You can run "dir /x" from the commandline to see the correct 8.3-style names.';
+					throw new Exception('The path to getid3 must not have any spaces in it - use 8dot3 naming convention if neccesary. You can run "dir /x" from the commandline to see the correct 8.3-style names.');
 				}
 			}
 			$pathParts[] = $value;
@@ -447,7 +447,7 @@ class Utils
 					$intvalue = 0 - ($intvalue & ($signMaskBit - 1));
 				}
 			} else {
-				throw new \Exception('ERROR: Cannot have signed integers larger than '.(8 * PHP_INT_SIZE).'-bits ('.strlen($byteword).') in self::BigEndian2Int()');
+				throw new Exception('ERROR: Cannot have signed integers larger than '.(8 * PHP_INT_SIZE).'-bits ('.strlen($byteword).') in self::BigEndian2Int()');
 			}
 		}
 		return self::CastAsInt($intvalue);
@@ -474,13 +474,13 @@ class Utils
 
 	public static function BigEndian2String($number, $minbytes=1, $synchsafe=false, $signed=false) {
 		if ($number < 0) {
-			throw new \Exception('ERROR: self::BigEndian2String() does not support negative numbers');
+			throw new Exception('ERROR: self::BigEndian2String() does not support negative numbers');
 		}
 		$maskbyte = (($synchsafe || $signed) ? 0x7F : 0xFF);
 		$intstring = '';
 		if ($signed) {
 			if ($minbytes > PHP_INT_SIZE) {
-				throw new \Exception('ERROR: Cannot have signed integers larger than '.(8 * PHP_INT_SIZE).'-bits in self::BigEndian2String()');
+				throw new Exception('ERROR: Cannot have signed integers larger than '.(8 * PHP_INT_SIZE).'-bits in self::BigEndian2String()');
 			}
 			$number = $number & (0x80 << (8 * ($minbytes - 1)));
 		}
@@ -797,7 +797,7 @@ class Utils
 			self::CopyFileParts($file, $data_filename, $offset, $end - $offset);
 			$result = $hash_function($data_filename);
 		} catch (\Exception $e) {
-			throw new \Exception('self::CopyFileParts() failed in getid_lib::hash_data(): '.$e->getMessage());
+			throw new Exception('self::CopyFileParts() failed in getid_lib::hash_data(): '.$e->getMessage());
 		}
 		unlink($data_filename);
 		return $result;
@@ -805,7 +805,7 @@ class Utils
 
 	public static function CopyFileParts($filename_source, $filename_dest, $offset, $length) {
 		if (!self::intValueSupported($offset + $length)) {
-			throw new \Exception('cannot copy file portion, it extends beyond the '.round(PHP_INT_MAX / 1073741824).'GB limit');
+			throw new Exception('cannot copy file portion, it extends beyond the '.round(PHP_INT_MAX / 1073741824).'GB limit');
 		}
 		if (is_readable($filename_source) && is_file($filename_source) && ($fp_src = fopen($filename_source, 'rb'))) {
 			if (($fp_dest = fopen($filename_dest, 'wb'))) {
@@ -817,15 +817,15 @@ class Utils
 					}
 					return true;
 				} else {
-					throw new \Exception('failed to seek to offset '.$offset.' in '.$filename_source);
+					throw new Exception('failed to seek to offset '.$offset.' in '.$filename_source);
 				}
 				fclose($fp_dest);
 			} else {
-				throw new \Exception('failed to create file for writing '.$filename_dest);
+				throw new Exception('failed to create file for writing '.$filename_dest);
 			}
 			fclose($fp_src);
 		} else {
-			throw new \Exception('failed to open file for reading '.$filename_source);
+			throw new Exception('failed to open file for reading '.$filename_source);
 		}
 		return false;
 	}
@@ -1169,7 +1169,7 @@ class Utils
 			$ConversionFunction = $ConversionFunctionList[strtoupper($in_charset)][strtoupper($out_charset)];
 			return self::$ConversionFunction($string);
 		}
-		throw new \Exception('PHP does not has mb_convert_encoding() or iconv() support - cannot convert from '.$in_charset.' to '.$out_charset);
+		throw new Exception('PHP does not has mb_convert_encoding() or iconv() support - cannot convert from '.$in_charset.' to '.$out_charset);
 	}
 
 	public static function recursiveMultiByteCharString2HTML($data, $charset='ISO-8859-1') {
@@ -1521,7 +1521,7 @@ class Utils
 
 		if (static::isWindows()) {
 			if (class_exists('COM')) { // From PHP 5.3.15 and 5.4.5, COM and DOTNET is no longer built into the php core.you have to add COM support in php.ini:
-				$filesystem = new COM('Scripting.FileSystemObject');
+				$filesystem = new \COM('Scripting.FileSystemObject');
 				$file = $filesystem->GetFile($path);
 				$filesize = $file->Size();
 				unset($filesystem, $file);

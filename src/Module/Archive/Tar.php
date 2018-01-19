@@ -2,6 +2,7 @@
 
 namespace JamesHeinrich\GetID3\Module\Archive;
 
+use JamesHeinrich\GetID3\Module\Handler;
 use JamesHeinrich\GetID3\Utils;
 
 /////////////////////////////////////////////////////////////////
@@ -23,7 +24,7 @@ use JamesHeinrich\GetID3\Utils;
 //                                                             //
 /////////////////////////////////////////////////////////////////
 
-class Tar extends \JamesHeinrich\GetID3\Module\Handler
+class Tar extends Handler
 {
 
 	public function Analyze() {

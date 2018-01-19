@@ -3,6 +3,7 @@
 namespace JamesHeinrich\GetID3\Module\Archive;
 
 use JamesHeinrich\GetID3\GetID3;
+use JamesHeinrich\GetID3\Module\Handler;
 use JamesHeinrich\GetID3\Utils;
 
 /////////////////////////////////////////////////////////////////
@@ -24,7 +25,7 @@ use JamesHeinrich\GetID3\Utils;
 //                                                             //
 /////////////////////////////////////////////////////////////////
 
-class Gzip extends \JamesHeinrich\GetID3\Module\Handler
+class Gzip extends Handler
 {
 
 	// public: Optional file list - disable for speed.

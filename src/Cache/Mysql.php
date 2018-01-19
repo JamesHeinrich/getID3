@@ -2,6 +2,7 @@
 
 namespace JamesHeinrich\GetID3\Cache;
 
+use JamesHeinrich\GetID3\Exception;
 use JamesHeinrich\GetID3\GetID3;
 
 /////////////////////////////////////////////////////////////////
@@ -90,18 +91,18 @@ class Mysql extends GetID3
 
 		// Check for mysql support
 		if (!function_exists('mysql_pconnect')) {
-			throw new \Exception('PHP not compiled with mysql support.');
+			throw new Exception('PHP not compiled with mysql support.');
 		}
 
 		// Connect to database
 		$this->connection = mysql_pconnect($host, $username, $password);
 		if (!$this->connection) {
-			throw new \Exception('mysql_pconnect() failed - check permissions and spelling.');
+			throw new Exception('mysql_pconnect() failed - check permissions and spelling.');
 		}
 
 		// Select database
 		if (!mysql_select_db($database, $this->connection)) {
-			throw new \Exception('Cannot use database '.$database);
+			throw new Exception('Cannot use database '.$database);
 		}
 
 		// Set table

@@ -2,6 +2,7 @@
 
 namespace JamesHeinrich\GetID3\Module\Audio;
 
+use JamesHeinrich\GetID3\Module\Handler;
 use JamesHeinrich\GetID3\Utils;
 
 /////////////////////////////////////////////////////////////////
@@ -18,7 +19,7 @@ use JamesHeinrich\GetID3\Utils;
 //                                                            ///
 /////////////////////////////////////////////////////////////////
 
-class Aac extends \JamesHeinrich\GetID3\Module\Handler
+class Aac extends Handler
 {
 	public function Analyze() {
 		$info = &$this->getid3->info;

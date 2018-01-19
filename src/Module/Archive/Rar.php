@@ -2,6 +2,7 @@
 
 namespace JamesHeinrich\GetID3\Module\Archive;
 
+use JamesHeinrich\GetID3\Module\Handler;
 use JamesHeinrich\GetID3\Utils;
 
 /////////////////////////////////////////////////////////////////
@@ -18,7 +19,7 @@ use JamesHeinrich\GetID3\Utils;
 //                                                            ///
 /////////////////////////////////////////////////////////////////
 
-class Rar extends \JamesHeinrich\GetID3\Module\Handler
+class Rar extends Handler
 {
 
 	public $option_use_rar_extension = false;

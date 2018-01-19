@@ -172,7 +172,7 @@ abstract class Handler {
                 $this->fseek($offset);
                 $attachment = $this->fread($length); // get whole data in one pass, till it is anyway stored in memory
                 if ($attachment === false || strlen($attachment) != $length) {
-                    throw new \Exception('failed to read attachment data');
+                    throw new Exception('failed to read attachment data');
                 }
 
             // assume directory path is given
@@ -180,14 +180,14 @@ abstract class Handler {
 
                 // set up destination path
                 $dir = rtrim(str_replace(array('/', '\\'), DIRECTORY_SEPARATOR, $this->getid3->option_save_attachments), DIRECTORY_SEPARATOR);
-                if (!is_dir($dir) || !is_writable($dir)) { // check supplied directory
-                    throw new \Exception('supplied path ('.$dir.') does not exist, or is not writable');
+                if (!is_dir($dir) || !Utils::isWritable($dir)) { // check supplied directory
+                    throw new Exception('supplied path ('.$dir.') does not exist, or is not writable');
                 }
                 $dest = $dir.DIRECTORY_SEPARATOR.$name.($image_mime ? '.'.Utils::ImageExtFromMime($image_mime) : '');
 
                 // create dest file
                 if (($fp_dest = fopen($dest, 'wb')) == false) {
-                    throw new \Exception('failed to create file '.$dest);
+                    throw new Exception('failed to create file '.$dest);
                 }
 
                 // copy data
@@ -196,7 +196,7 @@ abstract class Handler {
                 $bytesleft = $length;
                 while ($bytesleft > 0) {
                     if (($buffer = $this->fread(min($buffersize, $bytesleft))) === false || ($byteswritten = fwrite($fp_dest, $buffer)) === false || ($byteswritten === 0)) {
-                        throw new \Exception($buffer === false ? 'not enough data to read' : 'failed to write to destination file, may be not enough disk space');
+                        throw new Exception($buffer === false ? 'not enough data to read' : 'failed to write to destination file, may be not enough disk space');
                     }
                     $bytesleft -= $byteswritten;
                 }
@@ -211,6 +211,9 @@ abstract class Handler {
             // close and remove dest file if created
             if (isset($fp_dest) && is_resource($fp_dest)) {
                 fclose($fp_dest);
+            }
+
+            if (isset($dest) && file_exists($dest)) {
                 unlink($dest);
             }
 

@@ -7,6 +7,7 @@ use JamesHeinrich\GetID3\GetID3;
 use JamesHeinrich\GetID3\Module\Audio\Ac3;
 use JamesHeinrich\GetID3\Module\Audio\Dts;
 use JamesHeinrich\GetID3\Module\Audio\Mp3;
+use JamesHeinrich\GetID3\Module\Handler;
 use JamesHeinrich\GetID3\Module\Tag\ID3v2;
 use JamesHeinrich\GetID3\Utils;
 
@@ -30,7 +31,7 @@ use JamesHeinrich\GetID3\Utils;
  * @todo Parse AC-3/DTS audio inside WAVE correctly
  * @todo Rewrite RIFF parser totally
 */
-class Riff extends \JamesHeinrich\GetID3\Module\Handler
+class Riff extends Handler
 {
 
 	protected $container = 'riff'; // default
@@ -1188,20 +1189,20 @@ class Riff extends \JamesHeinrich\GetID3\Module\Handler
 					$WEBP_VP8_header = $this->fread(10);
 					$this->fseek($old_offset);
 					if (substr($WEBP_VP8_header, 3, 3) == "\x9D\x01\x2A") {
-						$thisfile_riff['WEBP']['VP8 '][0]['keyframe']   = !(getid3_lib::LittleEndian2Int(substr($WEBP_VP8_header, 0, 3)) & 0x800000);
-						$thisfile_riff['WEBP']['VP8 '][0]['version']    =  (getid3_lib::LittleEndian2Int(substr($WEBP_VP8_header, 0, 3)) & 0x700000) >> 20;
-						$thisfile_riff['WEBP']['VP8 '][0]['show_frame'] =  (getid3_lib::LittleEndian2Int(substr($WEBP_VP8_header, 0, 3)) & 0x080000);
-						$thisfile_riff['WEBP']['VP8 '][0]['data_bytes'] =  (getid3_lib::LittleEndian2Int(substr($WEBP_VP8_header, 0, 3)) & 0x07FFFF) >>  0;
+						$thisfile_riff['WEBP']['VP8 '][0]['keyframe']   = !(Utils::LittleEndian2Int(substr($WEBP_VP8_header, 0, 3)) & 0x800000);
+						$thisfile_riff['WEBP']['VP8 '][0]['version']    =  (Utils::LittleEndian2Int(substr($WEBP_VP8_header, 0, 3)) & 0x700000) >> 20;
+						$thisfile_riff['WEBP']['VP8 '][0]['show_frame'] =  (Utils::LittleEndian2Int(substr($WEBP_VP8_header, 0, 3)) & 0x080000);
+						$thisfile_riff['WEBP']['VP8 '][0]['data_bytes'] =  (Utils::LittleEndian2Int(substr($WEBP_VP8_header, 0, 3)) & 0x07FFFF) >>  0;
 
-						$thisfile_riff['WEBP']['VP8 '][0]['scale_x']    =  (getid3_lib::LittleEndian2Int(substr($WEBP_VP8_header, 6, 2)) & 0xC000) >> 14;
-						$thisfile_riff['WEBP']['VP8 '][0]['width']      =  (getid3_lib::LittleEndian2Int(substr($WEBP_VP8_header, 6, 2)) & 0x3FFF);
-						$thisfile_riff['WEBP']['VP8 '][0]['scale_y']    =  (getid3_lib::LittleEndian2Int(substr($WEBP_VP8_header, 8, 2)) & 0xC000) >> 14;
-						$thisfile_riff['WEBP']['VP8 '][0]['height']     =  (getid3_lib::LittleEndian2Int(substr($WEBP_VP8_header, 8, 2)) & 0x3FFF);
+						$thisfile_riff['WEBP']['VP8 '][0]['scale_x']    =  (Utils::LittleEndian2Int(substr($WEBP_VP8_header, 6, 2)) & 0xC000) >> 14;
+						$thisfile_riff['WEBP']['VP8 '][0]['width']      =  (Utils::LittleEndian2Int(substr($WEBP_VP8_header, 6, 2)) & 0x3FFF);
+						$thisfile_riff['WEBP']['VP8 '][0]['scale_y']    =  (Utils::LittleEndian2Int(substr($WEBP_VP8_header, 8, 2)) & 0xC000) >> 14;
+						$thisfile_riff['WEBP']['VP8 '][0]['height']     =  (Utils::LittleEndian2Int(substr($WEBP_VP8_header, 8, 2)) & 0x3FFF);
 
 						$info['video']['resolution_x'] = $thisfile_riff['WEBP']['VP8 '][0]['width'];
 						$info['video']['resolution_y'] = $thisfile_riff['WEBP']['VP8 '][0]['height'];
 					} else {
-						$this->error('Expecting 9D 01 2A at offset '.($thisfile_riff['WEBP']['VP8 '][0]['offset'] + 8 + 3).', found "'.getid3_lib::PrintHexBytes(substr($WEBP_VP8_header, 3, 3)).'"');
+						$this->error('Expecting 9D 01 2A at offset '.($thisfile_riff['WEBP']['VP8 '][0]['offset'] + 8 + 3).', found "'.Utils::PrintHexBytes(substr($WEBP_VP8_header, 3, 3)).'"');
 					}
 
 				}
@@ -1211,7 +1212,7 @@ class Riff extends \JamesHeinrich\GetID3\Module\Handler
 					$WEBP_VP8L_header = $this->fread(10);
 					$this->fseek($old_offset);
 					if (substr($WEBP_VP8L_header, 0, 1) == "\x2F") {
-						$width_height_flags = getid3_lib::LittleEndian2Bin(substr($WEBP_VP8L_header, 1, 4));
+						$width_height_flags = Utils::LittleEndian2Bin(substr($WEBP_VP8L_header, 1, 4));
 						$thisfile_riff['WEBP']['VP8L'][0]['width']         =        bindec(substr($width_height_flags, 18, 14)) + 1;
 						$thisfile_riff['WEBP']['VP8L'][0]['height']        =        bindec(substr($width_height_flags,  4, 14)) + 1;
 						$thisfile_riff['WEBP']['VP8L'][0]['alpha_is_used'] = (bool) bindec(substr($width_height_flags,  3,  1));
@@ -1220,7 +1221,7 @@ class Riff extends \JamesHeinrich\GetID3\Module\Handler
 						$info['video']['resolution_x'] = $thisfile_riff['WEBP']['VP8L'][0]['width'];
 						$info['video']['resolution_y'] = $thisfile_riff['WEBP']['VP8L'][0]['height'];
 					} else {
-						$this->error('Expecting 2F at offset '.($thisfile_riff['WEBP']['VP8L'][0]['offset'] + 8).', found "'.getid3_lib::PrintHexBytes(substr($WEBP_VP8L_header, 0, 1)).'"');
+						$this->error('Expecting 2F at offset '.($thisfile_riff['WEBP']['VP8L'][0]['offset'] + 8).', found "'.Utils::PrintHexBytes(substr($WEBP_VP8L_header, 0, 1)).'"');
 					}
 
 				}
@@ -1401,10 +1402,10 @@ class Riff extends \JamesHeinrich\GetID3\Module\Handler
 			$maxoffset = min($maxoffset, $info['avdataend']);
 			$AMVheader = $this->fread(284);
 			if (substr($AMVheader,   0,  8) != 'hdrlamvh') {
-				throw new \Exception('expecting "hdrlamv" at offset '.($startoffset +   0).', found "'.substr($AMVheader,   0, 8).'"');
+				throw new Exception('expecting "hdrlamv" at offset '.($startoffset +   0).', found "'.substr($AMVheader,   0, 8).'"');
 			}
 			if (substr($AMVheader,   8,  4) != "\x38\x00\x00\x00") { // "amvh" chunk size, hardcoded to 0x38 = 56 bytes
-				throw new \Exception('expecting "0x38000000" at offset '.($startoffset +   8).', found "'.Utils::PrintHexBytes(substr($AMVheader,   8, 4)).'"');
+				throw new Exception('expecting "0x38000000" at offset '.($startoffset +   8).', found "'.Utils::PrintHexBytes(substr($AMVheader,   8, 4)).'"');
 			}
 			$RIFFchunk = array();
 			$RIFFchunk['amvh']['us_per_frame']   = Utils::LittleEndian2Int(substr($AMVheader,  12,  4));
@@ -1426,20 +1427,20 @@ class Riff extends \JamesHeinrich\GetID3\Module\Handler
 			// the rest is all hardcoded(?) and does not appear to be useful until you get to audio info at offset 256, even then everything is probably hardcoded
 
 			if (substr($AMVheader,  68, 20) != 'LIST'."\x00\x00\x00\x00".'strlstrh'."\x38\x00\x00\x00") {
-				throw new \Exception('expecting "LIST<0x00000000>strlstrh<0x38000000>" at offset '.($startoffset +  68).', found "'.Utils::PrintHexBytes(substr($AMVheader,  68, 20)).'"');
+				throw new Exception('expecting "LIST<0x00000000>strlstrh<0x38000000>" at offset '.($startoffset +  68).', found "'.Utils::PrintHexBytes(substr($AMVheader,  68, 20)).'"');
 			}
 			// followed by 56 bytes of null: substr($AMVheader,  88, 56) -> 144
 			if (substr($AMVheader, 144,  8) != 'strf'."\x24\x00\x00\x00") {
-				throw new \Exception('expecting "strf<0x24000000>" at offset '.($startoffset + 144).', found "'.Utils::PrintHexBytes(substr($AMVheader, 144,  8)).'"');
+				throw new Exception('expecting "strf<0x24000000>" at offset '.($startoffset + 144).', found "'.Utils::PrintHexBytes(substr($AMVheader, 144,  8)).'"');
 			}
 			// followed by 36 bytes of null: substr($AMVheader, 144, 36) -> 180
 
 			if (substr($AMVheader, 188, 20) != 'LIST'."\x00\x00\x00\x00".'strlstrh'."\x30\x00\x00\x00") {
-				throw new \Exception('expecting "LIST<0x00000000>strlstrh<0x30000000>" at offset '.($startoffset + 188).', found "'.Utils::PrintHexBytes(substr($AMVheader, 188, 20)).'"');
+				throw new Exception('expecting "LIST<0x00000000>strlstrh<0x30000000>" at offset '.($startoffset + 188).', found "'.Utils::PrintHexBytes(substr($AMVheader, 188, 20)).'"');
 			}
 			// followed by 48 bytes of null: substr($AMVheader, 208, 48) -> 256
 			if (substr($AMVheader, 256,  8) != 'strf'."\x14\x00\x00\x00") {
-				throw new \Exception('expecting "strf<0x14000000>" at offset '.($startoffset + 256).', found "'.Utils::PrintHexBytes(substr($AMVheader, 256,  8)).'"');
+				throw new Exception('expecting "strf<0x14000000>" at offset '.($startoffset + 256).', found "'.Utils::PrintHexBytes(substr($AMVheader, 256,  8)).'"');
 			}
 			// followed by 20 bytes of a modified WAVEFORMATEX:
 			// typedef struct {

@@ -16,7 +16,9 @@ namespace JamesHeinrich\GetID3\Module\Misc;
 //                                                            ///
 /////////////////////////////////////////////////////////////////
 
-class Pdf extends \JamesHeinrich\GetID3\Module\Handler
+use JamesHeinrich\GetID3\Module\Handler;
+
+class Pdf extends Handler
 {
 
 	public function Analyze() {

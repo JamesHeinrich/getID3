@@ -16,7 +16,9 @@ namespace JamesHeinrich\GetID3\Module\Audio;
 //                                                            ///
 /////////////////////////////////////////////////////////////////
 
-class Mod extends \JamesHeinrich\GetID3\Module\Handler
+use JamesHeinrich\GetID3\Module\Handler;
+
+class Mod extends Handler
 {
 
 	public function Analyze() {

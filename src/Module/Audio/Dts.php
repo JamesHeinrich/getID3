@@ -2,6 +2,7 @@
 
 namespace JamesHeinrich\GetID3\Module\Audio;
 
+use JamesHeinrich\GetID3\Module\Handler;
 use JamesHeinrich\GetID3\Utils;
 
 /////////////////////////////////////////////////////////////////
@@ -22,7 +23,7 @@ use JamesHeinrich\GetID3\Utils;
 /**
 * @tutorial http://wiki.multimedia.cx/index.php?title=DTS
 */
-class Dts extends \JamesHeinrich\GetID3\Module\Handler
+class Dts extends Handler
 {
 	/**
 	* Default DTS syncword used in native .cpt or .dts formats

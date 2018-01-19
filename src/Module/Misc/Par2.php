@@ -16,7 +16,9 @@ namespace JamesHeinrich\GetID3\Module\Misc;
 //                                                            ///
 /////////////////////////////////////////////////////////////////
 
-class Par2 extends \JamesHeinrich\GetID3\Module\Handler
+use JamesHeinrich\GetID3\Module\Handler;
+
+class Par2 extends Handler
 {
 
 	public function Analyze() {

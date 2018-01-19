@@ -16,7 +16,9 @@ namespace JamesHeinrich\GetID3\Module\Graphic;
 //                                                            ///
 /////////////////////////////////////////////////////////////////
 
-class Svg extends \JamesHeinrich\GetID3\Module\Handler
+use JamesHeinrich\GetID3\Module\Handler;
+
+class Svg extends Handler
 {
 
 

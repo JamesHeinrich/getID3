@@ -2,6 +2,7 @@
 
 namespace JamesHeinrich\GetID3\Module\Graphic;
 
+use JamesHeinrich\GetID3\Module\Handler;
 use JamesHeinrich\GetID3\Module\Tag\Xmp;
 use JamesHeinrich\GetID3\Utils;
 
@@ -19,7 +20,7 @@ use JamesHeinrich\GetID3\Utils;
 //                                                            ///
 /////////////////////////////////////////////////////////////////
 
-class Jpg extends \JamesHeinrich\GetID3\Module\Handler
+class Jpg extends Handler
 {
 
 

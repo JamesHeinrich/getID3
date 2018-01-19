@@ -3,6 +3,7 @@
 namespace JamesHeinrich\GetID3\Module\Audio;
 
 use JamesHeinrich\GetID3\GetID3;
+use JamesHeinrich\GetID3\Module\Handler;
 use JamesHeinrich\GetID3\Module\Tag\ID3v2;
 use JamesHeinrich\GetID3\Utils;
 
@@ -20,7 +21,7 @@ use JamesHeinrich\GetID3\Utils;
 //                                                            ///
 /////////////////////////////////////////////////////////////////
 
-class Bonk extends \JamesHeinrich\GetID3\Module\Handler
+class Bonk extends Handler
 {
 	public function Analyze() {
 		$info = &$this->getid3->info;

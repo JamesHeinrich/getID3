@@ -2,6 +2,7 @@
 
 namespace JamesHeinrich\GetID3\Cache;
 
+use JamesHeinrich\GetID3\Exception;
 use JamesHeinrich\GetID3\GetID3;
 
 /////////////////////////////////////////////////////////////////
@@ -108,24 +109,24 @@ class Dbm extends GetID3
 
 		// Check for dba extension
 		if (!extension_loaded('dba')) {
-			throw new \Exception('PHP is not compiled with dba support, required to use DBM style cache.');
+			throw new Exception('PHP is not compiled with dba support, required to use DBM style cache.');
 		}
 
 		// Check for specific dba driver
 		if (!function_exists('dba_handlers') || !in_array($cache_type, dba_handlers())) {
-			throw new \Exception('PHP is not compiled --with '.$cache_type.' support, required to use DBM style cache.');
+			throw new Exception('PHP is not compiled --with '.$cache_type.' support, required to use DBM style cache.');
 		}
 
 		// Create lock file if needed
 		if (!file_exists($lock_filename)) {
 			if (!touch($lock_filename)) {
-				throw new \Exception('failed to create lock file: '.$lock_filename);
+				throw new Exception('failed to create lock file: '.$lock_filename);
 			}
 		}
 
 		// Open lock file for writing
 		if (!is_writeable($lock_filename)) {
-			throw new \Exception('lock file: '.$lock_filename.' is not writable');
+			throw new Exception('lock file: '.$lock_filename.' is not writable');
 		}
 		$this->lock = fopen($lock_filename, 'w');
 
@@ -135,7 +136,7 @@ class Dbm extends GetID3
 		// Create dbm-file if needed
 		if (!file_exists($dbm_filename)) {
 			if (!touch($dbm_filename)) {
-				throw new \Exception('failed to create dbm file: '.$dbm_filename);
+				throw new Exception('failed to create dbm file: '.$dbm_filename);
 			}
 		}
 
@@ -147,7 +148,7 @@ class Dbm extends GetID3
 			$this->dba = dba_open($dbm_filename, 'n', $cache_type);
 
 			if (!$this->dba) {
-				throw new \Exception('failed to create dbm file: '.$dbm_filename);
+				throw new Exception('failed to create dbm file: '.$dbm_filename);
 			}
 
 			// Insert getID3 version number
@@ -196,7 +197,7 @@ class Dbm extends GetID3
 		$this->dba = dba_open($this->dbm_filename, 'n', $this->cache_type);
 
 		if (!$this->dba) {
-			throw new \Exception('failed to clear cache/recreate dbm file: '.$this->dbm_filename);
+			throw new Exception('failed to clear cache/recreate dbm file: '.$this->dbm_filename);
 		}
 
 		// Insert getID3 version number
