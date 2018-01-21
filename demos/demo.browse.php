@@ -591,7 +591,7 @@ function MoreNaturalSort($ar1, $ar2) {
 function PoweredBygetID3($string='') {
 	global $getID3;
 	if (!$string) {
-		$string = '<div style="border: 1px #CCCCCC solid; padding: 5px; margin: 5px 0px; float: left; background-color: #EEEEEE; font-size: 8pt; font-face: sans-serif;">Powered by <a href="http://www.getid3.org/"><b>getID3() v<!--GETID3VER--></b><br>http://www.getid3.org/</a><br>Running on PHP v'.PHP_VERSION.' ('.(8 * PHP_INT_SIZE).'-bit, '.(defined('PHP_OS_FAMILY') ? PHP_OS_FAMILY : PHP_OS).')</div>';
+		$string = '<div style="border: 1px #CCCCCC solid; padding: 5px; margin: 5px 0; float: left; background-color: #EEEEEE; font-size: 8pt; font-family: sans-serif;">Powered by <a href="http://www.getid3.org/"><b>getID3() v<!--GETID3VER--></b><br>http://www.getid3.org/</a><br>Running on PHP v'.PHP_VERSION.' ('.(8 * PHP_INT_SIZE).'-bit, '.(defined('PHP_OS_FAMILY') ? PHP_OS_FAMILY : PHP_OS).')</div>';
 	}
 	return str_replace('<!--GETID3VER-->', $getID3->version(), $string);
 }

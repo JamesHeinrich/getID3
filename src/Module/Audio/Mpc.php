@@ -60,7 +60,6 @@ class Mpc extends Handler
 			return false;
 
 		}
-		return false;
 	}
 
 

@@ -717,7 +717,7 @@ class Utils
 		if (!is_object($XMLobject) && !is_array($XMLobject)) {
 			return $XMLobject;
 		}
-		$XMLarray = (is_object($XMLobject) ? get_object_vars($XMLobject) : $XMLobject);
+		$XMLarray = $XMLobject instanceof SimpleXMLElement ? get_object_vars($XMLobject) : $XMLobject;
 		foreach ($XMLarray as $key => $value) {
 			$XMLarray[$key] = self::SimpleXMLelement2array($value);
 		}
@@ -815,19 +815,18 @@ class Utils
 						$byteswritten = fwrite($fp_dest, $buffer, $byteslefttowrite);
 						$byteslefttowrite -= $byteswritten;
 					}
+					fclose($fp_dest);
 					return true;
 				} else {
+					fclose($fp_src);
 					throw new Exception('failed to seek to offset '.$offset.' in '.$filename_source);
 				}
-				fclose($fp_dest);
 			} else {
 				throw new Exception('failed to create file for writing '.$filename_dest);
 			}
-			fclose($fp_src);
 		} else {
 			throw new Exception('failed to open file for reading '.$filename_source);
 		}
-		return false;
 	}
 
 	public static function iconv_fallback_int_utf8($charval) {

@@ -67,7 +67,7 @@ class Lyrics3 extends Handler
 
 			// Lyrics3v2, no ID3v1, no APE
 
-			$lyrics3size    = strrev(substr(strrev($lyrics3_id3v1), 9, 6)) + 6 + strlen('LYRICS200'); // LSZ = lyrics + 'LYRICSBEGIN'; add 6-byte size field; add 'LYRICS200'
+			$lyrics3size    = (int) strrev(substr(strrev($lyrics3_id3v1), 9, 6)) + 6 + strlen('LYRICS200'); // LSZ = lyrics + 'LYRICSBEGIN'; add 6-byte size field; add 'LYRICS200'
 			$lyrics3offset  = $info['filesize'] - $lyrics3size;
 			$lyrics3version = 2;
 

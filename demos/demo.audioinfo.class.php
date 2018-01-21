@@ -42,10 +42,9 @@ class AudioInfo {
 	/**
 	* Private variables
 	*/
-	var $result = NULL;
-	var $info   = NULL;
-
-
+	private $result;
+	private $info;
+	private $getID3;
 
 
 	/**

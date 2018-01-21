@@ -27,20 +27,20 @@ function UnzipFileContents($filename, &$errors) {
 	if ($getid3->fp = fopen($filename, 'rb')) {
 		ob_end_clean();
 		$getid3_zip = new GetID3\Module\Archive\Zip($getid3);
-		$getid3_zip->analyze($filename);
+		$getid3_zip->analyze();
 		if (($getid3->info['fileformat'] == 'zip') && !empty($getid3->info['zip']['files'])) {
 			if (!empty($getid3->info['zip']['central_directory'])) {
 				$ZipDirectoryToWalk = $getid3->info['zip']['central_directory'];
 			} elseif (!empty($getid3->info['zip']['entries'])) {
 				$ZipDirectoryToWalk = $getid3->info['zip']['entries'];
 			} else {
-				$errors[] = 'failed to parse ZIP attachment "'.$piece_filename.'" (no central directory)<br>';
+				$errors[] = 'failed to parse ZIP attachment "'.$filename.'" (no central directory)<br>';
 				fclose($getid3->fp);
 				return false;
 			}
 			foreach ($ZipDirectoryToWalk as $key => $valuearray) {
 				fseek($getid3->fp, $valuearray['entry_offset'], SEEK_SET);
-				$LocalFileHeader = $getid3_zip->ZIPparseLocalFileHeader($getid3->fp);
+				$LocalFileHeader = $getid3_zip->ZIPparseLocalFileHeader();
 				if ($LocalFileHeader['flags']['encrypted']) {
 					// password-protected
 					$DecompressedFileContents[$valuearray['filename']] = '';

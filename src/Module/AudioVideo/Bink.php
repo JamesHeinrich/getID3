@@ -25,7 +25,7 @@ class Bink extends Handler
 	public function Analyze() {
 		$info = &$this->getid3->info;
 
-$this->error('Bink / Smacker files not properly processed by this version of getID3() ['.$this->getid3->version().']');
+		$this->error('Bink / Smacker files not properly processed by this version of getID3() ['.$this->getid3->version().']');
 
 		$this->fseek($info['avdataoffset']);
 		$fileTypeID = $this->fread(3);

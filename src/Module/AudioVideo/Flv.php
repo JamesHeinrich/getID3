@@ -594,7 +594,7 @@ class AMFReader {
 
 		while ($key = $this->stream->readUTF()) {
 			if (is_numeric($key)) {
-				$key = (float) $key;
+				$key = (int) $key;
 			}
 			$data[$key] = $this->readData();
 		}

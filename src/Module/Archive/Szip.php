@@ -34,8 +34,8 @@ class Szip extends Handler
 		$info['fileformat']            = 'szip';
 		$info['szip']['major_version'] = Utils::BigEndian2Int(substr($SZIPHeader, 4, 1));
 		$info['szip']['minor_version'] = Utils::BigEndian2Int(substr($SZIPHeader, 5, 1));
-$this->error('SZIP parsing not enabled in this version of getID3() ['.$this->getid3->version().']');
-return false;
+		$this->error('SZIP parsing not enabled in this version of getID3() ['.$this->getid3->version().']');
+		return false;
 
 		while (!$this->feof()) {
 			$NextBlockID = $this->fread(2);

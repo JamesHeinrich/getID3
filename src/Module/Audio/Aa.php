@@ -40,8 +40,8 @@ class Aa extends Handler
 
 		$info['fileformat']            = 'aa';
 		$info['audio']['dataformat']   = 'aa';
-$this->error('Audible Audiobook (.aa) parsing not enabled in this version of getID3() ['.$this->getid3->version().']');
-return false;
+		$this->error('Audible Audiobook (.aa) parsing not enabled in this version of getID3() ['.$this->getid3->version().']');
+		return false;
 		$info['audio']['bitrate_mode'] = 'cbr'; // is it?
 		$thisfile_aa['encoding']       = 'ISO-8859-1';
 

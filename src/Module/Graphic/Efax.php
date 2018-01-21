@@ -46,8 +46,8 @@ class Efax extends Handler
 		$info['efax']['header']['pages']      = Utils::LittleEndian2Int(substr($efaxheader, 198, 2));
 		$info['efax']['header']['data_bytes'] = Utils::LittleEndian2Int(substr($efaxheader, 202, 4));
 
-$this->error('eFax parsing not enabled in this version of getID3() ['.$this->getid3->version().']');
-return false;
+		$this->error('eFax parsing not enabled in this version of getID3() ['.$this->getid3->version().']');
+		return false;
 
 		return true;
 	}

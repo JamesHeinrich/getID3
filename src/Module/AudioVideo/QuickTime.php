@@ -691,13 +691,6 @@ class QuickTime extends Handler
 					break;
 
 
-				case 'rmla': // Reference Movie Language Atom
-					$atom_structure['version']   = Utils::BigEndian2Int(substr($atom_data,  0, 1));
-					$atom_structure['flags_raw'] = Utils::BigEndian2Int(substr($atom_data,  1, 3)); // hardcoded: 0x0000
-					$atom_structure['track_id']  = Utils::BigEndian2Int(substr($atom_data,  4, 2));
-					break;
-
-
 				case 'ptv ': // Print To Video - defines a movie's full screen mode
 					// http://developer.apple.com/documentation/QuickTime/APIREF/SOURCESIV/at_ptv-_pg.htm
 					$atom_structure['display_size_raw']  = Utils::BigEndian2Int(substr($atom_data, 0, 2));
@@ -2719,10 +2712,10 @@ echo 'QuicktimeParseNikonNCTG()::unknown $data_size_type: '.$data_size_type.'<br
 			if (count($stbl_res) > 0) {
 				$ts_res = array();
 				$this->search_tag_by_key($info['quicktime']['moov'], 'time_scale', 'quicktime/moov', $ts_res);
-				foreach ($ts_res as $value) {
-					$prefix = substr($value[0], 0, -12);
+				foreach ($ts_res as $sub_value) {
+					$prefix = substr($sub_value[0], 0, -12);
 					if ((substr($stbl_res[0][0], 0, strlen($prefix)) === $prefix) && ($ts_prefix_len < strlen($prefix))) {
-						$time_scale = $value[1]['time_scale'];
+						$time_scale = $sub_value[1]['time_scale'];
 						$ts_prefix_len = strlen($prefix);
 					}
 				}

@@ -314,10 +314,12 @@ class Xmp
 									}
 								}
 							}
+							break;
 						case 'cdata':
 						case 'close':
 							break;
 					}
+					break;
 
 				case 'rdf:ID':
 				case 'rdf:nodeID':

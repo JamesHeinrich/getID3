@@ -279,7 +279,7 @@ class Mpeg extends Handler
 						$GOPheader['closed_gop']         = self::readBitsFromStream($bitstream, $bitstreamoffset,  1); //  1 bit flag: closed_gop
 						$GOPheader['broken_link']        = self::readBitsFromStream($bitstream, $bitstreamoffset,  1); //  1 bit flag: broken_link
 
-						$time_code_separator = ($GOPheader['drop_frame_flag'] ? ';' : ':'); // While non-drop time code is displayed with colons separating the digit pairs�"HH:MM:SS:FF"�drop frame is usually represented with a semi-colon (;) or period (.) as the divider between all the digit pairs�"HH;MM;SS;FF", "HH.MM.SS.FF"
+						$time_code_separator = ($GOPheader['drop_frame_flag'] ? ';' : ':'); // While non-drop time code is displayed with colons separating the digit pairs "HH:MM:SS:FF" drop frame is usually represented with a semi-colon (;) or period (.) as the divider between all the digit pairs "HH;MM;SS;FF", "HH.MM.SS.FF"
 						$GOPheader['time_code'] = sprintf('%02d'.$time_code_separator.'%02d'.$time_code_separator.'%02d'.$time_code_separator.'%02d', $GOPheader['time_code_hours'], $GOPheader['time_code_minutes'], $GOPheader['time_code_seconds'], $GOPheader['time_code_pictures']);
 
 						$info['mpeg']['group_of_pictures'][] = $GOPheader;
