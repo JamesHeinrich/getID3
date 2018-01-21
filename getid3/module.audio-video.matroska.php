@@ -366,8 +366,8 @@ class getid3_matroska extends getid3_handler
 								if (!empty($getid3_temp->info[$header_data_key])) {
 									$info['matroska']['track_codec_parsed'][$trackarray['TrackNumber']] = $getid3_temp->info[$header_data_key];
 									if (isset($getid3_temp->info['audio']) && is_array($getid3_temp->info['audio'])) {
-										foreach ($getid3_temp->info['audio'] as $key => $value) {
-											$track_info[$key] = $value;
+										foreach ($getid3_temp->info['audio'] as $sub_key => $value) {
+											$track_info[$sub_key] = $value;
 										}
 									}
 								}
@@ -421,8 +421,8 @@ class getid3_matroska extends getid3_handler
 								if (!empty($getid3_temp->info['ogg'])) {
 									$info['matroska']['track_codec_parsed'][$trackarray['TrackNumber']] = $getid3_temp->info['ogg'];
 									if (isset($getid3_temp->info['audio']) && is_array($getid3_temp->info['audio'])) {
-										foreach ($getid3_temp->info['audio'] as $key => $value) {
-											$track_info[$key] = $value;
+										foreach ($getid3_temp->info['audio'] as $sub_key => $value) {
+											$track_info[$sub_key] = $value;
 										}
 									}
 								}
@@ -449,9 +449,9 @@ class getid3_matroska extends getid3_handler
 								getid3_lib::IncludeDependency(GETID3_INCLUDEPATH.'module.audio-video.riff.php', __FILE__, true);
 
 								$parsed = getid3_riff::parseWAVEFORMATex($trackarray['CodecPrivate']);
-								foreach ($parsed as $key => $value) {
-									if ($key != 'raw') {
-										$track_info[$key] = $value;
+								foreach ($parsed as $sub_key => $value) {
+									if ($sub_key != 'raw') {
+										$track_info[$sub_key] = $value;
 									}
 								}
 								$info['matroska']['track_codec_parsed'][$trackarray['TrackNumber']] = $parsed;

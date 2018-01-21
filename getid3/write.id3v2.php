@@ -917,6 +917,7 @@ class getid3_write_id3v2
 								} else {
 									$this->errors[] = $source_data_array['frameid'].' is not a valid Frame Identifier in '.$frame_name.' (in ID3v2.'.$this->majorversion.')';
 								}
+								break;
 
 							default:
 								if ((substr($source_data_array['frameid'], 0, 1) == 'T') || (substr($source_data_array['frameid'], 0, 1) == 'W')) {
@@ -1662,6 +1663,7 @@ class getid3_write_id3v2
 		switch ($framename) {
 			case 'RGAD':
 				$allow = true;
+				break;
 			default:
 				$allow = false;
 				break;

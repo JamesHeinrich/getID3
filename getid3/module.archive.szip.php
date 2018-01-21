@@ -30,8 +30,8 @@ class getid3_szip extends getid3_handler
 		$info['fileformat']            = 'szip';
 		$info['szip']['major_version'] = getid3_lib::BigEndian2Int(substr($SZIPHeader, 4, 1));
 		$info['szip']['minor_version'] = getid3_lib::BigEndian2Int(substr($SZIPHeader, 5, 1));
-$this->error('SZIP parsing not enabled in this version of getID3() ['.$this->getid3->version().']');
-return false;
+		$this->error('SZIP parsing not enabled in this version of getID3() ['.$this->getid3->version().']');
+		return false;
 
 		while (!$this->feof()) {
 			$NextBlockID = $this->fread(2);

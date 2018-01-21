@@ -56,7 +56,6 @@ class getid3_mpc extends getid3_handler
 			return false;
 
 		}
-		return false;
 	}
 
 
