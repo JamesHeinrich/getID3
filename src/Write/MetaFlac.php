@@ -107,7 +107,11 @@ class MetaFlac
 		} else {
 
 			// It's simpler on *nix
-			$commandline = 'metaflac --no-utf8-convert --remove-all-tags --import-tags-from='.escapeshellarg($tempcommentsfilename).' '.escapeshellarg($this->filename).' 2>&1';
+			$commandline  = 'metaflac --no-utf8-convert --remove-all-tags --import-tags-from='.escapeshellarg($tempcommentsfilename);
+			foreach ($this->pictures as $picturecommand) {
+				$commandline .= ' --import-picture-from='.escapeshellarg($picturecommand);
+			}
+			$commandline .= ' '.escapeshellarg($this->filename).' 2>&1';
 			$metaflacError = `$commandline`;
 
 		}
