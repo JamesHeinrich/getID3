@@ -1,4 +1,5 @@
 <?php
+
 /////////////////////////////////////////////////////////////////
 /// getID3() by James Heinrich <info@getid3.org>               //
 //  available at http://getid3.sourceforge.net                 //
@@ -17,7 +18,9 @@
 
 class getid3_bink extends getid3_handler
 {
-
+	/**
+	 * @return bool
+	 */
 	public function Analyze() {
 		$info = &$this->getid3->info;
 
@@ -44,6 +47,9 @@ class getid3_bink extends getid3_handler
 
 	}
 
+	/**
+	 * @return bool
+	 */
 	public function ParseBink() {
 		$info = &$this->getid3->info;
 		$info['fileformat']          = 'bink';
@@ -61,6 +67,9 @@ class getid3_bink extends getid3_handler
 		return true;
 	}
 
+	/**
+	 * @return bool
+	 */
 	public function ParseSmacker() {
 		$info = &$this->getid3->info;
 		$info['fileformat']          = 'smacker';

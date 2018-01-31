@@ -1,4 +1,5 @@
 <?php
+
 /////////////////////////////////////////////////////////////////
 /// getID3() by James Heinrich <info@getid3.org>               //
 //  available at http://getid3.sourceforge.net                 //
@@ -17,6 +18,9 @@
 
 class getid3_aac extends getid3_handler
 {
+	/**
+	 * @return bool
+	 */
 	public function Analyze() {
 		$info = &$this->getid3->info;
 		$this->fseek($info['avdataoffset']);
@@ -28,8 +32,9 @@ class getid3_aac extends getid3_handler
 		return true;
 	}
 
-
-
+	/**
+	 * @return bool
+	 */
 	public function getAACADIFheaderFilepointer() {
 		$info = &$this->getid3->info;
 		$info['fileformat']          = 'aac';
@@ -257,7 +262,12 @@ class getid3_aac extends getid3_handler
 
 	}
 
-
+	/**
+	 * @param int  $MaxFramesToScan
+	 * @param bool $ReturnExtendedInfo
+	 *
+	 * @return bool
+	 */
 	public function getAACADTSheaderFilepointer($MaxFramesToScan=1000000, $ReturnExtendedInfo=false) {
 		$info = &$this->getid3->info;
 
@@ -443,6 +453,11 @@ class getid3_aac extends getid3_handler
 		// should never get here.
 	}
 
+	/**
+	 * @param int $samplerateid
+	 *
+	 * @return int|string
+	 */
 	public static function AACsampleRateLookup($samplerateid) {
 		static $AACsampleRateLookup = array();
 		if (empty($AACsampleRateLookup)) {
@@ -466,6 +481,12 @@ class getid3_aac extends getid3_handler
 		return (isset($AACsampleRateLookup[$samplerateid]) ? $AACsampleRateLookup[$samplerateid] : 'invalid');
 	}
 
+	/**
+	 * @param int $profileid
+	 * @param int $mpegversion
+	 *
+	 * @return string
+	 */
 	public static function AACprofileLookup($profileid, $mpegversion) {
 		static $AACprofileLookup = array();
 		if (empty($AACprofileLookup)) {
@@ -481,6 +502,11 @@ class getid3_aac extends getid3_handler
 		return (isset($AACprofileLookup[$mpegversion][$profileid]) ? $AACprofileLookup[$mpegversion][$profileid] : 'invalid');
 	}
 
+	/**
+	 * @param array $program_configs
+	 *
+	 * @return int
+	 */
 	public static function AACchannelCountCalculate($program_configs) {
 		$channels = 0;
 		for ($i = 0; $i < $program_configs['num_front_channel_elements']; $i++) {

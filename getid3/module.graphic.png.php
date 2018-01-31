@@ -1,4 +1,5 @@
 <?php
+
 /////////////////////////////////////////////////////////////////
 /// getID3() by James Heinrich <info@getid3.org>               //
 //  available at http://getid3.sourceforge.net                 //
@@ -17,8 +18,17 @@
 
 class getid3_png extends getid3_handler
 {
-	public $max_data_bytes = 10000000; // if data chunk is larger than this do not read it completely (getID3 only needs the first few dozen bytes for parsing)
+	/**
+	 * If data chunk is larger than this do not read it completely (getID3 only needs the first
+	 * few dozen bytes for parsing).
+	 *
+	 * @var int
+	 */
+	public $max_data_bytes = 10000000;
 
+	/**
+	 * @return bool
+	 */
 	public function Analyze() {
 
 		$info = &$this->getid3->info;
@@ -493,6 +503,11 @@ class getid3_png extends getid3_handler
 		return true;
 	}
 
+	/**
+	 * @param int $sRGB
+	 *
+	 * @return string
+	 */
 	public function PNGsRGBintentLookup($sRGB) {
 		static $PNGsRGBintentLookup = array(
 			0 => 'Perceptual',
@@ -503,6 +518,11 @@ class getid3_png extends getid3_handler
 		return (isset($PNGsRGBintentLookup[$sRGB]) ? $PNGsRGBintentLookup[$sRGB] : 'invalid');
 	}
 
+	/**
+	 * @param int $compressionmethod
+	 *
+	 * @return string
+	 */
 	public function PNGcompressionMethodLookup($compressionmethod) {
 		static $PNGcompressionMethodLookup = array(
 			0 => 'deflate/inflate'
@@ -510,6 +530,11 @@ class getid3_png extends getid3_handler
 		return (isset($PNGcompressionMethodLookup[$compressionmethod]) ? $PNGcompressionMethodLookup[$compressionmethod] : 'invalid');
 	}
 
+	/**
+	 * @param int $unitid
+	 *
+	 * @return string
+	 */
 	public function PNGpHYsUnitLookup($unitid) {
 		static $PNGpHYsUnitLookup = array(
 			0 => 'unknown',
@@ -518,6 +543,11 @@ class getid3_png extends getid3_handler
 		return (isset($PNGpHYsUnitLookup[$unitid]) ? $PNGpHYsUnitLookup[$unitid] : 'invalid');
 	}
 
+	/**
+	 * @param int $unitid
+	 *
+	 * @return string
+	 */
 	public function PNGoFFsUnitLookup($unitid) {
 		static $PNGoFFsUnitLookup = array(
 			0 => 'pixel',
@@ -526,6 +556,11 @@ class getid3_png extends getid3_handler
 		return (isset($PNGoFFsUnitLookup[$unitid]) ? $PNGoFFsUnitLookup[$unitid] : 'invalid');
 	}
 
+	/**
+	 * @param int $equationtype
+	 *
+	 * @return string
+	 */
 	public function PNGpCALequationTypeLookup($equationtype) {
 		static $PNGpCALequationTypeLookup = array(
 			0 => 'Linear mapping',
@@ -536,6 +571,11 @@ class getid3_png extends getid3_handler
 		return (isset($PNGpCALequationTypeLookup[$equationtype]) ? $PNGpCALequationTypeLookup[$equationtype] : 'invalid');
 	}
 
+	/**
+	 * @param int $unitid
+	 *
+	 * @return string
+	 */
 	public function PNGsCALUnitLookup($unitid) {
 		static $PNGsCALUnitLookup = array(
 			0 => 'meter',
@@ -544,6 +584,12 @@ class getid3_png extends getid3_handler
 		return (isset($PNGsCALUnitLookup[$unitid]) ? $PNGsCALUnitLookup[$unitid] : 'invalid');
 	}
 
+	/**
+	 * @param int $color_type
+	 * @param int $bit_depth
+	 *
+	 * @return int|false
+	 */
 	public function IHDRcalculateBitsPerSample($color_type, $bit_depth) {
 		switch ($color_type) {
 			case 0: // Each pixel is a grayscale sample.

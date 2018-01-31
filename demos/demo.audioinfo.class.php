@@ -72,11 +72,12 @@ class AudioInfo {
 	/**
 	* Extract information - only public function
 	*
-	* @access   public
-	* @param    string  file    Audio file to extract info from.
+	* @param    string  $file    Audio file to extract info from.
+	*
+	* @return array
 	*/
 
-	function Info($file) {
+	public function Info($file) {
 
 		// Analyze file
 		$this->info = $this->getID3->analyze($file);
@@ -117,10 +118,9 @@ class AudioInfo {
 	/**
 	* post-getID3() data handling for AAC files.
 	*
-	* @access   private
 	*/
 
-	function aacInfo() {
+	private function aacInfo() {
 		$this->result['format_name']     = 'AAC';
 	}
 
@@ -130,10 +130,9 @@ class AudioInfo {
 	/**
 	* post-getID3() data handling for Wave files.
 	*
-	* @access   private
 	*/
 
-	function riffInfo() {
+	private function riffInfo() {
 		if ($this->info['audio']['dataformat'] == 'wav') {
 
 			$this->result['format_name'] = 'Wave';
@@ -155,10 +154,9 @@ class AudioInfo {
 	/**
 	* * post-getID3() data handling for FLAC files.
 	*
-	* @access   private
 	*/
 
-	function flacInfo() {
+	private function flacInfo() {
 		$this->result['format_name']     = 'FLAC';
 	}
 
@@ -169,10 +167,9 @@ class AudioInfo {
 	/**
 	* post-getID3() data handling for Monkey's Audio files.
 	*
-	* @access   private
 	*/
 
-	function macInfo() {
+	private function macInfo() {
 		$this->result['format_name']     = 'Monkey\'s Audio';
 	}
 
@@ -181,12 +178,9 @@ class AudioInfo {
 
 
 	/**
-	* post-getID3() data handling for Lossless Audio files.
-	*
-	* @access   private
-	*/
-
-	function laInfo() {
+	 * post-getID3() data handling for Lossless Audio files.
+	 */
+	private function laInfo() {
 		$this->result['format_name']     = 'La';
 	}
 

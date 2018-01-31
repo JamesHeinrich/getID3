@@ -1,4 +1,5 @@
 <?php
+
 /////////////////////////////////////////////////////////////////
 /// getID3() by James Heinrich <info@getid3.org>               //
 //  available at http://getid3.sourceforge.net                 //
@@ -17,7 +18,9 @@
 
 class getid3_mpc extends getid3_handler
 {
-
+	/**
+	 * @return bool
+	 */
 	public function Analyze() {
 		$info = &$this->getid3->info;
 
@@ -58,7 +61,9 @@ class getid3_mpc extends getid3_handler
 		}
 	}
 
-
+	/**
+	 * @return bool
+	 */
 	public function ParseMPCsv8() {
 		// this is SV8
 		// http://trac.musepack.net/trac/wiki/SV8Specification
@@ -207,6 +212,9 @@ class getid3_mpc extends getid3_handler
 		return true;
 	}
 
+	/**
+	 * @return bool
+	 */
 	public function ParseMPCsv7() {
 		// this is SV7
 		// http://www.uni-jena.de/~pfk/mpp/sv8/header.html
@@ -321,6 +329,9 @@ class getid3_mpc extends getid3_handler
 		return true;
 	}
 
+	/**
+	 * @return bool
+	 */
 	public function ParseMPCsv6() {
 		// this is SV4 - SV6
 
@@ -396,7 +407,11 @@ class getid3_mpc extends getid3_handler
 		return true;
 	}
 
-
+	/**
+	 * @param int $profileid
+	 *
+	 * @return string
+	 */
 	public function MPCprofileNameLookup($profileid) {
 		static $MPCprofileNameLookup = array(
 			0  => 'no profile',
@@ -419,6 +434,11 @@ class getid3_mpc extends getid3_handler
 		return (isset($MPCprofileNameLookup[$profileid]) ? $MPCprofileNameLookup[$profileid] : 'invalid');
 	}
 
+	/**
+	 * @param int $frequencyid
+	 *
+	 * @return int|string
+	 */
 	public function MPCfrequencyLookup($frequencyid) {
 		static $MPCfrequencyLookup = array(
 			0 => 44100,
@@ -429,6 +449,11 @@ class getid3_mpc extends getid3_handler
 		return (isset($MPCfrequencyLookup[$frequencyid]) ? $MPCfrequencyLookup[$frequencyid] : 'invalid');
 	}
 
+	/**
+	 * @param int $intvalue
+	 *
+	 * @return float|false
+	 */
 	public function MPCpeakDBLookup($intvalue) {
 		if ($intvalue > 0) {
 			return ((log10($intvalue) / log10(2)) - 15) * 6;
@@ -436,6 +461,11 @@ class getid3_mpc extends getid3_handler
 		return false;
 	}
 
+	/**
+	 * @param int $encoderversion
+	 *
+	 * @return string
+	 */
 	public function MPCencoderVersionLookup($encoderversion) {
 		//Encoder version * 100  (106 = 1.06)
 		//EncoderVersion % 10 == 0        Release (1.0)
@@ -463,6 +493,13 @@ class getid3_mpc extends getid3_handler
 		return number_format($encoderversion / 100, 2).' alpha';
 	}
 
+	/**
+	 * @param string $data
+	 * @param int    $packetLength
+	 * @param int    $maxHandledPacketLength
+	 *
+	 * @return int|false
+	 */
 	public function SV8variableLengthInteger($data, &$packetLength, $maxHandledPacketLength=9) {
 		$packet_size = 0;
 		for ($packetLength = 1; $packetLength <= $maxHandledPacketLength; $packetLength++) {
@@ -487,6 +524,11 @@ class getid3_mpc extends getid3_handler
 		return $packet_size;
 	}
 
+	/**
+	 * @param string $packetKey
+	 *
+	 * @return string
+	 */
 	public function MPCsv8PacketName($packetKey) {
 		static $MPCsv8PacketName = array();
 		if (empty($MPCsv8PacketName)) {

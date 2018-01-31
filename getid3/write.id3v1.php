@@ -1,4 +1,5 @@
 <?php
+
 /////////////////////////////////////////////////////////////////
 /// getID3() by James Heinrich <info@getid3.org>               //
 //  available at http://getid3.sourceforge.net                 //
@@ -18,15 +19,41 @@ getid3_lib::IncludeDependency(GETID3_INCLUDEPATH.'module.tag.id3v1.php', __FILE_
 
 class getid3_write_id3v1
 {
+	/**
+	 * @var string
+	 */
 	public $filename;
+
+	/**
+	 * @var int
+	 */
 	public $filesize;
+
+	/**
+	 * @var array
+	 */
 	public $tag_data;
-	public $warnings = array(); // any non-critical errors will be stored here
-	public $errors   = array(); // any critical errors will be stored here
+
+	/**
+	 * Any non-critical errors will be stored here.
+	 *
+	 * @var array
+	 */
+	public $warnings = array();
+
+	/**
+	 * Any critical errors will be stored here.
+	 *
+	 * @var array
+	 */
+	public $errors   = array();
 
 	public function __construct() {
 	}
 
+	/**
+	 * @return bool
+	 */
 	public function WriteID3v1() {
 		// File MUST be writeable - CHMOD(646) at least
 		if (!empty($this->filename) && is_readable($this->filename) && getID3::is_writable($this->filename) && is_file($this->filename)) {
@@ -65,6 +92,9 @@ class getid3_write_id3v1
 		return false;
 	}
 
+	/**
+	 * @return bool
+	 */
 	public function FixID3v1Padding() {
 		// ID3v1 data is supposed to be padded with NULL characters, but some taggers incorrectly use spaces
 		// This function rewrites the ID3v1 tag with correct padding
@@ -88,6 +118,9 @@ class getid3_write_id3v1
 		return false;
 	}
 
+	/**
+	 * @return bool
+	 */
 	public function RemoveID3v1() {
 		// File MUST be writeable - CHMOD(646) at least
 		if (!empty($this->filename) && is_readable($this->filename) && getID3::is_writable($this->filename) && is_file($this->filename)) {
@@ -116,6 +149,9 @@ class getid3_write_id3v1
 		return false;
 	}
 
+	/**
+	 * @return bool
+	 */
 	public function setRealFileSize() {
 		if (PHP_INT_MAX > 2147483647) {
 			$this->filesize = filesize($this->filename);

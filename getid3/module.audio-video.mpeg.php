@@ -1,4 +1,5 @@
 <?php
+
 /////////////////////////////////////////////////////////////////
 /// getID3() by James Heinrich <info@getid3.org>               //
 //  available at http://getid3.sourceforge.net                 //
@@ -16,7 +17,8 @@
 
 getid3_lib::IncludeDependency(GETID3_INCLUDEPATH.'module.audio.mp3.php', __FILE__, true);
 
-class getid3_mpeg extends getid3_handler {
+class getid3_mpeg extends getid3_handler
+{
 
 	const START_CODE_BASE       = "\x00\x00\x01";
 	const VIDEO_PICTURE_START   = "\x00\x00\x01\x00";
@@ -28,7 +30,9 @@ class getid3_mpeg extends getid3_handler {
 	const VIDEO_GROUP_START     = "\x00\x00\x01\xB8";
 	const AUDIO_START           = "\x00\x00\x01\xC0";
 
-
+	/**
+	 * @return bool
+	 */
 	public function Analyze() {
 		$info = &$this->getid3->info;
 
@@ -502,6 +506,14 @@ echo 'average_File_bitrate = '.number_format(array_sum($vbr_bitrates) / count($v
 		return true;
 	}
 
+	/**
+	 * @param string $bitstream
+	 * @param int    $bitstreamoffset
+	 * @param int    $bits_to_read
+	 * @param bool $return_singlebit_as_boolean
+	 *
+	 * @return bool|float|int
+	 */
 	private function readBitsFromStream(&$bitstream, &$bitstreamoffset, $bits_to_read, $return_singlebit_as_boolean=true) {
 		$return = bindec(substr($bitstream, $bitstreamoffset, $bits_to_read));
 		$bitstreamoffset += $bits_to_read;
@@ -511,7 +523,12 @@ echo 'average_File_bitrate = '.number_format(array_sum($vbr_bitrates) / count($v
 		return $return;
 	}
 
-
+	/**
+	 * @param int $VideoBitrate
+	 * @param int $AudioBitrate
+	 *
+	 * @return float|int
+	 */
 	public static function systemNonOverheadPercentage($VideoBitrate, $AudioBitrate) {
 		$OverheadPercentage = 0;
 
@@ -563,40 +580,74 @@ echo 'average_File_bitrate = '.number_format(array_sum($vbr_bitrates) / count($v
 		return $OverheadPercentage;
 	}
 
-
+	/**
+	 * @param int $rawframerate
+	 *
+	 * @return float
+	 */
 	public static function videoFramerateLookup($rawframerate) {
 		$lookup = array(0, 23.976, 24, 25, 29.97, 30, 50, 59.94, 60);
 		return (isset($lookup[$rawframerate]) ? (float) $lookup[$rawframerate] : (float) 0);
 	}
 
+	/**
+	 * @param int $rawaspectratio
+	 *
+	 * @return float
+	 */
 	public static function videoAspectRatioLookup($rawaspectratio) {
 		$lookup = array(0, 1, 0.6735, 0.7031, 0.7615, 0.8055, 0.8437, 0.8935, 0.9157, 0.9815, 1.0255, 1.0695, 1.0950, 1.1575, 1.2015, 0);
 		return (isset($lookup[$rawaspectratio]) ? (float) $lookup[$rawaspectratio] : (float) 0);
 	}
 
+	/**
+	 * @param int $rawaspectratio
+	 *
+	 * @return string
+	 */
 	public static function videoAspectRatioTextLookup($rawaspectratio) {
 		$lookup = array('forbidden', 'square pixels', '0.6735', '16:9, 625 line, PAL', '0.7615', '0.8055', '16:9, 525 line, NTSC', '0.8935', '4:3, 625 line, PAL, CCIR601', '0.9815', '1.0255', '1.0695', '4:3, 525 line, NTSC, CCIR601', '1.1575', '1.2015', 'reserved');
 		return (isset($lookup[$rawaspectratio]) ? $lookup[$rawaspectratio] : '');
 	}
 
+	/**
+	 * @param int $video_format
+	 *
+	 * @return string
+	 */
 	public static function videoFormatTextLookup($video_format) {
 		// ISO/IEC 13818-2, section 6.3.6, Table 6-6. Meaning of video_format
 		$lookup = array('component', 'PAL', 'NTSC', 'SECAM', 'MAC', 'Unspecified video format', 'reserved(6)', 'reserved(7)');
 		return (isset($lookup[$video_format]) ? $lookup[$video_format] : '');
 	}
 
+	/**
+	 * @param int $scalable_mode
+	 *
+	 * @return string
+	 */
 	public static function scalableModeTextLookup($scalable_mode) {
 		// ISO/IEC 13818-2, section 6.3.8, Table 6-10. Definition of scalable_mode
 		$lookup = array('data partitioning', 'spatial scalability', 'SNR scalability', 'temporal scalability');
 		return (isset($lookup[$scalable_mode]) ? $lookup[$scalable_mode] : '');
 	}
 
+	/**
+	 * @param int $picture_structure
+	 *
+	 * @return string
+	 */
 	public static function pictureStructureTextLookup($picture_structure) {
 		// ISO/IEC 13818-2, section 6.3.11, Table 6-14 Meaning of picture_structure
 		$lookup = array('reserved', 'Top Field', 'Bottom Field', 'Frame picture');
 		return (isset($lookup[$picture_structure]) ? $lookup[$picture_structure] : '');
 	}
 
+	/**
+	 * @param int $chroma_format
+	 *
+	 * @return string
+	 */
 	public static function chromaFormatTextLookup($chroma_format) {
 		// ISO/IEC 13818-2, section 6.3.11, Table 6-14 Meaning of picture_structure
 		$lookup = array('reserved', '4:2:0', '4:2:2', '4:4:4');

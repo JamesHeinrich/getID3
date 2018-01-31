@@ -1,4 +1,5 @@
 <?php
+
 /////////////////////////////////////////////////////////////////////////////////
 /// getID3() by James Heinrich <info@getid3.org>                               //
 //  available at http://getid3.sourceforge.net                                 //
@@ -16,6 +17,7 @@
 // MySQL extension was reworked for SQLite3 by Karl G. Holz <newaeonØmac*com>  //
 //                                                                            ///
 /////////////////////////////////////////////////////////////////////////////////
+
 /**
 * This is a caching extension for getID3(). It works the exact same
 * way as the getID3 class, but return cached information much faster
@@ -89,12 +91,28 @@
 *
 *
 */
-class getID3_cached_sqlite3 extends getID3 {
+class getID3_cached_sqlite3 extends getID3
+{
+	/**
+	 * hold the sqlite db
+	 *
+	 * @var SQLite3 Resource
+	 */
+	private $db;
 
 	/**
-	* __construct()
-	* @param string $table holds name of sqlite table
-	*/
+	 * table to use for caching
+	 *
+	 * @var string $table
+	 */
+	private $table;
+
+	/**
+	 * @param string  $table holds name of sqlite table
+	 * @param boolean $hide
+	 *
+	 * @throws getid3_exception
+	 */
 	public function __construct($table='getid3_cache', $hide=false) {
 		$this->table = $table; // Set table
 		$file = dirname(__FILE__).'/'.basename(__FILE__, 'php').'sqlite';
@@ -117,30 +135,18 @@ class getID3_cached_sqlite3 extends getID3 {
 	}
 
 	/**
-	* close the database connection
-	*/
+	 * close the database connection
+	 */
 	public function __destruct() {
 		$db=$this->db;
 		$db->close();
 	}
 
 	/**
-	* hold the sqlite db
-	* @var SQLite3 Resource
-	*/
-	private $db;
-
-	/**
-	* table to use for caching
-	* @var string $table
-	*/
-	private $table;
-
-	/**
-	* clear the cache
-	* @access private
-	* @return SQLite3Result
-	*/
+	 * clear the cache
+	 *
+	 * @return SQLite3Result
+	 */
 	private function clear_cache() {
 		$db = $this->db;
 		$sql = $this->getQuery('delete_cache');
@@ -154,10 +160,14 @@ class getID3_cached_sqlite3 extends getID3 {
 	}
 
 	/**
-	* analyze file and cache them, if cached pull from the db
-	* @param string $filename
-	* @return boolean
-	*/
+	 * analyze file and cache them, if cached pull from the db
+	 *
+	 * @param string  $filename
+	 * @param integer $filesize
+	 * @param string  $original_filename
+	 *
+	 * @return mixed|false
+	 */
 	public function analyze($filename, $filesize=null, $original_filename='') {
 		if (!file_exists($filename)) {
 			return false;
@@ -196,10 +206,11 @@ class getID3_cached_sqlite3 extends getID3 {
 	}
 
 	/**
-	* create data base table
-	* this is almost the same as MySQL, with the exception of the dirname being added
-	* @return bool
-	*/
+	 * create data base table
+	 * this is almost the same as MySQL, with the exception of the dirname being added
+	 *
+	 * @return bool
+	 */
 	private function create_table() {
 		$db = $this->db;
 		$sql = $this->getQuery('make_table');
@@ -207,15 +218,15 @@ class getID3_cached_sqlite3 extends getID3 {
 	}
 
 	/**
-	* get cached directory
-	*
-	* This function is not in the MySQL extention, it's ment to speed up requesting multiple files
-	* which is ideal for podcasting, playlists, etc.
-	*
-	* @access public
-	* @param string $dir directory to search the cache database for
-	* @return array return an array of matching id3 data
-	*/
+	 * get cached directory
+	 *
+	 * This function is not in the MySQL extention, it's ment to speed up requesting multiple files
+	 * which is ideal for podcasting, playlists, etc.
+	 *
+	 * @param string $dir directory to search the cache database for
+	 *
+	 * @return array return an array of matching id3 data
+	 */
 	public function get_cached_dir($dir) {
 		$db = $this->db;
 		$rows = array();
@@ -229,46 +240,50 @@ class getID3_cached_sqlite3 extends getID3 {
 		return $rows;
 	}
 
-    /**
-     * returns NULL if query is not found
-     *
-     * @param string $name
-     *
-     * @return null|string
-     */
-    public function getQuery($name)
-    {
-        switch ($name) {
-            case 'version_check':
-                return "SELECT val FROM $this->table WHERE filename = :filename AND filesize = '-1' AND filetime = '-1' AND analyzetime = '-1'";
-                break;
-            case 'delete_cache':
-                return "DELETE FROM $this->table";
-                break;
-            case 'set_version':
-                return "INSERT INTO $this->table (filename, dirname, filesize, filetime, analyzetime, val) VALUES (:filename, :dirname, -1, -1, -1, :val)";
-                break;
-            case 'get_id3_data':
-                return "SELECT val FROM $this->table WHERE filename = :filename AND filesize = :filesize AND filetime = :filetime";
-                break;
-            case 'cache_file':
-                return "INSERT INTO $this->table (filename, dirname, filesize, filetime, analyzetime, val) VALUES (:filename, :dirname, :filesize, :filetime, :atime, :val)";
-                break;
-            case 'make_table':
-                return "CREATE TABLE IF NOT EXISTS $this->table (filename VARCHAR(255) DEFAULT '', dirname VARCHAR(255) DEFAULT '', filesize INT(11) DEFAULT '0', filetime INT(11) DEFAULT '0', analyzetime INT(11) DEFAULT '0', val text, PRIMARY KEY (filename, filesize, filetime))";
-                break;
-            case 'get_cached_dir':
-                return "SELECT val FROM $this->table WHERE dirname = :dirname";
-                break;
-            default:
-                return null;
-        }
+	/**
+	 * returns NULL if query is not found
+	 *
+	 * @param string $name
+	 *
+	 * @return null|string
+	 */
+	public function getQuery($name)
+	{
+		switch ($name) {
+			case 'version_check':
+				return "SELECT val FROM $this->table WHERE filename = :filename AND filesize = '-1' AND filetime = '-1' AND analyzetime = '-1'";
+				break;
+			case 'delete_cache':
+				return "DELETE FROM $this->table";
+				break;
+			case 'set_version':
+				return "INSERT INTO $this->table (filename, dirname, filesize, filetime, analyzetime, val) VALUES (:filename, :dirname, -1, -1, -1, :val)";
+				break;
+			case 'get_id3_data':
+				return "SELECT val FROM $this->table WHERE filename = :filename AND filesize = :filesize AND filetime = :filetime";
+				break;
+			case 'cache_file':
+				return "INSERT INTO $this->table (filename, dirname, filesize, filetime, analyzetime, val) VALUES (:filename, :dirname, :filesize, :filetime, :atime, :val)";
+				break;
+			case 'make_table':
+				return "CREATE TABLE IF NOT EXISTS $this->table (filename VARCHAR(255) DEFAULT '', dirname VARCHAR(255) DEFAULT '', filesize INT(11) DEFAULT '0', filetime INT(11) DEFAULT '0', analyzetime INT(11) DEFAULT '0', val text, PRIMARY KEY (filename, filesize, filetime))";
+				break;
+			case 'get_cached_dir':
+				return "SELECT val FROM $this->table WHERE dirname = :dirname";
+				break;
+			default:
+				return null;
+		}
 	}
+
 	/**
 	* use the magical __get() for sql queries
 	*
 	* access as easy as $this->{case name}, returns NULL if query is not found
 	*
+	* @param string $name
+	*
+	* @return string
 	* @deprecated use getQuery() instead
 	*/
 	public function __get($name) {

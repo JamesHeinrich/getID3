@@ -1,4 +1,5 @@
 <?php
+
 /////////////////////////////////////////////////////////////////
 /// getID3() by James Heinrich <info@getid3.org>               //
 //  available at http://getid3.sourceforge.net                 //
@@ -17,7 +18,9 @@
 
 class getid3_mod extends getid3_handler
 {
-
+	/**
+	 * @return bool
+	 */
 	public function Analyze() {
 		$info = &$this->getid3->info;
 		$this->fseek($info['avdataoffset']);
@@ -35,7 +38,9 @@ class getid3_mod extends getid3_handler
 		return false;
 	}
 
-
+	/**
+	 * @return bool
+	 */
 	public function getMODheaderFilepointer() {
 		$info = &$this->getid3->info;
 		$this->fseek($info['avdataoffset'] + 1080);
@@ -51,6 +56,9 @@ class getid3_mod extends getid3_handler
 		return false;
 	}
 
+	/**
+	 * @return bool
+	 */
 	public function getXMheaderFilepointer() {
 		$info = &$this->getid3->info;
 		$this->fseek($info['avdataoffset']);
@@ -66,6 +74,9 @@ class getid3_mod extends getid3_handler
 		return false;
 	}
 
+	/**
+	 * @return bool
+	 */
 	public function getS3MheaderFilepointer() {
 		$info = &$this->getid3->info;
 		$this->fseek($info['avdataoffset'] + 44);
@@ -81,6 +92,9 @@ class getid3_mod extends getid3_handler
 		return false;
 	}
 
+	/**
+	 * @return bool
+	 */
 	public function getITheaderFilepointer() {
 		$info = &$this->getid3->info;
 		$this->fseek($info['avdataoffset']);

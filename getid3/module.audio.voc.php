@@ -1,4 +1,5 @@
 <?php
+
 /////////////////////////////////////////////////////////////////
 /// getID3() by James Heinrich <info@getid3.org>               //
 //  available at http://getid3.sourceforge.net                 //
@@ -17,7 +18,9 @@
 
 class getid3_voc extends getid3_handler
 {
-
+	/**
+	 * @return bool
+	 */
 	public function Analyze() {
 		$info = &$this->getid3->info;
 
@@ -164,6 +167,11 @@ class getid3_voc extends getid3_handler
 		return true;
 	}
 
+	/**
+	 * @param int $index
+	 *
+	 * @return string
+	 */
 	public function VOCcompressionTypeLookup($index) {
 		static $VOCcompressionTypeLookup = array(
 			0 => '8-bit',
@@ -174,6 +182,11 @@ class getid3_voc extends getid3_handler
 		return (isset($VOCcompressionTypeLookup[$index]) ? $VOCcompressionTypeLookup[$index] : 'Multi DAC ('.($index - 3).') channels');
 	}
 
+	/**
+	 * @param int $index
+	 *
+	 * @return string|false
+	 */
 	public function VOCwFormatLookup($index) {
 		static $VOCwFormatLookup = array(
 			0x0000 => '8-bit unsigned PCM',
@@ -188,6 +201,11 @@ class getid3_voc extends getid3_handler
 		return (isset($VOCwFormatLookup[$index]) ? $VOCwFormatLookup[$index] : false);
 	}
 
+	/**
+	 * @param int $index
+	 *
+	 * @return int|false
+	 */
 	public function VOCwFormatActualBitsPerSampleLookup($index) {
 		static $VOCwFormatLookup = array(
 			0x0000 =>  8,

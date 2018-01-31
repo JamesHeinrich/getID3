@@ -1,4 +1,5 @@
 <?php
+
 /////////////////////////////////////////////////////////////////
 /// getID3() by James Heinrich <info@getid3.org>               //
 //  available at http://getid3.sourceforge.net                 //
@@ -14,12 +15,15 @@
 //                                                            ///
 /////////////////////////////////////////////////////////////////
 
-// https://www.w3.org/Graphics/GIF/spec-gif89a.txt
-// http://www.matthewflickinger.com/lab/whatsinagif/bits_and_bytes.asp
-
+/**
+ * @link https://www.w3.org/Graphics/GIF/spec-gif89a.txt
+ * @link http://www.matthewflickinger.com/lab/whatsinagif/bits_and_bytes.asp
+ */
 class getid3_gif extends getid3_handler
 {
-
+	/**
+	 * @return bool
+	 */
 	public function Analyze() {
 		$info = &$this->getid3->info;
 
@@ -180,7 +184,11 @@ class getid3_gif extends getid3_handler
 		return true;
 	}
 
-
+	/**
+	 * @param int $bits
+	 *
+	 * @return float|int
+	 */
 	public function GetLSBits($bits) {
 		static $bitbuffer = '';
 		while (strlen($bitbuffer) < $bits) {

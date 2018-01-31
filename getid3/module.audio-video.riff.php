@@ -1,4 +1,5 @@
 <?php
+
 /////////////////////////////////////////////////////////////////
 /// getID3() by James Heinrich <info@getid3.org>               //
 //  available at http://getid3.sourceforge.net                 //
@@ -27,10 +28,15 @@ getid3_lib::IncludeDependency(GETID3_INCLUDEPATH.'module.audio.mp3.php', __FILE_
 getid3_lib::IncludeDependency(GETID3_INCLUDEPATH.'module.audio.ac3.php', __FILE__, true);
 getid3_lib::IncludeDependency(GETID3_INCLUDEPATH.'module.audio.dts.php', __FILE__, true);
 
-class getid3_riff extends getid3_handler {
-
+class getid3_riff extends getid3_handler
+{
 	protected $container = 'riff'; // default
 
+	/**
+	 * @return bool
+	 *
+	 * @throws getid3_exception
+	 */
 	public function Analyze() {
 		$info = &$this->getid3->info;
 
@@ -1374,6 +1380,15 @@ class getid3_riff extends getid3_handler {
 		return true;
 	}
 
+	/**
+	 * @param int $startoffset
+	 * @param int $maxoffset
+	 *
+	 * @return array|false
+	 *
+	 * @throws Exception
+	 * @throws getid3_exception
+	 */
 	public function ParseRIFFAMV($startoffset, $maxoffset) {
 		// AMV files are RIFF-AVI files with parts of the spec deliberately broken, such as chunk size fields hardcoded to zero (because players known in hardware that these fields are always a certain size
 
@@ -1482,7 +1497,13 @@ class getid3_riff extends getid3_handler {
 		return $RIFFchunk;
 	}
 
-
+	/**
+	 * @param int $startoffset
+	 * @param int $maxoffset
+	 *
+	 * @return array|false
+	 * @throws getid3_exception
+	 */
 	public function ParseRIFF($startoffset, $maxoffset) {
 		$info = &$this->getid3->info;
 
@@ -1769,6 +1790,11 @@ class getid3_riff extends getid3_handler {
 		return $RIFFchunk;
 	}
 
+	/**
+	 * @param string $RIFFdata
+	 *
+	 * @return bool
+	 */
 	public function ParseRIFFdata(&$RIFFdata) {
 		$info = &$this->getid3->info;
 		if ($RIFFdata) {
@@ -1806,6 +1832,12 @@ class getid3_riff extends getid3_handler {
 		return false;
 	}
 
+	/**
+	 * @param array $RIFFinfoArray
+	 * @param array $CommentsTargetArray
+	 *
+	 * @return bool
+	 */
 	public static function parseComments(&$RIFFinfoArray, &$CommentsTargetArray) {
 		$RIFFinfoKeyLookup = array(
 			'IARL'=>'archivallocation',
@@ -1865,6 +1897,11 @@ class getid3_riff extends getid3_handler {
 		return true;
 	}
 
+	/**
+	 * @param string $WaveFormatExData
+	 *
+	 * @return array
+	 */
 	public static function parseWAVEFORMATex($WaveFormatExData) {
 		// shortcut
 		$WaveFormatEx['raw'] = array();
@@ -1890,6 +1927,11 @@ class getid3_riff extends getid3_handler {
 		return $WaveFormatEx;
 	}
 
+	/**
+	 * @param string $WavPackChunkData
+	 *
+	 * @return bool
+	 */
 	public function parseWavPackHeader($WavPackChunkData) {
 		// typedef struct {
 		//     char ckID [4];
@@ -1951,6 +1993,12 @@ class getid3_riff extends getid3_handler {
 		return true;
 	}
 
+	/**
+	 * @param string $BITMAPINFOHEADER
+	 * @param bool   $littleEndian
+	 *
+	 * @return array
+	 */
 	public static function ParseBITMAPINFOHEADER($BITMAPINFOHEADER, $littleEndian=true) {
 
 		$parsed['biSize']          = substr($BITMAPINFOHEADER,  0, 4); // number of bytes required by the BITMAPINFOHEADER structure
@@ -1970,6 +2018,12 @@ class getid3_riff extends getid3_handler {
 		return $parsed;
 	}
 
+	/**
+	 * @param string $DIVXTAG
+	 * @param bool   $raw
+	 *
+	 * @return array
+	 */
 	public static function ParseDIVXTAG($DIVXTAG, $raw=false) {
 		// structure from "IDivX" source, Form1.frm, by "Greg Frazier of Daemonic Software Group", email: gfrazier@icestorm.net, web: http://dsg.cjb.net/
 		// source available at http://files.divx-digest.com/download/c663efe7ef8ad2e90bf4af4d3ea6188a/on0SWN2r/edit/IDivX.zip
@@ -2045,6 +2099,11 @@ class getid3_riff extends getid3_handler {
 		return $parsed;
 	}
 
+	/**
+	 * @param string $tagshortname
+	 *
+	 * @return string
+	 */
 	public static function waveSNDMtagLookup($tagshortname) {
 		$begin = __LINE__;
 
@@ -2068,6 +2127,11 @@ class getid3_riff extends getid3_handler {
 		return getid3_lib::EmbeddedLookup($tagshortname, $begin, __LINE__, __FILE__, 'riff-sndm');
 	}
 
+	/**
+	 * @param int $wFormatTag
+	 *
+	 * @return string
+	 */
 	public static function wFormatTagLookup($wFormatTag) {
 
 		$begin = __LINE__;
@@ -2237,6 +2301,11 @@ class getid3_riff extends getid3_handler {
 		return getid3_lib::EmbeddedLookup('0x'.str_pad(strtoupper(dechex($wFormatTag)), 4, '0', STR_PAD_LEFT), $begin, __LINE__, __FILE__, 'riff-wFormatTag');
 	}
 
+	/**
+	 * @param string $fourcc
+	 *
+	 * @return string
+	 */
 	public static function fourccLookup($fourcc) {
 
 		$begin = __LINE__;
@@ -2631,6 +2700,12 @@ class getid3_riff extends getid3_handler {
 		return getid3_lib::EmbeddedLookup($fourcc, $begin, __LINE__, __FILE__, 'riff-fourcc');
 	}
 
+	/**
+	 * @param string $byteword
+	 * @param bool   $signed
+	 *
+	 * @return int
+	 */
 	private function EitherEndian2Int($byteword, $signed=false) {
 		if ($this->container == 'riff') {
 			return getid3_lib::LittleEndian2Int($byteword, $signed);

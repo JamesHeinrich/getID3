@@ -1,4 +1,5 @@
 <?php
+
 /////////////////////////////////////////////////////////////////
 /// getID3() by James Heinrich <info@getid3.org>               //
 //  available at http://getid3.sourceforge.net                 //
@@ -17,7 +18,9 @@
 
 class getid3_nsv extends getid3_handler
 {
-
+	/**
+	 * @return bool
+	 */
 	public function Analyze() {
 		$info = &$this->getid3->info;
 
@@ -59,6 +62,11 @@ class getid3_nsv extends getid3_handler
 		return true;
 	}
 
+	/**
+	 * @param int $fileoffset
+	 *
+	 * @return bool
+	 */
 	public function getNSVsHeaderFilepointer($fileoffset) {
 		$info = &$this->getid3->info;
 		$this->fseek($fileoffset);
@@ -132,6 +140,12 @@ class getid3_nsv extends getid3_handler
 		return true;
 	}
 
+	/**
+	 * @param int  $fileoffset
+	 * @param bool $getTOCoffsets
+	 *
+	 * @return bool
+	 */
 	public function getNSVfHeaderFilepointer($fileoffset, $getTOCoffsets=false) {
 		$info = &$this->getid3->info;
 		$this->fseek($fileoffset);
@@ -205,7 +219,11 @@ class getid3_nsv extends getid3_handler
 		return true;
 	}
 
-
+	/**
+	 * @param int $framerateindex
+	 *
+	 * @return float|false
+	 */
 	public static function NSVframerateLookup($framerateindex) {
 		if ($framerateindex <= 127) {
 			return (float) $framerateindex;

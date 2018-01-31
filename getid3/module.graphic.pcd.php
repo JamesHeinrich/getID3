@@ -1,4 +1,5 @@
 <?php
+
 /////////////////////////////////////////////////////////////////
 /// getID3() by James Heinrich <info@getid3.org>               //
 //  available at http://getid3.sourceforge.net                 //
@@ -19,6 +20,9 @@ class getid3_pcd extends getid3_handler
 {
 	public $ExtractData = 0;
 
+	/**
+	 * @return bool
+	 */
 	public function Analyze() {
 		$info = &$this->getid3->info;
 
@@ -99,6 +103,13 @@ class getid3_pcd extends getid3_handler
 
 	}
 
+	/**
+	 * @param int $Y
+	 * @param int $Cb
+	 * @param int $Cr
+	 *
+	 * @return int
+	 */
 	public function YCbCr2RGB($Y, $Cb, $Cr) {
 		static $YCbCr_constants = array();
 		if (empty($YCbCr_constants)) {

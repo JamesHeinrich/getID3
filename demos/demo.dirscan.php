@@ -88,7 +88,7 @@ class dirscan {
 	* Configures a filetype list for use with glob searches,
 	* will match uppercase or lowercase extensions only, no mixing
 	* @param string $dir directory to use
-	* @param mixed cvs list of extentions or an array
+	* @param mixed $search cvs list of extentions or an array
 	* @return string or null if checks fail
 	*/
 	private function type_brace($dir, $search=array()) {
@@ -176,10 +176,10 @@ class dirscan {
 
 	/**
 	*
-	* @param type $dir
-	* @param type $match  search type name extentions, can be an array or csv list
-	* @param type $cache caching extention, select one of sqlite3, mysql, dbm
-	* @param array $opt database options,
+	* @param string $dir
+	* @param mixed  $match  search type name extentions, can be an array or csv list
+	* @param string $cache caching extention, select one of sqlite3, mysql, dbm
+	* @param array  $opt database options,
 	*/
 	function scan_files($dir, $match, $cache='sqlite3', $opt=array('table'=>'getid3_cache', 'hide'=>true)) {
 		$Start = self::getTime();

@@ -1,4 +1,5 @@
 <?php
+
 /////////////////////////////////////////////////////////////////
 /// getID3() by James Heinrich <info@getid3.org>               //
 //  available at http://getid3.sourceforge.net                 //
@@ -17,9 +18,14 @@
 
 class getid3_rar extends getid3_handler
 {
-
+	/**
+	 * @var bool
+	 */
 	public $option_use_rar_extension = false;
 
+	/**
+	 * @return bool
+	 */
 	public function Analyze() {
 		$info = &$this->getid3->info;
 

@@ -1,4 +1,5 @@
 <?php
+
 /////////////////////////////////////////////////////////////////
 /// getID3() by James Heinrich <info@getid3.org>               //
 //  available at http://getid3.sourceforge.net                 //
@@ -20,6 +21,9 @@ class getid3_bmp extends getid3_handler
 	public $ExtractPalette = false;
 	public $ExtractData    = false;
 
+	/**
+	 * @return bool
+	 */
 	public function Analyze() {
 		$info = &$this->getid3->info;
 
@@ -626,7 +630,11 @@ class getid3_bmp extends getid3_handler
 		return true;
 	}
 
-
+	/**
+	 * @param array $BMPinfo
+	 *
+	 * @return bool
+	 */
 	public function PlotBMP(&$BMPinfo) {
 		$starttime = time();
 		if (!isset($BMPinfo['bmp']['data']) || !is_array($BMPinfo['bmp']['data'])) {
@@ -663,6 +671,11 @@ class getid3_bmp extends getid3_handler
 		return false;
 	}
 
+	/**
+	 * @param int $compressionid
+	 *
+	 * @return string
+	 */
 	public function BMPcompressionWindowsLookup($compressionid) {
 		static $BMPcompressionWindowsLookup = array(
 			0 => 'BI_RGB',
@@ -675,6 +688,11 @@ class getid3_bmp extends getid3_handler
 		return (isset($BMPcompressionWindowsLookup[$compressionid]) ? $BMPcompressionWindowsLookup[$compressionid] : 'invalid');
 	}
 
+	/**
+	 * @param int $compressionid
+	 *
+	 * @return string
+	 */
 	public function BMPcompressionOS2Lookup($compressionid) {
 		static $BMPcompressionOS2Lookup = array(
 			0 => 'BI_RGB',
