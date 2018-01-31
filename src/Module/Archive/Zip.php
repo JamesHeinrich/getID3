@@ -21,7 +21,9 @@ use JamesHeinrich\GetID3\Utils;
 
 class Zip extends Handler
 {
-
+	/**
+	 * @return bool
+	 */
 	public function Analyze() {
 		$info = &$this->getid3->info;
 
@@ -133,7 +135,9 @@ class Zip extends Handler
 		return true;
 	}
 
-
+	/**
+	 * @return bool
+	 */
 	public function getZIPHeaderFilepointerTopDown() {
 		$info = &$this->getid3->info;
 
@@ -179,7 +183,9 @@ class Zip extends Handler
 		return true;
 	}
 
-
+	/**
+	 * @return bool
+	 */
 	public function getZIPentriesFilepointer() {
 		$info = &$this->getid3->info;
 
@@ -202,7 +208,9 @@ class Zip extends Handler
 		return true;
 	}
 
-
+	/**
+	 * @return array|false
+	 */
 	public function ZIPparseLocalFileHeader() {
 		$LocalFileHeader['offset'] = $this->ftell();
 
@@ -298,7 +306,9 @@ class Zip extends Handler
 		return $LocalFileHeader;
 	}
 
-
+	/**
+	 * @return array|false
+	 */
 	public function ZIPparseCentralDirectory() {
 		$CentralDirectory['offset'] = $this->ftell();
 
@@ -355,6 +365,9 @@ class Zip extends Handler
 		return $CentralDirectory;
 	}
 
+	/**
+	 * @return array|false
+	 */
 	public function ZIPparseEndOfCentralDirectory() {
 		$EndOfCentralDirectory['offset'] = $this->ftell();
 
@@ -381,7 +394,12 @@ class Zip extends Handler
 		return $EndOfCentralDirectory;
 	}
 
-
+	/**
+	 * @param int $flagbytes
+	 * @param int $compressionmethod
+	 *
+	 * @return array
+	 */
 	public static function ZIPparseGeneralPurposeFlags($flagbytes, $compressionmethod) {
 		// https://users.cs.jmu.edu/buchhofp/forensics/formats/pkzip-printable.html
 		$ParsedFlags = array();
@@ -430,7 +448,11 @@ class Zip extends Handler
 		return $ParsedFlags;
 	}
 
-
+	/**
+	 * @param int $index
+	 *
+	 * @return string
+	 */
 	public static function ZIPversionOSLookup($index) {
 		static $ZIPversionOSLookup = array(
 			0  => 'MS-DOS and OS/2 (FAT / VFAT / FAT32 file systems)',
@@ -458,6 +480,11 @@ class Zip extends Handler
 		return (isset($ZIPversionOSLookup[$index]) ? $ZIPversionOSLookup[$index] : '[unknown]');
 	}
 
+	/**
+	 * @param int $index
+	 *
+	 * @return string
+	 */
 	public static function ZIPcompressionMethodLookup($index) {
 		// http://www.sno.phy.queensu.ca/~phil/exiftool/TagNames/ZIP.html
 		static $ZIPcompressionMethodLookup = array(
@@ -489,6 +516,12 @@ class Zip extends Handler
 		return (isset($ZIPcompressionMethodLookup[$index]) ? $ZIPcompressionMethodLookup[$index] : '[unknown]');
 	}
 
+	/**
+	 * @param int $DOSdate
+	 * @param int $DOStime
+	 *
+	 * @return int
+	 */
 	public static function DOStime2UNIXtime($DOSdate, $DOStime) {
 		// wFatDate
 		// Specifies the MS-DOS date. The date is a packed 16-bit value with the following format:

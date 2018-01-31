@@ -23,6 +23,9 @@ use JamesHeinrich\GetID3\Utils;
 
 class Bonk extends Handler
 {
+	/**
+	 * @return bool
+	 */
 	public function Analyze() {
 		$info = &$this->getid3->info;
 
@@ -120,6 +123,9 @@ class Bonk extends Handler
 
 	}
 
+	/**
+	 * @param string $BonkTagName
+	 */
 	public function HandleBonkTags($BonkTagName) {
 		$info = &$this->getid3->info;
 		switch ($BonkTagName) {
@@ -216,6 +222,12 @@ class Bonk extends Handler
 		}
 	}
 
+	/**
+	 * @param string $PossibleBonkTag
+	 * @param bool   $ignorecase
+	 *
+	 * @return bool
+	 */
 	public static function BonkIsValidTagName($PossibleBonkTag, $ignorecase=false) {
 		static $BonkIsValidTagName = array('BONK', 'INFO', ' ID3', 'META');
 		foreach ($BonkIsValidTagName as $validtagname) {

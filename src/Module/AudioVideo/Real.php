@@ -21,7 +21,9 @@ use JamesHeinrich\GetID3\Utils;
 
 class Real extends Handler
 {
-
+	/**
+	 * @return bool
+	 */
 	public function Analyze() {
 		$info = &$this->getid3->info;
 
@@ -373,7 +375,12 @@ class Real extends Handler
 		return true;
 	}
 
-
+	/**
+	 * @param string $OldRAheaderData
+	 * @param array  $ParsedArray
+	 *
+	 * @return bool
+	 */
 	public function ParseOldRAheader($OldRAheaderData, &$ParsedArray) {
 		// http://www.freelists.org/archives/matroska-devel/07-2003/msg00010.html
 
@@ -488,6 +495,12 @@ class Real extends Handler
 		return true;
 	}
 
+	/**
+	 * @param string $fourcc
+	 * @param int    $bitrate
+	 *
+	 * @return string
+	 */
 	public function RealAudioCodecFourCClookup($fourcc, $bitrate) {
 		static $RealAudioCodecFourCClookup = array();
 		if (empty($RealAudioCodecFourCClookup)) {

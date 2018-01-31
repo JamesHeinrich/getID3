@@ -21,7 +21,9 @@ use JamesHeinrich\GetID3\Utils;
 
 class Au extends Handler
 {
-
+	/**
+	 * @return bool
+	 */
 	public function Analyze() {
 		$info = &$this->getid3->info;
 
@@ -74,6 +76,11 @@ class Au extends Handler
 		return true;
 	}
 
+	/**
+	 * @param int $id
+	 *
+	 * @return string|false
+	 */
 	public function AUdataFormatNameLookup($id) {
 		static $AUdataFormatNameLookup = array(
 			0  => 'unspecified format',
@@ -108,6 +115,11 @@ class Au extends Handler
 		return (isset($AUdataFormatNameLookup[$id]) ? $AUdataFormatNameLookup[$id] : false);
 	}
 
+	/**
+	 * @param int $id
+	 *
+	 * @return int|false
+	 */
 	public function AUdataFormatBitsPerSampleLookup($id) {
 		static $AUdataFormatBitsPerSampleLookup = array(
 			1  => 8,
@@ -136,6 +148,11 @@ class Au extends Handler
 		return (isset($AUdataFormatBitsPerSampleLookup[$id]) ? $AUdataFormatBitsPerSampleLookup[$id] : false);
 	}
 
+	/**
+	 * @param int $id
+	 *
+	 * @return int|false
+	 */
 	public function AUdataFormatUsedBitsPerSampleLookup($id) {
 		static $AUdataFormatUsedBitsPerSampleLookup = array(
 			1  => 8,

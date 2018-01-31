@@ -20,15 +20,35 @@ use JamesHeinrich\GetID3\Utils;
 
 class MetaFlac
 {
-
+	/**
+	 * @var string
+	 */
 	public $filename;
+
+	/**
+	 * @var array
+	 */
 	public $tag_data;
 
-	public $warnings = array(); // any non-critical errors will be stored here
-	public $errors   = array(); // any critical errors will be stored here
+	/**
+	 * Any non-critical errors will be stored here.
+	 *
+	 * @var array
+	 */
+	public $warnings = array();
+
+	/**
+	 * Any critical errors will be stored here.
+	 *
+	 * @var array
+	 */
+	public $errors   = array();
 
 	private $pictures = array();
 
+	/**
+	 * @return bool
+	 */
 	public function WriteMetaFLAC() {
 		$tempfilenames = array();
 
@@ -132,7 +152,9 @@ class MetaFlac
 		return true;
 	}
 
-
+	/**
+	 * @return bool
+	 */
 	public function DeleteMetaFLAC() {
 
 		$oldignoreuserabort = ignore_user_abort(true);
@@ -173,6 +195,11 @@ class MetaFlac
 		return true;
 	}
 
+	/**
+	 * @param int $id3v2_picture_typeid
+	 *
+	 * @return int
+	 */
 	public function ID3v2toFLACpictureTypes($id3v2_picture_typeid) {
 		// METAFLAC picture type list is identical to ID3v2 picture type list (as least up to 0x14 "Publisher/Studio logotype")
 		// http://id3.org/id3v2.4.0-frames (section 4.14)
@@ -181,6 +208,11 @@ class MetaFlac
 		return (($id3v2_picture_typeid <= 0x14) ? $id3v2_picture_typeid : 3); // default: "3: Cover (front)"
 	}
 
+	/**
+	 * @param string $originalcommentname
+	 *
+	 * @return string
+	 */
 	public function CleanmetaflacName($originalcommentname) {
 		// A case-insensitive field name that may consist of ASCII 0x20 through 0x7D, 0x3D ('=') excluded.
 		// ASCII 0x41 through 0x5A inclusive (A-Z) is to be considered equivalent to ASCII 0x61 through

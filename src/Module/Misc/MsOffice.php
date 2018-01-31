@@ -21,7 +21,9 @@ use JamesHeinrich\GetID3\Utils;
 
 class MsOffice extends Handler
 {
-
+	/**
+	 * @return bool
+	 */
 	public function Analyze() {
 		$info = &$this->getid3->info;
 
@@ -35,8 +37,8 @@ class MsOffice extends Handler
 		}
 		$info['fileformat'] = 'msoffice';
 
-$this->error('MS Office (.doc, .xls, etc) parsing not enabled in this version of getID3() ['.$this->getid3->version().']');
-return false;
+		$this->error('MS Office (.doc, .xls, etc) parsing not enabled in this version of getID3() ['.$this->getid3->version().']');
+		return false;
 
 	}
 

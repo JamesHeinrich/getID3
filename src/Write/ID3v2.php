@@ -22,18 +22,83 @@ use JamesHeinrich\GetID3\Utils;
 
 class ID3v2
 {
+	/**
+	 * @var string
+	 */
 	public $filename;
-	public $tag_data;
-	public $fread_buffer_size           = 32768;    // read buffer size in bytes
-	public $paddedlength                = 4096;     // minimum length of ID3v2 tag in bytes
-	public $majorversion                = 3;        // ID3v2 major version (2, 3 (recommended), 4)
-	public $minorversion                = 0;        // ID3v2 minor version - always 0
-	public $merge_existing_data         = false;    // if true, merge new data with existing tags; if false, delete old tag data and only write new tags
-	public $id3v2_default_encodingid    = 0;        // default text encoding (ISO-8859-1) if not explicitly passed
-	public $id3v2_use_unsynchronisation = false;    // the specs say it should be TRUE, but most other ID3v2-aware programs are broken if unsynchronization is used, so by default don't use it.
-	public $warnings                    = array();  // any non-critical errors will be stored here
-	public $errors                      = array();  // any critical errors will be stored here
 
+	/**
+	 * @var array
+	 */
+	public $tag_data;
+
+	/**
+	 * Read buffer size in bytes.
+	 *
+	 * @var int
+	 */
+	public $fread_buffer_size           = 32768;
+
+	/**
+	 * Minimum length of ID3v2 tag in bytes.
+	 *
+	 * @var int
+	 */
+	public $paddedlength                = 4096;
+
+	/**
+	 * ID3v2 major version (2, 3 (recommended), 4).
+	 *
+	 * @var int
+	 */
+	public $majorversion                = 3;
+
+	/**
+	 * ID3v2 minor version - always 0.
+	 *
+	 * @var int
+	 */
+	public $minorversion                = 0;
+
+	/**
+	 * If true, merge new data with existing tags; if false, delete old tag data and only write new tags.
+	 *
+	 * @var bool
+	 */
+	public $merge_existing_data         = false;
+
+	/**
+	 * Default text encoding (ISO-8859-1) if not explicitly passed.
+	 *
+	 * @var int
+	 */
+	public $id3v2_default_encodingid    = 0;
+
+	/**
+	 * The specs say it should be TRUE, but most other ID3v2-aware programs are broken if unsynchronization is used,
+	 * so by default don't use it.
+	 *
+	 * @var bool
+	 */
+	public $id3v2_use_unsynchronisation = false;
+
+	/**
+	 * Any non-critical errors will be stored here.
+	 *
+	 * @var array
+	 */
+	public $warnings                    = array();
+
+	/**
+	 * Any critical errors will be stored here.
+	 *
+	 * @var array
+	 */
+	public $errors                      = array();
+
+	/**
+	 * @return bool
+	 */
 	public function WriteID3v2() {
 		// File MUST be writeable - CHMOD(646) at least. It's best if the
 		// directory is also writeable, because that method is both faster and less susceptible to errors.
@@ -133,6 +198,9 @@ class ID3v2
 		return false;
 	}
 
+	/**
+	 * @return bool
+	 */
 	public function RemoveID3v2() {
 		// File MUST be writeable - CHMOD(646) at least. It's best if the
 		// directory is also writeable, because that method is both faster and less susceptible to errors.
@@ -224,7 +292,11 @@ class ID3v2
 		return true;
 	}
 
-
+	/**
+	 * @param array $flags
+	 *
+	 * @return string|false
+	 */
 	public function GenerateID3v2TagFlags($flags) {
 		$flag = null;
 		switch ($this->majorversion) {
@@ -259,7 +331,18 @@ class ID3v2
 		return chr(bindec($flag));
 	}
 
-
+	/**
+	 * @param bool $TagAlter
+	 * @param bool $FileAlter
+	 * @param bool $ReadOnly
+	 * @param bool $Compression
+	 * @param bool $Encryption
+	 * @param bool $GroupingIdentity
+	 * @param bool $Unsynchronisation
+	 * @param bool $DataLengthIndicator
+	 *
+	 * @return string|false
+	 */
 	public function GenerateID3v2FrameFlags($TagAlter=false, $FileAlter=false, $ReadOnly=false, $Compression=false, $Encryption=false, $GroupingIdentity=false, $Unsynchronisation=false, $DataLengthIndicator=false) {
 		$flag1 = null;
 		$flag2 = null;
@@ -302,6 +385,12 @@ class ID3v2
 		return chr(bindec($flag1)).chr(bindec($flag2));
 	}
 
+	/**
+	 * @param string $frame_name
+	 * @param array  $source_data_array
+	 *
+	 * @return string|false
+	 */
 	public function GenerateID3v2FrameData($frame_name, $source_data_array) {
 		if (!Tag::IsValidID3v2FrameName($frame_name, $this->majorversion)) {
 			return false;
@@ -1180,6 +1269,12 @@ class ID3v2
 		return $framedata;
 	}
 
+	/**
+	 * @param string|null $frame_name
+	 * @param array       $source_data_array
+	 *
+	 * @return bool
+	 */
 	public function ID3v2FrameIsAllowed($frame_name, $source_data_array) {
 		static $PreviousFrames = array();
 
@@ -1536,6 +1631,11 @@ class ID3v2
 		return true;
 	}
 
+	/**
+	 * @param bool $noerrorsonly
+	 *
+	 * @return string|false
+	 */
 	public function GenerateID3v2Tag($noerrorsonly=true) {
 		$this->ID3v2FrameIsAllowed(null, ''); // clear static array in case this isn't the first call to $this->GenerateID3v2Tag()
 
@@ -1650,6 +1750,11 @@ class ID3v2
 		return false;
 	}
 
+	/**
+	 * @param string $pricestring
+	 *
+	 * @return bool
+	 */
 	public function ID3v2IsValidPriceString($pricestring) {
 		if (Tag::LanguageLookup(substr($pricestring, 0, 3), true) == '') {
 			return false;
@@ -1659,6 +1764,11 @@ class ID3v2
 		return true;
 	}
 
+	/**
+	 * @param string $framename
+	 *
+	 * @return bool
+	 */
 	public function ID3v2FrameFlagsLookupTagAlter($framename) {
 		// unfinished
 		switch ($framename) {
@@ -1672,6 +1782,11 @@ class ID3v2
 		return $allow;
 	}
 
+	/**
+	 * @param string $framename
+	 *
+	 * @return bool
+	 */
 	public function ID3v2FrameFlagsLookupFileAlter($framename) {
 		// unfinished
 		switch ($framename) {
@@ -1685,6 +1800,11 @@ class ID3v2
 		}
 	}
 
+	/**
+	 * @param int $eventid
+	 *
+	 * @return bool
+	 */
 	public function ID3v2IsValidETCOevent($eventid) {
 		if (($eventid < 0) || ($eventid > 0xFF)) {
 			// outside range of 1 byte
@@ -1705,6 +1825,11 @@ class ID3v2
 		return true;
 	}
 
+	/**
+	 * @param int $contenttype
+	 *
+	 * @return bool
+	 */
 	public function ID3v2IsValidSYLTtype($contenttype) {
 		if (($contenttype >= 0) && ($contenttype <= 8) && ($this->majorversion == 4)) {
 			return true;
@@ -1714,6 +1839,11 @@ class ID3v2
 		return false;
 	}
 
+	/**
+	 * @param int $channeltype
+	 *
+	 * @return bool
+	 */
 	public function ID3v2IsValidRVA2channeltype($channeltype) {
 		if (($channeltype >= 0) && ($channeltype <= 8) && ($this->majorversion == 4)) {
 			return true;
@@ -1721,6 +1851,11 @@ class ID3v2
 		return false;
 	}
 
+	/**
+	 * @param int $picturetype
+	 *
+	 * @return bool
+	 */
 	public function ID3v2IsValidAPICpicturetype($picturetype) {
 		if (($picturetype >= 0) && ($picturetype <= 0x14) && ($this->majorversion >= 2) && ($this->majorversion <= 4)) {
 			return true;
@@ -1728,6 +1863,11 @@ class ID3v2
 		return false;
 	}
 
+	/**
+	 * @param int|string $imageformat
+	 *
+	 * @return bool
+	 */
 	public function ID3v2IsValidAPICimageformat($imageformat) {
 		if ($imageformat == '-->') {
 			return true;
@@ -1743,6 +1883,11 @@ class ID3v2
 		return false;
 	}
 
+	/**
+	 * @param int $receivedas
+	 *
+	 * @return bool
+	 */
 	public function ID3v2IsValidCOMRreceivedAs($receivedas) {
 		if (($this->majorversion >= 3) && ($receivedas >= 0) && ($receivedas <= 8)) {
 			return true;
@@ -1750,6 +1895,11 @@ class ID3v2
 		return false;
 	}
 
+	/**
+	 * @param int $RGADname
+	 *
+	 * @return bool
+	 */
 	public static function ID3v2IsValidRGADname($RGADname) {
 		if (($RGADname >= 0) && ($RGADname <= 2)) {
 			return true;
@@ -1757,6 +1907,11 @@ class ID3v2
 		return false;
 	}
 
+	/**
+	 * @param int $RGADoriginator
+	 *
+	 * @return bool
+	 */
 	public static function ID3v2IsValidRGADoriginator($RGADoriginator) {
 		if (($RGADoriginator >= 0) && ($RGADoriginator <= 3)) {
 			return true;
@@ -1764,6 +1919,11 @@ class ID3v2
 		return false;
 	}
 
+	/**
+	 * @param int $textencodingbyte
+	 *
+	 * @return bool
+	 */
 	public function ID3v2IsValidTextEncoding($textencodingbyte) {
 		// 0 = ISO-8859-1
 		// 1 = UTF-16 with BOM
@@ -1777,6 +1937,11 @@ class ID3v2
 		return isset($ID3v2IsValidTextEncoding_cache[$this->majorversion][$textencodingbyte]);
 	}
 
+	/**
+	 * @param string $data
+	 *
+	 * @return string
+	 */
 	public static function Unsynchronise($data) {
 		// Whenever a false synchronisation is found within the tag, one zeroed
 		// byte is inserted after the first false synchronisation byte. The
@@ -1807,6 +1972,11 @@ class ID3v2
 		return $unsyncheddata;
 	}
 
+	/**
+	 * @param mixed $var
+	 *
+	 * @return bool
+	 */
 	public function is_hash($var) {
 		// written by dev-nullØchristophe*vg
 		// taken from http://www.php.net/manual/en/function.array-merge-recursive.php
@@ -1822,6 +1992,12 @@ class ID3v2
 		return false;
 	}
 
+	/**
+	 * @param mixed $arr1
+	 * @param mixed $arr2
+	 *
+	 * @return array
+	 */
 	public function array_join_merge($arr1, $arr2) {
 		// written by dev-nullØchristophe*vg
 		// taken from http://www.php.net/manual/en/function.array-merge-recursive.php
@@ -1846,10 +2022,22 @@ class ID3v2
 		}
 	}
 
+	/**
+	 * @param string $mimestring
+	 *
+	 * @return false|int
+	 */
 	public static function IsValidMIMEstring($mimestring) {
 		return preg_match('#^.+/.+$#', $mimestring);
 	}
 
+	/**
+	 * @param int  $number
+	 * @param int  $maxbits
+	 * @param bool $signed
+	 *
+	 * @return bool
+	 */
 	public static function IsWithinBitRange($number, $maxbits, $signed=false) {
 		if ($signed) {
 			if (($number > (0 - pow(2, $maxbits - 1))) && ($number <= pow(2, $maxbits - 1))) {
@@ -1863,6 +2051,11 @@ class ID3v2
 		return false;
 	}
 
+	/**
+	 * @param string $email
+	 *
+	 * @return false|int|mixed
+	 */
 	public static function IsValidEmail($email) {
 		if (function_exists('filter_var')) {
 			return filter_var($email, FILTER_VALIDATE_EMAIL);
@@ -1871,6 +2064,12 @@ class ID3v2
 		return preg_match('#^[^ ]+@[a-z\\-\\.]+\\.[a-z]{2,}$#', $email);
 	}
 
+	/**
+	 * @param string $url
+	 * @param bool   $allowUserPass
+	 *
+	 * @return bool
+	 */
 	public static function IsValidURL($url, $allowUserPass=false) {
 		if ($url == '') {
 			return false;
@@ -1907,6 +2106,11 @@ class ID3v2
 		*/
 	}
 
+	/**
+	 * @param string $url
+	 *
+	 * @return array
+	 */
 	public static function safe_parse_url($url) {
 		$parts = @parse_url($url);
 		$parts['scheme'] = (isset($parts['scheme']) ? $parts['scheme'] : '');
@@ -1918,6 +2122,12 @@ class ID3v2
 		return $parts;
 	}
 
+	/**
+	 * @param int    $majorversion
+	 * @param string $long_description
+	 *
+	 * @return string
+	 */
 	public static function ID3v2ShortFrameNameLookup($majorversion, $long_description) {
 		$long_description = str_replace(' ', '_', strtolower(trim($long_description)));
 		static $ID3v2ShortFrameNameLookup = array();

@@ -23,6 +23,9 @@ class Swf extends Handler
 {
 	public $ReturnAllTagData = false;
 
+	/**
+	 * @return bool
+	 */
 	public function Analyze() {
 		$info = &$this->getid3->info;
 

@@ -75,13 +75,34 @@ use JamesHeinrich\GetID3\GetID3;
 
 class Mysqli extends GetID3
 {
-	// private vars
+	/**
+	 * @var mysqli
+	 */
 	private $mysqli;
+
+	/**
+	 * @var mysqli_result
+	 */
 	private $cursor;
+
+	/**
+	 * @var string
+	 */
 	private $table;
 
 
-	// public: constructor - see top of this file for cache type and cache_options
+	/**
+	 * constructor - see top of this file for cache type and cache_options
+	 *
+	 * @param string $host
+	 * @param string $database
+	 * @param string $username
+	 * @param string $password
+	 * @param string $table
+	 *
+	 * @throws Exception
+	 * @throws getid3_exception
+	 */
 	public function __construct($host, $database, $username, $password, $table='getid3_cache') {
 
 		// Check for mysqli support
@@ -125,14 +146,24 @@ class Mysqli extends GetID3
 	}
 
 
-	// public: clear cache
+	/**
+	 * clear cache
+	 */
 	public function clear_cache() {
 		$this->mysqli->query('DELETE FROM `'.$this->mysqli->real_escape_string($this->table).'`');
 		$this->mysqli->query('INSERT INTO `'.$this->mysqli->real_escape_string($this->table).'` (`filename`, `filesize`, `filetime`, `analyzetime`, `value`) VALUES (\'' . GetID3::VERSION . '\', -1, -1, -1, \'' . GetID3::VERSION . '\')');
 	}
 
 
-	// public: analyze file
+	/**
+	 * analyze file
+	 *
+	 * @param string $filename
+	 * @param int    $filesize
+	 * @param string $original_filename
+	 *
+	 * @return mixed
+	 */
 	public function analyze($filename, $filesize=null, $original_filename='') {
 
         $filetime = 0;
@@ -173,7 +204,11 @@ class Mysqli extends GetID3
 	}
 
 
-	// private: (re)create mysqli table
+	/**
+	 * (re)create mysqli table
+	 *
+	 * @param bool $drop
+	 */
 	private function create_table($drop=false) {
 		$SQLquery  = 'CREATE TABLE IF NOT EXISTS `'.$this->mysqli->real_escape_string($this->table).'` (';
 		$SQLquery .=   '`filename` VARCHAR(990) NOT NULL DEFAULT \'\'';

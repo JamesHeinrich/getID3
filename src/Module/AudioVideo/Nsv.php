@@ -21,7 +21,9 @@ use JamesHeinrich\GetID3\Utils;
 
 class Nsv extends Handler
 {
-
+	/**
+	 * @return bool
+	 */
 	public function Analyze() {
 		$info = &$this->getid3->info;
 
@@ -63,6 +65,11 @@ class Nsv extends Handler
 		return true;
 	}
 
+	/**
+	 * @param int $fileoffset
+	 *
+	 * @return bool
+	 */
 	public function getNSVsHeaderFilepointer($fileoffset) {
 		$info = &$this->getid3->info;
 		$this->fseek($fileoffset);
@@ -136,6 +143,12 @@ class Nsv extends Handler
 		return true;
 	}
 
+	/**
+	 * @param int  $fileoffset
+	 * @param bool $getTOCoffsets
+	 *
+	 * @return bool
+	 */
 	public function getNSVfHeaderFilepointer($fileoffset, $getTOCoffsets=false) {
 		$info = &$this->getid3->info;
 		$this->fseek($fileoffset);
@@ -209,7 +222,11 @@ class Nsv extends Handler
 		return true;
 	}
 
-
+	/**
+	 * @param int $framerateindex
+	 *
+	 * @return float|false
+	 */
 	public static function NSVframerateLookup($framerateindex) {
 		if ($framerateindex <= 127) {
 			return (float) $framerateindex;

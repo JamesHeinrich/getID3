@@ -21,9 +21,14 @@ use JamesHeinrich\GetID3\Utils;
 
 class Rar extends Handler
 {
-
+	/**
+	 * @var bool
+	 */
 	public $option_use_rar_extension = false;
 
+	/**
+	 * @return bool
+	 */
 	public function Analyze() {
 		$info = &$this->getid3->info;
 

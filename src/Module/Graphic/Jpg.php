@@ -22,8 +22,9 @@ use JamesHeinrich\GetID3\Utils;
 
 class Jpg extends Handler
 {
-
-
+	/**
+	 * @return bool
+	 */
 	public function Analyze() {
 		$info = &$this->getid3->info;
 
@@ -70,8 +71,8 @@ class Jpg extends Handler
 				if (isset($imageinfo['APP1'])) {
 					if (function_exists('exif_read_data')) {
 						if (substr($imageinfo['APP1'], 0, 4) == 'Exif') {
-//$this->warning('known issue: https://bugs.php.net/bug.php?id=62523');
-//return false;
+							//$this->warning('known issue: https://bugs.php.net/bug.php?id=62523');
+							//return false;
 							set_error_handler(function($errno, $errstr, $errfile, $errline, array $errcontext) {
 								if (!(error_reporting() & $errno)) {
 									// error is not specified in the error_reporting setting, so we ignore it
@@ -181,7 +182,11 @@ class Jpg extends Handler
 		return true;
 	}
 
-
+	/**
+	 * @param mixed $value
+	 *
+	 * @return mixed
+	 */
 	public function CastAsAppropriate($value) {
 		if (is_array($value)) {
 			return $value;
@@ -195,7 +200,11 @@ class Jpg extends Handler
 		return $value;
 	}
 
-
+	/**
+	 * @param int $iptc_record
+	 *
+	 * @return string
+	 */
 	public function IPTCrecordName($iptc_record) {
 		// http://www.sno.phy.queensu.ca/~phil/exiftool/TagNames/IPTC.html
 		static $IPTCrecordName = array();
@@ -212,7 +221,12 @@ class Jpg extends Handler
 		return (isset($IPTCrecordName[$iptc_record]) ? $IPTCrecordName[$iptc_record] : '');
 	}
 
-
+	/**
+	 * @param int $iptc_record
+	 * @param int $iptc_tagkey
+	 *
+	 * @return string
+	 */
 	public function IPTCrecordTagName($iptc_record, $iptc_tagkey) {
 		// http://www.sno.phy.queensu.ca/~phil/exiftool/TagNames/IPTC.html
 		static $IPTCrecordTagName = array();

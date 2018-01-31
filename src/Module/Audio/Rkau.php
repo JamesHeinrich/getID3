@@ -21,7 +21,9 @@ use JamesHeinrich\GetID3\Utils;
 
 class Rkau extends Handler
 {
-
+	/**
+	 * @return bool
+	 */
 	public function Analyze() {
 		$info = &$this->getid3->info;
 
@@ -80,7 +82,11 @@ class Rkau extends Handler
 
 	}
 
-
+	/**
+	 * @param array $RKAUdata
+	 *
+	 * @return bool
+	 */
 	public function RKAUqualityLookup(&$RKAUdata) {
 		$level   = ($RKAUdata['raw']['quality'] & 0xF0) >> 4;
 		$quality =  $RKAUdata['raw']['quality'] & 0x0F;

@@ -16,42 +16,110 @@ namespace JamesHeinrich\GetID3;
 //                                                            ///
 /////////////////////////////////////////////////////////////////
 
-// NOTES:
-//
-// You should pass data here with standard field names as follows:
-// * TITLE
-// * ARTIST
-// * ALBUM
-// * TRACKNUMBER
-// * COMMENT
-// * GENRE
-// * YEAR
-// * ATTACHED_PICTURE (ID3v2 only)
-//
-// http://www.personal.uni-jena.de/~pfk/mpp/sv8/apekey.html
-// The APEv2 Tag Items Keys definition says "TRACK" is correct but foobar2000 uses "TRACKNUMBER" instead
-// Pass data here as "TRACKNUMBER" for compatability with all formats
-
-
+/**
+ * NOTES:
+ *
+ * You should pass data here with standard field names as follows:
+ * * TITLE
+ * * ARTIST
+ * * ALBUM
+ * * TRACKNUMBER
+ * * COMMENT
+ * * GENRE
+ * * YEAR
+ * * ATTACHED_PICTURE (ID3v2 only)
+ * The APEv2 Tag Items Keys definition says "TRACK" is correct but foobar2000 uses "TRACKNUMBER" instead
+ * Pass data here as "TRACKNUMBER" for compatability with all formats
+ *
+ * @link http://www.personal.uni-jena.de/~pfk/mpp/sv8/apekey.html
+ */
 class WriteTags
 {
-	// public
-	public $filename;                            // absolute filename of file to write tags to
-	public $tagformats         = array();        // array of tag formats to write ('id3v1', 'id3v2.2', 'id2v2.3', 'id3v2.4', 'ape', 'vorbiscomment', 'metaflac', 'real')
-	public $tag_data           = array(array()); // 2-dimensional array of tag data (ex: $data['ARTIST'][0] = 'Elvis')
-	public $tag_encoding       = 'ISO-8859-1';   // text encoding used for tag data ('ISO-8859-1', 'UTF-8', 'UTF-16', 'UTF-16LE', 'UTF-16BE', )
-	public $overwrite_tags     = true;          // if true will erase existing tag data and write only passed data; if false will merge passed data with existing tag data
-	public $remove_other_tags  = false;          // if true will erase remove all existing tags and only write those passed in $tagformats; if false will ignore any tags not mentioned in $tagformats
+	/**
+	 * Absolute filename of file to write tags to.
+	 *
+	 * @var string
+	 */
+	public $filename;
 
-	public $id3v2_tag_language = 'eng';          // ISO-639-2 3-character language code needed for some ID3v2 frames (http://www.id3.org/iso639-2.html)
-	public $id3v2_paddedlength = 4096;           // minimum length of ID3v2 tags (will be padded to this length if tag data is shorter)
+	/**
+	 * Array of tag formats to write ('id3v1', 'id3v2.2', 'id2v2.3', 'id3v2.4', 'ape', 'vorbiscomment',
+	 * 'metaflac', 'real').
+	 *
+	 * @var array
+	 */
+	public $tagformats         = array();
 
-	public $warnings           = array();        // any non-critical errors will be stored here
-	public $errors             = array();        // any critical errors will be stored here
+	/**
+	 * 2-dimensional array of tag data (ex: $data['ARTIST'][0] = 'Elvis').
+	 *
+	 * @var array
+	 */
+	public $tag_data           = array(array());
 
-	// private
-	private $ThisFileInfo; // analysis of file before writing
+	/**
+	 * Text encoding used for tag data ('ISO-8859-1', 'UTF-8', 'UTF-16', 'UTF-16LE', 'UTF-16BE', ).
+	 *
+	 * @var string
+	 */
+	public $tag_encoding       = 'ISO-8859-1';
 
+	/**
+	 * If true will erase existing tag data and write only passed data; if false will merge passed data
+	 * with existing tag data.
+	 *
+	 * @var bool
+	 */
+	public $overwrite_tags     = true;
+
+	/**
+	 * If true will erase remove all existing tags and only write those passed in $tagformats;
+	 * If false will ignore any tags not mentioned in $tagformats.
+	 *
+	 * @var bool
+	 */
+	public $remove_other_tags  = false;
+
+	/**
+	 * ISO-639-2 3-character language code needed for some ID3v2 frames.
+	 *
+	 * @link http://www.id3.org/iso639-2.html
+	 *
+	 * @var string
+	 */
+	public $id3v2_tag_language = 'eng';
+
+	/**
+	 * Minimum length of ID3v2 tags (will be padded to this length if tag data is shorter).
+	 *
+	 * @var int
+	 */
+	public $id3v2_paddedlength = 4096;
+
+	/**
+	 * Any non-critical errors will be stored here.
+	 *
+	 * @var array
+	 */
+	public $warnings           = array();
+
+	/**
+	 * Any critical errors will be stored here.
+	 *
+	 * @var array
+	 */
+	public $errors             = array();
+
+	/**
+	 * Analysis of file before writing.
+	 *
+	 * @var array
+	 */
+	private $ThisFileInfo;
+
+	/**
+	 * @return bool
+	 */
 	public function WriteTags() {
 
 		if (empty($this->filename)) {
@@ -316,7 +384,11 @@ class WriteTags
 
 	}
 
-
+	/**
+	 * @param string[] $TagFormatsToDelete
+	 *
+	 * @return bool
+	 */
 	public function DeleteTags($TagFormatsToDelete) {
 		foreach ($TagFormatsToDelete as $DeleteTagFormat) {
 			$success = false; // overridden if tag deletion is successful
@@ -389,7 +461,13 @@ class WriteTags
 		return true;
 	}
 
-
+	/**
+	 * @param string $TagFormat
+	 * @param array  $tag_data
+	 *
+	 * @return bool
+	 * @throws Exception
+	 */
 	public function MergeExistingTagData($TagFormat, &$tag_data) {
 		// Merge supplied data with existing data, if requested
 		if ($this->overwrite_tags) {
@@ -404,6 +482,9 @@ class WriteTags
 		return true;
 	}
 
+	/**
+	 * @return array
+	 */
 	public function FormatDataForAPE() {
 		$ape_tag_data = array();
 		foreach ($this->tag_data as $tag_key => $valuearray) {
@@ -430,7 +511,9 @@ class WriteTags
 		return $ape_tag_data;
 	}
 
-
+	/**
+	 * @return array
+	 */
 	public function FormatDataForID3v1() {
 		$tag_data_id3v1['genreid'] = 255;
 		if (!empty($this->tag_data['GENRE'])) {
@@ -455,6 +538,11 @@ class WriteTags
 		return $tag_data_id3v1;
 	}
 
+	/**
+	 * @param int $id3v2_majorversion
+	 *
+	 * @return array|false
+	 */
 	public function FormatDataForID3v2($id3v2_majorversion) {
 		$tag_data_id3v2 = array();
 
@@ -586,6 +674,9 @@ class WriteTags
 		return $tag_data_id3v2;
 	}
 
+	/**
+	 * @return array
+	 */
 	public function FormatDataForVorbisComment() {
 		$tag_data_vorbiscomment = $this->tag_data;
 
@@ -619,12 +710,18 @@ class WriteTags
 		return $tag_data_vorbiscomment;
 	}
 
+	/**
+	 * @return array
+	 */
 	public function FormatDataForMetaFLAC() {
 		// FLAC & OggFLAC use VorbisComments same as OggVorbis
 		// but require metaflac to do the writing rather than vorbiscomment
 		return $this->FormatDataForVorbisComment();
 	}
 
+	/**
+	 * @return array
+	 */
 	public function FormatDataForReal() {
 		$tag_data_real['title']     = Utils::iconv_fallback($this->tag_encoding, 'ISO-8859-1', implode(' ', (isset($this->tag_data['TITLE']    ) ? $this->tag_data['TITLE']     : array())));
 		$tag_data_real['artist']    = Utils::iconv_fallback($this->tag_encoding, 'ISO-8859-1', implode(' ', (isset($this->tag_data['ARTIST']   ) ? $this->tag_data['ARTIST']    : array())));

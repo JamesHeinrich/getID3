@@ -27,10 +27,18 @@ use JamesHeinrich\GetID3\Utils;
 
 class Gzip extends Handler
 {
+	/**
+	 * Optional file list - disable for speed.
+	 *
+	 * Decode gzipped files, if possible, and parse recursively (.tar.gz for example).
+	 *
+	 * @var bool
+	 */
+	public $option_gzip_parse_contents = false;
 
-	// public: Optional file list - disable for speed.
-	public $option_gzip_parse_contents = false; // decode gzipped files, if possible, and parse recursively (.tar.gz for example)
-
+	/**
+	 * @return bool
+	 */
 	public function Analyze() {
 		$info = &$this->getid3->info;
 
@@ -250,7 +258,13 @@ class Gzip extends Handler
 		return true;
 	}
 
-	// Converts the OS type
+	/**
+	 * Converts the OS type.
+	 *
+	 * @param string $key
+	 *
+	 * @return string
+	 */
 	public function get_os_type($key) {
 		static $os_type = array(
 			'0'   => 'FAT filesystem (MS-DOS, OS/2, NT/Win32)',
@@ -272,7 +286,13 @@ class Gzip extends Handler
 		return (isset($os_type[$key]) ? $os_type[$key] : '');
 	}
 
-	// Converts the eXtra FLags
+	/**
+	 * Converts the eXtra FLags.
+	 *
+	 * @param string $key
+	 *
+	 * @return string
+	 */
 	public function get_xflag_type($key) {
 		static $xflag_type = array(
 			'0' => 'unknown',

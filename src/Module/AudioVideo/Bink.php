@@ -21,7 +21,9 @@ use JamesHeinrich\GetID3\Utils;
 
 class Bink extends Handler
 {
-
+	/**
+	 * @return bool
+	 */
 	public function Analyze() {
 		$info = &$this->getid3->info;
 
@@ -48,6 +50,9 @@ class Bink extends Handler
 
 	}
 
+	/**
+	 * @return bool
+	 */
 	public function ParseBink() {
 		$info = &$this->getid3->info;
 		$info['fileformat']          = 'bink';
@@ -65,6 +70,9 @@ class Bink extends Handler
 		return true;
 	}
 
+	/**
+	 * @return bool
+	 */
 	public function ParseSmacker() {
 		$info = &$this->getid3->info;
 		$info['fileformat']          = 'smacker';

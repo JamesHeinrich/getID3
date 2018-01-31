@@ -21,7 +21,9 @@ use JamesHeinrich\GetID3\Utils;
 
 class Monkey extends Handler
 {
-
+	/**
+	 * @return bool
+	 */
 	public function Analyze() {
 		$info = &$this->getid3->info;
 
@@ -181,6 +183,11 @@ class Monkey extends Handler
 		return true;
 	}
 
+	/**
+	 * @param int $compressionlevel
+	 *
+	 * @return string
+	 */
 	public function MonkeyCompressionLevelNameLookup($compressionlevel) {
 		static $MonkeyCompressionLevelNameLookup = array(
 			0     => 'unknown',
@@ -193,6 +200,12 @@ class Monkey extends Handler
 		return (isset($MonkeyCompressionLevelNameLookup[$compressionlevel]) ? $MonkeyCompressionLevelNameLookup[$compressionlevel] : 'invalid');
 	}
 
+	/**
+	 * @param int $versionid
+	 * @param int $compressionlevel
+	 *
+	 * @return int
+	 */
 	public function MonkeySamplesPerFrame($versionid, $compressionlevel) {
 		if ($versionid >= 3950) {
 			return 73728 * 4;

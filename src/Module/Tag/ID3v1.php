@@ -21,7 +21,9 @@ use JamesHeinrich\GetID3\Utils;
 
 class ID3v1 extends Handler
 {
-
+	/**
+	 * @return bool
+	 */
 	public function Analyze() {
 		$info = &$this->getid3->info;
 
@@ -128,10 +130,20 @@ class ID3v1 extends Handler
 		return true;
 	}
 
+	/**
+	 * @param string $str
+	 *
+	 * @return string
+	 */
 	public static function cutfield($str) {
 		return trim(substr($str, 0, strcspn($str, "\x00")));
 	}
 
+	/**
+	 * @param bool $allowSCMPXextended
+	 *
+	 * @return string[]
+	 */
 	public static function ArrayOfGenres($allowSCMPXextended=false) {
 		static $GenreLookup = array(
 			0    => 'Blues',
@@ -316,6 +328,12 @@ class ID3v1 extends Handler
 		return ($allowSCMPXextended ? $GenreLookupSCMPX : $GenreLookup);
 	}
 
+	/**
+	 * @param string $genreid
+	 * @param bool   $allowSCMPXextended
+	 *
+	 * @return string|false
+	 */
 	public static function LookupGenreName($genreid, $allowSCMPXextended=true) {
 		switch ($genreid) {
 			case 'RX':
@@ -332,6 +350,12 @@ class ID3v1 extends Handler
 		return (isset($GenreLookup[$genreid]) ? $GenreLookup[$genreid] : false);
 	}
 
+	/**
+	 * @param string $genre
+	 * @param bool   $allowSCMPXextended
+	 *
+	 * @return string|false
+	 */
 	public static function LookupGenreID($genre, $allowSCMPXextended=false) {
 		$GenreLookup = self::ArrayOfGenres($allowSCMPXextended);
 		$LowerCaseNoSpaceSearchTerm = strtolower(str_replace(' ', '', $genre));
@@ -343,6 +367,11 @@ class ID3v1 extends Handler
 		return false;
 	}
 
+	/**
+	 * @param string $OriginalGenre
+	 *
+	 * @return string|false
+	 */
 	public static function StandardiseID3v1GenreName($OriginalGenre) {
 		if (($GenreID = self::LookupGenreID($OriginalGenre)) !== false) {
 			return self::LookupGenreName($GenreID);
@@ -350,6 +379,17 @@ class ID3v1 extends Handler
 		return $OriginalGenre;
 	}
 
+	/**
+	 * @param string     $title
+	 * @param string     $artist
+	 * @param string     $album
+	 * @param string     $year
+	 * @param int        $genreid
+	 * @param string     $comment
+	 * @param int|string $track
+	 *
+	 * @return string
+	 */
 	public static function GenerateID3v1Tag($title, $artist, $album, $year, $genreid, $comment, $track='') {
 		$ID3v1Tag  = 'TAG';
 		$ID3v1Tag .= str_pad(trim(substr($title,  0, 30)), 30, "\x00", STR_PAD_RIGHT);

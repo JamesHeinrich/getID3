@@ -21,7 +21,9 @@ use JamesHeinrich\GetID3\Utils;
 
 class Dss extends Handler
 {
-
+	/**
+	 * @return bool
+	 */
 	public function Analyze() {
 		$info = &$this->getid3->info;
 
@@ -75,6 +77,11 @@ class Dss extends Handler
 		return true;
 	}
 
+	/**
+	 * @param string $datestring
+	 *
+	 * @return int|false
+	 */
 	public function DSSdateStringToUnixDate($datestring) {
 		$y = substr($datestring,  0, 2);
 		$m = substr($datestring,  2, 2);
@@ -86,6 +93,11 @@ class Dss extends Handler
 		return mktime($h, $i, $s, $m, $d, $y);
 	}
 
+	/**
+	 * @param int $sample_rate_index
+	 *
+	 * @return int|false
+	 */
 	public function DSSsampleRateLookup($sample_rate_index) {
 		static $dssSampleRateLookup = array(
 			0x0A => 16000,

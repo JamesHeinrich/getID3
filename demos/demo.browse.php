@@ -588,6 +588,11 @@ function MoreNaturalSort($ar1, $ar2) {
 	return 0;
 }
 
+/**
+ * @param string $string
+ *
+ * @return mixed
+ */
 function PoweredBygetID3($string='') {
 	global $getID3;
 	if (!$string) {

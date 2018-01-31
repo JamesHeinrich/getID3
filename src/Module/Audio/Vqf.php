@@ -21,6 +21,9 @@ use JamesHeinrich\GetID3\Utils;
 
 class Vqf extends Handler
 {
+	/**
+	 * @return bool
+	 */
 	public function Analyze() {
 		$info = &$this->getid3->info;
 
@@ -140,6 +143,11 @@ class Vqf extends Handler
 		return true;
 	}
 
+	/**
+	 * @param int $frequencyid
+	 *
+	 * @return int
+	 */
 	public function VQFchannelFrequencyLookup($frequencyid) {
 		static $VQFchannelFrequencyLookup = array(
 			11 => 11025,
@@ -149,6 +157,11 @@ class Vqf extends Handler
 		return (isset($VQFchannelFrequencyLookup[$frequencyid]) ? $VQFchannelFrequencyLookup[$frequencyid] : $frequencyid * 1000);
 	}
 
+	/**
+	 * @param string $shortname
+	 *
+	 * @return string
+	 */
 	public function VQFcommentNiceNameLookup($shortname) {
 		static $VQFcommentNiceNameLookup = array(
 			'NAME' => 'title',

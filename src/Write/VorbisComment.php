@@ -20,12 +20,33 @@ use JamesHeinrich\GetID3\Utils;
 
 class VorbisComment
 {
-
+	/**
+	 * @var string
+	 */
 	public $filename;
-	public $tag_data;
-	public $warnings = array(); // any non-critical errors will be stored here
-	public $errors   = array(); // any critical errors will be stored here
 
+	/**
+	 * @var array
+	 */
+	public $tag_data;
+
+	/**
+	 * Any non-critical errors will be stored here.
+	 *
+	 * @var array
+	 */
+	public $warnings = array();
+
+	/**
+	 * Any critical errors will be stored here.
+	 *
+	 * @var array
+	 */
+	public $errors   = array();
+
+	/**
+	 * @return bool
+	 */
 	public function WriteVorbisComment() {
 
 		// Create file with new comments
@@ -94,11 +115,19 @@ class VorbisComment
 		return true;
 	}
 
+	/**
+	 * @return bool
+	 */
 	public function DeleteVorbisComment() {
 		$this->tag_data = array(array());
 		return $this->WriteVorbisComment();
 	}
 
+	/**
+	 * @param string $originalcommentname
+	 *
+	 * @return string
+	 */
 	public function CleanVorbisCommentName($originalcommentname) {
 		// A case-insensitive field name that may consist of ASCII 0x20 through 0x7D, 0x3D ('=') excluded.
 		// ASCII 0x41 through 0x5A inclusive (A-Z) is to be considered equivalent to ASCII 0x61 through

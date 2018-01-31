@@ -24,6 +24,9 @@ class Bmp extends Handler
 	public $ExtractPalette = false;
 	public $ExtractData    = false;
 
+	/**
+	 * @return bool
+	 */
 	public function Analyze() {
 		$info = &$this->getid3->info;
 
@@ -630,7 +633,11 @@ class Bmp extends Handler
 		return true;
 	}
 
-
+	/**
+	 * @param array $BMPinfo
+	 *
+	 * @return bool
+	 */
 	public function PlotBMP(&$BMPinfo) {
 		$starttime = time();
 		if (!isset($BMPinfo['bmp']['data']) || !is_array($BMPinfo['bmp']['data'])) {
@@ -667,6 +674,11 @@ class Bmp extends Handler
 		return false;
 	}
 
+	/**
+	 * @param int $compressionid
+	 *
+	 * @return string
+	 */
 	public function BMPcompressionWindowsLookup($compressionid) {
 		static $BMPcompressionWindowsLookup = array(
 			0 => 'BI_RGB',
@@ -679,6 +691,11 @@ class Bmp extends Handler
 		return (isset($BMPcompressionWindowsLookup[$compressionid]) ? $BMPcompressionWindowsLookup[$compressionid] : 'invalid');
 	}
 
+	/**
+	 * @param int $compressionid
+	 *
+	 * @return string
+	 */
 	public function BMPcompressionOS2Lookup($compressionid) {
 		static $BMPcompressionOS2Lookup = array(
 			0 => 'BI_RGB',

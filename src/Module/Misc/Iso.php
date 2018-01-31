@@ -21,7 +21,9 @@ use JamesHeinrich\GetID3\Utils;
 
 class Iso extends Handler
 {
-
+	/**
+	 * @return bool
+	 */
 	public function Analyze() {
 		$info = &$this->getid3->info;
 
@@ -59,7 +61,11 @@ class Iso extends Handler
 		return true;
 	}
 
-
+	/**
+	 * @param string $ISOheader
+	 *
+	 * @return bool
+	 */
 	public function ParsePrimaryVolumeDescriptor(&$ISOheader) {
 		// ISO integer values are stored *BOTH* Little-Endian AND Big-Endian format!!
 		// ie 12345 == 0x3039  is stored as $39 $30 $30 $39 in a 4-byte field
@@ -133,7 +139,11 @@ class Iso extends Handler
 		return true;
 	}
 
-
+	/**
+	 * @param string $ISOheader
+	 *
+	 * @return bool
+	 */
 	public function ParseSupplementaryVolumeDescriptor(&$ISOheader) {
 		// ISO integer values are stored Both-Endian format!!
 		// ie 12345 == 0x3039  is stored as $39 $30 $30 $39 in a 4-byte field
@@ -212,7 +222,9 @@ class Iso extends Handler
 		return true;
 	}
 
-
+	/**
+	 * @return bool
+	 */
 	public function ParsePathTable() {
 		$info = &$this->getid3->info;
 		if (!isset($info['iso']['supplementary_volume_descriptor']['raw']['path_table_l_location']) && !isset($info['iso']['primary_volume_descriptor']['raw']['path_table_l_location'])) {
@@ -271,7 +283,11 @@ class Iso extends Handler
 		return true;
 	}
 
-
+	/**
+	 * @param array $directorydata
+	 *
+	 * @return array
+	 */
 	public function ParseDirectoryRecord($directorydata) {
 		$info = &$this->getid3->info;
 		if (isset($info['iso']['supplementary_volume_descriptor'])) {
@@ -326,6 +342,11 @@ class Iso extends Handler
 		return $DirectoryRecord;
 	}
 
+	/**
+	 * @param string $ISOfilename
+	 *
+	 * @return string
+	 */
 	public function ISOstripFilenameVersion($ISOfilename) {
 		// convert 'filename.ext;1' to 'filename.ext'
 		if (!strstr($ISOfilename, ';')) {
@@ -335,6 +356,11 @@ class Iso extends Handler
 		}
 	}
 
+	/**
+	 * @param string $ISOtime
+	 *
+	 * @return int|false
+	 */
 	public function ISOtimeText2UNIXtime($ISOtime) {
 
 		$UNIXyear   = (int) substr($ISOtime,  0, 4);
@@ -350,6 +376,11 @@ class Iso extends Handler
 		return gmmktime($UNIXhour, $UNIXminute, $UNIXsecond, $UNIXmonth, $UNIXday, $UNIXyear);
 	}
 
+	/**
+	 * @param string $ISOtime
+	 *
+	 * @return int
+	 */
 	public function ISOtime2UNIXtime($ISOtime) {
 		// Represented by seven bytes:
 		// 1: Number of years since 1900
@@ -371,6 +402,11 @@ class Iso extends Handler
 		return gmmktime($UNIXhour, $UNIXminute, $UNIXsecond, $UNIXmonth, $UNIXday, $UNIXyear);
 	}
 
+	/**
+	 * @param int $BinaryValue
+	 *
+	 * @return int
+	 */
 	public function TwosCompliment2Decimal($BinaryValue) {
 		// http://sandbox.mc.edu/~bennet/cs110/tc/tctod.html
 		// First check if the number is negative or positive by looking at the sign bit.

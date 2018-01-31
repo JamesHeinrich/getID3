@@ -22,7 +22,9 @@ use JamesHeinrich\GetID3\Utils;
 
 class Amr extends Handler
 {
-
+	/**
+	 * @return bool
+	 */
 	public function Analyze() {
 		$info = &$this->getid3->info;
 
@@ -68,7 +70,11 @@ class Amr extends Handler
 		return true;
 	}
 
-
+	/**
+	 * @param int $key
+	 *
+	 * @return int|false
+	 */
 	public function amr_mode_bitrate($key) {
 		static $amr_mode_bitrate = array(
 			0 =>  4750,
@@ -83,6 +89,11 @@ class Amr extends Handler
 		return (isset($amr_mode_bitrate[$key]) ? $amr_mode_bitrate[$key] : false);
 	}
 
+	/**
+	 * @param int $key
+	 *
+	 * @return int|false
+	 */
 	public function amr_mode_bytes_per_frame($key) {
 		static $amr_mode_bitrate = array(
 			0 =>  13, // 1-byte frame header +  95 bits [padded to: 12 bytes] audio data

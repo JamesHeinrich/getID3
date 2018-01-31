@@ -22,12 +22,38 @@ use JamesHeinrich\GetID3\Utils;
 
 class ID3v1
 {
+	/**
+	 * @var string
+	 */
 	public $filename;
-	public $filesize;
-	public $tag_data;
-	public $warnings = array(); // any non-critical errors will be stored here
-	public $errors   = array(); // any critical errors will be stored here
 
+	/**
+	 * @var int
+	 */
+	public $filesize;
+
+	/**
+	 * @var array
+	 */
+	public $tag_data;
+
+	/**
+	 * Any non-critical errors will be stored here.
+	 *
+	 * @var array
+	 */
+	public $warnings = array();
+
+	/**
+	 * Any critical errors will be stored here.
+	 *
+	 * @var array
+	 */
+	public $errors   = array();
+
+	/**
+	 * @return bool
+	 */
 	public function WriteID3v1() {
 		// File MUST be writeable - CHMOD(646) at least
 		if (!empty($this->filename) && is_readable($this->filename) && getID3::is_writable($this->filename) && is_file($this->filename)) {
@@ -66,6 +92,9 @@ class ID3v1
 		return false;
 	}
 
+	/**
+	 * @return bool
+	 */
 	public function FixID3v1Padding() {
 		// ID3v1 data is supposed to be padded with NULL characters, but some taggers incorrectly use spaces
 		// This function rewrites the ID3v1 tag with correct padding
@@ -89,6 +118,9 @@ class ID3v1
 		return false;
 	}
 
+	/**
+	 * @return bool
+	 */
 	public function RemoveID3v1() {
 		// File MUST be writeable - CHMOD(646) at least
 		if (!empty($this->filename) && is_readable($this->filename) && getID3::is_writable($this->filename) && is_file($this->filename)) {
@@ -117,6 +149,9 @@ class ID3v1
 		return false;
 	}
 
+	/**
+	 * @return bool
+	 */
 	public function setRealFileSize() {
 		if (PHP_INT_MAX > 2147483647) {
 			$this->filesize = filesize($this->filename);

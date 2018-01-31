@@ -26,7 +26,9 @@ use JamesHeinrich\GetID3\Utils;
 
 class Tar extends Handler
 {
-
+	/**
+	 * @return bool
+	 */
 	public function Analyze() {
 		$info = &$this->getid3->info;
 
@@ -121,7 +123,13 @@ class Tar extends Handler
 		return true;
 	}
 
-	// Parses the file mode to file permissions
+	/**
+	 * Parses the file mode to file permissions.
+	 *
+	 * @param int $mode
+	 *
+	 * @return string
+	 */
 	public function display_perms($mode) {
 		// Determine Type
 		if     ($mode & 0x1000) $type='p'; // FIFO pipe
@@ -156,7 +164,13 @@ class Tar extends Handler
 		return $s;
 	}
 
-	// Converts the file type
+	/**
+	 * Converts the file type.
+	 *
+	 * @param string $typflag
+	 *
+	 * @return mixed|string
+	 */
 	public function get_flag_type($typflag) {
 		static $flag_types = array(
 			'0' => 'LF_NORMAL',

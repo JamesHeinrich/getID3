@@ -20,7 +20,9 @@ use JamesHeinrich\GetID3\Module\Handler;
 
 class Mod extends Handler
 {
-
+	/**
+	 * @return bool
+	 */
 	public function Analyze() {
 		$info = &$this->getid3->info;
 		$this->fseek($info['avdataoffset']);
@@ -38,7 +40,9 @@ class Mod extends Handler
 		return false;
 	}
 
-
+	/**
+	 * @return bool
+	 */
 	public function getMODheaderFilepointer() {
 		$info = &$this->getid3->info;
 		$this->fseek($info['avdataoffset'] + 1080);
@@ -54,6 +58,9 @@ class Mod extends Handler
 		return false;
 	}
 
+	/**
+	 * @return bool
+	 */
 	public function getXMheaderFilepointer() {
 		$info = &$this->getid3->info;
 		$this->fseek($info['avdataoffset']);
@@ -69,6 +76,9 @@ class Mod extends Handler
 		return false;
 	}
 
+	/**
+	 * @return bool
+	 */
 	public function getS3MheaderFilepointer() {
 		$info = &$this->getid3->info;
 		$this->fseek($info['avdataoffset'] + 44);
@@ -84,6 +94,9 @@ class Mod extends Handler
 		return false;
 	}
 
+	/**
+	 * @return bool
+	 */
 	public function getITheaderFilepointer() {
 		$info = &$this->getid3->info;
 		$this->fseek($info['avdataoffset']);

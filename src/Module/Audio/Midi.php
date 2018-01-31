@@ -31,8 +31,14 @@ class Midi extends Handler
 	 */
 	const MAGIC_MTRK = 'MTrk';
 
+	/**
+	 * @var bool
+	 */
 	public $scanwholefile = true;
 
+	/**
+	 * @return bool
+	 */
 	public function Analyze() {
 		$info = &$this->getid3->info;
 
@@ -343,6 +349,11 @@ class Midi extends Handler
 		return true;
 	}
 
+	/**
+	 * @param int $instrumentid
+	 *
+	 * @return string
+	 */
 	public function GeneralMIDIinstrumentLookup($instrumentid) {
 
 		$begin = __LINE__;
@@ -483,6 +494,11 @@ class Midi extends Handler
 		return Utils::EmbeddedLookup($instrumentid, $begin, __LINE__, __FILE__, 'GeneralMIDIinstrument');
 	}
 
+	/**
+	 * @param int $instrumentid
+	 *
+	 * @return string
+	 */
 	public function GeneralMIDIpercussionLookup($instrumentid) {
 
 		$begin = __LINE__;

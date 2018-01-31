@@ -21,7 +21,9 @@ use JamesHeinrich\GetID3\Utils;
 
 class Tiff extends Handler
 {
-
+	/**
+	 * @return bool
+	 */
 	public function Analyze() {
 		$info = &$this->getid3->info;
 
@@ -186,7 +188,12 @@ class Tiff extends Handler
 		return true;
 	}
 
-
+	/**
+	 * @param string $bytestring
+	 * @param string $byteorder
+	 *
+	 * @return int|false
+	 */
 	public function TIFFendian2Int($bytestring, $byteorder) {
 		if ($byteorder == 'Intel') {
 			return Utils::LittleEndian2Int($bytestring);
@@ -196,6 +203,11 @@ class Tiff extends Handler
 		return false;
 	}
 
+	/**
+	 * @param int $id
+	 *
+	 * @return string
+	 */
 	public function TIFFcompressionMethod($id) {
 		static $TIFFcompressionMethod = array();
 		if (empty($TIFFcompressionMethod)) {
@@ -210,6 +222,11 @@ class Tiff extends Handler
 		return (isset($TIFFcompressionMethod[$id]) ? $TIFFcompressionMethod[$id] : 'unknown/invalid ('.$id.')');
 	}
 
+	/**
+	 * @param int $id
+	 *
+	 * @return string
+	 */
 	public function TIFFcommentName($id) {
 		static $TIFFcommentName = array();
 		if (empty($TIFFcommentName)) {

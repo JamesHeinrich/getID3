@@ -21,13 +21,47 @@ use JamesHeinrich\GetID3\Utils;
 
 class Real
 {
+	/**
+	 * @var string
+	 */
 	public $filename;
-	public $tag_data          = array();
-	public $fread_buffer_size = 32768;   // read buffer size in bytes
-	public $warnings          = array(); // any non-critical errors will be stored here
-	public $errors            = array(); // any critical errors will be stored here
-	public $paddedlength      = 512;     // minimum length of CONT tag in bytes
 
+	/**
+	 * @var array
+	 */
+	public $tag_data          = array();
+
+	/**
+	 * Read buffer size in bytes.
+	 *
+	 * @var int
+	 */
+	public $fread_buffer_size = 32768;
+
+	/**
+	 * Any non-critical errors will be stored here.
+	 *
+	 * @var array
+	 */
+	public $warnings          = array();
+
+	/**
+	 * Any critical errors will be stored here.
+	 *
+	 * @var array
+	 */
+	public $errors            = array();
+
+	/**
+	 * Minimum length of CONT tag in bytes.
+	 *
+	 * @var int
+	 */
+	public $paddedlength      = 512;
+
+	/**
+	 * @return bool
+	 */
 	public function WriteReal() {
 		// File MUST be writeable - CHMOD(646) at least
 		if (getID3::is_writable($this->filename) && is_file($this->filename) && ($fp_source = fopen($this->filename, 'r+b'))) {
@@ -129,6 +163,11 @@ class Real
 		return false;
 	}
 
+	/**
+	 * @param array $chunks
+	 *
+	 * @return string
+	 */
 	public function GenerateRMFchunk(&$chunks) {
 		$oldCONTexists = false;
 		$chunkNameKeys = array();
@@ -148,6 +187,12 @@ class Real
 		return $RMFchunk;
 	}
 
+	/**
+	 * @param array  $chunks
+	 * @param string $new_CONT_tag_data
+	 *
+	 * @return string
+	 */
 	public function GeneratePROPchunk(&$chunks, &$new_CONT_tag_data) {
 		$old_CONT_length = 0;
 		$old_DATA_offset = 0;
@@ -186,6 +231,9 @@ class Real
 		return $PROPchunk;
 	}
 
+	/**
+	 * @return string
+	 */
 	public function GenerateCONTchunk() {
 		foreach ($this->tag_data as $key => $value) {
 			// limit each value to 0xFFFF bytes
@@ -215,6 +263,9 @@ class Real
 		return $CONTchunk;
 	}
 
+	/**
+	 * @return bool
+	 */
 	public function RemoveReal() {
 		// File MUST be writeable - CHMOD(646) at least
 		if (getID3::is_writable($this->filename) && is_file($this->filename) && ($fp_source = fopen($this->filename, 'r+b'))) {

@@ -23,7 +23,9 @@ use JamesHeinrich\GetID3\Utils;
 
 class WavPack extends Handler
 {
-
+	/**
+	 * @return bool
+	 */
 	public function Analyze() {
 		$info = &$this->getid3->info;
 
@@ -372,7 +374,11 @@ class WavPack extends Handler
 		return true;
 	}
 
-
+	/**
+	 * @param int $id
+	 *
+	 * @return string
+	 */
 	public function WavPackMetablockNameLookup(&$id) {
 		static $WavPackMetablockNameLookup = array(
 			0x00 => 'Dummy',

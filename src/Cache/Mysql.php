@@ -75,18 +75,34 @@ use JamesHeinrich\GetID3\GetID3;
 
 class Mysql extends GetID3
 {
-
-	// private vars
+	/**
+	 * @var resource
+	 */
 	private $cursor;
+
+	/**
+	 * @var resource
+	 */
 	private $connection;
 
-    /**
-     * @var string
-     */
+	/**
+	 * @var string
+	 */
 	private $table;
 
 
-	// public: constructor - see top of this file for cache type and cache_options
+	/**
+	 * constructor - see top of this file for cache type and cache_options
+	 *
+	 * @param string $host
+	 * @param string $database
+	 * @param string $username
+	 * @param string $password
+	 * @param string $table
+	 *
+	 * @throws Exception
+	 * @throws getid3_exception
+	 */
 	public function __construct($host, $database, $username, $password, $table='getid3_cache') {
 
 		// Check for mysql support
@@ -131,7 +147,9 @@ class Mysql extends GetID3
 
 
 
-	// public: clear cache
+	/**
+	 * clear cache
+	 */
 	public function clear_cache() {
 
 		$this->cursor = mysql_query('DELETE FROM `'.mysql_real_escape_string($this->table).'`', $this->connection);
@@ -140,7 +158,15 @@ class Mysql extends GetID3
 
 
 
-	// public: analyze file
+	/**
+	 * analyze file
+	 *
+	 * @param string $filename
+	 * @param int    $filesize
+	 * @param string $original_filename
+	 *
+	 * @return mixed
+	 */
 	public function analyze($filename, $filesize=null, $original_filename='') {
 
         $filetime = 0;
@@ -182,7 +208,11 @@ class Mysql extends GetID3
 
 
 
-	// private: (re)create sql table
+	/**
+	 * (re)create sql table
+	 *
+	 * @param bool $drop
+	 */
 	private function create_table($drop=false) {
 
 		$SQLquery  = 'CREATE TABLE IF NOT EXISTS `'.mysql_real_escape_string($this->table).'` (';

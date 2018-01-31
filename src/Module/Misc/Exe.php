@@ -21,7 +21,9 @@ use JamesHeinrich\GetID3\Utils;
 
 class Exe extends Handler
 {
-
+	/**
+	 * @return bool
+	 */
 	public function Analyze() {
 		$info = &$this->getid3->info;
 
@@ -55,8 +57,8 @@ class Exe extends Handler
 		$info['exe']['mz']['memory_minimum']     = $info['exe']['mz']['raw']['min_memory_paragraphs'] * 16;
 		$info['exe']['mz']['memory_recommended'] = $info['exe']['mz']['raw']['max_memory_paragraphs'] * 16;
 
-$this->error('EXE parsing not enabled in this version of getID3() ['.$this->getid3->version().']');
-return false;
+		$this->error('EXE parsing not enabled in this version of getID3() ['.$this->getid3->version().']');
+		return false;
 
 	}
 

@@ -23,7 +23,9 @@ use JamesHeinrich\GetID3\Utils;
 
 class OptimFrog extends Handler
 {
-
+	/**
+	 * @return bool
+	 */
 	public function Analyze() {
 		$info = &$this->getid3->info;
 
@@ -49,7 +51,9 @@ class OptimFrog extends Handler
 		return false;
 	}
 
-
+	/**
+	 * @return bool
+	 */
 	public function ParseOptimFROGheader42() {
 		// for fileformat of v4.21 and older
 
@@ -96,7 +100,9 @@ class OptimFrog extends Handler
 		return true;
 	}
 
-
+	/**
+	 * @return bool
+	 */
 	public function ParseOptimFROGheader45() {
 		// for fileformat of v4.50a and higher
 
@@ -318,7 +324,11 @@ class OptimFrog extends Handler
 		return true;
 	}
 
-
+	/**
+	 * @param int $SampleType
+	 *
+	 * @return string|false
+	 */
 	public static function OptimFROGsampleTypeLookup($SampleType) {
 		static $OptimFROGsampleTypeLookup = array(
 			0  => 'unsigned int (8-bit)',
@@ -336,6 +346,11 @@ class OptimFrog extends Handler
 		return (isset($OptimFROGsampleTypeLookup[$SampleType]) ? $OptimFROGsampleTypeLookup[$SampleType] : false);
 	}
 
+	/**
+	 * @param int $SampleType
+	 *
+	 * @return int|false
+	 */
 	public static function OptimFROGbitsPerSampleTypeLookup($SampleType) {
 		static $OptimFROGbitsPerSampleTypeLookup = array(
 			0  => 8,
@@ -353,6 +368,11 @@ class OptimFrog extends Handler
 		return (isset($OptimFROGbitsPerSampleTypeLookup[$SampleType]) ? $OptimFROGbitsPerSampleTypeLookup[$SampleType] : false);
 	}
 
+	/**
+	 * @param int $ChannelConfiguration
+	 *
+	 * @return string|false
+	 */
 	public static function OptimFROGchannelConfigurationLookup($ChannelConfiguration) {
 		static $OptimFROGchannelConfigurationLookup = array(
 			0 => 'mono',
@@ -361,6 +381,11 @@ class OptimFrog extends Handler
 		return (isset($OptimFROGchannelConfigurationLookup[$ChannelConfiguration]) ? $OptimFROGchannelConfigurationLookup[$ChannelConfiguration] : false);
 	}
 
+	/**
+	 * @param int $ChannelConfiguration
+	 *
+	 * @return int|false
+	 */
 	public static function OptimFROGchannelConfigNumChannelsLookup($ChannelConfiguration) {
 		static $OptimFROGchannelConfigNumChannelsLookup = array(
 			0 => 1,
@@ -370,13 +395,17 @@ class OptimFrog extends Handler
 	}
 
 
-
 	// static function OptimFROGalgorithmNameLookup($AlgorithID) {
 	//     static $OptimFROGalgorithmNameLookup = array();
 	//     return (isset($OptimFROGalgorithmNameLookup[$AlgorithID]) ? $OptimFROGalgorithmNameLookup[$AlgorithID] : false);
 	// }
 
 
+	/**
+	 * @param int $EncoderID
+	 *
+	 * @return string
+	 */
 	public static function OptimFROGencoderNameLookup($EncoderID) {
 		// version = (encoderID >> 4) + 4500
 		// system  =  encoderID & 0xF
@@ -392,6 +421,11 @@ class OptimFrog extends Handler
 		return $EncoderVersion.' ('.(isset($OptimFROGencoderSystemLookup[$EncoderSystemID]) ? $OptimFROGencoderSystemLookup[$EncoderSystemID] : 'undefined encoder type (0x'.dechex($EncoderSystemID).')').')';
 	}
 
+	/**
+	 * @param int $CompressionID
+	 *
+	 * @return string
+	 */
 	public static function OptimFROGcompressionLookup($CompressionID) {
 		// mode    = compression >> 3
 		// speedup = compression & 0x07
@@ -414,6 +448,11 @@ class OptimFrog extends Handler
 		return (isset($OptimFROGencoderModeLookup[$CompressionModeID]) ? $OptimFROGencoderModeLookup[$CompressionModeID] : 'undefined mode (0x'.str_pad(dechex($CompressionModeID), 2, '0', STR_PAD_LEFT).')');
 	}
 
+	/**
+	 * @param int $CompressionID
+	 *
+	 * @return string
+	 */
 	public static function OptimFROGspeedupLookup($CompressionID) {
 		// mode    = compression >> 3
 		// speedup = compression & 0x07

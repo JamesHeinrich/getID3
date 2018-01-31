@@ -23,7 +23,9 @@ use JamesHeinrich\GetID3\Utils;
 
 class Lyrics3 extends Handler
 {
-
+	/**
+	 * @return bool
+	 */
 	public function Analyze() {
 		$info = &$this->getid3->info;
 
@@ -131,6 +133,13 @@ class Lyrics3 extends Handler
 		return true;
 	}
 
+	/**
+	 * @param int $endoffset
+	 * @param int $version
+	 * @param int $length
+	 *
+	 * @return bool
+	 */
 	public function getLyrics3Data($endoffset, $version, $length) {
 		// http://www.volweb.cz/str/tags.htm
 
@@ -255,6 +264,11 @@ class Lyrics3 extends Handler
 		return true;
 	}
 
+	/**
+	 * @param string $rawtimestamp
+	 *
+	 * @return int|false
+	 */
 	public function Lyrics3Timestamp2Seconds($rawtimestamp) {
 		if (preg_match('#^\\[([0-9]{2}):([0-9]{2})\\]$#', $rawtimestamp, $regs)) {
 			return (int) (($regs[1] * 60) + $regs[2]);
@@ -262,6 +276,11 @@ class Lyrics3 extends Handler
 		return false;
 	}
 
+	/**
+	 * @param array $Lyrics3data
+	 *
+	 * @return bool
+	 */
 	public function Lyrics3LyricsTimestampParse(&$Lyrics3data) {
 		$lyricsarray = explode("\r\n", $Lyrics3data['raw']['LYR']);
 		$notimestamplyricsarray = array();
@@ -293,6 +312,11 @@ class Lyrics3 extends Handler
 		return true;
 	}
 
+	/**
+	 * @param string $char
+	 *
+	 * @return bool|null
+	 */
 	public function IntString2Bool($char) {
 		if ($char == '1') {
 			return true;

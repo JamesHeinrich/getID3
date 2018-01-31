@@ -20,12 +20,14 @@ use JamesHeinrich\GetID3\Utils;
 /////////////////////////////////////////////////////////////////
 
 /**
- * @see https://www.w3.org/Graphics/GIF/spec-gif89a.txt
- * @see http://www.matthewflickinger.com/lab/whatsinagif/bits_and_bytes.asp
+ * @link https://www.w3.org/Graphics/GIF/spec-gif89a.txt
+ * @link http://www.matthewflickinger.com/lab/whatsinagif/bits_and_bytes.asp
  */
 class Gif extends Handler
 {
-
+	/**
+	 * @return bool
+	 */
 	public function Analyze() {
 		$info = &$this->getid3->info;
 
@@ -187,7 +189,11 @@ class Gif extends Handler
 		return true;
 	}
 
-
+	/**
+	 * @param int $bits
+	 *
+	 * @return float|int
+	 */
 	public function GetLSBits($bits) {
 		static $bitbuffer = '';
 		while (strlen($bitbuffer) < $bits) {

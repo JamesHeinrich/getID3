@@ -21,7 +21,9 @@ use JamesHeinrich\GetID3\Utils;
 
 class Avr extends Handler
 {
-
+	/**
+	 * @return bool
+	 */
 	public function Analyze() {
 		$info = &$this->getid3->info;
 

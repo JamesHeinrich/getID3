@@ -23,7 +23,9 @@ use JamesHeinrich\GetID3\Utils;
 
 class Dsf extends Handler
 {
-
+	/**
+	 * @return bool
+	 */
 	public function Analyze() {
 		$info = &$this->getid3->info;
 
@@ -122,7 +124,11 @@ class Dsf extends Handler
 		return true;
 	}
 
-
+	/**
+	 * @param int $channel_type_id
+	 *
+	 * @return string
+	 */
 	public static function DSFchannelTypeLookup($channel_type_id) {
 		static $DSFchannelTypeLookup = array(
 			                  // interleaving order:

@@ -23,6 +23,9 @@ class Pcd extends Handler
 {
 	public $ExtractData = 0;
 
+	/**
+	 * @return bool
+	 */
 	public function Analyze() {
 		$info = &$this->getid3->info;
 
@@ -102,6 +105,13 @@ class Pcd extends Handler
 
 	}
 
+	/**
+	 * @param int $Y
+	 * @param int $Cb
+	 * @param int $Cr
+	 *
+	 * @return int
+	 */
 	public function YCbCr2RGB($Y, $Cb, $Cr) {
 		static $YCbCr_constants = array();
 		if (empty($YCbCr_constants)) {

@@ -21,7 +21,9 @@ use JamesHeinrich\GetID3\Utils;
 
 class Efax extends Handler
 {
-
+	/**
+	 * @return bool
+	 */
 	public function Analyze() {
 		$info = &$this->getid3->info;
 

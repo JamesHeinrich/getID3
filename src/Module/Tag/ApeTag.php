@@ -21,9 +21,21 @@ use JamesHeinrich\GetID3\Utils;
 
 class ApeTag extends Handler
 {
-	public $inline_attachments = true; // true: return full data for all attachments; false: return no data for all attachments; integer: return data for attachments <= than this; string: save as file to this directory
+	/**
+	 * true: return full data for all attachments;
+	 * false: return no data for all attachments;
+	 * integer: return data for attachments <= than this;
+	 * string: save as file to this directory.
+	 *
+	 * @var int|bool|string
+	 */
+	public $inline_attachments = true;
+
 	public $overrideendoffset  = 0;
 
+	/**
+	 * @return bool
+	 */
 	public function Analyze() {
 		$info = &$this->getid3->info;
 
@@ -340,6 +352,11 @@ class ApeTag extends Handler
 		return true;
 	}
 
+	/**
+	 * @param string $APEheaderFooterData
+	 *
+	 * @return array|false
+	 */
 	public function parseAPEheaderFooter($APEheaderFooterData) {
 		// http://www.uni-jena.de/~pfk/mpp/sv8/apeheader.html
 
@@ -364,6 +381,11 @@ class ApeTag extends Handler
 		return $headerfooterinfo;
 	}
 
+	/**
+	 * @param int $rawflagint
+	 *
+	 * @return array
+	 */
 	public function parseAPEtagFlags($rawflagint) {
 		// "Note: APE Tags 1.0 do not use any of the APE Tag flags.
 		// All are set to zero on creation and ignored on reading."
@@ -379,6 +401,11 @@ class ApeTag extends Handler
 		return $flags;
 	}
 
+	/**
+	 * @param int $contenttypeid
+	 *
+	 * @return string
+	 */
 	public function APEcontentTypeFlagLookup($contenttypeid) {
 		static $APEcontentTypeFlagLookup = array(
 			0 => 'utf-8',
@@ -389,6 +416,11 @@ class ApeTag extends Handler
 		return (isset($APEcontentTypeFlagLookup[$contenttypeid]) ? $APEcontentTypeFlagLookup[$contenttypeid] : 'invalid');
 	}
 
+	/**
+	 * @param string $itemkey
+	 *
+	 * @return bool
+	 */
 	public function APEtagItemIsUTF8Lookup($itemkey) {
 		static $APEtagItemIsUTF8Lookup = array(
 			'title',

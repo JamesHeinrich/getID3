@@ -20,8 +20,9 @@ use JamesHeinrich\GetID3\Module\Handler;
 
 class Svg extends Handler
 {
-
-
+	/**
+	 * @return bool
+	 */
 	public function Analyze() {
 		$info = &$this->getid3->info;
 

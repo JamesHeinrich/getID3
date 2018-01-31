@@ -21,6 +21,9 @@ use JamesHeinrich\GetID3\Utils;
 
 class Aac extends Handler
 {
+	/**
+	 * @return bool
+	 */
 	public function Analyze() {
 		$info = &$this->getid3->info;
 		$this->fseek($info['avdataoffset']);
@@ -32,8 +35,9 @@ class Aac extends Handler
 		return true;
 	}
 
-
-
+	/**
+	 * @return bool
+	 */
 	public function getAACADIFheaderFilepointer() {
 		$info = &$this->getid3->info;
 		$info['fileformat']          = 'aac';
@@ -261,7 +265,12 @@ class Aac extends Handler
 
 	}
 
-
+	/**
+	 * @param int  $MaxFramesToScan
+	 * @param bool $ReturnExtendedInfo
+	 *
+	 * @return bool
+	 */
 	public function getAACADTSheaderFilepointer($MaxFramesToScan=1000000, $ReturnExtendedInfo=false) {
 		$info = &$this->getid3->info;
 
@@ -447,6 +456,11 @@ class Aac extends Handler
 		// should never get here.
 	}
 
+	/**
+	 * @param int $samplerateid
+	 *
+	 * @return int|string
+	 */
 	public static function AACsampleRateLookup($samplerateid) {
 		static $AACsampleRateLookup = array();
 		if (empty($AACsampleRateLookup)) {
@@ -470,6 +484,12 @@ class Aac extends Handler
 		return (isset($AACsampleRateLookup[$samplerateid]) ? $AACsampleRateLookup[$samplerateid] : 'invalid');
 	}
 
+	/**
+	 * @param int $profileid
+	 * @param int $mpegversion
+	 *
+	 * @return string
+	 */
 	public static function AACprofileLookup($profileid, $mpegversion) {
 		static $AACprofileLookup = array();
 		if (empty($AACprofileLookup)) {
@@ -485,6 +505,11 @@ class Aac extends Handler
 		return (isset($AACprofileLookup[$mpegversion][$profileid]) ? $AACprofileLookup[$mpegversion][$profileid] : 'invalid');
 	}
 
+	/**
+	 * @param array $program_configs
+	 *
+	 * @return int
+	 */
 	public static function AACchannelCountCalculate($program_configs) {
 		$channels = 0;
 		for ($i = 0; $i < $program_configs['num_front_channel_elements']; $i++) {
