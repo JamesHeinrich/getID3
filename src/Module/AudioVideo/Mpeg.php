@@ -265,7 +265,7 @@ class Mpeg extends Handler
 
 				case 0xB8: // group_of_pictures_header
 					$GOPcounter++;
-					if ($info['mpeg']['video']['bitrate_mode'] == 'vbr') {
+					if (!empty($info['mpeg']['video']['bitrate_mode']) && ($info['mpeg']['video']['bitrate_mode'] == 'vbr')) {
 						$bitstream = Utils::BigEndian2Bin(substr($MPEGstreamData, $StartCodeOffset + 4, 4)); // 27 bits needed for group_of_pictures_header
 						$bitstreamoffset = 0;
 
