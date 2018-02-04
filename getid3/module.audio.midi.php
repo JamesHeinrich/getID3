@@ -1,4 +1,5 @@
 <?php
+
 /////////////////////////////////////////////////////////////////
 /// getID3() by James Heinrich <info@getid3.org>               //
 //  available at http://getid3.sourceforge.net                 //
@@ -19,8 +20,14 @@ define('GETID3_MIDI_MAGIC_MTRK', 'MTrk'); // MIDI track header magic
 
 class getid3_midi extends getid3_handler
 {
+	/**
+	 * @var bool
+	 */
 	public $scanwholefile = true;
 
+	/**
+	 * @return bool
+	 */
 	public function Analyze() {
 		$info = &$this->getid3->info;
 
@@ -331,6 +338,11 @@ class getid3_midi extends getid3_handler
 		return true;
 	}
 
+	/**
+	 * @param int $instrumentid
+	 *
+	 * @return string
+	 */
 	public function GeneralMIDIinstrumentLookup($instrumentid) {
 
 		$begin = __LINE__;
@@ -471,6 +483,11 @@ class getid3_midi extends getid3_handler
 		return getid3_lib::EmbeddedLookup($instrumentid, $begin, __LINE__, __FILE__, 'GeneralMIDIinstrument');
 	}
 
+	/**
+	 * @param int $instrumentid
+	 *
+	 * @return string
+	 */
 	public function GeneralMIDIpercussionLookup($instrumentid) {
 
 		$begin = __LINE__;

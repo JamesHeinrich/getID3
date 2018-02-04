@@ -1,4 +1,5 @@
 <?php
+
 /////////////////////////////////////////////////////////////////
 /// getID3() by James Heinrich <info@getid3.org>               //
 //  available at http://getid3.sourceforge.net                 //
@@ -17,7 +18,9 @@
 
 class getid3_efax extends getid3_handler
 {
-
+	/**
+	 * @return bool
+	 */
 	public function Analyze() {
 		$info = &$this->getid3->info;
 
@@ -42,8 +45,8 @@ class getid3_efax extends getid3_handler
 		$info['efax']['header']['pages']      = getid3_lib::LittleEndian2Int(substr($efaxheader, 198, 2));
 		$info['efax']['header']['data_bytes'] = getid3_lib::LittleEndian2Int(substr($efaxheader, 202, 4));
 
-$this->error('eFax parsing not enabled in this version of getID3() ['.$this->getid3->version().']');
-return false;
+		$this->error('eFax parsing not enabled in this version of getID3() ['.$this->getid3->version().']');
+		return false;
 
 		return true;
 	}

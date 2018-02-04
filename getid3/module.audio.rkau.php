@@ -1,4 +1,5 @@
 <?php
+
 /////////////////////////////////////////////////////////////////
 /// getID3() by James Heinrich <info@getid3.org>               //
 //  available at http://getid3.sourceforge.net                 //
@@ -17,7 +18,9 @@
 
 class getid3_rkau extends getid3_handler
 {
-
+	/**
+	 * @return bool
+	 */
 	public function Analyze() {
 		$info = &$this->getid3->info;
 
@@ -76,7 +79,11 @@ class getid3_rkau extends getid3_handler
 
 	}
 
-
+	/**
+	 * @param array $RKAUdata
+	 *
+	 * @return bool
+	 */
 	public function RKAUqualityLookup(&$RKAUdata) {
 		$level   = ($RKAUdata['raw']['quality'] & 0xF0) >> 4;
 		$quality =  $RKAUdata['raw']['quality'] & 0x0F;

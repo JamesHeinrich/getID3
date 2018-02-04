@@ -1,4 +1,5 @@
 <?php
+
 /////////////////////////////////////////////////////////////////
 /// getID3() by James Heinrich <info@getid3.org>               //
 //  available at http://getid3.sourceforge.net                 //
@@ -20,11 +21,20 @@
 /////////////////////////////////////////////////////////////////
 
 
-class getid3_gzip extends getid3_handler {
+class getid3_gzip extends getid3_handler
+{
+	/**
+	 * Optional file list - disable for speed.
+	 *
+	 * Decode gzipped files, if possible, and parse recursively (.tar.gz for example).
+	 *
+	 * @var bool
+	 */
+	public $option_gzip_parse_contents = false;
 
-	// public: Optional file list - disable for speed.
-	public $option_gzip_parse_contents = false; // decode gzipped files, if possible, and parse recursively (.tar.gz for example)
-
+	/**
+	 * @return bool
+	 */
 	public function Analyze() {
 		$info = &$this->getid3->info;
 
@@ -247,7 +257,13 @@ class getid3_gzip extends getid3_handler {
 		return true;
 	}
 
-	// Converts the OS type
+	/**
+	 * Converts the OS type.
+	 *
+	 * @param string $key
+	 *
+	 * @return string
+	 */
 	public function get_os_type($key) {
 		static $os_type = array(
 			'0'   => 'FAT filesystem (MS-DOS, OS/2, NT/Win32)',
@@ -269,7 +285,13 @@ class getid3_gzip extends getid3_handler {
 		return (isset($os_type[$key]) ? $os_type[$key] : '');
 	}
 
-	// Converts the eXtra FLags
+	/**
+	 * Converts the eXtra FLags.
+	 *
+	 * @param string $key
+	 *
+	 * @return string
+	 */
 	public function get_xflag_type($key) {
 		static $xflag_type = array(
 			'0' => 'unknown',

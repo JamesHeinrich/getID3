@@ -1,4 +1,5 @@
 <?php
+
 /////////////////////////////////////////////////////////////////
 /// getID3() by James Heinrich <info@getid3.org>               //
 //  available at http://getid3.sourceforge.net                 //
@@ -17,7 +18,9 @@
 
 class getid3_tiff extends getid3_handler
 {
-
+	/**
+	 * @return bool
+	 */
 	public function Analyze() {
 		$info = &$this->getid3->info;
 
@@ -182,7 +185,12 @@ class getid3_tiff extends getid3_handler
 		return true;
 	}
 
-
+	/**
+	 * @param string $bytestring
+	 * @param string $byteorder
+	 *
+	 * @return int|false
+	 */
 	public function TIFFendian2Int($bytestring, $byteorder) {
 		if ($byteorder == 'Intel') {
 			return getid3_lib::LittleEndian2Int($bytestring);
@@ -192,6 +200,11 @@ class getid3_tiff extends getid3_handler
 		return false;
 	}
 
+	/**
+	 * @param int $id
+	 *
+	 * @return string
+	 */
 	public function TIFFcompressionMethod($id) {
 		static $TIFFcompressionMethod = array();
 		if (empty($TIFFcompressionMethod)) {
@@ -206,6 +219,11 @@ class getid3_tiff extends getid3_handler
 		return (isset($TIFFcompressionMethod[$id]) ? $TIFFcompressionMethod[$id] : 'unknown/invalid ('.$id.')');
 	}
 
+	/**
+	 * @param int $id
+	 *
+	 * @return string
+	 */
 	public function TIFFcommentName($id) {
 		static $TIFFcommentName = array();
 		if (empty($TIFFcommentName)) {

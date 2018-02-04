@@ -1,4 +1,5 @@
 <?php
+
 /////////////////////////////////////////////////////////////////
 /// getID3() by James Heinrich <info@getid3.org>               //
 //  available at http://getid3.sourceforge.net                 //
@@ -17,7 +18,9 @@
 
 class getid3_aa extends getid3_handler
 {
-
+	/**
+	 * @return bool
+	 */
 	public function Analyze() {
 		$info = &$this->getid3->info;
 
@@ -36,8 +39,8 @@ class getid3_aa extends getid3_handler
 
 		$info['fileformat']            = 'aa';
 		$info['audio']['dataformat']   = 'aa';
-$this->error('Audible Audiobook (.aa) parsing not enabled in this version of getID3() ['.$this->getid3->version().']');
-return false;
+		$this->error('Audible Audiobook (.aa) parsing not enabled in this version of getID3() ['.$this->getid3->version().']');
+		return false;
 		$info['audio']['bitrate_mode'] = 'cbr'; // is it?
 		$thisfile_aa['encoding']       = 'ISO-8859-1';
 

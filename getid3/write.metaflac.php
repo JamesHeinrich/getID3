@@ -1,4 +1,5 @@
 <?php
+
 /////////////////////////////////////////////////////////////////
 /// getID3() by James Heinrich <info@getid3.org>               //
 //  available at http://getid3.sourceforge.net                 //
@@ -17,18 +18,38 @@
 
 class getid3_write_metaflac
 {
-
+	/**
+	 * @var string
+	 */
 	public $filename;
+
+	/**
+	 * @var array
+	 */
 	public $tag_data;
 
-	public $warnings = array(); // any non-critical errors will be stored here
-	public $errors   = array(); // any critical errors will be stored here
+	/**
+	 * Any non-critical errors will be stored here.
+	 *
+	 * @var array
+	 */
+	public $warnings = array();
+
+	/**
+	 * Any critical errors will be stored here.
+	 *
+	 * @var array
+	 */
+	public $errors   = array();
 
 	private $pictures = array();
 
 	public function __construct() {
 	}
 
+	/**
+	 * @return bool
+	 */
 	public function WriteMetaFLAC() {
 
 		if (preg_match('#(1|ON)#i', ini_get('safe_mode'))) {
@@ -53,7 +74,7 @@ class getid3_write_metaflac
 					$picture_width_height_depth = '';
 					$this->pictures[] = $picture_typeid.'|'.$picture_mimetype.'|'.preg_replace('#[^\x20-\x7B\x7D-\x7F]#', '', $picturedetails['description']).'|'.$picture_width_height_depth.'|'.$temppicturefilename;
 				} else {
-					$this->errors[] = 'failed to open temporary tags file, tags not written - fopen("'.$tempcommentsfilename.'", "wb")';
+					$this->errors[] = 'failed to open temporary tags file, tags not written - fopen("'.$temppicturefilename.'", "wb")';
 					return false;
 				}
 			}
@@ -138,7 +159,9 @@ class getid3_write_metaflac
 		return true;
 	}
 
-
+	/**
+	 * @return bool
+	 */
 	public function DeleteMetaFLAC() {
 
 		if (preg_match('#(1|ON)#i', ini_get('safe_mode'))) {
@@ -184,6 +207,11 @@ class getid3_write_metaflac
 		return true;
 	}
 
+	/**
+	 * @param int $id3v2_picture_typeid
+	 *
+	 * @return int
+	 */
 	public function ID3v2toFLACpictureTypes($id3v2_picture_typeid) {
 		// METAFLAC picture type list is identical to ID3v2 picture type list (as least up to 0x14 "Publisher/Studio logotype")
 		// http://id3.org/id3v2.4.0-frames (section 4.14)
@@ -192,6 +220,11 @@ class getid3_write_metaflac
 		return (($id3v2_picture_typeid <= 0x14) ? $id3v2_picture_typeid : 3); // default: "3: Cover (front)"
 	}
 
+	/**
+	 * @param string $originalcommentname
+	 *
+	 * @return string
+	 */
 	public function CleanmetaflacName($originalcommentname) {
 		// A case-insensitive field name that may consist of ASCII 0x20 through 0x7D, 0x3D ('=') excluded.
 		// ASCII 0x41 through 0x5A inclusive (A-Z) is to be considered equivalent to ASCII 0x61 through

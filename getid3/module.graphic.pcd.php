@@ -1,4 +1,5 @@
 <?php
+
 /////////////////////////////////////////////////////////////////
 /// getID3() by James Heinrich <info@getid3.org>               //
 //  available at http://getid3.sourceforge.net                 //
@@ -19,6 +20,9 @@ class getid3_pcd extends getid3_handler
 {
 	public $ExtractData = 0;
 
+	/**
+	 * @return bool
+	 */
 	public function Analyze() {
 		$info = &$this->getid3->info;
 
@@ -73,11 +77,11 @@ class getid3_pcd extends getid3_handler
 
 				for ($x = 0; $x < $PCD_width; $x++) {
 					if ($PCDisVertical) {
-						$info['pcd']['data'][$PCD_width - $x][$y]     = $this->YCbCr2RGB(ord($PCD_data_Y1{$x}), ord($PCD_data_Cb{floor($x / 2)}), ord($PCD_data_Cr{floor($x / 2)}));
-						$info['pcd']['data'][$PCD_width - $x][$y + 1] = $this->YCbCr2RGB(ord($PCD_data_Y2{$x}), ord($PCD_data_Cb{floor($x / 2)}), ord($PCD_data_Cr{floor($x / 2)}));
+						$info['pcd']['data'][$PCD_width - $x][$y]     = $this->YCbCr2RGB(ord($PCD_data_Y1{$x}), ord($PCD_data_Cb{(int) floor($x / 2)}), ord($PCD_data_Cr{(int) floor($x / 2)}));
+						$info['pcd']['data'][$PCD_width - $x][$y + 1] = $this->YCbCr2RGB(ord($PCD_data_Y2{$x}), ord($PCD_data_Cb{(int) floor($x / 2)}), ord($PCD_data_Cr{(int) floor($x / 2)}));
 					} else {
-						$info['pcd']['data'][$y][$x]                  = $this->YCbCr2RGB(ord($PCD_data_Y1{$x}), ord($PCD_data_Cb{floor($x / 2)}), ord($PCD_data_Cr{floor($x / 2)}));
-						$info['pcd']['data'][$y + 1][$x]              = $this->YCbCr2RGB(ord($PCD_data_Y2{$x}), ord($PCD_data_Cb{floor($x / 2)}), ord($PCD_data_Cr{floor($x / 2)}));
+						$info['pcd']['data'][$y][$x]                  = $this->YCbCr2RGB(ord($PCD_data_Y1{$x}), ord($PCD_data_Cb{(int) floor($x / 2)}), ord($PCD_data_Cr{(int) floor($x / 2)}));
+						$info['pcd']['data'][$y + 1][$x]              = $this->YCbCr2RGB(ord($PCD_data_Y2{$x}), ord($PCD_data_Cb{(int) floor($x / 2)}), ord($PCD_data_Cr{(int) floor($x / 2)}));
 					}
 				}
 			}
@@ -99,6 +103,13 @@ class getid3_pcd extends getid3_handler
 
 	}
 
+	/**
+	 * @param int $Y
+	 * @param int $Cb
+	 * @param int $Cr
+	 *
+	 * @return int
+	 */
 	public function YCbCr2RGB($Y, $Cb, $Cr) {
 		static $YCbCr_constants = array();
 		if (empty($YCbCr_constants)) {

@@ -1,4 +1,5 @@
 <?php
+
 /////////////////////////////////////////////////////////////////
 /// getID3() by James Heinrich <info@getid3.org>               //
 //  available at http://getid3.sourceforge.net                 //
@@ -17,15 +18,36 @@
 
 class getid3_write_vorbiscomment
 {
-
+	/**
+	 * @var string
+	 */
 	public $filename;
+
+	/**
+	 * @var array
+	 */
 	public $tag_data;
-	public $warnings = array(); // any non-critical errors will be stored here
-	public $errors   = array(); // any critical errors will be stored here
+
+	/**
+	 * Any non-critical errors will be stored here.
+	 *
+	 * @var array
+	 */
+	public $warnings = array();
+
+	/**
+	 * Any critical errors will be stored here.
+	 *
+	 * @var array
+	 */
+	public $errors   = array();
 
 	public function __construct() {
 	}
 
+	/**
+	 * @return bool
+	 */
 	public function WriteVorbisComment() {
 
 		if (preg_match('#(1|ON)#i', ini_get('safe_mode'))) {
@@ -99,11 +121,19 @@ class getid3_write_vorbiscomment
 		return true;
 	}
 
+	/**
+	 * @return bool
+	 */
 	public function DeleteVorbisComment() {
 		$this->tag_data = array(array());
 		return $this->WriteVorbisComment();
 	}
 
+	/**
+	 * @param string $originalcommentname
+	 *
+	 * @return string
+	 */
 	public function CleanVorbisCommentName($originalcommentname) {
 		// A case-insensitive field name that may consist of ASCII 0x20 through 0x7D, 0x3D ('=') excluded.
 		// ASCII 0x41 through 0x5A inclusive (A-Z) is to be considered equivalent to ASCII 0x61 through

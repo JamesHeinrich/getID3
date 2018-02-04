@@ -1,4 +1,5 @@
 <?php
+
 /////////////////////////////////////////////////////////////////
 /// getID3() by James Heinrich <info@getid3.org>               //
 //  available at http://getid3.sourceforge.net                 //
@@ -19,16 +20,43 @@ getid3_lib::IncludeDependency(GETID3_INCLUDEPATH.'module.tag.apetag.php', __FILE
 
 class getid3_write_apetag
 {
-
+	/**
+	 * @var string
+	 */
 	public $filename;
+
+	/**
+	 * @var array
+	 */
 	public $tag_data;
-	public $always_preserve_replaygain = true;    // ReplayGain / MP3gain tags will be copied from old tag even if not passed in data
-	public $warnings                   = array(); // any non-critical errors will be stored here
-	public $errors                     = array(); // any critical errors will be stored here
+
+	/**
+	 * ReplayGain / MP3gain tags will be copied from old tag even if not passed in data.
+	 *
+	 * @var bool
+	 */
+	public $always_preserve_replaygain = true;
+
+	/**
+	 * Any non-critical errors will be stored here.
+	 *
+	 * @var array
+	 */
+	public $warnings                   = array();
+
+	/**
+	 * Any critical errors will be stored here.
+	 *
+	 * @var array
+	 */
+	public $errors                     = array();
 
 	public function __construct() {
 	}
 
+	/**
+	 * @return bool
+	 */
 	public function WriteAPEtag() {
 		// NOTE: All data passed to this function must be UTF-8 format
 
@@ -91,6 +119,9 @@ class getid3_write_apetag
 		return false;
 	}
 
+	/**
+	 * @return bool
+	 */
 	public function DeleteAPEtag() {
 		$getID3 = new getID3;
 		$ThisFileInfo = $getID3->analyze($this->filename);
@@ -124,7 +155,9 @@ class getid3_write_apetag
 		return true;
 	}
 
-
+	/**
+	 * @return string|false
+	 */
 	public function GenerateAPEtag() {
 		// NOTE: All data passed to this function must be UTF-8 format
 
@@ -159,6 +192,12 @@ class getid3_write_apetag
 		return $this->GenerateAPEtagHeaderFooter($items, true).implode('', $items).$this->GenerateAPEtagHeaderFooter($items, false);
 	}
 
+	/**
+	 * @param array $items
+	 * @param bool  $isheader
+	 *
+	 * @return string
+	 */
 	public function GenerateAPEtagHeaderFooter(&$items, $isheader=false) {
 		$tagdatalength = 0;
 		foreach ($items as $itemdata) {
@@ -175,6 +214,15 @@ class getid3_write_apetag
 		return $APEheader;
 	}
 
+	/**
+	 * @param bool $header
+	 * @param bool $footer
+	 * @param bool $isheader
+	 * @param int  $encodingid
+	 * @param bool $readonly
+	 *
+	 * @return string
+	 */
 	public function GenerateAPEtagFlags($header=true, $footer=true, $isheader=false, $encodingid=0, $readonly=false) {
 		$APEtagFlags = array_fill(0, 4, 0);
 		if ($header) {
@@ -200,6 +248,11 @@ class getid3_write_apetag
 		return chr($APEtagFlags[3]).chr($APEtagFlags[2]).chr($APEtagFlags[1]).chr($APEtagFlags[0]);
 	}
 
+	/**
+	 * @param string $itemkey
+	 *
+	 * @return string
+	 */
 	public function CleanAPEtagItemKey($itemkey) {
 		$itemkey = preg_replace("#[^\x20-\x7E]#i", '', $itemkey);
 

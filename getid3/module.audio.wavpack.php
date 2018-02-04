@@ -1,4 +1,5 @@
 <?php
+
 /////////////////////////////////////////////////////////////////
 /// getID3() by James Heinrich <info@getid3.org>               //
 //  available at http://getid3.sourceforge.net                 //
@@ -17,7 +18,9 @@
 
 class getid3_wavpack extends getid3_handler
 {
-
+	/**
+	 * @return bool
+	 */
 	public function Analyze() {
 		$info = &$this->getid3->info;
 
@@ -368,7 +371,11 @@ class getid3_wavpack extends getid3_handler
 		return true;
 	}
 
-
+	/**
+	 * @param int $id
+	 *
+	 * @return string
+	 */
 	public function WavPackMetablockNameLookup(&$id) {
 		static $WavPackMetablockNameLookup = array(
 			0x00 => 'Dummy',

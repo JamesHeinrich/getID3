@@ -1,4 +1,5 @@
 <?php
+
 /////////////////////////////////////////////////////////////////
 /// getID3() by James Heinrich <info@getid3.org>               //
 //  available at http://getid3.sourceforge.net                 //
@@ -17,7 +18,9 @@
 
 class getid3_dss extends getid3_handler
 {
-
+	/**
+	 * @return bool
+	 */
 	public function Analyze() {
 		$info = &$this->getid3->info;
 
@@ -71,6 +74,11 @@ class getid3_dss extends getid3_handler
 		return true;
 	}
 
+	/**
+	 * @param string $datestring
+	 *
+	 * @return int|false
+	 */
 	public function DSSdateStringToUnixDate($datestring) {
 		$y = substr($datestring,  0, 2);
 		$m = substr($datestring,  2, 2);
@@ -82,6 +90,11 @@ class getid3_dss extends getid3_handler
 		return mktime($h, $i, $s, $m, $d, $y);
 	}
 
+	/**
+	 * @param int $sample_rate_index
+	 *
+	 * @return int|false
+	 */
 	public function DSSsampleRateLookup($sample_rate_index) {
 		static $dssSampleRateLookup = array(
 			0x0A => 16000,

@@ -1,4 +1,5 @@
 <?php
+
 /////////////////////////////////////////////////////////////////
 /// getID3() by James Heinrich <info@getid3.org>               //
 //  available at http://getid3.sourceforge.net                 //
@@ -20,6 +21,9 @@ class getid3_id3v2 extends getid3_handler
 {
 	public $StartingOffset = 0;
 
+	/**
+	 * @return bool
+	 */
 	public function Analyze() {
 		$info = &$this->getid3->info;
 
@@ -502,7 +506,11 @@ class getid3_id3v2 extends getid3_handler
 		return true;
 	}
 
-
+	/**
+	 * @param string $genrestring
+	 *
+	 * @return array
+	 */
 	public function ParseID3v2GenreString($genrestring) {
 		// Parse genres into arrays of genreName and genreID
 		// ID3v2.2.x, ID3v2.3.x: '(21)' or '(4)Eurodisco' or '(51)(39)' or '(55)((I think...)'
@@ -544,7 +552,11 @@ class getid3_id3v2 extends getid3_handler
 		return $clean_genres;
 	}
 
-
+	/**
+	 * @param array $parsedFrame
+	 *
+	 * @return bool
+	 */
 	public function ParseID3v2Frame(&$parsedFrame) {
 
 		// shortcuts
@@ -2187,11 +2199,20 @@ class getid3_id3v2 extends getid3_handler
 		return true;
 	}
 
-
+	/**
+	 * @param string $data
+	 *
+	 * @return string
+	 */
 	public function DeUnsynchronise($data) {
 		return str_replace("\xFF\x00", "\xFF", $data);
 	}
 
+	/**
+	 * @param int $index
+	 *
+	 * @return string
+	 */
 	public function LookupExtendedHeaderRestrictionsTagSizeLimits($index) {
 		static $LookupExtendedHeaderRestrictionsTagSizeLimits = array(
 			0x00 => 'No more than 128 frames and 1 MB total tag size',
@@ -2202,6 +2223,11 @@ class getid3_id3v2 extends getid3_handler
 		return (isset($LookupExtendedHeaderRestrictionsTagSizeLimits[$index]) ? $LookupExtendedHeaderRestrictionsTagSizeLimits[$index] : '');
 	}
 
+	/**
+	 * @param int $index
+	 *
+	 * @return string
+	 */
 	public function LookupExtendedHeaderRestrictionsTextEncodings($index) {
 		static $LookupExtendedHeaderRestrictionsTextEncodings = array(
 			0x00 => 'No restrictions',
@@ -2210,6 +2236,11 @@ class getid3_id3v2 extends getid3_handler
 		return (isset($LookupExtendedHeaderRestrictionsTextEncodings[$index]) ? $LookupExtendedHeaderRestrictionsTextEncodings[$index] : '');
 	}
 
+	/**
+	 * @param int $index
+	 *
+	 * @return string
+	 */
 	public function LookupExtendedHeaderRestrictionsTextFieldSize($index) {
 		static $LookupExtendedHeaderRestrictionsTextFieldSize = array(
 			0x00 => 'No restrictions',
@@ -2220,6 +2251,11 @@ class getid3_id3v2 extends getid3_handler
 		return (isset($LookupExtendedHeaderRestrictionsTextFieldSize[$index]) ? $LookupExtendedHeaderRestrictionsTextFieldSize[$index] : '');
 	}
 
+	/**
+	 * @param int $index
+	 *
+	 * @return string
+	 */
 	public function LookupExtendedHeaderRestrictionsImageEncoding($index) {
 		static $LookupExtendedHeaderRestrictionsImageEncoding = array(
 			0x00 => 'No restrictions',
@@ -2228,6 +2264,11 @@ class getid3_id3v2 extends getid3_handler
 		return (isset($LookupExtendedHeaderRestrictionsImageEncoding[$index]) ? $LookupExtendedHeaderRestrictionsImageEncoding[$index] : '');
 	}
 
+	/**
+	 * @param int $index
+	 *
+	 * @return string
+	 */
 	public function LookupExtendedHeaderRestrictionsImageSizeSize($index) {
 		static $LookupExtendedHeaderRestrictionsImageSizeSize = array(
 			0x00 => 'No restrictions',
@@ -2238,6 +2279,11 @@ class getid3_id3v2 extends getid3_handler
 		return (isset($LookupExtendedHeaderRestrictionsImageSizeSize[$index]) ? $LookupExtendedHeaderRestrictionsImageSizeSize[$index] : '');
 	}
 
+	/**
+	 * @param string $currencyid
+	 *
+	 * @return string
+	 */
 	public function LookupCurrencyUnits($currencyid) {
 
 		$begin = __LINE__;
@@ -2434,7 +2480,11 @@ class getid3_id3v2 extends getid3_handler
 		return getid3_lib::EmbeddedLookup($currencyid, $begin, __LINE__, __FILE__, 'id3v2-currency-units');
 	}
 
-
+	/**
+	 * @param string $currencyid
+	 *
+	 * @return string
+	 */
 	public function LookupCurrencyCountry($currencyid) {
 
 		$begin = __LINE__;
@@ -2630,8 +2680,12 @@ class getid3_id3v2 extends getid3_handler
 		return getid3_lib::EmbeddedLookup($currencyid, $begin, __LINE__, __FILE__, 'id3v2-currency-country');
 	}
 
-
-
+	/**
+	 * @param string $languagecode
+	 * @param bool   $casesensitive
+	 *
+	 * @return string
+	 */
 	public static function LanguageLookup($languagecode, $casesensitive=false) {
 
 		if (!$casesensitive) {
@@ -3087,7 +3141,11 @@ class getid3_id3v2 extends getid3_handler
 		return getid3_lib::EmbeddedLookup($languagecode, $begin, __LINE__, __FILE__, 'id3v2-languagecode');
 	}
 
-
+	/**
+	 * @param int $index
+	 *
+	 * @return string
+	 */
 	public static function ETCOEventLookup($index) {
 		if (($index >= 0x17) && ($index <= 0xDF)) {
 			return 'reserved for future use';
@@ -3131,6 +3189,11 @@ class getid3_id3v2 extends getid3_handler
 		return (isset($EventLookup[$index]) ? $EventLookup[$index] : '');
 	}
 
+	/**
+	 * @param int $index
+	 *
+	 * @return string
+	 */
 	public static function SYTLContentTypeLookup($index) {
 		static $SYTLContentTypeLookup = array(
 			0x00 => 'other',
@@ -3147,6 +3210,12 @@ class getid3_id3v2 extends getid3_handler
 		return (isset($SYTLContentTypeLookup[$index]) ? $SYTLContentTypeLookup[$index] : '');
 	}
 
+	/**
+	 * @param int   $index
+	 * @param bool $returnarray
+	 *
+	 * @return array|string
+	 */
 	public static function APICPictureTypeLookup($index, $returnarray=false) {
 		static $APICPictureTypeLookup = array(
 			0x00 => 'Other',
@@ -3177,6 +3246,11 @@ class getid3_id3v2 extends getid3_handler
 		return (isset($APICPictureTypeLookup[$index]) ? $APICPictureTypeLookup[$index] : '');
 	}
 
+	/**
+	 * @param int $index
+	 *
+	 * @return string
+	 */
 	public static function COMRReceivedAsLookup($index) {
 		static $COMRReceivedAsLookup = array(
 			0x00 => 'Other',
@@ -3193,6 +3267,11 @@ class getid3_id3v2 extends getid3_handler
 		return (isset($COMRReceivedAsLookup[$index]) ? $COMRReceivedAsLookup[$index] : '');
 	}
 
+	/**
+	 * @param int $index
+	 *
+	 * @return string
+	 */
 	public static function RVA2ChannelTypeLookup($index) {
 		static $RVA2ChannelTypeLookup = array(
 			0x00 => 'Other',
@@ -3209,6 +3288,11 @@ class getid3_id3v2 extends getid3_handler
 		return (isset($RVA2ChannelTypeLookup[$index]) ? $RVA2ChannelTypeLookup[$index] : '');
 	}
 
+	/**
+	 * @param string $framename
+	 *
+	 * @return string
+	 */
 	public static function FrameNameLongLookup($framename) {
 
 		$begin = __LINE__;
@@ -3392,7 +3476,11 @@ class getid3_id3v2 extends getid3_handler
 		// from http://privatewww.essex.ac.uk/~djmrob/replaygain/file_format_id3v2.html
 	}
 
-
+	/**
+	 * @param string $framename
+	 *
+	 * @return string
+	 */
 	public static function FrameNameShortLookup($framename) {
 
 		$begin = __LINE__;
@@ -3572,6 +3660,11 @@ class getid3_id3v2 extends getid3_handler
 		return getid3_lib::EmbeddedLookup($framename, $begin, __LINE__, __FILE__, 'id3v2-framename_short');
 	}
 
+	/**
+	 * @param string $encoding
+	 *
+	 * @return string
+	 */
 	public static function TextEncodingTerminatorLookup($encoding) {
 		// http://www.id3.org/id3v2.4.0-structure.txt
 		// Frames that allow different types of text encoding contains a text encoding description byte. Possible encodings:
@@ -3585,6 +3678,11 @@ class getid3_id3v2 extends getid3_handler
 		return (isset($TextEncodingTerminatorLookup[$encoding]) ? $TextEncodingTerminatorLookup[$encoding] : "\x00");
 	}
 
+	/**
+	 * @param int $encoding
+	 *
+	 * @return string
+	 */
 	public static function TextEncodingNameLookup($encoding) {
 		// http://www.id3.org/id3v2.4.0-structure.txt
 		// Frames that allow different types of text encoding contains a text encoding description byte. Possible encodings:
@@ -3598,6 +3696,12 @@ class getid3_id3v2 extends getid3_handler
 		return (isset($TextEncodingNameLookup[$encoding]) ? $TextEncodingNameLookup[$encoding] : 'ISO-8859-1');
 	}
 
+	/**
+	 * @param string $framename
+	 * @param int    $id3v2majorversion
+	 *
+	 * @return bool|int
+	 */
 	public static function IsValidID3v2FrameName($framename, $id3v2majorversion) {
 		switch ($id3v2majorversion) {
 			case 2:
@@ -3612,6 +3716,13 @@ class getid3_id3v2 extends getid3_handler
 		return false;
 	}
 
+	/**
+	 * @param string $numberstring
+	 * @param bool   $allowdecimal
+	 * @param bool   $allownegative
+	 *
+	 * @return bool
+	 */
 	public static function IsANumber($numberstring, $allowdecimal=false, $allownegative=false) {
 		for ($i = 0; $i < strlen($numberstring); $i++) {
 			if ((chr($numberstring{$i}) < chr('0')) || (chr($numberstring{$i}) > chr('9'))) {
@@ -3627,6 +3738,11 @@ class getid3_id3v2 extends getid3_handler
 		return true;
 	}
 
+	/**
+	 * @param string $datestamp
+	 *
+	 * @return bool
+	 */
 	public static function IsValidDateStampString($datestamp) {
 		if (strlen($datestamp) != 8) {
 			return false;
@@ -3655,10 +3771,20 @@ class getid3_id3v2 extends getid3_handler
 		return true;
 	}
 
+	/**
+	 * @param int $majorversion
+	 *
+	 * @return int
+	 */
 	public static function ID3v2HeaderLength($majorversion) {
 		return (($majorversion == 2) ? 6 : 10);
 	}
 
+	/**
+	 * @param string $frame_name
+	 *
+	 * @return string|false
+	 */
 	public static function ID3v22iTunesBrokenFrameName($frame_name) {
 		// iTunes (multiple versions) has been known to write ID3v2.3 style frames
 		// but use ID3v2.2 frame names, right-padded using either [space] or [null]

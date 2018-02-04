@@ -1,4 +1,5 @@
 <?php
+
 /////////////////////////////////////////////////////////////////
 /// getID3() by James Heinrich <info@getid3.org>               //
 //  available at http://getid3.sourceforge.net                 //
@@ -17,7 +18,9 @@
 
 class getid3_id3v1 extends getid3_handler
 {
-
+	/**
+	 * @return bool
+	 */
 	public function Analyze() {
 		$info = &$this->getid3->info;
 
@@ -124,10 +127,20 @@ class getid3_id3v1 extends getid3_handler
 		return true;
 	}
 
+	/**
+	 * @param string $str
+	 *
+	 * @return string
+	 */
 	public static function cutfield($str) {
 		return trim(substr($str, 0, strcspn($str, "\x00")));
 	}
 
+	/**
+	 * @param bool $allowSCMPXextended
+	 *
+	 * @return string[]
+	 */
 	public static function ArrayOfGenres($allowSCMPXextended=false) {
 		static $GenreLookup = array(
 			0    => 'Blues',
@@ -312,6 +325,12 @@ class getid3_id3v1 extends getid3_handler
 		return ($allowSCMPXextended ? $GenreLookupSCMPX : $GenreLookup);
 	}
 
+	/**
+	 * @param string $genreid
+	 * @param bool   $allowSCMPXextended
+	 *
+	 * @return string|false
+	 */
 	public static function LookupGenreName($genreid, $allowSCMPXextended=true) {
 		switch ($genreid) {
 			case 'RX':
@@ -328,6 +347,12 @@ class getid3_id3v1 extends getid3_handler
 		return (isset($GenreLookup[$genreid]) ? $GenreLookup[$genreid] : false);
 	}
 
+	/**
+	 * @param string $genre
+	 * @param bool   $allowSCMPXextended
+	 *
+	 * @return string|false
+	 */
 	public static function LookupGenreID($genre, $allowSCMPXextended=false) {
 		$GenreLookup = self::ArrayOfGenres($allowSCMPXextended);
 		$LowerCaseNoSpaceSearchTerm = strtolower(str_replace(' ', '', $genre));
@@ -339,6 +364,11 @@ class getid3_id3v1 extends getid3_handler
 		return false;
 	}
 
+	/**
+	 * @param string $OriginalGenre
+	 *
+	 * @return string|false
+	 */
 	public static function StandardiseID3v1GenreName($OriginalGenre) {
 		if (($GenreID = self::LookupGenreID($OriginalGenre)) !== false) {
 			return self::LookupGenreName($GenreID);
@@ -346,6 +376,17 @@ class getid3_id3v1 extends getid3_handler
 		return $OriginalGenre;
 	}
 
+	/**
+	 * @param string     $title
+	 * @param string     $artist
+	 * @param string     $album
+	 * @param string     $year
+	 * @param int        $genreid
+	 * @param string     $comment
+	 * @param int|string $track
+	 *
+	 * @return string
+	 */
 	public static function GenerateID3v1Tag($title, $artist, $album, $year, $genreid, $comment, $track='') {
 		$ID3v1Tag  = 'TAG';
 		$ID3v1Tag .= str_pad(trim(substr($title,  0, 30)), 30, "\x00", STR_PAD_RIGHT);
