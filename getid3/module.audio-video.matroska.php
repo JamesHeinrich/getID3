@@ -1275,7 +1275,7 @@ class getid3_matroska extends getid3_handler
 	}
 
 	/**
-	 * @return int
+	 * @return int|float|false
 	 */
 	private function readEBMLint() {
 		$actual_offset = $this->current_offset - $this->EBMLbuffer_offset;

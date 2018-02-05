@@ -617,7 +617,7 @@ class getid3_lib
 	/**
 	 * @param int $macdate
 	 *
-	 * @return int
+	 * @return int|float
 	 */
 	public static function DateMac2Unix($macdate) {
 		// Macintosh timestamp: seconds since 00:00h January 1, 1904
