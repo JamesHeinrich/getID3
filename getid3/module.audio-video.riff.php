@@ -2704,7 +2704,7 @@ class getid3_riff extends getid3_handler
 	 * @param string $byteword
 	 * @param bool   $signed
 	 *
-	 * @return int
+	 * @return int|float|false
 	 */
 	private function EitherEndian2Int($byteword, $signed=false) {
 		if ($this->container == 'riff') {

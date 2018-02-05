@@ -1512,7 +1512,7 @@ class getid3_matroska extends getid3_handler
 	/**
 	 * @param string $EBMLstring
 	 *
-	 * @return int
+	 * @return int|float|false
 	 */
 	private static function EBML2Int($EBMLstring) {
 		// http://matroska.org/specs/
@@ -1871,6 +1871,7 @@ class getid3_matroska extends getid3_handler
 	 */
 	private static function getDefaultStreamInfo($streams)
 	{
+		$stream = array();
 		foreach (array_reverse($streams) as $stream) {
 			if ($stream['default']) {
 				break;

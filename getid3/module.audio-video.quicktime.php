@@ -2552,7 +2552,7 @@ class getid3_quicktime extends getid3_handler
 
 	/**
 	 * @param string $keyname
-	 * @param string $data
+	 * @param string|array $data
 	 * @param string $boxname
 	 *
 	 * @return bool
