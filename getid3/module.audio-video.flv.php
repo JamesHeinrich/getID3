@@ -521,7 +521,7 @@ class AMFStream
 	}
 
 	/**
-	 * @return float
+	 * @return float|false
 	 */
 	public function peekDouble() {
 		$pos = $this->pos;
@@ -639,7 +639,7 @@ class AMFReader
 	}
 
 	/**
-	 * @return float
+	 * @return float|false
 	 */
 	public function readDouble() {
 		return $this->stream->readDouble();
@@ -719,7 +719,7 @@ class AMFReader
 	}
 
 	/**
-	 * @return float
+	 * @return float|false
 	 */
 	public function readDate() {
 		$timestamp = $this->stream->readDouble();
