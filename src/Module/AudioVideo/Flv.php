@@ -440,7 +440,7 @@ class AMFStream
 	}
 
 	/**
-	 * @return int
+	 * @return int|float|false
 	 */
 	public function readByte() {
 		return Utils::BigEndian2Int(substr($this->bytes, $this->pos++, 1));
@@ -461,7 +461,7 @@ class AMFStream
 	}
 
 	/**
-	 * @return float
+	 * @return float|false
 	 */
 	public function readDouble() {
 		return Utils::BigEndian2Float($this->read(8));

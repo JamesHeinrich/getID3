@@ -297,7 +297,7 @@ class WriteTags
 			switch ($tagformat) {
 				case 'ape':
 					$ape_writer = new Write\ApeTag;
-					if (($ape_writer->tag_data = $this->FormatDataForAPE()) !== false) {
+					if ($ape_writer->tag_data = $this->FormatDataForAPE()) {
 						$ape_writer->filename = $this->filename;
 						if (($success = $ape_writer->WriteAPEtag()) === false) {
 							$this->errors[] = 'WriteAPEtag() failed with message(s):<pre><ul><li>'.str_replace("\n", '</li><li>', htmlentities(trim(implode("\n", $ape_writer->errors)))).'</li></ul></pre>';
@@ -309,7 +309,7 @@ class WriteTags
 
 				case 'id3v1':
 					$id3v1_writer = new Write\ID3v1;
-					if (($id3v1_writer->tag_data = $this->FormatDataForID3v1()) !== false) {
+					if ($id3v1_writer->tag_data = $this->FormatDataForID3v1()) {
 						$id3v1_writer->filename = $this->filename;
 						if (($success = $id3v1_writer->WriteID3v1()) === false) {
 							$this->errors[] = 'WriteID3v1() failed with message(s):<pre><ul><li>'.str_replace("\n", '</li><li>', htmlentities(trim(implode("\n", $id3v1_writer->errors)))).'</li></ul></pre>';
@@ -325,7 +325,9 @@ class WriteTags
 					$id3v2_writer = new Write\ID3v2;
 					$id3v2_writer->majorversion = intval(substr($tagformat, -1));
 					$id3v2_writer->paddedlength = $this->id3v2_paddedlength;
-					if (($id3v2_writer->tag_data = $this->FormatDataForID3v2($id3v2_writer->majorversion)) !== false) {
+					if (($id3v2_writer_tag_data = $this->FormatDataForID3v2($id3v2_writer->majorversion)) !== false) {
+						$id3v2_writer->tag_data = $id3v2_writer_tag_data;
+						unset($id3v2_writer_tag_data);
 						$id3v2_writer->filename = $this->filename;
 						if (($success = $id3v2_writer->WriteID3v2()) === false) {
 							$this->errors[] = 'WriteID3v2() failed with message(s):<pre><ul><li>'.str_replace("\n", '</li><li>', htmlentities(trim(implode("\n", $id3v2_writer->errors)))).'</li></ul></pre>';
@@ -337,7 +339,7 @@ class WriteTags
 
 				case 'vorbiscomment':
 					$vorbiscomment_writer = new Write\VorbisComment;
-					if (($vorbiscomment_writer->tag_data = $this->FormatDataForVorbisComment()) !== false) {
+					if ($vorbiscomment_writer->tag_data = $this->FormatDataForVorbisComment()) {
 						$vorbiscomment_writer->filename = $this->filename;
 						if (($success = $vorbiscomment_writer->WriteVorbisComment()) === false) {
 							$this->errors[] = 'WriteVorbisComment() failed with message(s):<pre><ul><li>'.str_replace("\n", '</li><li>', htmlentities(trim(implode("\n", $vorbiscomment_writer->errors)))).'</li></ul></pre>';
@@ -349,7 +351,7 @@ class WriteTags
 
 				case 'metaflac':
 					$metaflac_writer = new Write\MetaFlac;
-					if (($metaflac_writer->tag_data = $this->FormatDataForMetaFLAC()) !== false) {
+					if ($metaflac_writer->tag_data = $this->FormatDataForMetaFLAC()) {
 						$metaflac_writer->filename = $this->filename;
 						if (($success = $metaflac_writer->WriteMetaFLAC()) === false) {
 							$this->errors[] = 'WriteMetaFLAC() failed with message(s):<pre><ul><li>'.str_replace("\n", '</li><li>', htmlentities(trim(implode("\n", $metaflac_writer->errors)))).'</li></ul></pre>';
@@ -361,7 +363,7 @@ class WriteTags
 
 				case 'real':
 					$real_writer = new Write\Real;
-					if (($real_writer->tag_data = $this->FormatDataForReal()) !== false) {
+					if ($real_writer->tag_data = $this->FormatDataForReal()) {
 						$real_writer->filename = $this->filename;
 						if (($success = $real_writer->WriteReal()) === false) {
 							$this->errors[] = 'WriteReal() failed with message(s):<pre><ul><li>'.str_replace("\n", '</li><li>', htmlentities(trim(implode("\n", $real_writer->errors)))).'</li></ul></pre>';

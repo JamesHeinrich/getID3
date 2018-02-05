@@ -2556,7 +2556,7 @@ class QuickTime extends Handler
 
 	/**
 	 * @param string $keyname
-	 * @param string $data
+	 * @param string|array $data
 	 * @param string $boxname
 	 *
 	 * @return bool

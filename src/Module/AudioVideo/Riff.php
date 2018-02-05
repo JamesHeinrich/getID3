@@ -2702,7 +2702,7 @@ class Riff extends Handler
 	 * @param string $byteword
 	 * @param bool   $signed
 	 *
-	 * @return int
+	 * @return int|float|false
 	 */
 	private function EitherEndian2Int($byteword, $signed=false) {
 		if ($this->container == 'riff') {

@@ -231,9 +231,9 @@ class Utils
 	}
 
 	/**
-	 * @param float $floatnum
+	 * @param int|float $floatnum
 	 *
-	 * @return int
+	 * @return int|float
 	 */
 	public static function CastAsInt($floatnum) {
 		// convert to float if not already
@@ -385,7 +385,7 @@ class Utils
 	/**
 	 * @param string $byteword
 	 *
-	 * @return float
+	 * @return float|false
 	 */
 	public static function LittleEndian2Float($byteword) {
 		return self::BigEndian2Float(strrev($byteword));
@@ -1632,7 +1632,7 @@ class Utils
 		if ($signbit == 1) {
 			$adjustment *= -1;
 		}
-		return (float) $adjustment;
+		return $adjustment;
 	}
 
 	/**

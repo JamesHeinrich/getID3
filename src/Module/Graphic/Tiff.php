@@ -192,7 +192,7 @@ class Tiff extends Handler
 	 * @param string $bytestring
 	 * @param string $byteorder
 	 *
-	 * @return int|false
+	 * @return int|float|false
 	 */
 	public function TIFFendian2Int($bytestring, $byteorder) {
 		if ($byteorder == 'Intel') {
