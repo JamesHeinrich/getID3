@@ -7,5 +7,4 @@ parameters:
         - '#Function rar_(open|list|close) not found#'
         - '#Function mysql_(\w+) not found#'
         - '#Constant GETID3_HELPERAPPSDIR not found#'
-        - '#Constant GETID3_INCLUDEPATH not found#'
         - '#Constant GETID3_ASF_(\w+) not found#'

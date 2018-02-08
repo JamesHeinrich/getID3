@@ -343,7 +343,8 @@ class getid3_writetags
 					$id3v2_writer = new getid3_write_id3v2;
 					$id3v2_writer->majorversion = intval(substr($tagformat, -1));
 					$id3v2_writer->paddedlength = $this->id3v2_paddedlength;
-					if (($id3v2_writer_tag_data = $this->FormatDataForID3v2($id3v2_writer->majorversion)) !== false) {
+					$id3v2_writer_tag_data = $this->FormatDataForID3v2($id3v2_writer->majorversion);
+					if ($id3v2_writer_tag_data !== false) {
 						$id3v2_writer->tag_data = $id3v2_writer_tag_data;
 						unset($id3v2_writer_tag_data);
 						$id3v2_writer->filename = $this->filename;
@@ -535,6 +536,7 @@ class getid3_writetags
 	 * @return array
 	 */
 	public function FormatDataForID3v1() {
+		$tag_data_id3v1            = array();
 		$tag_data_id3v1['genreid'] = 255;
 		if (!empty($this->tag_data['GENRE'])) {
 			foreach ($this->tag_data['GENRE'] as $key => $value) {

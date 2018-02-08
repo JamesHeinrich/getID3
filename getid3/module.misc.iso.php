@@ -301,6 +301,8 @@ class getid3_iso extends getid3_handler
 
 			$DirectoryRecordData .= $this->fread(ord($DirectoryRecordData{0}) - 1);
 
+			$ThisDirectoryRecord = array();
+
 			$ThisDirectoryRecord['raw']['length']                    = getid3_lib::LittleEndian2Int(substr($DirectoryRecordData,  0, 1));
 			$ThisDirectoryRecord['raw']['extended_attribute_length'] = getid3_lib::LittleEndian2Int(substr($DirectoryRecordData,  1, 1));
 			$ThisDirectoryRecord['raw']['offset_logical']            = getid3_lib::LittleEndian2Int(substr($DirectoryRecordData,  2, 4));
