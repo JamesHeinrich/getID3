@@ -1492,7 +1492,7 @@ class getid3_lib
 	 * @return float
 	 */
 	public static function RGADadjustmentLookup($rawadjustment, $signbit) {
-		$adjustment = $rawadjustment / 10;
+		$adjustment = (float) $rawadjustment / 10;
 		if ($signbit == 1) {
 			$adjustment *= -1;
 		}
