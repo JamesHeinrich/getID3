@@ -304,6 +304,8 @@ class Iso extends Handler
 
 			$DirectoryRecordData .= $this->fread(ord($DirectoryRecordData{0}) - 1);
 
+			$ThisDirectoryRecord = array();
+
 			$ThisDirectoryRecord['raw']['length']                    = Utils::LittleEndian2Int(substr($DirectoryRecordData,  0, 1));
 			$ThisDirectoryRecord['raw']['extended_attribute_length'] = Utils::LittleEndian2Int(substr($DirectoryRecordData,  1, 1));
 			$ThisDirectoryRecord['raw']['offset_logical']            = Utils::LittleEndian2Int(substr($DirectoryRecordData,  2, 4));

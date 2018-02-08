@@ -156,6 +156,8 @@ class Lyrics3 extends Handler
 		}
 		$rawdata = $this->fread($length);
 
+		$ParsedLyrics3 = array();
+
 		$ParsedLyrics3['raw']['lyrics3version'] = $version;
 		$ParsedLyrics3['raw']['lyrics3tagsize'] = $length;
 		$ParsedLyrics3['tag_offset_start']      = $endoffset;

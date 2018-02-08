@@ -624,6 +624,8 @@ class Riff extends Handler
 				$thisfile_video['bitrate_mode'] = 'vbr'; // maybe not, but probably
 				$thisfile_video['dataformat']   = 'avi';
 
+				$thisfile_riff_video_current = array();
+
 				if (isset($thisfile_riff[$RIFFsubtype]['movi']['offset'])) {
 					$info['avdataoffset'] = $thisfile_riff[$RIFFsubtype]['movi']['offset'] + 8;
 					if (isset($thisfile_riff['AVIX'])) {
@@ -712,6 +714,7 @@ class Riff extends Handler
 
 					// shortcut
 					$thisfile_riff_video[$streamindex] = array();
+                    /** @var array $thisfile_riff_video_current */
 					$thisfile_riff_video_current = &$thisfile_riff_video[$streamindex];
 
 					if ($thisfile_riff_raw_avih['dwWidth'] > 0) {
@@ -1902,6 +1905,7 @@ class Riff extends Handler
 	 */
 	public static function parseWAVEFORMATex($WaveFormatExData) {
 		// shortcut
+		$WaveFormatEx        = array();
 		$WaveFormatEx['raw'] = array();
 		$WaveFormatEx_raw    = &$WaveFormatEx['raw'];
 
