@@ -816,6 +816,10 @@ class QuickTime extends Handler
 									case 'yuv2':
 										$info['fileformat'] = 'mp4';
 										$info['video']['fourcc'] = $atom_structure['sample_description_table'][$i]['data_format'];
+										if ($this->QuicktimeVideoCodecLookup($info['video']['fourcc'])) {
+											$info['video']['fourcc_lookup'] = $this->QuicktimeVideoCodecLookup($info['video']['fourcc']);
+										}
+
 										// http://www.getid3.org/phpBB3/viewtopic.php?t=1550
 										//if ((!empty($atom_structure['sample_description_table'][$i]['width']) && !empty($atom_structure['sample_description_table'][$i]['width'])) && (empty($info['video']['resolution_x']) || empty($info['video']['resolution_y']) || (number_format($info['video']['resolution_x'], 6) != number_format(round($info['video']['resolution_x']), 6)) || (number_format($info['video']['resolution_y'], 6) != number_format(round($info['video']['resolution_y']), 6)))) { // ugly check for floating point numbers
 										if (!empty($atom_structure['sample_description_table'][$i]['width']) && !empty($atom_structure['sample_description_table'][$i]['height'])) {
