@@ -170,6 +170,9 @@ class QuickTime extends Handler
 		if (isset($info['bitrate']) && !isset($info['audio']['bitrate']) && !isset($info['quicktime']['video'])) {
 			$info['audio']['bitrate'] = $info['bitrate'];
 		}
+		if (!empty($info['bitrate']) && !empty($info['audio']['bitrate']) && empty($info['video']['bitrate']) && !empty($info['video']['frame_rate']) && !empty($info['video']['resolution_x']) && ($info['bitrate'] > $info['audio']['bitrate'])) {
+			$info['video']['bitrate'] = $info['bitrate'] - $info['audio']['bitrate'];
+		}
 		if (!empty($info['playtime_seconds']) && !isset($info['video']['frame_rate']) && !empty($info['quicktime']['stts_framecount'])) {
 			foreach ($info['quicktime']['stts_framecount'] as $key => $samples_count) {
 				$samples_per_second = $samples_count / $info['playtime_seconds'];
@@ -848,7 +851,14 @@ class QuickTime extends Handler
 										switch ($atom_structure['sample_description_table'][$i]['data_format']) {
 											case 'raw ': // PCM
 											case 'alac': // Apple Lossless Audio Codec
+											case 'sowt': // signed/two's complement (Little Endian)
+											case 'twos': // signed/two's complement (Big Endian)
+											case 'in24': // 24-bit Integer
+											case 'in32': // 32-bit Integer
+											case 'fl32': // 32-bit Floating Point
+											case 'fl64': // 64-bit Floating Point
 												$info['audio']['lossless'] = true;
+												$info['audio']['bitrate'] = $info['audio']['channels'] * $info['audio']['bits_per_sample'] * $info['audio']['sample_rate'];
 												break;
 											default:
 												$info['audio']['lossless'] = false;
