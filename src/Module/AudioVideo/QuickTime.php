@@ -857,8 +857,8 @@ class QuickTime extends Handler
 											case 'in32': // 32-bit Integer
 											case 'fl32': // 32-bit Floating Point
 											case 'fl64': // 64-bit Floating Point
-												$info['audio']['lossless'] = true;
-												$info['audio']['bitrate'] = $info['audio']['channels'] * $info['audio']['bits_per_sample'] * $info['audio']['sample_rate'];
+												$info['audio']['lossless'] = $info['quicktime']['audio']['lossless'] = true;
+												$info['audio']['bitrate']  = $info['quicktime']['audio']['bitrate']  = $info['audio']['channels'] * $info['audio']['bits_per_sample'] * $info['audio']['sample_rate'];
 												break;
 											default:
 												$info['audio']['lossless'] = false;
