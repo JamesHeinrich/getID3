@@ -129,8 +129,8 @@ class Mpeg extends Handler
 						}
 					}
 
-					$info['mpeg']['video']['pixel_aspect_ratio']      =     self::videoAspectRatioLookup($info['mpeg']['video']['raw']['aspect_ratio_information']);
-					$info['mpeg']['video']['pixel_aspect_ratio_text'] = self::videoAspectRatioTextLookup($info['mpeg']['video']['raw']['aspect_ratio_information']);
+					$info['mpeg']['video']['pixel_aspect_ratio']      =     self::videoAspectRatioLookup($info['mpeg']['video']['raw']['aspect_ratio_information']); // may be overridden later if file turns out to be MPEG-2
+					$info['mpeg']['video']['pixel_aspect_ratio_text'] = self::videoAspectRatioTextLookup($info['mpeg']['video']['raw']['aspect_ratio_information']); // may be overridden later if file turns out to be MPEG-2
 					$info['mpeg']['video']['frame_rate']              =       self::videoFramerateLookup($info['mpeg']['video']['raw']['frame_rate_code']);
 					if ($info['mpeg']['video']['raw']['bitrate'] == 0x3FFFF) { // 18 set bits = VBR
 						//$this->warning('This version of getID3() ['.$this->getid3->version().'] cannot determine average bitrate of VBR MPEG video files');
@@ -152,7 +152,13 @@ class Mpeg extends Handler
 				case 0xB5: // extension_start_code
 					$info['video']['codec'] = 'MPEG-2';
 
-					$bitstream = Utils::BigEndian2Bin(substr($MPEGstreamData, $StartCodeOffset + 4, 8)); // 48 bits for Sequence Extension ID; 61 bits for Sequence Display Extension ID; 59 bits for Sequence Scalable Extension ID
+					if (isset($info['mpeg']['video']['raw']['aspect_ratio_information'])) {
+						// MPEG-2 defines the aspect ratio flag differently from MPEG-1, but the MPEG-2 extension start code may occur after we've already looked up the aspect ratio assuming it was MPEG-1, so re-lookup assuming MPEG-2
+						$info['mpeg']['video']['pixel_aspect_ratio']      =     self::videoAspectRatioLookup($info['mpeg']['video']['raw']['aspect_ratio_information'], 2);
+						$info['mpeg']['video']['pixel_aspect_ratio_text'] = self::videoAspectRatioTextLookup($info['mpeg']['video']['raw']['aspect_ratio_information'], 2);
+					}
+
+					$bitstream = getid3_lib::BigEndian2Bin(substr($MPEGstreamData, $StartCodeOffset + 4, 8)); // 48 bits for Sequence Extension ID; 61 bits for Sequence Display Extension ID; 59 bits for Sequence Scalable Extension ID
 					$bitstreamoffset = 0;
 
 					$info['mpeg']['video']['raw']['extension_start_code_identifier'] = self::readBitsFromStream($bitstream, $bitstreamoffset,  4); //  4 bits for extension_start_code_identifier
@@ -590,7 +596,7 @@ echo 'average_File_bitrate = '.number_format(array_sum($vbr_bitrates) / count($v
 	 */
 	public static function videoFramerateLookup($rawframerate) {
 		$lookup = array(0, 23.976, 24, 25, 29.97, 30, 50, 59.94, 60);
-		return (isset($lookup[$rawframerate]) ? (float) $lookup[$rawframerate] : (float) 0);
+		return (float) (isset($lookup[$rawframerate]) ? $lookup[$rawframerate] : 0);
 	}
 
 	/**
@@ -598,9 +604,12 @@ echo 'average_File_bitrate = '.number_format(array_sum($vbr_bitrates) / count($v
 	 *
 	 * @return float
 	 */
-	public static function videoAspectRatioLookup($rawaspectratio) {
-		$lookup = array(0, 1, 0.6735, 0.7031, 0.7615, 0.8055, 0.8437, 0.8935, 0.9157, 0.9815, 1.0255, 1.0695, 1.0950, 1.1575, 1.2015, 0);
-		return (isset($lookup[$rawaspectratio]) ? (float) $lookup[$rawaspectratio] : (float) 0);
+	public static function videoAspectRatioLookup($rawaspectratio, $mpeg_version=1) {
+		$lookup = array(
+			1 => array(0, 1, 0.6735, 0.7031, 0.7615, 0.8055, 0.8437, 0.8935, 0.9157, 0.9815, 1.0255, 1.0695, 1.0950, 1.1575, 1.2015, 0),
+			2 => array(0, 1, 1.3333, 1.7778, 2.2100, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0),
+		);
+		return (float) (isset($lookup[$rawaspectratio][$mpeg_version]) ? $lookup[$rawaspectratio][$mpeg_version] : 0);
 	}
 
 	/**
@@ -608,9 +617,12 @@ echo 'average_File_bitrate = '.number_format(array_sum($vbr_bitrates) / count($v
 	 *
 	 * @return string
 	 */
-	public static function videoAspectRatioTextLookup($rawaspectratio) {
-		$lookup = array('forbidden', 'square pixels', '0.6735', '16:9, 625 line, PAL', '0.7615', '0.8055', '16:9, 525 line, NTSC', '0.8935', '4:3, 625 line, PAL, CCIR601', '0.9815', '1.0255', '1.0695', '4:3, 525 line, NTSC, CCIR601', '1.1575', '1.2015', 'reserved');
-		return (isset($lookup[$rawaspectratio]) ? $lookup[$rawaspectratio] : '');
+	public static function videoAspectRatioTextLookup($rawaspectratio, $mpeg_version=1) {
+		$lookup = array(
+			1 => array('forbidden', 'square pixels', '0.6735', '16:9, 625 line, PAL', '0.7615', '0.8055', '16:9, 525 line, NTSC', '0.8935', '4:3, 625 line, PAL, CCIR601', '0.9815', '1.0255', '1.0695', '4:3, 525 line, NTSC, CCIR601', '1.1575', '1.2015', 'reserved'),
+			2 => array('forbidden', 'square pixels', '4:3', '16:9', '1.21:1', 'reserved', 'reserved', 'reserved', 'reserved', 'reserved', 'reserved', 'reserved', 'reserved', 'reserved', 'reserved', 'reserved'), // http://dvd.sourceforge.net/dvdinfo/mpeghdrs.html
+		);
+		return (isset($lookup[$rawaspectratio][$mpeg_version]) ? $lookup[$rawaspectratio][$mpeg_version] : '');
 	}
 
 	/**
