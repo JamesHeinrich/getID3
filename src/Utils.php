@@ -1722,6 +1722,10 @@ class Utils
 			$ImageTypesLookup[12] = 'jb2';
 			$ImageTypesLookup[13] = 'swc';
 			$ImageTypesLookup[14] = 'iff';
+			$ImageTypesLookup[15] = 'wbmp';
+			$ImageTypesLookup[16] = 'xbm';
+			$ImageTypesLookup[17] = 'ico';
+			$ImageTypesLookup[18] = 'webp';
 		}
 		return (isset($ImageTypesLookup[$imagetypeid]) ? $ImageTypesLookup[$imagetypeid] : '');
 	}
