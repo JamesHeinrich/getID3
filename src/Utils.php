@@ -1701,36 +1701,6 @@ class Utils
 	}
 
 	/**
-	 * @param int $imagetypeid
-	 *
-	 * @return string
-	 */
-	public static function ImageTypesLookup($imagetypeid) {
-		static $ImageTypesLookup = array();
-		if (empty($ImageTypesLookup)) {
-			$ImageTypesLookup[1]  = 'gif';
-			$ImageTypesLookup[2]  = 'jpeg';
-			$ImageTypesLookup[3]  = 'png';
-			$ImageTypesLookup[4]  = 'swf';
-			$ImageTypesLookup[5]  = 'psd';
-			$ImageTypesLookup[6]  = 'bmp';
-			$ImageTypesLookup[7]  = 'tiff (little-endian)';
-			$ImageTypesLookup[8]  = 'tiff (big-endian)';
-			$ImageTypesLookup[9]  = 'jpc';
-			$ImageTypesLookup[10] = 'jp2';
-			$ImageTypesLookup[11] = 'jpx';
-			$ImageTypesLookup[12] = 'jb2';
-			$ImageTypesLookup[13] = 'swc';
-			$ImageTypesLookup[14] = 'iff';
-			$ImageTypesLookup[15] = 'wbmp';
-			$ImageTypesLookup[16] = 'xbm';
-			$ImageTypesLookup[17] = 'ico';
-			$ImageTypesLookup[18] = 'webp';
-		}
-		return (isset($ImageTypesLookup[$imagetypeid]) ? $ImageTypesLookup[$imagetypeid] : '');
-	}
-
-	/**
 	 * @param array $ThisFileInfo
 	 *
 	 * @return bool
