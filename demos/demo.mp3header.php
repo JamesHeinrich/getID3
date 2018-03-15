@@ -42,7 +42,7 @@ if (!function_exists('table_var_dump')) {
 						require_once(GETID3_INCLUDEPATH.'getid3.getimagesize.php');
 						$imageinfo = array();
 						if ($imagechunkcheck = GetDataImageSize($value, $imageinfo)) {
-							$DumpedImageSRC = (!empty($_REQUEST['filename']) ? $_REQUEST['filename'] : '.getid3').'.'.$variable['dataoffset'].'.'.ImageTypesLookup($imagechunkcheck[2]);
+							$DumpedImageSRC = (!empty($_REQUEST['filename']) ? $_REQUEST['filename'] : '.getid3').'.'.$variable['dataoffset'].'.'.image_type_to_mime_type($imagechunkcheck[2]);
 							if ($tempimagefile = fopen($DumpedImageSRC, 'wb')) {
 								fwrite($tempimagefile, $value);
 								fclose($tempimagefile);
@@ -91,7 +91,7 @@ if (!function_exists('table_var_dump')) {
 				$imageinfo = array();
 				if (($imagechunkcheck = GetDataImageSize(substr($variable, 0, 32768), $imageinfo)) && ($imagechunkcheck[2] >= 1) && ($imagechunkcheck[2] <= 3)) {
 					$returnstring .= '<table border="1" cellspacing="0" cellpadding="2">';
-					$returnstring .= '<tr><td><b>type</b></td><td>'.ImageTypesLookup($imagechunkcheck[2]).'</td></tr>';
+					$returnstring .= '<tr><td><b>type</b></td><td>'.image_type_to_mime_type($imagechunkcheck[2]).'</td></tr>';
 					$returnstring .= '<tr><td><b>width</b></td><td>'.number_format($imagechunkcheck[0]).' px</td></tr>';
 					$returnstring .= '<tr><td><b>height</b></td><td>'.number_format($imagechunkcheck[1]).' px</td></tr>';
 					$returnstring .= '<tr><td><b>size</b></td><td>'.number_format(strlen($variable)).' bytes</td></tr></table>';
