@@ -1449,7 +1449,7 @@ class ID3v2 extends Handler
 				$imageinfo = array();
 				if ($imagechunkcheck = Utils::GetDataImageSize($parsedFrame['data'], $imageinfo)) {
 					if (($imagechunkcheck[2] >= 1) && ($imagechunkcheck[2] <= 3)) {
-						$parsedFrame['image_mime']       = 'image/'.Utils::ImageTypesLookup($imagechunkcheck[2]);
+						$parsedFrame['image_mime']       = image_type_to_mime_type($imagechunkcheck[2]);
 						if ($imagechunkcheck[0]) {
 							$parsedFrame['image_width']  = $imagechunkcheck[0];
 						}
