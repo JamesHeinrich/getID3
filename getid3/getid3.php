@@ -252,7 +252,7 @@ class getID3
 	 */
 	protected $startup_warning = '';
 
-	const VERSION           = '1.9.15-201803150911';
+	const VERSION           = '1.9.15-201803161257';
 	const FREAD_BUFFER_SIZE = 32768;
 
 	const ATTACHMENTS_NONE   = false;
@@ -1977,6 +1977,9 @@ abstract class getid3_handler
 		*/
 		$contents = '';
 		do {
+			if ($this->getid3->memory_limit && ($bytes > $this->getid3->memory_limit)) {
+				throw new getid3_exception('cannot fread('.$bytes.' from '.$this->ftell().') that is more than available PHP memory', 10);
+			}
 			$part = fread($this->getid3->fp, $bytes);
 			$partLength  = strlen($part);
 			$bytes      -= $partLength;
