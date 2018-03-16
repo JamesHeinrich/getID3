@@ -1745,16 +1745,16 @@ class QuickTime extends Handler
 
 				case 'loci':// 3GP location (El Loco)
 					$loffset = 0;
-					$info['quicktime']['comments']['gps_flags']     =   Utils::BigEndian2Int(substr($atom_data, 0, 4));
-					$info['quicktime']['comments']['gps_lang']      =   Utils::BigEndian2Int(substr($atom_data, 4, 2));
-					$info['quicktime']['comments']['gps_location']  =           $this->LociString(substr($atom_data, 6), $loffset);
+					$info['quicktime']['comments']['gps_flags']     = array(  Utils::BigEndian2Int(substr($atom_data, 0, 4)));
+					$info['quicktime']['comments']['gps_lang']      = array(  Utils::BigEndian2Int(substr($atom_data, 4, 2)));
+					$info['quicktime']['comments']['gps_location']  = array(          $this->LociString(substr($atom_data, 6), $loffset));
 					$loci_data = substr($atom_data, 6 + $loffset);
-					$info['quicktime']['comments']['gps_role']      =   Utils::BigEndian2Int(substr($loci_data, 0, 1));
-					$info['quicktime']['comments']['gps_longitude'] = Utils::FixedPoint16_16(substr($loci_data, 1, 4));
-					$info['quicktime']['comments']['gps_latitude']  = Utils::FixedPoint16_16(substr($loci_data, 5, 4));
-					$info['quicktime']['comments']['gps_altitude']  = Utils::FixedPoint16_16(substr($loci_data, 9, 4));
-					$info['quicktime']['comments']['gps_body']      =           $this->LociString(substr($loci_data, 13           ), $loffset);
-					$info['quicktime']['comments']['gps_notes']     =           $this->LociString(substr($loci_data, 13 + $loffset), $loffset);
+					$info['quicktime']['comments']['gps_role']      = array(  Utils::BigEndian2Int(substr($loci_data, 0, 1)));
+					$info['quicktime']['comments']['gps_longitude'] = array(Utils::FixedPoint16_16(substr($loci_data, 1, 4)));
+					$info['quicktime']['comments']['gps_latitude']  = array(Utils::FixedPoint16_16(substr($loci_data, 5, 4)));
+					$info['quicktime']['comments']['gps_altitude']  = array(Utils::FixedPoint16_16(substr($loci_data, 9, 4)));
+					$info['quicktime']['comments']['gps_body']      = array(          $this->LociString(substr($loci_data, 13           ), $loffset));
+					$info['quicktime']['comments']['gps_notes']     = array(          $this->LociString(substr($loci_data, 13 + $loffset), $loffset));
 					break;
 
 				case 'chpl': // CHaPter List
