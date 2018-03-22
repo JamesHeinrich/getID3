@@ -336,7 +336,7 @@ class getID3
 	 *
 	 * @return bool
 	 *
-	 * @throws getid3_exception
+	 * @throws Exception
 	 */
 	public function openfile($filename, $filesize=null) {
 		try {

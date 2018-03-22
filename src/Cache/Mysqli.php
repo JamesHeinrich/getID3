@@ -76,12 +76,12 @@ use JamesHeinrich\GetID3\GetID3;
 class Mysqli extends GetID3
 {
 	/**
-	 * @var mysqli
+	 * @var \mysqli
 	 */
 	private $mysqli;
 
 	/**
-	 * @var mysqli_result
+	 * @var \mysqli_result
 	 */
 	private $cursor;
 
@@ -100,8 +100,8 @@ class Mysqli extends GetID3
 	 * @param string $password
 	 * @param string $table
 	 *
+	 * @throws \Exception
 	 * @throws Exception
-	 * @throws getid3_exception
 	 */
 	public function __construct($host, $database, $username, $password, $table='getid3_cache') {
 

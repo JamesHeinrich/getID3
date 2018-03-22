@@ -39,7 +39,7 @@ class Riff extends Handler
 	/**
 	 * @return bool
 	 *
-	 * @throws getid3_exception
+	 * @throws Exception
 	 */
 	public function Analyze() {
 		$info = &$this->getid3->info;
@@ -1388,8 +1388,8 @@ class Riff extends Handler
 	 *
 	 * @return array|false
 	 *
+	 * @throws \Exception
 	 * @throws Exception
-	 * @throws getid3_exception
 	 */
 	public function ParseRIFFAMV($startoffset, $maxoffset) {
 		// AMV files are RIFF-AVI files with parts of the spec deliberately broken, such as chunk size fields hardcoded to zero (because players known in hardware that these fields are always a certain size
@@ -1503,7 +1503,7 @@ class Riff extends Handler
 	 * @param int $maxoffset
 	 *
 	 * @return array|false
-	 * @throws getid3_exception
+	 * @throws Exception
 	 */
 	public function ParseRIFF($startoffset, $maxoffset) {
 		$info = &$this->getid3->info;

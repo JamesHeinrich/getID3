@@ -102,8 +102,8 @@ class Dbm extends GetID3
 	 * @param string $dbm_filename
 	 * @param string $lock_filename
 	 *
+	 * @throws \Exception
 	 * @throws Exception
-	 * @throws getid3_exception
 	 */
 	public function __construct($cache_type, $dbm_filename, $lock_filename) {
 

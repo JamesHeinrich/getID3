@@ -100,8 +100,8 @@ class Mysql extends GetID3
 	 * @param string $password
 	 * @param string $table
 	 *
+	 * @throws \Exception
 	 * @throws Exception
-	 * @throws getid3_exception
 	 */
 	public function __construct($host, $database, $username, $password, $table='getid3_cache') {
 

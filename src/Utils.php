@@ -886,7 +886,7 @@ class Utils
 	}
 
 	/**
-	* @param SimpleXMLElement|array $XMLobject
+	* @param \SimpleXMLElement|array $XMLobject
 	*
 	* @return array
 	*/
@@ -894,7 +894,7 @@ class Utils
 		if (!is_object($XMLobject) && !is_array($XMLobject)) {
 			return $XMLobject;
 		}
-		$XMLarray = $XMLobject instanceof SimpleXMLElement ? get_object_vars($XMLobject) : $XMLobject;
+		$XMLarray = $XMLobject instanceof \SimpleXMLElement ? get_object_vars($XMLobject) : $XMLobject;
 		foreach ($XMLarray as $key => $value) {
 			$XMLarray[$key] = self::SimpleXMLelement2array($value);
 		}
@@ -912,8 +912,8 @@ class Utils
 	 * @param string $algorithm
 	 *
 	 * @return string|false
+	 * @throws \Exception
 	 * @throws Exception
-	 * @throws getid3_exception
 	 */
 	public static function hash_data($file, $offset, $end, $algorithm) {
 		$windows_call = null;

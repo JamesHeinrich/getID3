@@ -2,6 +2,7 @@
 
 namespace JamesHeinrich\GetID3\Cache;
 
+use JamesHeinrich\GetID3\Exception;
 use JamesHeinrich\GetID3\GetID3;
 
 /////////////////////////////////////////////////////////////////////////////////
@@ -119,7 +120,7 @@ class Sqlite3 extends GetID3 {
 	 * @param string  $table holds name of sqlite table
 	 * @param boolean $hide
 	 *
-	 * @throws getid3_exception
+	 * @throws Exception
 	 */
 	public function __construct($table='getid3_cache', $hide=false) {
 		$this->table = $table; // Set table
