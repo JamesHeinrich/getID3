@@ -149,7 +149,7 @@ if (isset($_REQUEST['filename'])) {
 		while ($file = readdir($handle)) {
 			$currentfilename = $listdirectory.'/'.$file;
 			set_time_limit(30); // allocate another 30 seconds to process this file - should go much quicker than this unless intense processing (like bitrate histogram analysis) is enabled
-			echo ' .'; // progress indicator dot
+			echo ' <span title="'.htmlentities($file, ENT_QUOTES).'">.</span>'; // progress indicator dot
 			flush();  // make sure the dot is shown, otherwise it's useless
 			switch ($file) {
 				case '..':

@@ -1801,6 +1801,34 @@ class getid3_quicktime extends getid3_handler
 					}
 					break;
 
+				case 'frea':
+					// https://www.sno.phy.queensu.ca/~phil/exiftool/TagNames/Kodak.html#frea
+					// may contain "scra" (PreviewImage) and/or "thma" (ThumbnailImage)
+					$atom_structure['subatoms'] = $this->QuicktimeParseContainerAtom($atom_data, $baseoffset + 4, $atomHierarchy, $ParseAllPossibleAtoms);
+					break;
+				case 'tima': // subatom to "frea"
+					// no idea what this does, the one sample file I've seen has a value of 0x00000027
+					$atom_structure['data'] = $atom_data;
+					break;
+				case 'ver ': // subatom to "frea"
+					// some kind of version number, the one sample file I've seen has a value of "3.00.073"
+					$atom_structure['data'] = $atom_data;
+					break;
+				case 'thma': // subatom to "frea" -- "ThumbnailImage"
+					// https://www.sno.phy.queensu.ca/~phil/exiftool/TagNames/Kodak.html#frea
+					if (strlen($atom_data) > 0) {
+						$info['quicktime']['comments']['picture'][] = array('data'=>$atom_data, 'image_mime'=>'image/jpeg');
+					}
+					break;
+				case 'scra': // subatom to "frea" -- "PreviewImage"
+					// https://www.sno.phy.queensu.ca/~phil/exiftool/TagNames/Kodak.html#frea
+					// but the only sample file I've seen has no useful data here
+					if (strlen($atom_data) > 0) {
+						$info['quicktime']['comments']['picture'][] = array('data'=>$atom_data, 'image_mime'=>'image/jpeg');
+					}
+					break;
+
+
 				default:
 					$this->warning('Unknown QuickTime atom type: "'.preg_replace('#[^a-zA-Z0-9 _\\-]#', '?', $atomname).'" ('.trim(getid3_lib::PrintHexBytes($atomname)).'), '.$atomsize.' bytes at offset '.$baseoffset);
 					$atom_structure['data'] = $atom_data;
