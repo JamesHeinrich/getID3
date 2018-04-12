@@ -1572,7 +1572,7 @@ function MPEGaudioCRCLookup($CRCbit) {
 /////////////////////////////////////////////////////////////////
 /// getID3() by James Heinrich <info@getid3.org>               //
 //  available at http://getid3.sourceforge.net                ///
-//            or http://www.getid3.org                        ///
+//            or https://www.getid3.org                       ///
 /////////////////////////////////////////////////////////////////
 //                                                             //
 // getid3.mp3.php - part of getID3()                           //

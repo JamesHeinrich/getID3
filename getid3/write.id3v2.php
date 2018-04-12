@@ -3,7 +3,7 @@
 /////////////////////////////////////////////////////////////////
 /// getID3() by James Heinrich <info@getid3.org>               //
 //  available at http://getid3.sourceforge.net                 //
-//            or http://www.getid3.org                         //
+//            or https://www.getid3.org                        //
 //          also https://github.com/JamesHeinrich/getID3       //
 /////////////////////////////////////////////////////////////////
 // See readme.txt for more details                             //
@@ -2082,7 +2082,7 @@ class getid3_write_id3v2
 			}
 		}
 		// 2016-06-08: relax URL checking to avoid falsely rejecting valid URLs, leave URL validation to the user
-		// http://www.getid3.org/phpBB3/viewtopic.php?t=1926
+		// https://www.getid3.org/phpBB3/viewtopic.php?t=1926
 		return true;
 		/*
 		if ($parts = $this->safe_parse_url($url)) {

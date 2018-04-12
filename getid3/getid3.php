@@ -3,7 +3,7 @@
 /////////////////////////////////////////////////////////////////
 /// getID3() by James Heinrich <info@getid3.org>               //
 //  available at http://getid3.sourceforge.net                 //
-//            or http://www.getid3.org                         //
+//            or https://www.getid3.org                        //
 //          also https://github.com/JamesHeinrich/getID3       //
 /////////////////////////////////////////////////////////////////
 //                                                             //
@@ -28,7 +28,7 @@ if (!defined('ENT_SUBSTITUTE')) { // PHP5.3 adds ENT_IGNORE, PHP5.4 adds ENT_SUB
 }
 
 /*
-http://www.getid3.org/phpBB3/viewtopic.php?t=2114
+https://www.getid3.org/phpBB3/viewtopic.php?t=2114
 If you are running into a the problem where filenames with special characters are being handled
 incorrectly by external helper programs (e.g. metaflac), notably with the special characters removed,
 and you are passing in the filename in UTF8 (typically via a HTML form), try uncommenting this line:
@@ -433,7 +433,7 @@ class getID3
 			//$filename = preg_replace('#(?<!gs:)('.preg_quote(DIRECTORY_SEPARATOR).'{2,})#', DIRECTORY_SEPARATOR, $filename);
 
 			// open local file
-			//if (is_readable($filename) && is_file($filename) && ($this->fp = fopen($filename, 'rb'))) { // see http://www.getid3.org/phpBB3/viewtopic.php?t=1720
+			//if (is_readable($filename) && is_file($filename) && ($this->fp = fopen($filename, 'rb'))) { // see https://www.getid3.org/phpBB3/viewtopic.php?t=1720
 			if ((is_readable($filename) || file_exists($filename)) && is_file($filename) && ($this->fp = fopen($filename, 'rb'))) {
 				// great
 			} else {
@@ -1969,7 +1969,7 @@ abstract class getid3_handler
 
 		//return fread($this->getid3->fp, $bytes);
 		/*
-		* http://www.getid3.org/phpBB3/viewtopic.php?t=1930
+		* https://www.getid3.org/phpBB3/viewtopic.php?t=1930
 		* "I found out that the root cause for the problem was how getID3 uses the PHP system function fread().
 		* It seems to assume that fread() would always return as many bytes as were requested.
 		* However, according the PHP manual (http://php.net/manual/en/function.fread.php), this is the case only with regular local files, but not e.g. with Linux pipes.
