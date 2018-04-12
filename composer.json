@@ -5,8 +5,7 @@
     "keywords": ["php","tags","codecs"],
     "type": "library",
     "license": ["GPL-1.0-or-later", "LGPL-3.0-only", "MPL-2.0"],
-    "require":
-    {
+    "require": {
         "php": ">=5.3.0"
     },
     "require-dev": {
@@ -20,5 +19,10 @@
     },
     "autoload": {
         "classmap": ["getid3/"]
+    },
+    "extra": {
+        "branch-alias": {
+            "dev-master": "1.9.x-dev"
+        }
     }
 }
