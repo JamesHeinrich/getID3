@@ -1,7 +1,7 @@
 /////////////////////////////////////////////////////////////////
 /// getID3() by James Heinrich <info@getid3.org>               //
 //  available at http://getid3.sourceforge.net                 //
-//            or http://www.getid3.org                         //
+//            or https://www.getid3.org                        //
 //          also https://github.com/JamesHeinrich/getID3       //
 /////////////////////////////////////////////////////////////////
 //                                                             //
@@ -574,7 +574,7 @@ Version History
     » Tagwriter requires metaflac 1.1.1+ in order to write FLAC tags.
     » Removed broken and non-fixable tagwriting module for real format.
     ! Developers please help fix the above module:
-      http://www.getid3.org/phpBB3/viewtopic.php?t=677
+      https://www.getid3.org/phpBB3/viewtopic.php?t=677
     » Avoided security issues with demo.browse.php, demo.write.php and
       demo.mysql.php. These demos are now disabled by default and has
       to be enabled in the source.
@@ -1438,7 +1438,7 @@ Version History
 
 
 1.6.2: [May-04-2003] James Heinrich
-   » New official mirror site for getID3() - http://www.getid3.org
+   » New official mirror site for getID3() - https://www.getid3.org
    » Added basic support for SWF (Flash)  (thanks n8n8Øyahoo*com)
      New file: getid3.swf.php
    » Added experimental support for parsing the audio portion of

@@ -3,7 +3,7 @@
 /////////////////////////////////////////////////////////////////
 /// getID3() by James Heinrich <info@getid3.org>               //
 //  available at http://getid3.sourceforge.net                 //
-//            or http://www.getid3.org                         //
+//            or https://www.getid3.org                        //
 //          also https://github.com/JamesHeinrich/getID3       //
 /////////////////////////////////////////////////////////////////
 // See readme.txt for more details                             //
@@ -829,7 +829,7 @@ class getid3_id3v2 extends getid3_handler
 			$parsedFrame['encoding']   = $this->TextEncodingNameLookup($parsedFrame['encodingid']);
 			$parsedFrame['data_raw']   = (string) substr($parsedFrame['data'], $frame_offset);
 
-			// http://www.getid3.org/phpBB3/viewtopic.php?t=1369
+			// https://www.getid3.org/phpBB3/viewtopic.php?t=1369
 			// "this tag typically contains null terminated strings, which are associated in pairs"
 			// "there are users that use the tag incorrectly"
 			$IPLS_parts = array();

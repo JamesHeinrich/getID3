@@ -2,7 +2,7 @@
 /////////////////////////////////////////////////////////////////
 /// getID3() by James Heinrich <info@getid3.org>               //
 //  available at http://getid3.sourceforge.net                 //
-//            or http://www.getid3.org                         //
+//            or https://www.getid3.org                        //
 //          also https://github.com/JamesHeinrich/getID3       //
 /////////////////////////////////////////////////////////////////
 //                                                             //
@@ -603,7 +603,7 @@ function MoreNaturalSort($ar1, $ar2) {
 function PoweredBygetID3($string='') {
 	global $getID3;
 	if (!$string) {
-		$string = '<div style="border: 1px #CCCCCC solid; padding: 5px; margin: 5px 0; float: left; background-color: #EEEEEE; font-size: 8pt; font-family: sans-serif;">Powered by <a href="http://www.getid3.org/"><b>getID3() v<!--GETID3VER--></b><br>http://www.getid3.org/</a><br>Running on PHP v'.PHP_VERSION.' ('.(8 * PHP_INT_SIZE).'-bit, '.(defined('PHP_OS_FAMILY') ? PHP_OS_FAMILY : PHP_OS).')</div>';
+		$string = '<div style="border: 1px #CCCCCC solid; padding: 5px; margin: 5px 0; float: left; background-color: #EEEEEE; font-size: 8pt; font-family: sans-serif;">Powered by <a href="https://www.getid3.org/"><b>getID3() v<!--GETID3VER--></b><br>https://www.getid3.org/</a><br>Running on PHP v'.PHP_VERSION.' ('.(8 * PHP_INT_SIZE).'-bit, '.(defined('PHP_OS_FAMILY') ? PHP_OS_FAMILY : PHP_OS).')</div>';
 	}
 	return str_replace('<!--GETID3VER-->', $getID3->version(), $string);
 }

@@ -3,7 +3,7 @@
 /////////////////////////////////////////////////////////////////
 /// getID3() by James Heinrich <info@getid3.org>               //
 //  available at http://getid3.sourceforge.net                 //
-//            or http://www.getid3.org                         //
+//            or https://www.getid3.org                        //
 //          also https://github.com/JamesHeinrich/getID3       //
 /////////////////////////////////////////////////////////////////
 // See readme.txt for more details                             //
@@ -223,7 +223,7 @@ class getid3_quicktime extends getid3_handler
 
 		$info = &$this->getid3->info;
 
-		$atom_parent = end($atomHierarchy); // not array_pop($atomHierarchy); see http://www.getid3.org/phpBB3/viewtopic.php?t=1717
+		$atom_parent = end($atomHierarchy); // not array_pop($atomHierarchy); see https://www.getid3.org/phpBB3/viewtopic.php?t=1717
 		array_push($atomHierarchy, $atomname);
 		$atom_structure['hierarchy'] = implode(' ', $atomHierarchy);
 		$atom_structure['name']      = $atomname;
@@ -819,7 +819,7 @@ class getid3_quicktime extends getid3_handler
 											$info['video']['fourcc_lookup'] = $this->QuicktimeVideoCodecLookup($info['video']['fourcc']);
 										}
 
-										// http://www.getid3.org/phpBB3/viewtopic.php?t=1550
+										// https://www.getid3.org/phpBB3/viewtopic.php?t=1550
 										//if ((!empty($atom_structure['sample_description_table'][$i]['width']) && !empty($atom_structure['sample_description_table'][$i]['width'])) && (empty($info['video']['resolution_x']) || empty($info['video']['resolution_y']) || (number_format($info['video']['resolution_x'], 6) != number_format(round($info['video']['resolution_x']), 6)) || (number_format($info['video']['resolution_y'], 6) != number_format(round($info['video']['resolution_y']), 6)))) { // ugly check for floating point numbers
 										if (!empty($atom_structure['sample_description_table'][$i]['width']) && !empty($atom_structure['sample_description_table'][$i]['height'])) {
 											// assume that values stored here are more important than values stored in [tkhd] atom
@@ -1311,7 +1311,7 @@ class getid3_quicktime extends getid3_handler
 					$atom_structure['creation_time_unix']  = getid3_lib::DateMac2Unix($atom_structure['creation_time']);
 					$atom_structure['modify_time_unix']    = getid3_lib::DateMac2Unix($atom_structure['modify_time']);
 
-					// http://www.getid3.org/phpBB3/viewtopic.php?t=1908
+					// https://www.getid3.org/phpBB3/viewtopic.php?t=1908
 					// attempt to compute rotation from matrix values
 					// 2017-Dec-28: uncertain if 90/270 are correctly oriented; values returned by FixedPoint16_16 should perhaps be -1 instead of 65535(?)
 					if (!isset($info['video']['rotate'])) {
@@ -1334,7 +1334,7 @@ class getid3_quicktime extends getid3_handler
 						$info['quicktime']['video']['resolution_x'] = $info['video']['resolution_x'];
 						$info['quicktime']['video']['resolution_y'] = $info['video']['resolution_y'];
 					} else {
-						// see: http://www.getid3.org/phpBB3/viewtopic.php?t=1295
+						// see: https://www.getid3.org/phpBB3/viewtopic.php?t=1295
 						//if (isset($info['video']['resolution_x'])) { unset($info['video']['resolution_x']); }
 						//if (isset($info['video']['resolution_y'])) { unset($info['video']['resolution_y']); }
 						//if (isset($info['quicktime']['video']))    { unset($info['quicktime']['video']);    }
@@ -1529,7 +1529,7 @@ class getid3_quicktime extends getid3_handler
 				case 'code':
 				case 'FIEL': // this is NOT "fiel" (Field Ordering) as describe here: http://developer.apple.com/documentation/QuickTime/QTFF/QTFFChap3/chapter_4_section_2.html
 				case 'tapt': // TrackApertureModeDimensionsAID - http://developer.apple.com/documentation/QuickTime/Reference/QT7-1_Update_Reference/Constants/Constants.html
-							// tapt seems to be used to compute the video size [http://www.getid3.org/phpBB3/viewtopic.php?t=838]
+							// tapt seems to be used to compute the video size [https://www.getid3.org/phpBB3/viewtopic.php?t=838]
 							// * http://lists.apple.com/archives/quicktime-api/2006/Aug/msg00014.html
 							// * http://handbrake.fr/irclogs/handbrake-dev/handbrake-dev20080128_pg2.html
 				case 'ctts'://  STCompositionOffsetAID             - http://developer.apple.com/documentation/QuickTime/Reference/QTRef_Constants/Reference/reference.html
@@ -1783,7 +1783,7 @@ class getid3_quicktime extends getid3_handler
 
 				case 'dscp':
 				case 'rcif':
-					// http://www.getid3.org/phpBB3/viewtopic.php?t=1908
+					// https://www.getid3.org/phpBB3/viewtopic.php?t=1908
 					if (substr($atom_data, 0, 7) == "\x00\x00\x00\x00\x55\xC4".'{') {
 						if ($json_decoded = @json_decode(rtrim(substr($atom_data, 6), "\x00"), true)) {
 							$info['quicktime']['camera'][$atomname] = $json_decoded;
@@ -2695,8 +2695,8 @@ class getid3_quicktime extends getid3_handler
 			$handyatomtranslatorarray['MusicBrainz Disc Id']         = 'MusicBrainz Disc Id';
 
 			// http://age.hobba.nl/audio/tag_frame_reference.html
-			$handyatomtranslatorarray['PLAY_COUNTER']                = 'play_counter'; // Foobar2000 - http://www.getid3.org/phpBB3/viewtopic.php?t=1355
-			$handyatomtranslatorarray['MEDIATYPE']                   = 'mediatype';    // Foobar2000 - http://www.getid3.org/phpBB3/viewtopic.php?t=1355
+			$handyatomtranslatorarray['PLAY_COUNTER']                = 'play_counter'; // Foobar2000 - https://www.getid3.org/phpBB3/viewtopic.php?t=1355
+			$handyatomtranslatorarray['MEDIATYPE']                   = 'mediatype';    // Foobar2000 - https://www.getid3.org/phpBB3/viewtopic.php?t=1355
 			*/
 		}
 		$info = &$this->getid3->info;
