@@ -161,7 +161,11 @@ class getid3_mp3 extends getid3_handler
 
 		// Calculate playtime
 		if (!isset($info['playtime_seconds']) && isset($info['audio']['bitrate']) && ($info['audio']['bitrate'] > 0)) {
-			$info['playtime_seconds'] = ($info['avdataend'] - $info['avdataoffset']) * 8 / $info['audio']['bitrate'];
+			// https://github.com/JamesHeinrich/getID3/issues/161
+			// VBR header frame contains ~0.026s of silent audio data, but is not actually part of the original encoding and should be ignored
+			$xingVBRheaderFrameLength = ((isset($info['mpeg']['audio']['VBR_frames']) && isset($info['mpeg']['audio']['framelength'])) ? $info['mpeg']['audio']['framelength'] : 0);
+
+			$info['playtime_seconds'] = ($info['avdataend'] - $info['avdataoffset'] - $xingVBRheaderFrameLength) * 8 / $info['audio']['bitrate'];
 		}
 
 		$info['audio']['encoder_options'] = $this->GuessEncoderOptions();
@@ -583,7 +587,7 @@ class getid3_mp3 extends getid3_handler
 
 			$thisfile_mpeg_audio['bitrate_mode'] = 'vbr';
 			$thisfile_mpeg_audio['VBR_method']   = 'Fraunhofer';
-			$info['audio']['codec']                = 'Fraunhofer';
+			$info['audio']['codec']              = 'Fraunhofer';
 
 			$SideInfoData = substr($headerstring, 4 + 2, 32);
 
