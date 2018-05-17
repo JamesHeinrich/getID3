@@ -6,7 +6,7 @@
 //          also https://github.com/JamesHeinrich/getID3       //
 /////////////////////////////////////////////////////////////////
 //                                                             //
-// /demo/demo.browse.php - part of getID3()                     //
+// /demo/demo.browse.php - part of getID3()                    //
 // Sample script for browsing/scanning files and displaying    //
 // information returned by getID3()                            //
 // See readme.txt for more details                             //

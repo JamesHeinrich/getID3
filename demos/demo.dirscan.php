@@ -1,18 +1,18 @@
 <?php
-/////////////////////////////////////////////////////////////////////////////////
-/// getID3() by James Heinrich <info@getid3.org>                               //
-//  available at http://getid3.sourceforge.net                                 //
-//            or https://www.getid3.org                                        //
-//          also https://github.com/JamesHeinrich/getID3                       //
-/////////////////////////////////////////////////////////////////////////////////
-///                                                                            //
-// demo.dirscan.php - tool for batch media file processing with getID3()       //
-//                                                                            ///
-/////////////////////////////////////////////////////////////////////////////////
-///                                                                            //
-//  Directory Scanning and Caching CLI tool by Karl G. Holz <newaeonØmac*com>  //
-//                                                                            ///
-/////////////////////////////////////////////////////////////////////////////////
+/////////////////////////////////////////////////////////////////
+/// getID3() by James Heinrich <info@getid3.org>               //
+//  available at http://getid3.sourceforge.net                 //
+//            or https://www.getid3.org                        //
+//          also https://github.com/JamesHeinrich/getID3       //
+/////////////////////////////////////////////////////////////////
+//                                                             //
+// /demo/demo.dirscan.php - part of getID3()                   //
+// Directory Scanning and Caching CLI tool for batch media     //
+//   file processing with getID3()                             //
+//  by Karl G. Holz <newaeonØmac*com>                          //
+//                                                            ///
+/////////////////////////////////////////////////////////////////
+
 /**
 * This is a directory scanning and caching cli tool for getID3().
 *
