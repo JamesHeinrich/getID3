@@ -69,7 +69,7 @@ class getid3_ogg extends getid3_handler
 
 		} elseif (substr($filedata, 0, 8) == 'OpusHead') {
 
-			if( $this->ParseOpusPageHeader($filedata, $filedataoffset, $oggpageinfo) == false ) {
+			if ($this->ParseOpusPageHeader($filedata, $filedataoffset, $oggpageinfo) === false) {
 				return false;
 			}
 
@@ -477,7 +477,7 @@ class getid3_ogg extends getid3_handler
 		$info['ogg']['pageheader']['opus']['pre_skip'] = getid3_lib::LittleEndian2Int(substr($filedata, $filedataoffset,  2));
 		$filedataoffset += 2;
 
-		$info['ogg']['pageheader']['opus']['sample_rate'] = getid3_lib::LittleEndian2Int(substr($filedata, $filedataoffset,  4));
+		$info['ogg']['pageheader']['opus']['input_sample_rate'] = getid3_lib::LittleEndian2Int(substr($filedata, $filedataoffset,  4));
 		$filedataoffset += 4;
 
 		//$info['ogg']['pageheader']['opus']['output_gain'] = getid3_lib::LittleEndian2Int(substr($filedata, $filedataoffset,  2));
@@ -486,12 +486,13 @@ class getid3_ogg extends getid3_handler
 		//$info['ogg']['pageheader']['opus']['channel_mapping_family'] = getid3_lib::LittleEndian2Int(substr($filedata, $filedataoffset,  1));
 		//$filedataoffset += 1;
 
-		$info['opus']['opus_version']      = $info['ogg']['pageheader']['opus']['version'];
-		$info['opus']['sample_rate']       = $info['ogg']['pageheader']['opus']['sample_rate'];
-		$info['opus']['out_channel_count'] = $info['ogg']['pageheader']['opus']['out_channel_count'];
+		$info['opus']['opus_version']       = $info['ogg']['pageheader']['opus']['version'];
+		$info['opus']['sample_rate_input']  = $info['ogg']['pageheader']['opus']['input_sample_rate'];
+		$info['opus']['out_channel_count']  = $info['ogg']['pageheader']['opus']['out_channel_count'];
 
-		$info['audio']['channels']      = $info['opus']['out_channel_count'];
-		$info['audio']['sample_rate']   = $info['opus']['sample_rate'];
+		$info['audio']['channels']          = $info['opus']['out_channel_count'];
+		$info['audio']['sample_rate_input'] = $info['opus']['sample_rate_input'];
+		$info['audio']['sample_rate']       = 48000; // "All Opus audio is coded at 48 kHz, and should also be decoded at 48 kHz for playback (unless the target hardware does not support this sampling rate). However, this field may be used to resample the audio back to the original sampling rate, for example, when saving the output to a file." -- https://mf4.xiph.org/jenkins/view/opus/job/opusfile-unix/ws/doc/html/structOpusHead.html
 		return true;
 	}
 
