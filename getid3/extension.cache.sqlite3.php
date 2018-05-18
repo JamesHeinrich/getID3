@@ -1,22 +1,26 @@
 <?php
-
-/////////////////////////////////////////////////////////////////////////////////
-/// getID3() by James Heinrich <info@getid3.org>                               //
-//  available at http://getid3.sourceforge.net                                 //
-//            or https://www.getid3.org                                        //
-//          also https://github.com/JamesHeinrich/getID3                       //
-/////////////////////////////////////////////////////////////////////////////////
-///                                                                            //
-// extension.cache.sqlite3.php - part of getID3()                              //
-// Please see readme.txt for more information                                  //
-//                                                                            ///
-/////////////////////////////////////////////////////////////////////////////////
-///                                                                            //
-// MySQL extension written by Allan Hansen <ahØartemis*dk>                     //
-// Table name mod by Carlo Capocasa <calroØcarlocapocasa*com>                  //
-// MySQL extension was reworked for SQLite3 by Karl G. Holz <newaeonØmac*com>  //
-//                                                                            ///
-/////////////////////////////////////////////////////////////////////////////////
+/////////////////////////////////////////////////////////////////
+/// getID3() by James Heinrich <info@getid3.org>               //
+//  available at https://github.com/JamesHeinrich/getID3       //
+//            or https://www.getid3.org                        //
+//            or http://getid3.sourceforge.net                 //
+//                                                             //
+// extension.cache.mysqli.php - part of getID3()               //
+// Please see readme.txt for more information                  //
+//                                                             //
+/////////////////////////////////////////////////////////////////
+//                                                             //
+// extension.cache.sqlite3.php - part of getID3()              //
+// Please see readme.txt for more information                  //
+//                                                             //
+/////////////////////////////////////////////////////////////////
+///                                                            //
+// MySQL extension written by Allan Hansen <ahØartemis*dk>     //
+// Table name mod by Carlo Capocasa <calroØcarlocapocasa*com>  //
+// MySQL extension was reworked for SQLite3 by                 //
+//   Karl G. Holz <newaeonØmac*com>                            //
+//                                                            ///
+/////////////////////////////////////////////////////////////////
 
 /**
 * This is a caching extension for getID3(). It works the exact same
