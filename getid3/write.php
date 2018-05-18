@@ -148,6 +148,20 @@ class getid3_writetags
 			$this->errors[] = 'tagformats must be an array in getid3_writetags';
 			return false;
 		}
+		// prevent duplicate tag formats
+		$this->tagformats = array_unique($this->tagformats);
+
+		// prevent trying to specify more than one version of ID3v2 tag to write simultaneously
+		$id3typecounter = 0;
+		foreach ($this->tagformats as $tagformat) {
+			if (substr(strtolower($tagformat), 0, 6) == 'id3v2.') {
+				$id3typecounter++;
+			}
+		}
+		if ($id3typecounter > 1) {
+			$this->errors[] = 'tagformats must not contain more than one version of ID3v2';
+			return false;
+		}
 
 		$TagFormatsToRemove = array();
 		$AllowedTagFormats = array();
