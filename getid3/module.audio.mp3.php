@@ -482,7 +482,6 @@ class getid3_mp3 extends getid3_handler
 		}
 		$thisfile_mpeg_audio = &$info['mpeg']['audio'];
 
-
 		if ($MPEGaudioHeaderValidCache[$head4_key]) {
 			$thisfile_mpeg_audio['raw'] = $MPEGheaderRawArray;
 		} else {
@@ -1568,7 +1567,7 @@ class getid3_mp3 extends getid3_handler
 								}
 							}
 							$synchstartoffset = $scan_start_offset[$current_segment];
-							while ($this->decodeMPEGaudioHeader($synchstartoffset, $dummy, false, false, $FastMode)) {
+							while (($synchstartoffset < $info['avdataend']) && $this->decodeMPEGaudioHeader($synchstartoffset, $dummy, false, false, $FastMode)) {
 								$FastMode = true;
 								$thisframebitrate = $MPEGaudioBitrateLookup[$MPEGaudioVersionLookup[$dummy['mpeg']['audio']['raw']['version']]][$MPEGaudioLayerLookup[$dummy['mpeg']['audio']['raw']['layer']]][$dummy['mpeg']['audio']['raw']['bitrate']];
 
