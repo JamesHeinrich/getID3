@@ -95,6 +95,7 @@ class getid3_gif extends getid3_handler
 		}
 
 		// Image Descriptor
+		$info['gif']['animation']['animated'] = false;
 		while (!feof($this->getid3->fp)) {
 			$NextBlockTest = $this->fread(1);
 			switch ($NextBlockTest) {
