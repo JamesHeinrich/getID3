@@ -1691,9 +1691,9 @@ class getid3_quicktime extends getid3_handler
 									$minute = substr($GPS_this_GPRMC['raw']['timestamp'], 2, 2);
 									$second = substr($GPS_this_GPRMC['raw']['timestamp'], 4, 2);
 									$ms     = substr($GPS_this_GPRMC['raw']['timestamp'], 6);    // may contain decimal seconds
-									$day   = substr($GPS_this_GPRMC['raw']['datestamp'], 0, 2);
-									$month = substr($GPS_this_GPRMC['raw']['datestamp'], 2, 2);
-									$year  = substr($GPS_this_GPRMC['raw']['datestamp'], 4, 2);
+									$day    = substr($GPS_this_GPRMC['raw']['datestamp'], 0, 2);
+									$month  = substr($GPS_this_GPRMC['raw']['datestamp'], 2, 2);
+									$year   = substr($GPS_this_GPRMC['raw']['datestamp'], 4, 2);
 									$year += (($year > 90) ? 1900 : 2000); // complete lack of foresight: datestamps are stored with 2-digit years, take best guess
 									$GPS_this_GPRMC['timestamp'] = $year.'-'.$month.'-'.$day.' '.$hour.':'.$minute.':'.$second.$ms;
 
@@ -1718,10 +1718,10 @@ class getid3_quicktime extends getid3_handler
 									$atom_structure['gps_entries'][$key] = $GPS_this_GPRMC;
 
 									@$info['quicktime']['gps_track'][$GPS_this_GPRMC['timestamp']] = array(
-										'latitude'  => $GPS_this_GPRMC['latitude'],
-										'longitude' => $GPS_this_GPRMC['longitude'],
-										'speed_kmh' => $GPS_this_GPRMC['speed_kmh'],
-										'heading'   => $GPS_this_GPRMC['heading'],
+										'latitude'  => (float) $GPS_this_GPRMC['latitude'],
+										'longitude' => (float) $GPS_this_GPRMC['longitude'],
+										'speed_kmh' => (float) $GPS_this_GPRMC['speed_kmh'],
+										'heading'   => (float) $GPS_this_GPRMC['heading'],
 									);
 
 								} else {
