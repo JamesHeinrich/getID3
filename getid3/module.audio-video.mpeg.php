@@ -601,6 +601,9 @@ echo 'average_File_bitrate = '.number_format(array_sum($vbr_bitrates) / count($v
 
 	/**
 	 * @param int $rawaspectratio
+	 * @param int $mpeg_version
+	 * @param int $width
+	 * @param int $height
 	 *
 	 * @return float
 	 */
@@ -619,6 +622,7 @@ echo 'average_File_bitrate = '.number_format(array_sum($vbr_bitrates) / count($v
 
 	/**
 	 * @param int $rawaspectratio
+     * @param int $mpeg_version
 	 *
 	 * @return string
 	 */
