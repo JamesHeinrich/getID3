@@ -678,7 +678,7 @@ class getid3_mp3 extends getid3_handler
 						$used_filesize = $thisfile_mpeg_audio['VBR_bytes'];
 					} elseif (!empty($info['filesize'])) {
 						$used_filesize  = $info['filesize'];
-						$used_filesize -= intval(@$info['id3v2']['headerlength']);
+						$used_filesize -= (isset($info['id3v2']['headerlength']) ? intval($info['id3v2']['headerlength']) : 0);
 						$used_filesize -= (isset($info['id3v1']) ? 128 : 0);
 						$used_filesize -= (isset($info['tag_offset_end']) ? $info['tag_offset_end'] - $info['tag_offset_start'] : 0);
 						$this->warning('MP3.Xing header missing VBR_bytes, assuming MPEG audio portion of file is '.number_format($used_filesize).' bytes');
