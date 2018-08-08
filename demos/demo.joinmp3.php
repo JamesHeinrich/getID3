@@ -83,7 +83,7 @@ function CombineMultipleMP3sTo($FilenameOut, $FilenamesIn) {
 					if ($length_seconds > 0) { // seconds from start of audio
 						$end_offset_bytes = $start_offset_bytes + round($CurrentFileInfo['bitrate'] / 8 * $length_seconds);
 					} elseif ($length_seconds < 0) { // seconds from start of audio
-						$end_offset_bytes = $CurrentFileInfo['avdataend'] + round($CurrentFileInfo['bitrate'] / 8 * $startoffset);
+						$end_offset_bytes = $CurrentFileInfo['avdataend'] + round($CurrentFileInfo['bitrate'] / 8 * $length_seconds);
 					}
 					$end_offset_bytes = max($CurrentFileInfo['avdataoffset'], min($CurrentFileInfo['avdataend'], $end_offset_bytes));
 
