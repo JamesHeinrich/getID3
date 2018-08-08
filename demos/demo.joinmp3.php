@@ -72,7 +72,7 @@ function CombineMultipleMP3sTo($FilenameOut, $FilenamesIn) {
 
 					// copy audio data from first file
 					$start_offset_bytes = $CurrentFileInfo['avdataoffset'];
-					if ($startoffset > 0) { // start X seconds from start of audio
+					if ($startoffset > 0) {       // start X seconds from start of audio
 						$start_offset_bytes = $CurrentFileInfo['avdataoffset'] + round(($CurrentFileInfo['bitrate'] / 8) * $startoffset);
 					} elseif ($startoffset < 0) { // start X seconds from end of audio
 						$start_offset_bytes = $CurrentFileInfo['avdataend']    + round(($CurrentFileInfo['bitrate'] / 8) * $startoffset);
@@ -80,9 +80,9 @@ function CombineMultipleMP3sTo($FilenameOut, $FilenamesIn) {
 					$start_offset_bytes = max($CurrentFileInfo['avdataoffset'], min($CurrentFileInfo['avdataend'], $start_offset_bytes));
 
 					$end_offset_bytes = $CurrentFileInfo['avdataend'];
-					if ($length_seconds > 0) { // seconds from start of audio
+					if ($length_seconds > 0) {       // set end offset to X seconds from start of audio
 						$end_offset_bytes = $start_offset_bytes           + round(($CurrentFileInfo['bitrate'] / 8) * $length_seconds);
-					} elseif ($length_seconds < 0) { // seconds from start of audio
+					} elseif ($length_seconds < 0) { // set end offset to X seconds from end of audio
 						$end_offset_bytes = $CurrentFileInfo['avdataend'] + round(($CurrentFileInfo['bitrate'] / 8) * $length_seconds);
 					}
 					$end_offset_bytes = max($CurrentFileInfo['avdataoffset'], min($CurrentFileInfo['avdataend'], $end_offset_bytes));
