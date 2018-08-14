@@ -116,8 +116,14 @@ class getID3_cached_sqlite3 extends getID3
 	 * @param boolean $hide
 	 *
 	 * @throws getid3_exception
+	 * @throws Exception
 	 */
 	public function __construct($table='getid3_cache', $hide=false) {
+		// Check for SQLite3 support
+		if (!function_exists('sqlite_open')) {
+			throw new Exception('PHP not compiled with SQLite3 support.');
+		}
+
 		$this->table = $table; // Set table
 		$file = dirname(__FILE__).'/'.basename(__FILE__, 'php').'sqlite';
 		if ($hide) {
