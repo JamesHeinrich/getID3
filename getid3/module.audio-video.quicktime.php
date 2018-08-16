@@ -1313,14 +1313,27 @@ class getid3_quicktime extends getid3_handler
 					// https://www.getid3.org/phpBB3/viewtopic.php?t=1908
 					// attempt to compute rotation from matrix values
 					// 2017-Dec-28: uncertain if 90/270 are correctly oriented; values returned by FixedPoint16_16 should perhaps be -1 instead of 65535(?)
-					if (!isset($info['video']['rotate'])) {
-						switch ($atom_structure['matrix_a'].':'.$atom_structure['matrix_b'].':'.$atom_structure['matrix_c'].':'.$atom_structure['matrix_d']) {
-							case '1:0:0:1':         $info['quicktime']['video']['rotate'] = $info['video']['rotate'] =   0; break;
-							case '0:1:65535:0':     $info['quicktime']['video']['rotate'] = $info['video']['rotate'] =  90; break;
-							case '65535:0:0:65535': $info['quicktime']['video']['rotate'] = $info['video']['rotate'] = 180; break;
-							case '0:65535:1:0':     $info['quicktime']['video']['rotate'] = $info['video']['rotate'] = 270; break;
-							default: break;
-						}
+					$matrixRotation = 0;
+					switch ($atom_structure['matrix_a'].':'.$atom_structure['matrix_b'].':'.$atom_structure['matrix_c'].':'.$atom_structure['matrix_d']) {
+						case '1:0:0:1':         $matrixRotation =   0; break;
+						case '0:1:65535:0':     $matrixRotation =  90; break;
+						case '65535:0:0:65535': $matrixRotation = 180; break;
+						case '0:65535:1:0':     $matrixRotation = 270; break;
+						default: break;
+					}
+
+					// https://www.getid3.org/phpBB3/viewtopic.php?t=2468
+					// The rotation matrix can appear in the Quicktime file multiple times, at least once for each track,
+					// and it's possible that only the video track (or, in theory, one of the video tracks) is flagged as
+					// rotated while the other tracks (e.g. audio) is tagged as rotation=0 (behavior noted on iPhone 8 Plus)
+					// The correct solution would be to check if the TrackID associated with the rotation matrix is indeed
+					// a video track (or the main video track) and only set the rotation then, but since information about
+					// what track is what is not trivially there to be examined, the lazy solution is to set the rotation
+					// if it is found to be nonzero, on the assumption that tracks that don't need it will have rotation set
+					// to zero (and be effectively ignored) and the video track will have rotation set correctly, which will
+					// either be zero and automatically correct, or nonzero and be set correctly.
+					if (!isset($info['video']['rotate']) || (($info['video']['rotate'] == 0) && ($matrixRotation > 0))) {
+						$info['quicktime']['video']['rotate'] = $info['video']['rotate'] = $matrixRotation;
 					}
 
 					if ($atom_structure['flags']['enabled'] == 1) {
