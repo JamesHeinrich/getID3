@@ -250,6 +250,8 @@ class getid3_gzip extends getid3_handler
 							// unknown or unhandled format
 							break;
 					}
+				} else {
+					$this->warning('PHP is not compiled with gzinflate() support. Please enable PHP Zlib extension or recompile with the --with-zlib switch');
 				}
 			}
 		}

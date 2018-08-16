@@ -9,7 +9,24 @@
         "php": ">=5.3.0"
     },
     "require-dev": {
-        "jakub-onderka/php-parallel-lint": "0.9.2"
+        "jakub-onderka/php-parallel-lint": "^0.9 || ^1.0"
+    },
+    "suggest": {
+        "ext-com_dotnet": "COM extension is required when loading files larger than 2GB on Windows.",
+        "ext-ctype": "ctype extension is required when loading files larger than 2GB on 32-bit PHP (also on 64-bit PHP on Windows) or executing `getid3_lib::CopyTagsToComments`.",
+        "ext-dba": "DBA extension is required to use the DBA database as a cache storage.",
+        "ext-exif": "EXIF extension is required for graphic modules.",
+        "ext-iconv": "iconv extension is required to work with different character sets (when `ext-mbstring` is not available).",
+        "ext-json": "JSON extension is required to analyze Apple Quicktime videos.",
+        "ext-libxml": "libxml extension is required to analyze RIFF/WAV/BWF audio files.",
+        "ext-mbstring": "mbstring extension is required to work with different character sets.",
+        "ext-mysql": "MySQL extension is required to use the MySQL database as a cache storage (deprecated in PHP 5.5, removed in PHP >= 7.0, use `ext-mysqli` instead).",
+        "ext-mysqli": "MySQLi extension is required to use the MySQL database as a cache storage.",
+        "ext-rar": "RAR extension is required for RAR archive module.",
+        "ext-SimpleXML": "SimpleXML extension is required to analyze RIFF/WAV/BWF audio files (also requires `ext-libxml`).",
+        "ext-sqlite3": "SQLite3 extension is required to use the SQLite3 database as a cache storage.",
+        "ext-xml": "XML extension is required for graphic modules to analyze the XML metadata.",
+        "ext-zlib": "Zlib extension is required for archive modules and compressed metadata."
     },
     "scripts": {
         "lint": "parallel-lint --exclude vendor .",
