@@ -251,7 +251,7 @@ class getID3
 	 */
 	protected $startup_warning = '';
 
-	const VERSION           = '1.9.15-201808161551';
+	const VERSION           = '1.9.15-201809110652';
 	const FREAD_BUFFER_SIZE = 32768;
 
 	const ATTACHMENTS_NONE   = false;
@@ -852,7 +852,7 @@ class getID3
 							'pattern'   => '^fLaC',
 							'group'     => 'audio',
 							'module'    => 'flac',
-							'mime_type' => 'audio/x-flac',
+							'mime_type' => 'audio/flac',
 						),
 
 				// LA   - audio       - Lossless Audio (LA)
@@ -1073,7 +1073,7 @@ class getID3
 							'pattern'   => '^(RIFF|SDSS|FORM)',
 							'group'     => 'audio-video',
 							'module'    => 'riff',
-							'mime_type' => 'audio/x-wav',
+							'mime_type' => 'audio/wav',
 							'fail_ape'  => 'WARNING',
 						),
 
@@ -1237,7 +1237,7 @@ class getID3
 							'pattern'   => '^\\x1F\\x8B\\x08',
 							'group'     => 'archive',
 							'module'    => 'gzip',
-							'mime_type' => 'application/x-gzip',
+							'mime_type' => 'application/gzip',
 							'fail_id3'  => 'ERROR',
 							'fail_ape'  => 'ERROR',
 						),
