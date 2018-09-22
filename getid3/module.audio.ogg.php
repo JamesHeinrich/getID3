@@ -263,9 +263,34 @@ class getid3_ogg extends getid3_handler
 			$this->error('Ogg Skeleton not correctly handled in this version of getID3 ['.$this->getid3->version().']');
 			//return false;
 
+		} elseif (substr($filedata, 0, 5) == "\x7F".'FLAC') {
+			// https://xiph.org/flac/ogg_mapping.html
+
+			$info['audio']['dataformat']   = 'flac';
+			$info['audio']['bitrate_mode'] = 'vbr';
+			$info['audio']['lossless']     = true;
+
+			$info['ogg']['flac']['header']['version_major']  =                         ord(substr($filedata,  5, 1));
+			$info['ogg']['flac']['header']['version_minor']  =                         ord(substr($filedata,  6, 1));
+			$info['ogg']['flac']['header']['header_packets'] =   getid3_lib::BigEndian2Int(substr($filedata,  7, 2)) + 1; // "A two-byte, big-endian binary number signifying the number of header (non-audio) packets, not including this one. This number may be zero (0x0000) to signify 'unknown' but be aware that some decoders may not be able to handle such streams."
+			$info['ogg']['flac']['header']['magic']          =                             substr($filedata,  9, 4);
+			if ($info['ogg']['flac']['header']['magic'] != 'fLaC') {
+				$this->error('Ogg-FLAC expecting "fLaC", found "'.$info['ogg']['flac']['header']['magic'].'" ('.trim(getid3_lib::PrintHexBytes($info['ogg']['flac']['header']['magic'])).')');
+				return false;
+			}
+			$info['ogg']['flac']['header']['STREAMINFO_bytes'] = getid3_lib::BigEndian2Int(substr($filedata, 13, 4));
+			$info['flac']['STREAMINFO'] = getid3_flac::parseSTREAMINFOdata(substr($filedata, 17, 34));
+			if (!empty($info['flac']['STREAMINFO']['sample_rate'])) {
+				$info['audio']['bitrate_mode']    = 'vbr';
+				$info['audio']['sample_rate']     = $info['flac']['STREAMINFO']['sample_rate'];
+				$info['audio']['channels']        = $info['flac']['STREAMINFO']['channels'];
+				$info['audio']['bits_per_sample'] = $info['flac']['STREAMINFO']['bits_per_sample'];
+				$info['playtime_seconds']         = $info['flac']['STREAMINFO']['samples_stream'] / $info['flac']['STREAMINFO']['sample_rate'];
+			}
+
 		} else {
 
-			$this->error('Expecting either "Speex   ", "OpusHead" or "vorbis" identifier strings, found "'.substr($filedata, 0, 8).'"');
+			$this->error('Expecting one of "vorbis", "Speex", "OpusHead", "vorbis", "fishhead", "theora", "fLaC" identifier strings, found "'.substr($filedata, 0, 8).'"');
 			unset($info['ogg']);
 			unset($info['mime_type']);
 			return false;
