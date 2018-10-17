@@ -18,6 +18,35 @@
 Version History
 ===============
 
+1.9.16: [2018-10-17] James Heinrich :: 1.9.16-201810171314
+	* bugfix (G:168) Ogg FLAC not parsed
+	* bugfix (G:163) invalid MP3 header error on VBR
+	* bugfix (G:162) prevent writing multiple ID3v2 versions
+	* bugfix (G:161) MP3 VBR header duration
+	* bugfix (G:160) OggOpus duration sometimes incorrect
+	* bugfix (G:157) quicktime GPS invalid argument
+	* bugfix (G:148) MPEG-2 aspect ratio
+	* bugfix (G:147) Quicktime fourcc codec name lookup
+	* bugfix (G:147) Quicktime audio/video bitrate guessing
+	* bugfix (G:145) incompatible variable types
+	* bugfix (G:139) Quicktime islt subatoms >5
+	* bugfix (G:137) ID3v2 semi-numeric genres
+	* bugfix (G:136) ID3v2 unsynchronised typo
+	* bugfix (#2514) FLAC zero-byte block header
+	* bugfix (#2488) MIME types (FLAC, WAV, gzip)
+	* bugfix (#2468) Quicktime video rotation
+	* bugfix (#2207) metaflac + attached pictures
+	* bugfix (#2151) improved demo UNC filename support
+	* bugfix (#1966) fread fail when PHP memory_limit -1
+	* bugfix (#1908) Quicktime rotation detection (using matrix values)
+	* bugfix (#1908) Quicktime "rcif" and "dscp" atoms
+	* bugfix (#1900) demo.joinmp3 cut from end
+	* security: avoid disabled demo reflection
+	* TIFF: expand list of named tags, expose as 'tag_name' key for all entries
+	* Quicktime: parse some GoPro-specific data
+	* helperapps (Windows): updated vorbiscomment.exe, metaflac.exe to v1.3.2
+	* add more image formats supported by getimagesize()
+
 1.9.15: [2017-10-26] James Heinrich :: 1.9.15-201709291043
     » (G:108) add basic APNG support
     » (G:107) add basic WebP support
