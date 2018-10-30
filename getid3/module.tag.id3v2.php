@@ -2062,7 +2062,7 @@ class getid3_id3v2 extends getid3_handler
 					$subframe['encodingid'] = ord(substr($subframe_rawdata, 0, 1));
 					$subframe['text']       =     substr($subframe_rawdata, 1);
 					$subframe['encoding']   = $this->TextEncodingNameLookup($subframe['encodingid']);
-					$encoding_converted_text = trim(getid3_lib::iconv_fallback($subframe['encoding'], $info['encoding'], $subframe['text']));;
+					$encoding_converted_text = trim(getid3_lib::iconv_fallback($subframe['encoding'], $info['encoding'], $subframe['text']));
 					switch (substr($encoding_converted_text, 0, 2)) {
 						case "\xFF\xFE":
 						case "\xFE\xFF":
@@ -2082,22 +2082,51 @@ class getid3_id3v2 extends getid3_handler
 							break;
 					}
 
-					if (($subframe['name'] == 'TIT2') || ($subframe['name'] == 'TIT3')) {
-						if ($subframe['name'] == 'TIT2') {
+					switch ($subframe['name']) {
+						case 'TIT2':
 							$parsedFrame['chapter_name']        = $encoding_converted_text;
-						} elseif ($subframe['name'] == 'TIT3') {
+							$parsedFrame['subframes'][] = $subframe;
+							break;
+						case 'TIT3':
 							$parsedFrame['chapter_description'] = $encoding_converted_text;
-						}
-						$parsedFrame['subframes'][] = $subframe;
-					} else {
-						$this->warning('ID3v2.CHAP subframe "'.$subframe['name'].'" not handled (only TIT2 and TIT3)');
+							$parsedFrame['subframes'][] = $subframe;
+							break;
+						case 'WXXX':
+							list($subframe['chapter_url_description'], $subframe['chapter_url']) = explode("\x00", $encoding_converted_text, 2);
+							$parsedFrame['chapter_url'][$subframe['chapter_url_description']] = $subframe['chapter_url'];
+							$parsedFrame['subframes'][] = $subframe;
+							break;
+						case 'APIC':
+							if (preg_match('#^([^\\x00]+)*\\x00(.)([^\\x00]+)*\\x00(.+)$#s', $subframe['text'], $matches)) {
+								list($dummy, $subframe_apic_mime, $subframe_apic_picturetype, $subframe_apic_description, $subframe_apic_picturedata) = $matches;
+								$subframe['image_mime']   = trim(getid3_lib::iconv_fallback($subframe['encoding'], $info['encoding'], $subframe_apic_mime));
+								$subframe['picture_type'] = $this->APICPictureTypeLookup($subframe_apic_picturetype);
+								$subframe['description']  = trim(getid3_lib::iconv_fallback($subframe['encoding'], $info['encoding'], $subframe_apic_description));
+								if (strlen($this->TextEncodingTerminatorLookup($subframe['encoding'])) == 2) {
+									// the null terminator between "description" and "picture data" could be either 1 byte (ISO-8859-1, UTF-8) or two bytes (UTF-16)
+									// the above regex assumes one byte, if it's actually two then strip the second one here
+									$subframe_apic_picturedata = substr($subframe_apic_picturedata, 1);
+								}
+								$subframe['data'] = $subframe_apic_picturedata;
+								unset($dummy, $subframe_apic_mime, $subframe_apic_picturetype, $subframe_apic_description, $subframe_apic_picturedata);
+								unset($subframe['text'], $parsedFrame['text']);
+								$parsedFrame['subframes'][] = $subframe;
+								$parsedFrame['picture_present'] = true;
+							} else {
+								$this->warning('ID3v2.CHAP subframe #'.(count($parsedFrame['subframes']) + 1).' "'.$subframe['name'].'" not in expected format');
+							}
+							break;
+						default:
+							$this->warning('ID3v2.CHAP subframe "'.$subframe['name'].'" not handled (supported: TIT2, TIT3, WXXX, APIC)');
+							break;
 					}
 				}
 				unset($subframe_rawdata, $subframe, $encoding_converted_text);
+				unset($parsedFrame['data']); // debatable whether this this be here, without it the returned structure may contain a large amount of duplicate data if chapters contain APIC
 			}
 
 			$id3v2_chapter_entry = array();
-			foreach (array('id', 'time_begin', 'time_end', 'offset_begin', 'offset_end', 'chapter_name', 'chapter_description') as $id3v2_chapter_key) {
+			foreach (array('id', 'time_begin', 'time_end', 'offset_begin', 'offset_end', 'chapter_name', 'chapter_description', 'chapter_url', 'picture_present') as $id3v2_chapter_key) {
 				if (isset($parsedFrame[$id3v2_chapter_key])) {
 					$id3v2_chapter_entry[$id3v2_chapter_key] = $parsedFrame[$id3v2_chapter_key];
 				}
