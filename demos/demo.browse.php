@@ -233,7 +233,8 @@ if (isset($_REQUEST['filename'])) {
 						echo '"> <input type="submit" value="Go">';
 						echo '</form></td>';
 					} else {
-						$escaped_filename = htmlentities($filename, ENT_SUBSTITUTE, $PageEncoding); // do filesystems always return filenames in ISO-8859-1?
+						//$escaped_filename = htmlentities($filename, ENT_SUBSTITUTE, $PageEncoding); // do filesystems always return filenames in ISO-8859-1?
+						$escaped_filename = htmlentities($filename, ENT_SUBSTITUTE, 'ISO-8859-1'); // do filesystems always return filenames in ISO-8859-1?
 						$escaped_filename = ($escaped_filename ? $escaped_filename : rawurlencode($filename));
 						echo '<td colspan="'.$columnsintable.'"><a href="'.htmlentities($_SERVER['PHP_SELF'].'?listdirectory='.urlencode($dirname.$filename), ENT_QUOTES | ENT_SUBSTITUTE, $PageEncoding).'"><b>'.$escaped_filename.'</b></a></td>';
 					}
@@ -266,7 +267,8 @@ if (isset($_REQUEST['filename'])) {
 				uksort($DirectoryContents[$dirname]['known'], 'MoreNaturalSort');
 				foreach ($DirectoryContents[$dirname]['known'] as $filename => $fileinfo) {
 					echo '<tr bgcolor="#'.(($rowcounter++ % 2) ? $getID3checkColor_FileDark : $getID3checkColor_FileLight).'">';
-					$escaped_filename = htmlentities($filename, ENT_SUBSTITUTE, $PageEncoding);
+					//$escaped_filename = htmlentities($filename, ENT_SUBSTITUTE, $PageEncoding); // do filesystems always return filenames in ISO-8859-1?
+					$escaped_filename = htmlentities($filename, ENT_SUBSTITUTE, 'ISO-8859-1'); // do filesystems always return filenames in ISO-8859-1?
 					$escaped_filename = ($escaped_filename ? $escaped_filename : rawurlencode($filename));
 					echo '<td><a href="'.htmlentities($_SERVER['PHP_SELF'].'?filename='.urlencode($dirname.$filename), ENT_QUOTES | ENT_SUBSTITUTE, $PageEncoding).'" title="View detailed analysis">'.$escaped_filename.'</a></td>';
 					echo '<td align="right">&nbsp;'.number_format($fileinfo['filesize']).'</td>';
