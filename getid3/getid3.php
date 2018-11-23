@@ -251,7 +251,7 @@ class getID3
 	 */
 	protected $startup_warning = '';
 
-	const VERSION           = '1.9.16-201811102211';
+	const VERSION           = '1.9.16-201811222154';
 	const FREAD_BUFFER_SIZE = 32768;
 
 	const ATTACHMENTS_NONE   = false;
@@ -1248,6 +1248,16 @@ class getID3
 							'group'     => 'archive',
 							'module'    => 'zip',
 							'mime_type' => 'application/zip',
+							'fail_id3'  => 'ERROR',
+							'fail_ape'  => 'ERROR',
+						),
+
+				// XZ   - data         - XZ compressed data
+				'xz'  => array(
+							'pattern'   => '^\\xFD7zXZ\\x00',
+							'group'     => 'archive',
+							'module'    => 'xz',
+							'mime_type' => 'application/x-xz',
 							'fail_id3'  => 'ERROR',
 							'fail_ape'  => 'ERROR',
 						),
