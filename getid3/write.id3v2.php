@@ -2316,6 +2316,7 @@ class getid3_write_id3v2
 			$ID3v2ShortFrameNameLookup[4]['performer_sort_order']              = 'TSOP';
 			$ID3v2ShortFrameNameLookup[4]['title_sort_order']                  = 'TSOT';
 			$ID3v2ShortFrameNameLookup[4]['set_subtitle']                      = 'TSST';
+			$ID3v2ShortFrameNameLookup[4]['year']                              = 'TDRC'; // subset of ISO 8601: valid timestamps are yyyy, yyyy-MM, yyyy-MM-dd, yyyy-MM-ddTHH, yyyy-MM-ddTHH:mm and yyyy-MM-ddTHH:mm:ss. All time stamps are UTC
 		}
 		return (isset($ID3v2ShortFrameNameLookup[$majorversion][strtolower($long_description)]) ? $ID3v2ShortFrameNameLookup[$majorversion][strtolower($long_description)] : '');
 
