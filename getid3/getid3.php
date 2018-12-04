@@ -406,7 +406,7 @@ class getID3
 	 *
 	 * @throws getid3_exception
 	 */
-	public function openfile($filename, $filesize=null) {
+	public function openfile($filename, $filesize=null, $fp=null) {
 		try {
 			if (!empty($this->startup_error)) {
 				throw new getid3_exception($this->startup_error);
@@ -433,7 +433,9 @@ class getID3
 
 			// open local file
 			//if (is_readable($filename) && is_file($filename) && ($this->fp = fopen($filename, 'rb'))) { // see https://www.getid3.org/phpBB3/viewtopic.php?t=1720
-			if ((is_readable($filename) || file_exists($filename)) && is_file($filename) && ($this->fp = fopen($filename, 'rb'))) {
+			if (($fp != null) && ((get_resource_type($fp) == 'file') || (get_resource_type($fp) == 'stream'))) {
+                   		$this->fp = $fp;
+             		} else if ((is_readable($filename) || file_exists($filename)) && is_file($filename) && ($this->fp = fopen($filename, 'rb'))) {
 				// great
 			} else {
 				$errormessagelist = array();
@@ -514,9 +516,9 @@ class getID3
 	 *
 	 * @return array
 	 */
-	public function analyze($filename, $filesize=null, $original_filename='') {
+	public function analyze($filename, $filesize=null, $original_filename='', $fp=null) {
 		try {
-			if (!$this->openfile($filename, $filesize)) {
+			if (!$this->openfile($filename, $filesize, $fp)) {
 				return $this->info;
 			}
 
