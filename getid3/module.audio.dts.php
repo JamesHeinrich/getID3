@@ -51,18 +51,18 @@ class getid3_dts extends getid3_handler
 
 		// check syncword
 		$sync = substr($DTSheader, 0, 4);
-        if (($encoding = array_search($sync, self::$syncwords)) !== false) {
+		if (($encoding = array_search($sync, self::$syncwords)) !== false) {
 
-        	$info['dts']['raw']['magic'] = $sync;
+			$info['dts']['raw']['magic'] = $sync;
 			$this->readBinDataOffset = 32;
 
-        } elseif ($this->isDependencyFor('matroska')) {
+		} elseif ($this->isDependencyFor('matroska')) {
 
 			// Matroska contains DTS without syncword encoded as raw big-endian format
 			$encoding = 0;
 			$this->readBinDataOffset = 0;
 
-        } else {
+		} else {
 
 			unset($info['fileformat']);
 			return $this->error('Expecting "'.implode('| ', array_map('getid3_lib::PrintHexBytes', self::$syncwords)).'" at offset '.$info['avdataoffset'].', found "'.getid3_lib::PrintHexBytes($sync).'"');

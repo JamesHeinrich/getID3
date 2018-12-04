@@ -2019,9 +2019,9 @@ class getid3_id3v2 extends getid3_handler
 			// Element ID      <text string> $00
 			// Start time      $xx xx xx xx
 			// End time        $xx xx xx xx
-            // Start offset    $xx xx xx xx
-            // End offset      $xx xx xx xx
-            // <Optional embedded sub-frames>
+			// Start offset    $xx xx xx xx
+			// End offset      $xx xx xx xx
+			// <Optional embedded sub-frames>
 
 			$frame_offset = 0;
 			@list($parsedFrame['element_id']) = explode("\x00", $parsedFrame['data'], 2);
@@ -2145,7 +2145,7 @@ class getid3_id3v2 extends getid3_handler
 			// CTOC flags        %xx
 			// Entry count       $xx
 			// Child Element ID  <string>$00   /* zero or more child CHAP or CTOC entries */
-            // <Optional embedded sub-frames>
+			// <Optional embedded sub-frames>
 
 			$frame_offset = 0;
 			@list($parsedFrame['element_id']) = explode("\x00", $parsedFrame['data'], 2);

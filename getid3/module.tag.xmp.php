@@ -124,7 +124,7 @@ class Image_XMP
 		// Flag that we havent yet hit the compressed image data
 		$hit_compressed_image_data = false;
 
-        $headerdata = array();
+		$headerdata = array();
 		// Cycle through the file until, one of: 1) an EOI (End of image) marker is hit,
 		//                                       2) we have hit the compressed image data (no more headers are allowed after data)
 		//                                       3) or end of file is hit

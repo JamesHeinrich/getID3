@@ -178,7 +178,7 @@ class getid3_flac extends getid3_handler
 		if (isset($info['flac']['STREAMINFO']['audio_signature'])) {
 
 			if ($info['flac']['STREAMINFO']['audio_signature'] === str_repeat("\x00", 16)) {
-                $this->warning('FLAC STREAMINFO.audio_signature is null (known issue with libOggFLAC)');
+				$this->warning('FLAC STREAMINFO.audio_signature is null (known issue with libOggFLAC)');
 			}
 			else {
 				$info['md5_data_source'] = '';

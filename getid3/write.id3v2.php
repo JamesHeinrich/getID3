@@ -345,7 +345,7 @@ class getid3_write_id3v2
 	public function GenerateID3v2FrameFlags($TagAlter=false, $FileAlter=false, $ReadOnly=false, $Compression=false, $Encryption=false, $GroupingIdentity=false, $Unsynchronisation=false, $DataLengthIndicator=false) {
 		$flag1 = null;
 		$flag2 = null;
-	    switch ($this->majorversion) {
+		switch ($this->majorversion) {
 			case 4:
 				// %0abc0000 %0h00kmnp
 				$flag1  = '0';

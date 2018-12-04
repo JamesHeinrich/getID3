@@ -1,5 +1,4 @@
 <?php
-
 /////////////////////////////////////////////////////////////////
 /// getID3() by James Heinrich <info@getid3.org>               //
 //  available at https://github.com/JamesHeinrich/getID3       //
@@ -251,7 +250,7 @@ class getID3
 	 */
 	protected $startup_warning = '';
 
-	const VERSION           = '1.9.16-201811291512';
+	const VERSION           = '1.9.16-201812042150';
 	const FREAD_BUFFER_SIZE = 32768;
 
 	const ATTACHMENTS_NONE   = false;
@@ -434,8 +433,8 @@ class getID3
 			// open local file
 			//if (is_readable($filename) && is_file($filename) && ($this->fp = fopen($filename, 'rb'))) { // see https://www.getid3.org/phpBB3/viewtopic.php?t=1720
 			if (($fp != null) && ((get_resource_type($fp) == 'file') || (get_resource_type($fp) == 'stream'))) {
-                   		$this->fp = $fp;
-             		} else if ((is_readable($filename) || file_exists($filename)) && is_file($filename) && ($this->fp = fopen($filename, 'rb'))) {
+				$this->fp = $fp;
+			} else if ((is_readable($filename) || file_exists($filename)) && is_file($filename) && ($this->fp = fopen($filename, 'rb'))) {
 				// great
 			} else {
 				$errormessagelist = array();
@@ -1836,16 +1835,14 @@ class getID3
 	 *
 	 * @return bool
 	 */
-    public static function is_writable ($filename) {
-        $ret = is_writable($filename);
-
-        if (!$ret) {
-            $perms = fileperms($filename);
-            $ret = ($perms & 0x0080) || ($perms & 0x0010) || ($perms & 0x0002);
-        }
-
-        return $ret;
-    }
+	public static function is_writable ($filename) {
+		$ret = is_writable($filename);
+		if (!$ret) {
+			$perms = fileperms($filename);
+			$ret = ($perms & 0x0080) || ($perms & 0x0010) || ($perms & 0x0002);
+		}
+		return $ret;
+	}
 
 }
 

@@ -51,7 +51,7 @@ class getid3_riff extends getid3_handler
 		$thisfile_audio_dataformat = &$thisfile_audio['dataformat'];
 		$thisfile_riff_audio       = &$thisfile_riff['audio'];
 		$thisfile_riff_video       = &$thisfile_riff['video'];
-        $thisfile_riff_WAVE        = array();
+		$thisfile_riff_WAVE        = array();
 
 		$Original['avdataoffset'] = $info['avdataoffset'];
 		$Original['avdataend']    = $info['avdataend'];
@@ -703,13 +703,13 @@ class getid3_riff extends getid3_handler
 						'capturedfile' => 0x00010000,
 						'copyrighted'  => 0x00020010,
 					);
-                    foreach ($flags as $flag => $value) {
+					foreach ($flags as $flag => $value) {
 						$thisfile_riff_raw_avih['flags'][$flag] = (bool) ($thisfile_riff_raw_avih['dwFlags'] & $value);
 					}
 
 					// shortcut
 					$thisfile_riff_video[$streamindex] = array();
-                    /** @var array $thisfile_riff_video_current */
+					/** @var array $thisfile_riff_video_current */
 					$thisfile_riff_video_current = &$thisfile_riff_video[$streamindex];
 
 					if ($thisfile_riff_raw_avih['dwWidth'] > 0) {
@@ -923,7 +923,7 @@ class getid3_riff extends getid3_handler
 			// http://en.wikipedia.org/wiki/CD-DA
 			case 'CDDA':
 				$info['fileformat'] = 'cda';
-			    unset($info['mime_type']);
+				unset($info['mime_type']);
 
 				$thisfile_audio_dataformat      = 'cda';
 
@@ -956,7 +956,7 @@ class getid3_riff extends getid3_handler
 				}
 				break;
 
-            // http://en.wikipedia.org/wiki/AIFF
+			// http://en.wikipedia.org/wiki/AIFF
 			case 'AIFF':
 			case 'AIFC':
 				$info['fileformat'] = 'aiff';

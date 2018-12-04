@@ -2752,38 +2752,35 @@ class getid3_quicktime extends getid3_handler
 	 *
 	 * @return string
 	 */
-    public function LociString($lstring, &$count) {
-            // Loci strings are UTF-8 or UTF-16 and null (x00/x0000) terminated. UTF-16 has a BOM
-            // Also need to return the number of bytes the string occupied so additional fields can be extracted
-            $len = strlen($lstring);
-            if ($len == 0) {
-                $count = 0;
-                return '';
-            }
-            if ($lstring[0] == "\x00") {
-                $count = 1;
-                return '';
-            }
-            //check for BOM
-            if ($len > 2 && (($lstring[0] == "\xFE" && $lstring[1] == "\xFF") || ($lstring[0] == "\xFF" && $lstring[1] == "\xFE"))) {
-                //UTF-16
-                if (preg_match('/(.*)\x00/', $lstring, $lmatches)){
-                     $count = strlen($lmatches[1]) * 2 + 2; //account for 2 byte characters and trailing \x0000
-                    return getid3_lib::iconv_fallback_utf16_utf8($lmatches[1]);
-                } else {
-                    return '';
-                }
-            } else {
-                //UTF-8
-                if (preg_match('/(.*)\x00/', $lstring, $lmatches)){
-                    $count = strlen($lmatches[1]) + 1; //account for trailing \x00
-                    return $lmatches[1];
-                }else {
-                    return '';
-                }
-
-            }
-        }
+	public function LociString($lstring, &$count) {
+		// Loci strings are UTF-8 or UTF-16 and null (x00/x0000) terminated. UTF-16 has a BOM
+		// Also need to return the number of bytes the string occupied so additional fields can be extracted
+		$len = strlen($lstring);
+		if ($len == 0) {
+			$count = 0;
+			return '';
+		}
+		if ($lstring[0] == "\x00") {
+			$count = 1;
+			return '';
+		}
+		// check for BOM
+		if (($len > 2) && ((($lstring[0] == "\xFE") && ($lstring[1] == "\xFF")) || (($lstring[0] == "\xFF") && ($lstring[1] == "\xFE")))) {
+			// UTF-16
+			if (preg_match('/(.*)\x00/', $lstring, $lmatches)) {
+				$count = strlen($lmatches[1]) * 2 + 2; //account for 2 byte characters and trailing \x0000
+				return getid3_lib::iconv_fallback_utf16_utf8($lmatches[1]);
+			} else {
+				return '';
+			}
+		}
+		// UTF-8
+		if (preg_match('/(.*)\x00/', $lstring, $lmatches)) {
+			$count = strlen($lmatches[1]) + 1; //account for trailing \x00
+			return $lmatches[1];
+		}
+		return '';
+	}
 
 	/**
 	 * @param string $nullterminatedstring

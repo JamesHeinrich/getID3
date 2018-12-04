@@ -1407,10 +1407,9 @@ class getid3_mp3 extends getid3_handler
 		static $MPEGaudioLayerLookup;
 		static $MPEGaudioBitrateLookup;
 		if (empty($MPEGaudioVersionLookup)) {
-		   $MPEGaudioVersionLookup = self::MPEGaudioVersionArray();
-		   $MPEGaudioLayerLookup   = self::MPEGaudioLayerArray();
-		   $MPEGaudioBitrateLookup = self::MPEGaudioBitrateArray();
-
+			$MPEGaudioVersionLookup = self::MPEGaudioVersionArray();
+			$MPEGaudioLayerLookup   = self::MPEGaudioLayerArray();
+			$MPEGaudioBitrateLookup = self::MPEGaudioBitrateArray();
 		}
 
 		$this->fseek($avdataoffset);
@@ -1997,7 +1996,7 @@ class getid3_mp3 extends getid3_handler
 	public static function XingVBRidOffset($version, $channelmode) {
 		static $XingVBRidOffsetCache = array();
 		if (empty($XingVBRidOffsetCache)) {
-            $XingVBRidOffsetCache = array (
+			$XingVBRidOffsetCache = array (
 				'1'   => array ('mono'          => 0x15, // 4 + 17 = 21
 								'stereo'        => 0x24, // 4 + 32 = 36
 								'joint stereo'  => 0x24,

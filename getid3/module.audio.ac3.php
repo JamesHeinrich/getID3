@@ -20,14 +20,14 @@ class getid3_ac3 extends getid3_handler
 	/**
 	 * @var array
 	 */
-    private $AC3header = array();
+	private $AC3header = array();
 
 	/**
 	 * @var int
 	 */
-    private $BSIoffset = 0;
+	private $BSIoffset = 0;
 
-    const syncword = 0x0B77;
+	const syncword = 0x0B77;
 
 	/**
 	 * @return bool
@@ -422,7 +422,7 @@ class getid3_ac3 extends getid3_handler
 		} else {
 
 			$this->error('Bit stream identification is version '.$thisfile_ac3_raw_bsi['bsid'].', but getID3() only understands up to version 16. Please submit a support ticket with a sample file.');
-		    unset($info['ac3']);
+			unset($info['ac3']);
 			return false;
 
 		}

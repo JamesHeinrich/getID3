@@ -163,7 +163,7 @@ class getID3_cached_mysqli extends getID3
 	 */
 	public function analyze($filename, $filesize=null, $original_filename='') {
 
-        $filetime = 0;
+		$filetime = 0;
 		if (file_exists($filename)) {
 
 			// Short-hands
