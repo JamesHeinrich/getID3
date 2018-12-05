@@ -1811,7 +1811,7 @@ class getid3_riff extends getid3_handler
 			fclose($fp_temp);
 
 			$getid3_temp = new getID3();
-			$getid3_temp->openfile($tempfile, null, $this->getid3->fp);
+			$getid3_temp->openfile($tempfile);
 			$getid3_temp->info['filesize']     = $RIFFdataLength;
 			$getid3_temp->info['filenamepath'] = $info['filenamepath'];
 			$getid3_temp->info['tags']         = $info['tags'];
