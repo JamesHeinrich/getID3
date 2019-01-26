@@ -1334,7 +1334,7 @@ class getID3
 
 
 		if (preg_match('#\\.mp[123a]$#i', $filename)) {
-			// Too many mp3 encoders on the market put gabage in front of mpeg files
+			// Too many mp3 encoders on the market put garbage in front of mpeg files
 			// use assume format on these if format detection failed
 			$GetFileFormatArray = $this->GetFileFormatArray();
 			$info = $GetFileFormatArray['mp3'];
