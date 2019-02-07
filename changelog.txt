@@ -18,6 +18,16 @@
 Version History
 ===============
 
+1.9.17: [2019-02-07] James Heinrich :: 1.9.17-201902071234
+	* bugfix (G:178) HandleAllTags should skip "picture"
+	* bugfix (G:177) error checking for reading more than PHP memory_limit
+	* bugfix (G:176) improved mp3 detection in remote-file demo
+	* bugfix (G:173) Add filepointer option to analyze/openfile function
+	* bugfix (G:170) Add support for WXXX (URL) and APIC (attached picture) subframes inside ID3v2 chapters
+	* bugfix: write.id3v2 year field
+	* bugfix: mp3.APE permit optional " dB" in ReplayGain tags
+	* placeholder support for .xz file format
+
 1.9.16: [2018-10-17] James Heinrich :: 1.9.16-201810171314
 	* bugfix (G:168) Ogg FLAC not parsed
 	* bugfix (G:163) invalid MP3 header error on VBR
