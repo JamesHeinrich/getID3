@@ -568,8 +568,8 @@ class getid3_quicktime extends getid3_handler
 							}
 						}
 					}
-						$this->CopyToAppropriateCommentsSection($atomname, $atom_structure['data'], $atom_structure['name']);
-						break;
+					$this->CopyToAppropriateCommentsSection($atomname, $atom_structure['data'], $atom_structure['name']);
+					break;
 
 
 				case 'play': // auto-PLAY atom
