@@ -43,7 +43,7 @@ class getid3_tiff extends getid3_handler
 		$info['video']['dataformat'] = 'tiff';
 		$info['video']['lossless']   = true;
 		$info['tiff']['ifd']         = array();
-		$CurrentIFD                          = array();
+		$CurrentIFD                  = array();
 
 		$FieldTypeByteLength = array(1=>1, 2=>1, 3=>2, 4=>4, 5=>8);
 
@@ -57,47 +57,61 @@ class getid3_tiff extends getid3_handler
 			$CurrentIFD['fieldcount'] = $this->TIFFendian2Int($this->fread(2), $info['tiff']['byte_order']);
 
 			for ($i = 0; $i < $CurrentIFD['fieldcount']; $i++) {
-				$CurrentIFD['fields'][$i]['raw']['tag']    = $this->TIFFendian2Int($this->fread(2), $info['tiff']['byte_order']);
-				$CurrentIFD['fields'][$i]['raw']['type']   = $this->TIFFendian2Int($this->fread(2), $info['tiff']['byte_order']);
-				$CurrentIFD['fields'][$i]['raw']['length'] = $this->TIFFendian2Int($this->fread(4), $info['tiff']['byte_order']);
-				$CurrentIFD['fields'][$i]['raw']['offset'] =                       $this->fread(4);
-
+				$CurrentIFD['fields'][$i]['raw']['tag']      = $this->TIFFendian2Int($this->fread(2), $info['tiff']['byte_order']);
+				$CurrentIFD['fields'][$i]['raw']['type']     = $this->TIFFendian2Int($this->fread(2), $info['tiff']['byte_order']);
+				$CurrentIFD['fields'][$i]['raw']['length']   = $this->TIFFendian2Int($this->fread(4), $info['tiff']['byte_order']);
+				$CurrentIFD['fields'][$i]['raw']['valoff']   =                       $this->fread(4); // To save time and space the Value Offset contains the Value instead of pointing to the Value if and only if the Value fits into 4 bytes. If the Value is shorter than 4 bytes, it is left-justified within the 4-byte Value Offset, i.e., stored in the lowernumbered bytes. Whether the Value fits within 4 bytes is determined by the Type and Count of the field.
 				$CurrentIFD['fields'][$i]['raw']['tag_name'] = $this->TIFFcommentName($CurrentIFD['fields'][$i]['raw']['tag']);
 
 				switch ($CurrentIFD['fields'][$i]['raw']['type']) {
 					case 1: // BYTE  An 8-bit unsigned integer.
 						if ($CurrentIFD['fields'][$i]['raw']['length'] <= 4) {
-							$CurrentIFD['fields'][$i]['value']  = $this->TIFFendian2Int(substr($CurrentIFD['fields'][$i]['raw']['offset'], 0, 1), $info['tiff']['byte_order']);
+							$CurrentIFD['fields'][$i]['value']  = $this->TIFFendian2Int(substr($CurrentIFD['fields'][$i]['raw']['valoff'], 0, 1), $info['tiff']['byte_order']);
 						} else {
-							$CurrentIFD['fields'][$i]['offset'] = $this->TIFFendian2Int($CurrentIFD['fields'][$i]['raw']['offset'], $info['tiff']['byte_order']);
+							$CurrentIFD['fields'][$i]['offset'] = $this->TIFFendian2Int($CurrentIFD['fields'][$i]['raw']['valoff'], $info['tiff']['byte_order']);
 						}
 						break;
 
 					case 2: // ASCII 8-bit bytes  that store ASCII codes; the last byte must be null.
 						if ($CurrentIFD['fields'][$i]['raw']['length'] <= 4) {
-							$CurrentIFD['fields'][$i]['value']  = substr($CurrentIFD['fields'][$i]['raw']['offset'], 3);
+							$CurrentIFD['fields'][$i]['value']  = substr($CurrentIFD['fields'][$i]['raw']['valoff'], 3);
 						} else {
-							$CurrentIFD['fields'][$i]['offset'] = $this->TIFFendian2Int($CurrentIFD['fields'][$i]['raw']['offset'], $info['tiff']['byte_order']);
+							$CurrentIFD['fields'][$i]['offset'] = $this->TIFFendian2Int($CurrentIFD['fields'][$i]['raw']['valoff'], $info['tiff']['byte_order']);
 						}
 						break;
 
 					case 3: // SHORT A 16-bit (2-byte) unsigned integer.
 						if ($CurrentIFD['fields'][$i]['raw']['length'] <= 2) {
-							$CurrentIFD['fields'][$i]['value']  = $this->TIFFendian2Int(substr($CurrentIFD['fields'][$i]['raw']['offset'], 0, 2), $info['tiff']['byte_order']);
+							$CurrentIFD['fields'][$i]['value']  = $this->TIFFendian2Int(substr($CurrentIFD['fields'][$i]['raw']['valoff'], 0, 2), $info['tiff']['byte_order']);
 						} else {
-							$CurrentIFD['fields'][$i]['offset'] = $this->TIFFendian2Int($CurrentIFD['fields'][$i]['raw']['offset'], $info['tiff']['byte_order']);
+							$CurrentIFD['fields'][$i]['offset'] = $this->TIFFendian2Int($CurrentIFD['fields'][$i]['raw']['valoff'], $info['tiff']['byte_order']);
 						}
 						break;
 
 					case 4: // LONG  A 32-bit (4-byte) unsigned integer.
-						if ($CurrentIFD['fields'][$i]['raw']['length'] <= 1) {
-							$CurrentIFD['fields'][$i]['value']  = $this->TIFFendian2Int($CurrentIFD['fields'][$i]['raw']['offset'], $info['tiff']['byte_order']);
+						if ($CurrentIFD['fields'][$i]['raw']['length'] <= 4) {
+							$CurrentIFD['fields'][$i]['value']  = $this->TIFFendian2Int($CurrentIFD['fields'][$i]['raw']['valoff'], $info['tiff']['byte_order']);
 						} else {
-							$CurrentIFD['fields'][$i]['offset'] = $this->TIFFendian2Int($CurrentIFD['fields'][$i]['raw']['offset'], $info['tiff']['byte_order']);
+							$CurrentIFD['fields'][$i]['offset'] = $this->TIFFendian2Int($CurrentIFD['fields'][$i]['raw']['valoff'], $info['tiff']['byte_order']);
 						}
 						break;
 
 					case 5: // RATIONAL   Two LONG_s:  the first represents the numerator of a fraction, the second the denominator.
+					case 7: // UNDEFINED An 8-bit byte that may contain anything, depending on the definition of the field.
+						$CurrentIFD['fields'][$i]['offset'] = $this->TIFFendian2Int($CurrentIFD['fields'][$i]['raw']['valoff'], $info['tiff']['byte_order']);
+						break;
+
+					// Warning: It is possible that other TIFF field types will be added in the future. Readers should skip over fields containing an unexpected field type.
+					// In TIFF 6.0, some new field types have been defined:
+					// These new field types are also governed by the byte order (II or MM) in the TIFF header.
+					case 6: // SBYTE An 8-bit signed (twos-complement) integer.
+					case 8: // SSHORT A 16-bit (2-byte) signed (twos-complement) integer.
+					case 9: // SLONG A 32-bit (4-byte) signed (twos-complement) integer.
+					case 10: // SRATIONAL Two SLONGs: the first represents the numerator of a fraction, the second the denominator.
+					case 11: // FLOAT Single precision (4-byte) IEEE format
+					case 12: // DOUBLE Double precision (8-byte) IEEE format
+					default:
+						$this->warning('unhandled IFD field type '.$CurrentIFD['fields'][$i]['raw']['type'].' for IFD entry '.$i);
 						break;
 				}
 			}
@@ -135,6 +149,16 @@ class getid3_tiff extends getid3_handler
 							$this->fseek($fieldarray['offset']);
 							$info['tiff']['ifd'][$IFDid]['fields'][$key]['raw']['data'] = $this->fread($fieldarray['raw']['length'] * $FieldTypeByteLength[$fieldarray['raw']['type']]);
 
+						}
+						break;
+					case 700:
+						$XMPmagic = '<?xpacket';
+						$this->fseek($fieldarray['offset']);
+						$xmpkey = (isset($info['tiff']['XMP']) ? count($info['tiff']['XMP']) : 0);
+						$info['tiff']['XMP'][$xmpkey]['raw'] = $this->fread($fieldarray['raw']['length']);
+						if (substr($info['tiff']['XMP'][$xmpkey]['raw'], 0, strlen($XMPmagic)) != $XMPmagic) {
+							$this->warning('did not find expected XMP data at offset '.$fieldarray['offset']);
+							unset($info['tiff']['XMP'][$xmpkey]['raw']);
 						}
 						break;
 				}
@@ -207,14 +231,33 @@ class getid3_tiff extends getid3_handler
 	 * @return string
 	 */
 	public function TIFFcompressionMethod($id) {
+		// https://en.wikipedia.org/wiki/TIFF#TIFF_Compression_Tag
 		static $TIFFcompressionMethod = array();
 		if (empty($TIFFcompressionMethod)) {
 			$TIFFcompressionMethod = array(
-				1     => 'Uncompressed',
-				2     => 'Huffman',
-				3     => 'Fax - CCITT 3',
-				5     => 'LZW',
-				32773 => 'PackBits',
+				0x0001 => 'Uncompressed',
+				0x0002 => 'Huffman',
+				0x0003 => 'CCITT T.4',
+				0x0004 => 'CCITT T.6',
+				0x0005 => 'LZW',
+				0x0006 => 'JPEG-old',
+				0x0007 => 'JPEG',
+				0x0008 => 'deflate',
+				0x0009 => 'JBIG ITU-T T.85',
+				0x000A => 'JBIG ITU-T T.43',
+				0x7FFE => 'NeXT RLE 2-bit',
+				0x8005 => 'PackBits',
+				0x8029 => 'ThunderScan RLE 4-bit',
+				0x807F => 'RasterPadding',
+				0x8080 => 'RLE-LW',
+				0x8081 => 'RLE-CT',
+				0x8082 => 'RLE-BL',
+				0x80B2 => 'deflate-PK',
+				0x80B3 => 'Kodak-DCS',
+				0x8765 => 'JBIG',
+				0x8798 => 'JPEG2000',
+				0x8799 => 'Nikon NEF',
+				0x879B => 'JBIG2',
 			);
 		}
 		return (isset($TIFFcompressionMethod[$id]) ? $TIFFcompressionMethod[$id] : 'unknown/invalid ('.$id.')');
