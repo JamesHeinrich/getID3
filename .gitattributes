@@ -31,3 +31,4 @@ composer.json export-ignore
 phpunit.xml.dist export-ignore
 build/ export-ignore
 tests/ export-ignore
+phpstan.neon export-ignore
