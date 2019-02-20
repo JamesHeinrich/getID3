@@ -175,7 +175,7 @@ class getID3_cached_mysqli extends getID3
 
 				$SQLquery  = 'UPDATE `getid3_cache` SET';
 				$SQLquery .= ' `hash` = MD5(`filename`, `filesize`, `filetime`)';
-				$SQLquery .= ' WHERE (`filesize` > -1);
+				$SQLquery .= ' WHERE (`filesize` > -1)';
 				$this->mysqli->query($SQLquery);
 
 				$SQLquery  = 'UPDATE `getid3_cache` SET';
