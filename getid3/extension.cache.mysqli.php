@@ -170,7 +170,7 @@ class getID3_cached_mysqli extends getID3
 			$this->cursor = $this->mysqli->query($SQLquery);
 			if ($this->cursor->num_rows == 0) {
 				// table has not been migrated, add column, add hashes, change index
-				$SQLquery  = 'ALTER TABLE `getid3_cache` DROP PRIMARY KEY, ADD `hash` CHAR(32) NOT NULL DEFAULT '' FIRST, ADD PRIMARY KEY(`hash`)';
+				$SQLquery  = 'ALTER TABLE `getid3_cache` DROP PRIMARY KEY, ADD `hash` CHAR(32) NOT NULL DEFAULT \'\' FIRST, ADD PRIMARY KEY(`hash`)';
 				$this->mysqli->query($SQLquery);
 
 				$SQLquery  = 'UPDATE `getid3_cache` SET';
