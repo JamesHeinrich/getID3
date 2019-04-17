@@ -13,9 +13,10 @@
 /////////////////////////////////////////////////////////////////
 
 die('For security reasons, this demo has been disabled. It can be enabled by removing line '.__LINE__.' in demos/'.basename(__FILE__));
-define('GETID3_DEMO_BROWSE_ALLOW_EDIT_LINK',   false);
-define('GETID3_DEMO_BROWSE_ALLOW_DELETE_LINK', false);
-define('GETID3_DEMO_BROWSE_ALLOW_MD5_LINK',    false);
+
+define('GETID3_DEMO_BROWSE_ALLOW_EDIT_LINK',   false); // if enabled, shows "edit" links (to /demos/demo.write.php) to allow ID3/APE/etc tag editing on applicable file types
+define('GETID3_DEMO_BROWSE_ALLOW_DELETE_LINK', false); // if enabled, shows "delete" links to delete files from the browse interface
+define('GETID3_DEMO_BROWSE_ALLOW_MD5_LINK',    false); // if enabled, shows "enable" link for MD5 hashes for file/data/source
 
 /////////////////////////////////////////////////////////////////
 // die if magic_quotes_runtime or magic_quotes_gpc are set
@@ -60,20 +61,20 @@ echo '<link rel="stylesheet" href="getid3.css" type="text/css">';
 echo '<meta http-equiv="Content-Type" content="text/html;charset='.$PageEncoding.'" />';
 echo '</head><body>';
 
-if (isset($_REQUEST['deletefile'])) {
+if (isset($_REQUEST['deletefile']) && GETID3_DEMO_BROWSE_ALLOW_DELETE_LINK) {
 	if (file_exists($_REQUEST['deletefile'])) {
 		if (unlink($_REQUEST['deletefile'])) {
-			$deletefilemessage = 'Successfully deleted '.addslashes($_REQUEST['deletefile']);
+			$deletefilemessage = 'Successfully deleted '.$_REQUEST['deletefile'];
 		} else {
-			$deletefilemessage = 'FAILED to delete '.addslashes($_REQUEST['deletefile']).' - error deleting file';
+			$deletefilemessage = 'FAILED to delete '.$_REQUEST['deletefile'].' - error deleting file';
 		}
 	} else {
-		$deletefilemessage = 'FAILED to delete '.addslashes($_REQUEST['deletefile']).' - file does not exist';
+		$deletefilemessage = 'FAILED to delete '.$_REQUEST['deletefile'].' - file does not exist';
 	}
 	if (isset($_REQUEST['noalert'])) {
-		echo '<b><font color="'.(($deletefilemessage{0} == 'F') ? '#FF0000' : '#008000').'">'.$deletefilemessage.'</font></b><hr>';
+		echo '<span style="font-weight: bold; color: #'.(($deletefilemessage{0} == 'F') ? 'FF0000' : '008000').';">'.htmlentities($deletefilemessage, ENT_QUOTES).'</span><hr>';
 	} else {
-		echo '<script type="text/javascript">alert("'.$deletefilemessage.'");</script>';
+		echo '<script type="text/javascript">alert("'.addslashes($deletefilemessage).'");</script>';
 	}
 }
 
