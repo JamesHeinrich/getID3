@@ -1125,6 +1125,13 @@ class getid3_id3v2 extends getid3_handler
 				}
 				$frame_text = (string) substr($parsedFrame['data'], $frame_terminatorpos + strlen($frame_textencoding_terminator));
 
+				// Null terminator at end of comment string is somewhat ambiguous in the specification, may or may not be implemented by various taggers. Remove terminator only if present.
+				// https://github.com/JamesHeinrich/getID3/issues/121
+				// https://community.mp3tag.de/t/x-trailing-nulls-in-id3v2-comments/19227
+				if (substr($frame_text, -strlen($frame_textencoding_terminator), strlen($frame_textencoding_terminator)) === $frame_textencoding_terminator) {
+					$frame_text = substr($frame_text, 0, -strlen($frame_textencoding_terminator));
+				}
+
 				$parsedFrame['encodingid']   = $frame_textencoding;
 				$parsedFrame['encoding']     = $this->TextEncodingNameLookup($frame_textencoding);
 
