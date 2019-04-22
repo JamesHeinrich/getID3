@@ -768,19 +768,16 @@ class getid3_id3v2 extends getid3_handler
 			if (ord(substr($parsedFrame['data'], $frame_terminatorpos + strlen($frame_textencoding_terminator), 1)) === 0) {
 				$frame_terminatorpos++; // strpos() fooled because 2nd byte of Unicode chars are often 0x00
 			}
-			$frame_description = substr($parsedFrame['data'], $frame_offset, $frame_terminatorpos - $frame_offset);
-			if (in_array($frame_description, array("\x00", "\x00\x00", "\xFF\xFE", "\xFE\xFF"))) {
-				// if description only contains a BOM or terminator then make it blank
-				$frame_description = '';
-			}
-			$parsedFrame['data'] = substr($parsedFrame['data'], $frame_terminatorpos + strlen($frame_textencoding_terminator));
-			$parsedFrame['data'] = $this->RemoveStringTerminator($parsedFrame['data'], $frame_textencoding_terminator);
-
 			$parsedFrame['encodingid']  = $frame_textencoding;
 			$parsedFrame['encoding']    = $this->TextEncodingNameLookup($frame_textencoding);
+			$parsedFrame['description'] = substr($parsedFrame['data'], $frame_offset, $frame_terminatorpos - $frame_offset);           // according to the frame text encoding
+			$parsedFrame['url']         = substr($parsedFrame['data'], $frame_terminatorpos + strlen($frame_textencoding_terminator)); // always ISO-8859-1
+			if (in_array($parsedFrame['description'], array("\x00", "\x00\x00", "\xFF\xFE", "\xFE\xFF"))) {
+				// if description only contains a BOM or terminator then make it blank
+				$parsedFrame['description'] = '';
+			}
+			$parsedFrame['description'] = $this->RemoveStringTerminator($parsedFrame['description'], $frame_textencoding_terminator);
 
-			$parsedFrame['url']         = $frame_urldata;     // always ISO-8859-1
-			$parsedFrame['description'] = $frame_description; // according to the frame text encoding
 			if (!empty($parsedFrame['framenameshort']) && $parsedFrame['url']) {
 				$info['id3v2']['comments'][$parsedFrame['framenameshort']][] = getid3_lib::iconv_fallback('ISO-8859-1', $info['id3v2']['encoding'], $parsedFrame['url']);
 			}
