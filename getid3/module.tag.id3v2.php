@@ -682,6 +682,7 @@ class getid3_id3v2 extends getid3_handler
 
 			$parsedFrame['description'] = trim(getid3_lib::iconv_fallback($parsedFrame['encoding'], $info['id3v2']['encoding'], $frame_description));
 			$parsedFrame['data'] = substr($parsedFrame['data'], $frame_terminatorpos + strlen($frame_textencoding_terminator));
+			$parsedFrame['data'] = $this->RemoveStringTerminator($parsedFrame['data'], $frame_textencoding_terminator);
 			if (!empty($parsedFrame['framenameshort']) && !empty($parsedFrame['data'])) {
 				$commentkey = ($parsedFrame['description'] ? $parsedFrame['description'] : (isset($info['id3v2']['comments'][$parsedFrame['framenameshort']]) ? count($info['id3v2']['comments'][$parsedFrame['framenameshort']]) : 0));
 				if (!isset($info['id3v2']['comments'][$parsedFrame['framenameshort']]) || !array_key_exists($commentkey, $info['id3v2']['comments'][$parsedFrame['framenameshort']])) {
@@ -707,6 +708,7 @@ class getid3_id3v2 extends getid3_handler
 			}
 
 			$parsedFrame['data'] = (string) substr($parsedFrame['data'], $frame_offset);
+			$parsedFrame['data'] = $this->RemoveStringTerminator($parsedFrame['data'], $this->TextEncodingTerminatorLookup($frame_textencoding));
 
 			$parsedFrame['encodingid'] = $frame_textencoding;
 			$parsedFrame['encoding']   = $this->TextEncodingNameLookup($frame_textencoding);
@@ -772,19 +774,7 @@ class getid3_id3v2 extends getid3_handler
 				$frame_description = '';
 			}
 			$parsedFrame['data'] = substr($parsedFrame['data'], $frame_terminatorpos + strlen($frame_textencoding_terminator));
-
-			$frame_terminatorpos = strpos($parsedFrame['data'], $frame_textencoding_terminator);
-			if (ord(substr($parsedFrame['data'], $frame_terminatorpos + strlen($frame_textencoding_terminator), 1)) === 0) {
-				$frame_terminatorpos++; // strpos() fooled because 2nd byte of Unicode chars are often 0x00
-			}
-			if ($frame_terminatorpos) {
-				// there are null bytes after the data - this is not according to spec
-				// only use data up to first null byte
-				$frame_urldata = (string) substr($parsedFrame['data'], 0, $frame_terminatorpos);
-			} else {
-				// no null bytes following data, just use all data
-				$frame_urldata = (string) $parsedFrame['data'];
-			}
+			$parsedFrame['data'] = $this->RemoveStringTerminator($parsedFrame['data'], $frame_textencoding_terminator);
 
 			$parsedFrame['encodingid']  = $frame_textencoding;
 			$parsedFrame['encoding']    = $this->TextEncodingNameLookup($frame_textencoding);
@@ -1016,6 +1006,7 @@ class getid3_id3v2 extends getid3_handler
 				$frame_description = '';
 			}
 			$parsedFrame['data'] = substr($parsedFrame['data'], $frame_terminatorpos + strlen($frame_textencoding_terminator));
+			$parsedFrame['data'] = $this->RemoveStringTerminator($parsedFrame['data'], $frame_textencoding_terminator);
 
 			$parsedFrame['encodingid']   = $frame_textencoding;
 			$parsedFrame['encoding']     = $this->TextEncodingNameLookup($frame_textencoding);
@@ -1124,13 +1115,7 @@ class getid3_id3v2 extends getid3_handler
 					$frame_description = '';
 				}
 				$frame_text = (string) substr($parsedFrame['data'], $frame_terminatorpos + strlen($frame_textencoding_terminator));
-
-				// Null terminator at end of comment string is somewhat ambiguous in the specification, may or may not be implemented by various taggers. Remove terminator only if present.
-				// https://github.com/JamesHeinrich/getID3/issues/121
-				// https://community.mp3tag.de/t/x-trailing-nulls-in-id3v2-comments/19227
-				if (substr($frame_text, -strlen($frame_textencoding_terminator), strlen($frame_textencoding_terminator)) === $frame_textencoding_terminator) {
-					$frame_text = substr($frame_text, 0, -strlen($frame_textencoding_terminator));
-				}
+				$frame_text = $this->RemoveStringTerminator($frame_text, $frame_textencoding_terminator);
 
 				$parsedFrame['encodingid']   = $frame_textencoding;
 				$parsedFrame['encoding']     = $this->TextEncodingNameLookup($frame_textencoding);
@@ -1745,7 +1730,8 @@ class getid3_id3v2 extends getid3_handler
 			$parsedFrame['encodingid']   = $frame_textencoding;
 			$parsedFrame['encoding']     = $this->TextEncodingNameLookup($frame_textencoding);
 
-			$parsedFrame['data']         = (string) substr($parsedFrame['data'], $frame_offset);
+			$parsedFrame['data'] = (string) substr($parsedFrame['data'], $frame_offset);
+			$parsedFrame['data'] = $this->RemoveStringTerminator($parsedFrame['data'], $this->TextEncodingTerminatorLookup($frame_textencoding));
 			if (!empty($parsedFrame['framenameshort']) && !empty($parsedFrame['data'])) {
 				$info['id3v2']['comments'][$parsedFrame['framenameshort']][] = getid3_lib::iconv_fallback($parsedFrame['encoding'], $info['id3v2']['encoding'], $parsedFrame['data']);
 			}
@@ -1783,6 +1769,7 @@ class getid3_id3v2 extends getid3_handler
 			$frame_offset += 8;
 
 			$parsedFrame['seller'] = (string) substr($parsedFrame['data'], $frame_offset);
+			$parsedFrame['seller'] = $this->RemoveStringTerminator($parsedFrame['seller'], $this->TextEncodingTerminatorLookup($frame_textencoding));
 			unset($parsedFrame['data']);
 
 
@@ -3729,6 +3716,22 @@ class getid3_id3v2 extends getid3_handler
 			255 => 'UTF-16BE'
 		);
 		return (isset($TextEncodingNameLookup[$encoding]) ? $TextEncodingNameLookup[$encoding] : 'ISO-8859-1');
+	}
+
+	/**
+	 * @param string $string
+	 * @param string $terminator
+	 *
+	 * @return string
+	 */
+	public static function RemoveStringTerminator($string, $terminator) {
+		// Null terminator at end of comment string is somewhat ambiguous in the specification, may or may not be implemented by various taggers. Remove terminator only if present.
+		// https://github.com/JamesHeinrich/getID3/issues/121
+		// https://community.mp3tag.de/t/x-trailing-nulls-in-id3v2-comments/19227
+		if (substr($string, -strlen($terminator), strlen($terminator)) === $terminator) {
+			$string = substr($string, 0, -strlen($terminator));
+		}
+		return $string;
 	}
 
 	/**
