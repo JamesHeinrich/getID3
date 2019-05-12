@@ -68,7 +68,7 @@ class getid3_id3v1 extends getid3_handler
 			$ID3v1encoding = 'ISO-8859-1';
 			foreach ($ParsedID3v1['comments'] as $tag_key => $valuearray) {
 				foreach ($valuearray as $key => $value) {
-					if (preg_match('#^[\\x00-\\x40\\xA8\\B8\\x80-\\xFF]+$#', $value)) {
+					if (preg_match('#^[\\x00-\\x40\\xA8\\xB8\\x80-\\xFF]+$#', $value)) {
 						foreach (array('Windows-1251', 'KOI8-R') as $id3v1_bad_encoding) {
 							if (function_exists('mb_convert_encoding') && @mb_convert_encoding($value, $id3v1_bad_encoding, $id3v1_bad_encoding) === $value) {
 								$ID3v1encoding = $id3v1_bad_encoding;
