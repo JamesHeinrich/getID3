@@ -1830,7 +1830,7 @@ $this->error('WebP image parsing not supported in this version of getID3()');
 		if (strlen($WaveFormatExData) > 16) {
 			$WaveFormatEx_raw['cbSize']      = substr($WaveFormatExData, 16, 2);
 		}
-		$WaveFormatEx_raw = array_map('Utils::LittleEndian2Int', $WaveFormatEx_raw);
+        $WaveFormatEx_raw = array_map(array('JamesHeinrich\GetID3\Utils', 'LittleEndian2Int'), $WaveFormatEx_raw);
 
 		$WaveFormatEx['codec']           = self::wFormatTagLookup($WaveFormatEx_raw['wFormatTag']);
 		$WaveFormatEx['channels']        = $WaveFormatEx_raw['nChannels'];
