@@ -64,7 +64,7 @@ class Real
 	 */
 	public function WriteReal() {
 		// File MUST be writeable - CHMOD(646) at least
-		if (getID3::is_writable($this->filename) && is_file($this->filename) && ($fp_source = fopen($this->filename, 'r+b'))) {
+		if (Utils::isWritable($this->filename) && is_file($this->filename) && ($fp_source = fopen($this->filename, 'r+b'))) {
 
 			// Initialize getID3 engine
 			$getID3 = new GetID3;
@@ -130,7 +130,7 @@ class Real
 					$AfterOffset  = $oldChunkInfo['CONT']['offset'] + $oldChunkInfo['CONT']['length'];
 				}
 				if ($tempfilename = tempnam(Utils::getTempDirectory(), 'getID3')) {
-					if (is_writable($tempfilename) && is_file($tempfilename) && ($fp_temp = fopen($tempfilename, 'wb'))) {
+					if (Utils::isWritable($tempfilename) && is_file($tempfilename) && ($fp_temp = fopen($tempfilename, 'wb'))) {
 
 						rewind($fp_source);
 						fwrite($fp_temp, fread($fp_source, $BeforeOffset));
@@ -268,7 +268,7 @@ class Real
 	 */
 	public function RemoveReal() {
 		// File MUST be writeable - CHMOD(646) at least
-		if (getID3::is_writable($this->filename) && is_file($this->filename) && ($fp_source = fopen($this->filename, 'r+b'))) {
+		if (Utils::isWritable($this->filename) && is_file($this->filename) && ($fp_source = fopen($this->filename, 'r+b'))) {
 
 			// Initialize getID3 engine
 			$getID3 = new GetID3;
@@ -297,7 +297,7 @@ class Real
 			$BeforeOffset = $oldChunkInfo['CONT']['offset'];
 			$AfterOffset  = $oldChunkInfo['CONT']['offset'] + $oldChunkInfo['CONT']['length'];
 			if ($tempfilename = tempnam(Utils::getTempDirectory(), 'getID3')) {
-				if (is_writable($tempfilename) && is_file($tempfilename) && ($fp_temp = fopen($tempfilename, 'wb'))) {
+				if (Utils::isWritable($tempfilename) && is_file($tempfilename) && ($fp_temp = fopen($tempfilename, 'wb'))) {
 
 					rewind($fp_source);
 					fwrite($fp_temp, fread($fp_source, $BeforeOffset));

@@ -440,30 +440,23 @@ class AMFStream
 	}
 
 	/**
-	 * @return int
+	 * @return int 8-bit
 	 */
 	public function readByte() {
-		return Utils::BigEndian2Int(substr($this->bytes, $this->pos++, 1));
-	}
-
-	/**
-	 * @return int
-	 */
-	public function readByte() { //  8-bit
 		return ord(substr($this->bytes, $this->pos++, 1));
 	}
 
 	/**
-	 * @return int
+	 * @return int 16-bit
 	 */
-	public function readInt() { // 16-bit
+	public function readInt() {
 		return ($this->readByte() << 8) + $this->readByte();
 	}
 
 	/**
-	 * @return int
+	 * @return int 32-bit
 	 */
-	public function readLong() { // 32-bit
+	public function readLong() {
 		return ($this->readByte() << 24) + ($this->readByte() << 16) + ($this->readByte() << 8) + $this->readByte();
 	}
 

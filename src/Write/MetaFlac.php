@@ -57,7 +57,7 @@ class MetaFlac
 			foreach ($this->tag_data['ATTACHED_PICTURE'] as $key => $picturedetails) {
 				$temppicturefilename = tempnam(Utils::getTempDirectory(), 'getID3');
 				$tempfilenames[] = $temppicturefilename;
-				if (getID3::is_writable($temppicturefilename) && is_file($temppicturefilename) && ($fpcomments = fopen($temppicturefilename, 'wb'))) {
+				if (Utils::isWritable($temppicturefilename) && is_file($temppicturefilename) && ($fpcomments = fopen($temppicturefilename, 'wb'))) {
 					// https://xiph.org/flac/documentation_tools_flac.html#flac_options_picture
 					// [TYPE]|[MIME-TYPE]|[DESCRIPTION]|[WIDTHxHEIGHTxDEPTH[/COLORS]]|FILE
 					fwrite($fpcomments, $picturedetails['data']);
@@ -78,7 +78,7 @@ class MetaFlac
 		// Create file with new comments
 		$tempcommentsfilename = tempnam(Utils::getTempDirectory(), 'getID3');
 		$tempfilenames[] = $tempcommentsfilename;
-		if (getID3::is_writable($tempcommentsfilename) && is_file($tempcommentsfilename) && ($fpcomments = fopen($tempcommentsfilename, 'wb'))) {
+		if (Utils::isWritable($tempcommentsfilename) && is_file($tempcommentsfilename) && ($fpcomments = fopen($tempcommentsfilename, 'wb'))) {
 			foreach ($this->tag_data as $key => $value) {
 				foreach ($value as $commentdata) {
 					fwrite($fpcomments, $this->CleanmetaflacName($key).'='.$commentdata."\n");

@@ -24,7 +24,7 @@ use JamesHeinrich\GetID3\Module\Tag\ID3v2;
 class Asf extends Handler
 {
 	/**
-	 * @param getID3 $getid3
+	 * @param GetID3 $getid3
 	 */
 	public function __construct(GetID3 $getid3) {
 		parent::__construct($getid3);

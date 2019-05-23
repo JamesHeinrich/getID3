@@ -172,7 +172,14 @@ class Utils
 		return static::$helpers = implode(\DIRECTORY_SEPARATOR, $pathParts) . \DIRECTORY_SEPARATOR;
 	}
 
-
+	/**
+	 * @param string $string
+	 * @param bool   $hex
+	 * @param bool   $spaces
+	 * @param string $htmlencoding
+	 *
+	 * @return string
+	 */
 	public static function PrintHexBytes($string, $hex=true, $spaces=true, $htmlencoding='UTF-8') {
 		$returnstring = '';
 		for ($i = 0; $i < strlen($string); $i++) {
@@ -1847,6 +1854,11 @@ class Utils
 		return (isset($cache[$file][$name][$key]) ? $cache[$file][$name][$key] : '');
 	}
 
+	/**
+	 * @param string $string
+	 *
+	 * @return string
+	 */
 	public static function trimNullByte($string) {
 		return trim($string, "\x00");
 	}
@@ -1878,6 +1890,22 @@ class Utils
 			}
 		}
 		return $filesize;
+	}
+
+	/**
+	 * @param string $filename
+	 *
+	 * @return bool
+	 */
+	public static function isWritable($filename) {
+		$ret = is_writable($filename);
+
+		if (!$ret) {
+			$perms = fileperms($filename);
+			$ret = ($perms & 0x0080) || ($perms & 0x0010) || ($perms & 0x0002);
+		}
+
+		return $ret;
 	}
 
 	/**

@@ -152,7 +152,7 @@ class Mpeg extends Handler
 				case 0xB5: // extension_start_code
 					$info['video']['codec'] = 'MPEG-2';
 
-					$bitstream = getid3_lib::BigEndian2Bin(substr($MPEGstreamData, $StartCodeOffset + 4, 8)); // 48 bits for Sequence Extension ID; 61 bits for Sequence Display Extension ID; 59 bits for Sequence Scalable Extension ID
+					$bitstream = Utils::BigEndian2Bin(substr($MPEGstreamData, $StartCodeOffset + 4, 8)); // 48 bits for Sequence Extension ID; 61 bits for Sequence Display Extension ID; 59 bits for Sequence Scalable Extension ID
 					$bitstreamoffset = 0;
 
 					$info['mpeg']['video']['raw']['extension_start_code_identifier'] = self::readBitsFromStream($bitstream, $bitstreamoffset,  4); //  4 bits for extension_start_code_identifier

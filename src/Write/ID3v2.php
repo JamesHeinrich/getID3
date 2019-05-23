@@ -103,7 +103,7 @@ class ID3v2
 		// File MUST be writeable - CHMOD(646) at least. It's best if the
 		// directory is also writeable, because that method is both faster and less susceptible to errors.
 
-		if (!empty($this->filename) && (getID3::is_writable($this->filename) || (!file_exists($this->filename) && getID3::is_writable(dirname($this->filename))))) {
+		if (!empty($this->filename) && (Utils::isWritable($this->filename) || (!file_exists($this->filename) && Utils::isWritable(dirname($this->filename))))) {
 			// Initialize getID3 engine
 			$getID3 = new GetID3;
 			$OldThisFileInfo = $getID3->analyze($this->filename);
@@ -121,12 +121,12 @@ class ID3v2
 
 			if ($NewID3v2Tag = $this->GenerateID3v2Tag()) {
 
-				if (file_exists($this->filename) && getID3::is_writable($this->filename) && isset($OldThisFileInfo['id3v2']['headerlength']) && ($OldThisFileInfo['id3v2']['headerlength'] == strlen($NewID3v2Tag))) {
+				if (file_exists($this->filename) && Utils::isWritable($this->filename) && isset($OldThisFileInfo['id3v2']['headerlength']) && ($OldThisFileInfo['id3v2']['headerlength'] == strlen($NewID3v2Tag))) {
 
 					// best and fastest method - insert-overwrite existing tag (padded to length of old tag if neccesary)
 					if (file_exists($this->filename)) {
 
-						if (is_readable($this->filename) && getID3::is_writable($this->filename) && is_file($this->filename) && ($fp = fopen($this->filename, 'r+b'))) {
+						if (is_readable($this->filename) && Utils::isWritable($this->filename) && is_file($this->filename) && ($fp = fopen($this->filename, 'r+b'))) {
 							rewind($fp);
 							fwrite($fp, $NewID3v2Tag, strlen($NewID3v2Tag));
 							fclose($fp);
@@ -136,7 +136,7 @@ class ID3v2
 
 					} else {
 
-						if (getID3::is_writable($this->filename) && is_file($this->filename) && ($fp = fopen($this->filename, 'wb'))) {
+						if (Utils::isWritable($this->filename) && is_file($this->filename) && ($fp = fopen($this->filename, 'wb'))) {
 							rewind($fp);
 							fwrite($fp, $NewID3v2Tag, strlen($NewID3v2Tag));
 							fclose($fp);
@@ -150,7 +150,7 @@ class ID3v2
 
 					if ($tempfilename = tempnam(Utils::getTempDirectory(), 'getID3')) {
 						if (is_readable($this->filename) && is_file($this->filename) && ($fp_source = fopen($this->filename, 'rb'))) {
-							if (getID3::is_writable($tempfilename) && is_file($tempfilename) && ($fp_temp = fopen($tempfilename, 'wb'))) {
+							if (Utils::isWritable($tempfilename) && is_file($tempfilename) && ($fp_temp = fopen($tempfilename, 'wb'))) {
 
 								fwrite($fp_temp, $NewID3v2Tag, strlen($NewID3v2Tag));
 
@@ -204,7 +204,7 @@ class ID3v2
 	public function RemoveID3v2() {
 		// File MUST be writeable - CHMOD(646) at least. It's best if the
 		// directory is also writeable, because that method is both faster and less susceptible to errors.
-		if (getID3::is_writable(dirname($this->filename))) {
+		if (Utils::isWritable(dirname($this->filename))) {
 
 			// preferred method - only one copying operation, minimal chance of corrupting
 			// original file if script is interrupted, but required directory to be writeable
@@ -222,7 +222,7 @@ class ID3v2
 				if ($OldThisFileInfo['avdataoffset'] !== false) {
 					fseek($fp_source, $OldThisFileInfo['avdataoffset']);
 				}
-				if (getID3::is_writable($this->filename) && is_file($this->filename) && ($fp_temp = fopen($this->filename.'getid3tmp', 'w+b'))) {
+				if (Utils::isWritable($this->filename) && is_file($this->filename) && ($fp_temp = fopen($this->filename.'getid3tmp', 'w+b'))) {
 					while ($buffer = fread($fp_source, $this->fread_buffer_size)) {
 						fwrite($fp_temp, $buffer, strlen($buffer));
 					}
@@ -239,7 +239,7 @@ class ID3v2
 			}
 			rename($this->filename.'getid3tmp', $this->filename);
 
-		} elseif (getID3::is_writable($this->filename)) {
+		} elseif (Utils::isWritable($this->filename)) {
 
 			// less desirable alternate method - double-copies the file, overwrites original file
 			// and could corrupt source file if the script is interrupted or an error occurs.
@@ -262,7 +262,7 @@ class ID3v2
 						fwrite($fp_temp, $buffer, strlen($buffer));
 					}
 					fclose($fp_source);
-					if (getID3::is_writable($this->filename) && is_file($this->filename) && ($fp_source = fopen($this->filename, 'wb'))) {
+					if (Utils::isWritable($this->filename) && is_file($this->filename) && ($fp_source = fopen($this->filename, 'wb'))) {
 						rewind($fp_temp);
 						while ($buffer = fread($fp_temp, $this->fread_buffer_size)) {
 							fwrite($fp_source, $buffer, strlen($buffer));

@@ -93,21 +93,14 @@ use JamesHeinrich\GetID3\GetID3;
 *
 *
 */
-class Sqlite3 extends GetID3 {
-
+class Sqlite3 extends GetID3
+{
 	/**
 	 * hold the sqlite db
 	 *
-	 * @var SQLite3 Resource
+	 * @var \SQLite3 Resource
 	 */
-    private $db;
-
-	/**
-	 * table to use for caching
-	 *
-	 * @var string $table
-	 */
-    private $table;
+	private $db;
 
 	/**
 	 * table to use for caching

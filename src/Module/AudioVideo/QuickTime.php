@@ -492,7 +492,7 @@ class QuickTime extends Handler
 													case 'gnre':
 														// enum
 														$GenreID = Utils::BigEndian2Int(substr($boxdata, 8, 4));
-														$atom_structure['data']    = getid3_id3v1::LookupGenreName($GenreID - 1);
+														$atom_structure['data']    = ID3v1::LookupGenreName($GenreID - 1);
 														break;
 
 													case 'rtng':
@@ -1445,7 +1445,7 @@ class QuickTime extends Handler
 						$getid3_temp->openfile($this->getid3->filename);
 						$getid3_temp->info['avdataoffset'] = $info['avdataoffset'];
 						$getid3_temp->info['avdataend']    = $info['avdataend'];
-						$getid3_mp3 = new getid3_mp3($getid3_temp);
+						$getid3_mp3 = new Mp3($getid3_temp);
 						if ($getid3_mp3->MPEGaudioHeaderValid($getid3_mp3->MPEGaudioHeaderDecode($this->fread(4)))) {
 							$getid3_mp3->getOnlyMPEGaudioInfo($getid3_temp->info['avdataoffset'], false);
 							if (!empty($getid3_temp->info['warning'])) {

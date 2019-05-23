@@ -51,7 +51,7 @@ class VorbisComment
 
 		// Create file with new comments
 		$tempcommentsfilename = tempnam(Utils::getTempDirectory(), 'getID3');
-		if (is_writable($tempcommentsfilename) && is_file($tempcommentsfilename) && ($fpcomments = fopen($tempcommentsfilename, 'wb'))) {
+		if (Utils::isWritable($tempcommentsfilename) && is_file($tempcommentsfilename) && ($fpcomments = fopen($tempcommentsfilename, 'wb'))) {
 
 			foreach ($this->tag_data as $key => $value) {
 				foreach ($value as $commentdata) {

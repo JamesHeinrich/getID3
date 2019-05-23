@@ -3,6 +3,7 @@
 namespace JamesHeinrich\GetID3\Write;
 
 use JamesHeinrich\GetID3\GetID3;
+use JamesHeinrich\GetID3\Utils;
 
 /////////////////////////////////////////////////////////////////
 /// getID3() by James Heinrich <info@getid3.org>               //
@@ -61,7 +62,7 @@ class Lyrics3
 		$getID3 = new GetID3;
 		$ThisFileInfo = $getID3->analyze($this->filename);
 		if (isset($ThisFileInfo['lyrics3']['tag_offset_start']) && isset($ThisFileInfo['lyrics3']['tag_offset_end'])) {
-			if (is_readable($this->filename) && getID3::is_writable($this->filename) && is_file($this->filename) && ($fp = fopen($this->filename, 'a+b'))) {
+			if (is_readable($this->filename) && Utils::isWritable($this->filename) && is_file($this->filename) && ($fp = fopen($this->filename, 'a+b'))) {
 
 				flock($fp, LOCK_EX);
 				$oldignoreuserabort = ignore_user_abort(true);
