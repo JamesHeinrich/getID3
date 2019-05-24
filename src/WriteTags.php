@@ -4,11 +4,10 @@ namespace JamesHeinrich\GetID3;
 
 /////////////////////////////////////////////////////////////////
 /// getID3() by James Heinrich <info@getid3.org>               //
-//  available at http://getid3.sourceforge.net                 //
-//            or http://www.getid3.org                         //
-//          also https://github.com/JamesHeinrich/getID3       //
-/////////////////////////////////////////////////////////////////
-// See readme.txt for more details                             //
+//  available at https://github.com/JamesHeinrich/getID3       //
+//            or https://www.getid3.org                        //
+//            or http://getid3.sourceforge.net                 //
+//  see readme.txt for more details                            //
 /////////////////////////////////////////////////////////////////
 ///                                                            //
 // write.php                                                   //
@@ -132,6 +131,20 @@ class WriteTags
 
 		if (!is_array($this->tagformats)) {
 			$this->errors[] = 'tagformats must be an array in getid3_writetags';
+			return false;
+		}
+		// prevent duplicate tag formats
+		$this->tagformats = array_unique($this->tagformats);
+
+		// prevent trying to specify more than one version of ID3v2 tag to write simultaneously
+		$id3typecounter = 0;
+		foreach ($this->tagformats as $tagformat) {
+			if (substr(strtolower($tagformat), 0, 6) == 'id3v2.') {
+				$id3typecounter++;
+			}
+		}
+		if ($id3typecounter > 1) {
+			$this->errors[] = 'tagformats must not contain more than one version of ID3v2';
 			return false;
 		}
 
@@ -601,6 +614,17 @@ class WriteTags
 					} else {
 						$this->errors[] = 'ID3v2 UFID data is not properly structured';
 						return false;
+					}
+					break;
+
+				case 'TXXX':
+					foreach ($valuearray as $key => $txxx_data_array) {
+						if (isset($txxx_data_array['description']) && isset($txxx_data_array['data'])) {
+							$tag_data_id3v2['TXXX'][] = $txxx_data_array;
+						} else {
+							$this->errors[] = 'ID3v2 TXXX data is not properly structured';
+							return false;
+						}
 					}
 					break;
 

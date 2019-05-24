@@ -8,11 +8,10 @@ use JamesHeinrich\GetID3\Utils;
 
 /////////////////////////////////////////////////////////////////
 /// getID3() by James Heinrich <info@getid3.org>               //
-//  available at http://getid3.sourceforge.net                 //
-//            or http://www.getid3.org                         //
-//          also https://github.com/JamesHeinrich/getID3       //
-/////////////////////////////////////////////////////////////////
-// See readme.txt for more details                             //
+//  available at https://github.com/JamesHeinrich/getID3       //
+//            or https://www.getid3.org                        //
+//            or http://getid3.sourceforge.net                 //
+//  see readme.txt for more details                            //
 /////////////////////////////////////////////////////////////////
 //                                                             //
 // module.audio.flac.php                                       //
@@ -55,17 +54,22 @@ class Flac extends Handler
 		do {
 			$BlockOffset   = $this->ftell();
 			$BlockHeader   = $this->fread(4);
-			$LBFBT         = Utils::BigEndian2Int(substr($BlockHeader, 0, 1));
+			$LBFBT         = Utils::BigEndian2Int(substr($BlockHeader, 0, 1));  // LBFBT = LastBlockFlag + BlockType
 			$LastBlockFlag = (bool) ($LBFBT & 0x80);
 			$BlockType     =        ($LBFBT & 0x7F);
 			$BlockLength   = Utils::BigEndian2Int(substr($BlockHeader, 1, 3));
 			$BlockTypeText = self::metaBlockTypeLookup($BlockType);
 
 			if (($BlockOffset + 4 + $BlockLength) > $info['avdataend']) {
-				$this->error('METADATA_BLOCK_HEADER.BLOCK_TYPE ('.$BlockTypeText.') at offset '.$BlockOffset.' extends beyond end of file');
+				$this->warning('METADATA_BLOCK_HEADER.BLOCK_TYPE ('.$BlockTypeText.') at offset '.$BlockOffset.' extends beyond end of file');
 				break;
 			}
 			if ($BlockLength < 1) {
+				if ($BlockTypeText != 'reserved') {
+					// probably supposed to be zero-length
+					$this->warning('METADATA_BLOCK_HEADER.BLOCK_LENGTH ('.$BlockTypeText.') at offset '.$BlockOffset.' is zero bytes');
+					continue;
+				}
 				$this->error('METADATA_BLOCK_HEADER.BLOCK_LENGTH ('.$BlockLength.') at offset '.$BlockOffset.' is invalid');
 				break;
 			}
@@ -176,7 +180,7 @@ class Flac extends Handler
 		if (isset($info['flac']['STREAMINFO']['audio_signature'])) {
 
 			if ($info['flac']['STREAMINFO']['audio_signature'] === str_repeat("\x00", 16)) {
-                $this->warning('FLAC STREAMINFO.audio_signature is null (known issue with libOggFLAC)');
+				$this->warning('FLAC STREAMINFO.audio_signature is null (known issue with libOggFLAC)');
 			}
 			else {
 				$info['md5_data_source'] = '';
@@ -206,14 +210,10 @@ class Flac extends Handler
 	/**
 	 * @param string $BlockData
 	 *
-	 * @return bool
+	 * @return array
 	 */
-	private function parseSTREAMINFO($BlockData) {
-		$info = &$this->getid3->info;
-
-		$info['flac']['STREAMINFO'] = array();
-		$streaminfo = &$info['flac']['STREAMINFO'];
-
+	public static function parseSTREAMINFOdata($BlockData) {
+		$streaminfo = array();
 		$streaminfo['min_block_size']  = Utils::BigEndian2Int(substr($BlockData, 0, 2));
 		$streaminfo['max_block_size']  = Utils::BigEndian2Int(substr($BlockData, 2, 2));
 		$streaminfo['min_frame_size']  = Utils::BigEndian2Int(substr($BlockData, 4, 3));
@@ -225,15 +225,28 @@ class Flac extends Handler
 		$streaminfo['bits_per_sample'] = Utils::Bin2Dec(substr($SRCSBSS, 23,  5)) + 1;
 		$streaminfo['samples_stream']  = Utils::Bin2Dec(substr($SRCSBSS, 28, 36));
 
-		$streaminfo['audio_signature'] = substr($BlockData, 18, 16);
+		$streaminfo['audio_signature'] =                           substr($BlockData, 18, 16);
 
-		if (!empty($streaminfo['sample_rate'])) {
+		return $streaminfo;
+	}
+
+	/**
+	 * @param string $BlockData
+	 *
+	 * @return bool
+	 */
+	private function parseSTREAMINFO($BlockData) {
+		$info = &$this->getid3->info;
+
+		$info['flac']['STREAMINFO'] = self::parseSTREAMINFOdata($BlockData);
+
+		if (!empty($info['flac']['STREAMINFO']['sample_rate'])) {
 
 			$info['audio']['bitrate_mode']    = 'vbr';
-			$info['audio']['sample_rate']     = $streaminfo['sample_rate'];
-			$info['audio']['channels']        = $streaminfo['channels'];
-			$info['audio']['bits_per_sample'] = $streaminfo['bits_per_sample'];
-			$info['playtime_seconds']         = $streaminfo['samples_stream'] / $streaminfo['sample_rate'];
+			$info['audio']['sample_rate']     = $info['flac']['STREAMINFO']['sample_rate'];
+			$info['audio']['channels']        = $info['flac']['STREAMINFO']['channels'];
+			$info['audio']['bits_per_sample'] = $info['flac']['STREAMINFO']['bits_per_sample'];
+			$info['playtime_seconds']         = $info['flac']['STREAMINFO']['samples_stream'] / $info['flac']['STREAMINFO']['sample_rate'];
 			if ($info['playtime_seconds'] > 0) {
 				if (!$this->isDependencyFor('Matroska')) {
 					$info['audio']['bitrate'] = (($info['avdataend'] - $info['avdataoffset']) * 8) / $info['playtime_seconds'];

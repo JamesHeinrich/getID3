@@ -5,19 +5,14 @@ use JamesHeinrich\GetID3;
 require __DIR__ . "/../vendor/autoload.php";
 
 /////////////////////////////////////////////////////////////////////////////////
-/// getID3() by James Heinrich <info@getid3.org>                               //
-//  available at http://getid3.sourceforge.net                                 //
-//            or http://www.getid3.org                                         //
-//          also https://github.com/JamesHeinrich/getID3                       //
+/// getID3() by James Heinrich <info@getid3.org>               //
+//  available at https://github.com/JamesHeinrich/getID3       //
+//            or https://www.getid3.org                        //
+//            or http://getid3.sourceforge.net                 //
 /////////////////////////////////////////////////////////////////////////////////
 ///                                                                            //
 // demo.dirscan.php - tool for batch media file processing with getID3()       //
 //                                                                            ///
-/////////////////////////////////////////////////////////////////////////////////
-///                                                                            //
-//  Directory Scanning and Caching CLI tool by Karl G. Holz <newaeonØmac*com>  //
-//                                                                            ///
-/////////////////////////////////////////////////////////////////////////////////
 /**
 * This is a directory scanning and caching cli tool for getID3().
 *

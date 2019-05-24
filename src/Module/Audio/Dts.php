@@ -7,11 +7,10 @@ use JamesHeinrich\GetID3\Utils;
 
 /////////////////////////////////////////////////////////////////
 /// getID3() by James Heinrich <info@getid3.org>               //
-//  available at http://getid3.sourceforge.net                 //
-//            or http://www.getid3.org                         //
-//          also https://github.com/JamesHeinrich/getID3       //
-/////////////////////////////////////////////////////////////////
-// See readme.txt for more details                             //
+//  available at https://github.com/JamesHeinrich/getID3       //
+//            or https://www.getid3.org                        //
+//            or http://getid3.sourceforge.net                 //
+//  see readme.txt for more details                            //
 /////////////////////////////////////////////////////////////////
 //                                                             //
 // module.audio.dts.php                                        //
@@ -56,18 +55,18 @@ class Dts extends Handler
 
 		// check syncword
 		$sync = substr($DTSheader, 0, 4);
-        if (($encoding = array_search($sync, self::$syncwords)) !== false) {
+		if (($encoding = array_search($sync, self::$syncwords)) !== false) {
 
-        	$info['dts']['raw']['magic'] = $sync;
+			$info['dts']['raw']['magic'] = $sync;
 			$this->readBinDataOffset = 32;
 
-        } elseif ($this->isDependencyFor('Matroska')) {
+		} elseif ($this->isDependencyFor('Matroska')) {
 
 			// Matroska contains DTS without syncword encoded as raw big-endian format
 			$encoding = 0;
 			$this->readBinDataOffset = 0;
 
-        } else {
+		} else {
 
 			unset($info['fileformat']);
 			return $this->error('Expecting "'.implode('| ', array_map('Utils::PrintHexBytes', self::$syncwords)).'" at offset '.$info['avdataoffset'].', found "'.Utils::PrintHexBytes($sync).'"');

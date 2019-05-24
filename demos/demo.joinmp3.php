@@ -6,16 +6,15 @@ require __DIR__ . "/../vendor/autoload.php";
 
 /////////////////////////////////////////////////////////////////
 /// getID3() by James Heinrich <info@getid3.org>               //
-//  available at http://getid3.sourceforge.net                 //
-//            or http://www.getid3.org                         //
-//          also https://github.com/JamesHeinrich/getID3       //
-/////////////////////////////////////////////////////////////////
+//  available at https://github.com/JamesHeinrich/getID3       //
+//            or https://www.getid3.org                        //
+//            or http://getid3.sourceforge.net                 //
 //                                                             //
 // /demo/demo.joinmp3.php - part of getID3()                   //
 // Sample script for splicing two or more MP3s together into   //
 // one file. Does not attempt to fix VBR header frames.        //
 // Can also be used to extract portion from single file.       //
-// See readme.txt for more details                             //
+//  see readme.txt for more details                            //
 //                                                            ///
 /////////////////////////////////////////////////////////////////
 
@@ -77,18 +76,18 @@ function CombineMultipleMP3sTo($FilenameOut, $FilenamesIn) {
 
 					// copy audio data from first file
 					$start_offset_bytes = $CurrentFileInfo['avdataoffset'];
-					if ($startoffset > 0) { // start X seconds from start of audio
-						$start_offset_bytes = $CurrentFileInfo['avdataoffset'] + round($CurrentFileInfo['bitrate'] / 8 * $startoffset);
+					if ($startoffset > 0) {       // start X seconds from start of audio
+						$start_offset_bytes = $CurrentFileInfo['avdataoffset'] + round(($CurrentFileInfo['bitrate'] / 8) * $startoffset);
 					} elseif ($startoffset < 0) { // start X seconds from end of audio
-						$start_offset_bytes = $CurrentFileInfo['avdataend'] + round($CurrentFileInfo['bitrate'] / 8 * $startoffset);
+						$start_offset_bytes = $CurrentFileInfo['avdataend']    + round(($CurrentFileInfo['bitrate'] / 8) * $startoffset);
 					}
 					$start_offset_bytes = max($CurrentFileInfo['avdataoffset'], min($CurrentFileInfo['avdataend'], $start_offset_bytes));
 
 					$end_offset_bytes = $CurrentFileInfo['avdataend'];
-					if ($length_seconds > 0) { // seconds from start of audio
-						$end_offset_bytes = $start_offset_bytes + round($CurrentFileInfo['bitrate'] / 8 * $length_seconds);
-					} elseif ($length_seconds < 0) { // seconds from start of audio
-						$end_offset_bytes = $CurrentFileInfo['avdataend'] + round($CurrentFileInfo['bitrate'] / 8 * $startoffset);
+					if ($length_seconds > 0) {       // set end offset to X seconds from start of audio
+						$end_offset_bytes = $start_offset_bytes           + round(($CurrentFileInfo['bitrate'] / 8) * $length_seconds);
+					} elseif ($length_seconds < 0) { // set end offset to X seconds from end of audio
+						$end_offset_bytes = $CurrentFileInfo['avdataend'] + round(($CurrentFileInfo['bitrate'] / 8) * $length_seconds);
 					}
 					$end_offset_bytes = max($CurrentFileInfo['avdataoffset'], min($CurrentFileInfo['avdataend'], $end_offset_bytes));
 

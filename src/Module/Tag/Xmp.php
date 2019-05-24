@@ -4,11 +4,10 @@ namespace JamesHeinrich\GetID3\Module\Tag;
 
 /////////////////////////////////////////////////////////////////
 /// getID3() by James Heinrich <info@getid3.org>               //
-//  available at http://getid3.sourceforge.net                 //
-//            or http://www.getid3.org                         //
-//          also https://github.com/JamesHeinrich/getID3       //
-/////////////////////////////////////////////////////////////////
-// See readme.txt for more details                             //
+//  available at https://github.com/JamesHeinrich/getID3       //
+//            or https://www.getid3.org                        //
+//            or http://getid3.sourceforge.net                 //
+//  see readme.txt for more details                            //
 /////////////////////////////////////////////////////////////////
 //                                                             //
 // module.tag.xmp.php                                          //
@@ -126,7 +125,7 @@ class Xmp
 		// Flag that we havent yet hit the compressed image data
 		$hit_compressed_image_data = false;
 
-        $headerdata = array();
+		$headerdata = array();
 		// Cycle through the file until, one of: 1) an EOI (End of image) marker is hit,
 		//                                       2) we have hit the compressed image data (no more headers are allowed after data)
 		//                                       3) or end of file is hit
@@ -215,7 +214,7 @@ class Xmp
 					// Return the XMP text
 					$xmp_data = substr($jpeg_header_data[$i]['SegData'], 29);
 
-					return trim($xmp_data); // trim() should not be neccesary, but some files found in the wild with null-terminated block (known samples from Apple Aperture) causes problems elsewhere (see http://www.getid3.org/phpBB3/viewtopic.php?f=4&t=1153)
+					return trim($xmp_data); // trim() should not be neccesary, but some files found in the wild with null-terminated block (known samples from Apple Aperture) causes problems elsewhere (see https://www.getid3.org/phpBB3/viewtopic.php?f=4&t=1153)
 				}
 			}
 		}

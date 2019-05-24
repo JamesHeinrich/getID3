@@ -3,7 +3,7 @@
     "type": "library",
     "description": "Extract and write useful information to/from popular multimedia file formats",
     "keywords": ["id3", "tags", "codecs", "audio", "video", "metadata"],
-    "homepage": "http://www.getid3.org/",
+    "homepage": "https://www.getid3.org/",
     "license": ["GPL-1.0-or-later", "LGPL-3.0-only", "MPL-2.0"],
     "authors": [{
         "name": "James Heinrich",
@@ -20,12 +20,25 @@
         "php": ">=5.4.0"
     },
     "suggest": {
+        "ext-com_dotnet": "COM extension is required when loading files larger than 2GB on Windows.",
+        "ext-ctype": "ctype extension is required when loading files larger than 2GB on 32-bit PHP (also on 64-bit PHP on Windows) or executing `getid3_lib::CopyTagsToComments`.",
+        "ext-dba": "DBA extension is required to use the DBA database as a cache storage.",
+        "ext-exif": "EXIF extension is required for graphic modules.",
+        "ext-iconv": "iconv extension is required to work with different character sets (when `ext-mbstring` is not available).",
+        "ext-json": "JSON extension is required to analyze Apple Quicktime videos.",
+        "ext-libxml": "libxml extension is required to analyze RIFF/WAV/BWF audio files.",
+        "ext-mbstring": "mbstring extension is required to work with different character sets.",
+        "ext-mysql": "MySQL extension is required to use the MySQL database as a cache storage (deprecated in PHP 5.5, removed in PHP >= 7.0, use `ext-mysqli` instead).",
+        "ext-mysqli": "MySQLi extension is required to use the MySQL database as a cache storage.",
         "ext-rar": "RAR extension is required for RAR archive module.",
-        "ext-exif": "EXIF extension is required for graphic modules."
+        "ext-SimpleXML": "SimpleXML extension is required to analyze RIFF/WAV/BWF audio files (also requires `ext-libxml`).",
+        "ext-sqlite3": "SQLite3 extension is required to use the SQLite3 database as a cache storage.",
+        "ext-xml": "XML extension is required for graphic modules to analyze the XML metadata.",
+        "ext-zlib": "Zlib extension is required for archive modules and compressed metadata."
     },
     "require-dev": {
         "phpunit/phpunit": "^4.8|^5.0",
-        "jakub-onderka/php-parallel-lint": "^0.9.2",
+        "jakub-onderka/php-parallel-lint": "^0.9 || ^1.0"
         "phpstan/phpstan": "^0.9"
     },
     "scripts": {
@@ -39,5 +52,10 @@
     },
     "autoload-dev": {
         "psr-4": { "JamesHeinrich\\GetID3\\Tests\\": "tests/" }
+    },
+    "extra": {
+        "branch-alias": {
+            "dev-master": "2.0.x-dev"
+        }
     }
 }

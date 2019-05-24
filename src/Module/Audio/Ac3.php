@@ -7,11 +7,10 @@ use JamesHeinrich\GetID3\Utils;
 
 /////////////////////////////////////////////////////////////////
 /// getID3() by James Heinrich <info@getid3.org>               //
-//  available at http://getid3.sourceforge.net                 //
-//            or http://www.getid3.org                         //
-//          also https://github.com/JamesHeinrich/getID3       //
-/////////////////////////////////////////////////////////////////
-// See readme.txt for more details                             //
+//  available at https://github.com/JamesHeinrich/getID3       //
+//            or https://www.getid3.org                        //
+//            or http://getid3.sourceforge.net                 //
+//  see readme.txt for more details                            //
 /////////////////////////////////////////////////////////////////
 //                                                             //
 // module.audio.ac3.php                                        //
@@ -24,14 +23,14 @@ class Ac3 extends Handler
 	/**
 	 * @var array
 	 */
-    private $AC3header = array();
+	private $AC3header = array();
 
 	/**
 	 * @var int
 	 */
-    private $BSIoffset = 0;
+	private $BSIoffset = 0;
 
-    const syncword = 0x0B77;
+	const syncword = 0x0B77;
 
 	/**
 	 * @return bool
@@ -426,7 +425,7 @@ class Ac3 extends Handler
 		} else {
 
 			$this->error('Bit stream identification is version '.$thisfile_ac3_raw_bsi['bsid'].', but getID3() only understands up to version 16. Please submit a support ticket with a sample file.');
-		    unset($info['ac3']);
+			unset($info['ac3']);
 			return false;
 
 		}

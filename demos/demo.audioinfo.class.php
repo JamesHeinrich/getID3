@@ -4,6 +4,15 @@ use JamesHeinrich\GetID3;
 
 require __DIR__ . "/../vendor/autoload.php";
 
+/////////////////////////////////////////////////////////////////
+/// getID3() by James Heinrich <info@getid3.org>               //
+//  available at https://github.com/JamesHeinrich/getID3       //
+//            or https://www.getid3.org                        //
+//            or http://getid3.sourceforge.net                 //
+//                                                             //
+// /demo/demo.audioinfo.class.php - part of getID3()           //
+//                                                            ///
+/////////////////////////////////////////////////////////////////
 // +----------------------------------------------------------------------+
 // | PHP version 4.1.0                                                    |
 // +----------------------------------------------------------------------+
@@ -30,7 +39,6 @@ require __DIR__ . "/../vendor/autoload.php";
 // +----------------------------------------------------------------------+
 // | Authors: Allan Hansen <ahØartemis*dk>                                |
 // +----------------------------------------------------------------------+
-//
 
 
 /**

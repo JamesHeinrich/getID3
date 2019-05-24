@@ -7,10 +7,9 @@ use JamesHeinrich\GetID3\GetID3;
 
 /////////////////////////////////////////////////////////////////
 /// getID3() by James Heinrich <info@getid3.org>               //
-//  available at http://getid3.sourceforge.net                 //
-//            or http://www.getid3.org                         //
-//          also https://github.com/JamesHeinrich/getID3       //
-/////////////////////////////////////////////////////////////////
+//  available at https://github.com/JamesHeinrich/getID3       //
+//            or https://www.getid3.org                        //
+//            or http://getid3.sourceforge.net                 //
 //                                                             //
 // extension.cache.mysql.php - part of getID3()                //
 // Please see readme.txt for more information                  //
@@ -169,7 +168,7 @@ class Mysql extends GetID3
 	 */
 	public function analyze($filename, $filesize=null, $original_filename='') {
 
-        $filetime = 0;
+		$filetime = 0;
 		if (file_exists($filename)) {
 
 			// Short-hands

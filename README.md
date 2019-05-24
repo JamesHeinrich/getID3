@@ -2,7 +2,7 @@ getID3
 ======
 
 A PHP library to extract and write useful information to/from popular multimedia file formats.  
-If you want to donate, there is a link on <http://www.getid3.org> for PayPal donations.
+If you want to donate, there is a link on <https://www.getid3.org> for PayPal donations.
 
 [![Latest Stable Version](https://poser.pugx.org/james-heinrich/getID3/version.svg)](https://packagist.org/packages/james-heinrich/getid3)
 [![Build Status](https://travis-ci.org/JamesHeinrich/getID3.svg?branch=2.0)](https://travis-ci.org/JamesHeinrich/getID3)

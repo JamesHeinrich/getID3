@@ -1,7 +1,7 @@
 /////////////////////////////////////////////////////////////////
 /// getID3() by James Heinrich <info@getid3.org>               //
 //  available at http://getid3.sourceforge.net                 //
-//            or http://www.getid3.org                         //
+//            or https://www.getid3.org                        //
 //          also https://github.com/JamesHeinrich/getID3       //
 /////////////////////////////////////////////////////////////////
 
@@ -18,9 +18,9 @@ GNU GPL: https://gnu.org/licenses/gpl.html                   (v3)
 
 GNU LGPL: https://gnu.org/licenses/lgpl.html                 (v3)
 
-Mozilla MPL: http://www.mozilla.org/MPL/2.0/                 (v2)
+Mozilla MPL: https://www.mozilla.org/MPL/2.0/                (v2)
 
-getID3 Commercial License: http://getid3.org/#gCL (payment required)
+getID3 Commercial License: https://www.getid3.org/#gCL (payment required)
 
 *****************************************************************
 *****************************************************************
@@ -28,10 +28,10 @@ Copies of each of the above licenses are included in the 'licenses'
 directory of the getID3 distribution.
 
 
-       +---------------------------------------------+
-       | If you want to donate, there is a link on   |
-       | http://www.getid3.org for PayPal donations. |
-       +---------------------------------------------+
+       +----------------------------------------------+
+       | If you want to donate, there is a link on    |
+       | https://www.getid3.org for PayPal donations. |
+       +----------------------------------------------+
 
 
 Quick Start
@@ -177,22 +177,25 @@ like this:
 // Copy remote file locally to scan with getID3()
 $remotefilename = 'http://www.example.com/filename.mp3';
 if ($fp_remote = fopen($remotefilename, 'rb')) {
-    $localtempfilename = tempnam('/tmp', 'getID3');
-    if ($fp_local = fopen($localtempfilename, 'wb')) {
-        while ($buffer = fread($fp_remote, 8192)) {
-            fwrite($fp_local, $buffer);
-        }
-        fclose($fp_local);
+	$localtempfilename = tempnam('/tmp', 'getID3');
+	if ($fp_local = fopen($localtempfilename, 'wb')) {
+		while ($buffer = fread($fp_remote, 32768)) {
+			fwrite($fp_local, $buffer);
+		}
+		fclose($fp_local);
+
+		$remote_headers = array_change_key_case(get_headers($remotefilename, 1), CASE_LOWER);
+		$remote_filesize = (isset($remote_headers['content-length']) ? (is_array($remote_headers['content-length']) ? $remote_headers['content-length'][count($remote_headers['content-length']) - 1] : $remote_headers['content-length']) : null);
 
 		// Initialize getID3 engine
 		$getID3 = new getID3;
 
-		$ThisFileInfo = $getID3->analyze($localtempfilename);
+		$ThisFileInfo = $getID3->analyze($localtempfilename, $remote_filesize, basename($remotefilename));
 
-        // Delete temporary file
-        unlink($localtempfilename);
-    }
-    fclose($fp_remote);
+		// Delete temporary file
+		unlink($localtempfilename);
+	}
+	fclose($fp_remote);
 }
 
 Note: since v1.9.9-20150212 it is possible a second and third parameter
@@ -297,7 +300,7 @@ could essentially write it today with a one-line function:
 
 Future Plans
 ===========================================================================
-http://www.getid3.org/phpBB3/viewforum.php?f=7
+https://www.getid3.org/phpBB3/viewforum.php?f=7
 
 * Better support for MP4 container format
 * Scan for appended ID3v2 tag at end of file per ID3v2.4 specs (Section 5.0)
@@ -339,11 +342,11 @@ http://www.getid3.org/phpBB3/viewforum.php?f=7
 * Optional scan-through-frames for AVI verification
   (thanks rockcohenØmassive-interactive*nl)
 * Support for TTF (thanks infoØbutterflyx*com)
-* Support for DSS (http://www.getid3.org/phpBB3/viewtopic.php?t=171)
+* Support for DSS (https://www.getid3.org/phpBB3/viewtopic.php?t=171)
 * Support for SMAF (http://smaf-yamaha.com/what/demo.html)
-  http://www.getid3.org/phpBB3/viewtopic.php?t=182
-* Support for AMR (http://www.getid3.org/phpBB3/viewtopic.php?t=195)
-* Support for 3gpp (http://www.getid3.org/phpBB3/viewtopic.php?t=195)
+  https://www.getid3.org/phpBB3/viewtopic.php?t=182
+* Support for AMR (https://www.getid3.org/phpBB3/viewtopic.php?t=195)
+* Support for 3gpp (https://www.getid3.org/phpBB3/viewtopic.php?t=195)
 * Support for ID4 (http://www.wackysoft.cjb.net grizlyY2KØhotmail*com)
 * Parse XML data returned in Ogg comments
 * Parse XML data from Quicktime SMIL metafiles (klausrathØmac*com)
@@ -379,7 +382,7 @@ http://www.getid3.org/phpBB3/viewforum.php?f=7
 
 Known Bugs/Issues in getID3() that may be fixed eventually
 ===========================================================================
-http://www.getid3.org/phpBB3/viewtopic.php?t=25
+https://www.getid3.org/phpBB3/viewtopic.php?t=25
 
 * Cannot determine bitrate for MPEG video with VBR video data
   (need documentation)
@@ -405,7 +408,7 @@ http://www.getid3.org/phpBB3/viewtopic.php?t=25
 
 Known Bugs/Issues in getID3() that cannot be fixed
 --------------------------------------------------
-http://www.getid3.org/phpBB3/viewtopic.php?t=25
+https://www.getid3.org/phpBB3/viewtopic.php?t=25
 
 * 32-bit PHP installations only:
   Files larger than 2GB cannot always be parsed fully by getID3()
@@ -435,7 +438,7 @@ http://www.getid3.org/phpBB3/viewtopic.php?t=25
 
 Known Bugs/Issues in other programs
 -----------------------------------
-http://www.getid3.org/phpBB3/viewtopic.php?t=25
+https://www.getid3.org/phpBB3/viewtopic.php?t=25
 
 * MusicBrainz Picard (at least up to v1.3.2) writes multiple
   ID3v2.3 genres in non-standard forward-slash separated text

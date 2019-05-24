@@ -6,14 +6,13 @@ require __DIR__ . "/../vendor/autoload.php";
 
 /////////////////////////////////////////////////////////////////
 /// getID3() by James Heinrich <info@getid3.org>               //
-//  available at http://getid3.sourceforge.net                 //
-//            or http://www.getid3.org                         //
-//          also https://github.com/JamesHeinrich/getID3       //
-/////////////////////////////////////////////////////////////////
+//  available at https://github.com/JamesHeinrich/getID3       //
+//            or https://www.getid3.org                        //
+//            or http://getid3.sourceforge.net                 //
 //                                                             //
 // /demo/demo.zip.php - part of getID3()                       //
 // Sample script how to use getID3() to decompress zip files   //
-// See readme.txt for more details                             //
+//  see readme.txt for more details                            //
 //                                                            ///
 /////////////////////////////////////////////////////////////////
 

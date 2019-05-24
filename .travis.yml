@@ -1,4 +1,5 @@
 language: php
+sudo: false
 
 cache:
   directories:
@@ -11,8 +12,7 @@ php:
   - 7.0
   - 7.1
   - 7.2
-
-sudo: false
+  - 7.3
 
 matrix:
   include:

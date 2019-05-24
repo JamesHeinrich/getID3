@@ -6,22 +6,22 @@ require __DIR__ . "/../vendor/autoload.php";
 
 /////////////////////////////////////////////////////////////////
 /// getID3() by James Heinrich <info@getid3.org>               //
-//  available at http://getid3.sourceforge.net                 //
-//            or http://www.getid3.org                         //
-//          also https://github.com/JamesHeinrich/getID3       //
-/////////////////////////////////////////////////////////////////
+//  available at https://github.com/JamesHeinrich/getID3       //
+//            or https://www.getid3.org                        //
+//            or http://getid3.sourceforge.net                 //
 //                                                             //
-// /demo/demo.browse.php - part of getID3()                     //
+// /demo/demo.browse.php - part of getID3()                    //
 // Sample script for browsing/scanning files and displaying    //
 // information returned by getID3()                            //
-// See readme.txt for more details                             //
+//  see readme.txt for more details                            //
 //                                                            ///
 /////////////////////////////////////////////////////////////////
 
 die('For security reasons, this demo has been disabled. It can be enabled by removing line '.__LINE__.' in demos/'.basename(__FILE__));
-define('GETID3_DEMO_BROWSE_ALLOW_EDIT_LINK',   false);
-define('GETID3_DEMO_BROWSE_ALLOW_DELETE_LINK', false);
-define('GETID3_DEMO_BROWSE_ALLOW_MD5_LINK',    false);
+
+define('GETID3_DEMO_BROWSE_ALLOW_EDIT_LINK',   false); // if enabled, shows "edit" links (to /demos/demo.write.php) to allow ID3/APE/etc tag editing on applicable file types
+define('GETID3_DEMO_BROWSE_ALLOW_DELETE_LINK', false); // if enabled, shows "delete" links to delete files from the browse interface
+define('GETID3_DEMO_BROWSE_ALLOW_MD5_LINK',    false); // if enabled, shows "enable" link for MD5 hashes for file/data/source
 
 $PageEncoding = 'UTF-8';
 
@@ -54,20 +54,20 @@ echo '<link rel="stylesheet" href="getid3.css" type="text/css">';
 echo '<meta http-equiv="Content-Type" content="text/html;charset='.$PageEncoding.'" />';
 echo '</head><body>';
 
-if (isset($_REQUEST['deletefile'])) {
+if (isset($_REQUEST['deletefile']) && GETID3_DEMO_BROWSE_ALLOW_DELETE_LINK) {
 	if (file_exists($_REQUEST['deletefile'])) {
 		if (unlink($_REQUEST['deletefile'])) {
-			$deletefilemessage = 'Successfully deleted '.addslashes($_REQUEST['deletefile']);
+			$deletefilemessage = 'Successfully deleted '.$_REQUEST['deletefile'];
 		} else {
-			$deletefilemessage = 'FAILED to delete '.addslashes($_REQUEST['deletefile']).' - error deleting file';
+			$deletefilemessage = 'FAILED to delete '.$_REQUEST['deletefile'].' - error deleting file';
 		}
 	} else {
-		$deletefilemessage = 'FAILED to delete '.addslashes($_REQUEST['deletefile']).' - file does not exist';
+		$deletefilemessage = 'FAILED to delete '.$_REQUEST['deletefile'].' - file does not exist';
 	}
 	if (isset($_REQUEST['noalert'])) {
-		echo '<b><font color="'.(($deletefilemessage{0} == 'F') ? '#FF0000' : '#008000').'">'.$deletefilemessage.'</font></b><hr>';
+		echo '<span style="font-weight: bold; color: #'.(($deletefilemessage{0} == 'F') ? 'FF0000' : '008000').';">'.htmlentities($deletefilemessage, ENT_QUOTES).'</span><hr>';
 	} else {
-		echo '<script type="text/javascript">alert("'.$deletefilemessage.'");</script>';
+		echo '<script type="text/javascript">alert("'.addslashes($deletefilemessage).'");</script>';
 	}
 }
 
@@ -142,7 +142,7 @@ if (isset($_REQUEST['filename'])) {
 		while ($file = readdir($handle)) {
 			$currentfilename = $listdirectory.'/'.$file;
 			set_time_limit(30); // allocate another 30 seconds to process this file - should go much quicker than this unless intense processing (like bitrate histogram analysis) is enabled
-			echo ' .'; // progress indicator dot
+			echo ' <span title="'.htmlentities($file, ENT_QUOTES).'">.</span>'; // progress indicator dot
 			flush();  // make sure the dot is shown, otherwise it's useless
 			switch ($file) {
 				case '..':
@@ -227,7 +227,8 @@ if (isset($_REQUEST['filename'])) {
 						echo '"> <input type="submit" value="Go">';
 						echo '</form></td>';
 					} else {
-						$escaped_filename = htmlentities($filename, ENT_SUBSTITUTE, $PageEncoding); // do filesystems always return filenames in ISO-8859-1?
+						//$escaped_filename = htmlentities($filename, ENT_SUBSTITUTE, $PageEncoding); // do filesystems always return filenames in ISO-8859-1?
+						$escaped_filename = htmlentities($filename, ENT_SUBSTITUTE, 'ISO-8859-1'); // do filesystems always return filenames in ISO-8859-1?
 						$escaped_filename = ($escaped_filename ? $escaped_filename : rawurlencode($filename));
 						echo '<td colspan="'.$columnsintable.'"><a href="'.htmlentities($_SERVER['PHP_SELF'].'?listdirectory='.urlencode($dirname.$filename), ENT_QUOTES | ENT_SUBSTITUTE, $PageEncoding).'"><b>'.$escaped_filename.'</b></a></td>';
 					}
@@ -260,7 +261,8 @@ if (isset($_REQUEST['filename'])) {
 				uksort($DirectoryContents[$dirname]['known'], 'MoreNaturalSort');
 				foreach ($DirectoryContents[$dirname]['known'] as $filename => $fileinfo) {
 					echo '<tr bgcolor="#'.(($rowcounter++ % 2) ? $getID3checkColor_FileDark : $getID3checkColor_FileLight).'">';
-					$escaped_filename = htmlentities($filename, ENT_SUBSTITUTE, $PageEncoding);
+					//$escaped_filename = htmlentities($filename, ENT_SUBSTITUTE, $PageEncoding); // do filesystems always return filenames in ISO-8859-1?
+					$escaped_filename = htmlentities($filename, ENT_SUBSTITUTE, 'ISO-8859-1'); // do filesystems always return filenames in ISO-8859-1?
 					$escaped_filename = ($escaped_filename ? $escaped_filename : rawurlencode($filename));
 					echo '<td><a href="'.htmlentities($_SERVER['PHP_SELF'].'?filename='.urlencode($dirname.$filename), ENT_QUOTES | ENT_SUBSTITUTE, $PageEncoding).'" title="View detailed analysis">'.$escaped_filename.'</a></td>';
 					echo '<td align="right">&nbsp;'.number_format($fileinfo['filesize']).'</td>';
@@ -596,7 +598,7 @@ function MoreNaturalSort($ar1, $ar2) {
 function PoweredBygetID3($string='') {
 	global $getID3;
 	if (!$string) {
-		$string = '<div style="border: 1px #CCCCCC solid; padding: 5px; margin: 5px 0; float: left; background-color: #EEEEEE; font-size: 8pt; font-family: sans-serif;">Powered by <a href="http://www.getid3.org/"><b>getID3() v<!--GETID3VER--></b><br>http://www.getid3.org/</a><br>Running on PHP v'.PHP_VERSION.' ('.(8 * PHP_INT_SIZE).'-bit, '.(defined('PHP_OS_FAMILY') ? PHP_OS_FAMILY : PHP_OS).')</div>';
+		$string = '<div style="border: 1px #CCCCCC solid; padding: 5px; margin: 5px 0; float: left; background-color: #EEEEEE; font-size: 8pt; font-family: sans-serif;">Powered by <a href="https://www.getid3.org/"><b>getID3() v<!--GETID3VER--></b><br>https://www.getid3.org/</a><br>Running on PHP v'.PHP_VERSION.' ('.(8 * PHP_INT_SIZE).'-bit, '.(defined('PHP_OS_FAMILY') ? PHP_OS_FAMILY : PHP_OS).')</div>';
 	}
 	return str_replace('<!--GETID3VER-->', $getID3->version(), $string);
 }

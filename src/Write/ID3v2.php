@@ -8,11 +8,10 @@ use JamesHeinrich\GetID3\Utils;
 
 /////////////////////////////////////////////////////////////////
 /// getID3() by James Heinrich <info@getid3.org>               //
-//  available at http://getid3.sourceforge.net                 //
-//            or http://www.getid3.org                         //
-//          also https://github.com/JamesHeinrich/getID3       //
-/////////////////////////////////////////////////////////////////
-// See readme.txt for more details                             //
+//  available at https://github.com/JamesHeinrich/getID3       //
+//            or https://www.getid3.org                        //
+//            or http://getid3.sourceforge.net                 //
+//  see readme.txt for more details                            //
 /////////////////////////////////////////////////////////////////
 ///                                                            //
 // write.id3v2.php                                             //
@@ -346,7 +345,7 @@ class ID3v2
 	public function GenerateID3v2FrameFlags($TagAlter=false, $FileAlter=false, $ReadOnly=false, $Compression=false, $Encryption=false, $GroupingIdentity=false, $Unsynchronisation=false, $DataLengthIndicator=false) {
 		$flag1 = null;
 		$flag2 = null;
-	    switch ($this->majorversion) {
+		switch ($this->majorversion) {
 			case 4:
 				// %0abc0000 %0h00kmnp
 				$flag1  = '0';
@@ -2082,7 +2081,7 @@ class ID3v2
 			}
 		}
 		// 2016-06-08: relax URL checking to avoid falsely rejecting valid URLs, leave URL validation to the user
-		// http://www.getid3.org/phpBB3/viewtopic.php?t=1926
+		// https://www.getid3.org/phpBB3/viewtopic.php?t=1926
 		return true;
 		/*
 		if ($parts = $this->safe_parse_url($url)) {
@@ -2317,6 +2316,7 @@ class ID3v2
 			$ID3v2ShortFrameNameLookup[4]['performer_sort_order']              = 'TSOP';
 			$ID3v2ShortFrameNameLookup[4]['title_sort_order']                  = 'TSOT';
 			$ID3v2ShortFrameNameLookup[4]['set_subtitle']                      = 'TSST';
+			$ID3v2ShortFrameNameLookup[4]['year']                              = 'TDRC'; // subset of ISO 8601: valid timestamps are yyyy, yyyy-MM, yyyy-MM-dd, yyyy-MM-ddTHH, yyyy-MM-ddTHH:mm and yyyy-MM-ddTHH:mm:ss. All time stamps are UTC
 		}
 		return (isset($ID3v2ShortFrameNameLookup[$majorversion][strtolower($long_description)]) ? $ID3v2ShortFrameNameLookup[$majorversion][strtolower($long_description)] : '');
 

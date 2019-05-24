@@ -4,10 +4,9 @@ namespace JamesHeinrich\GetID3;
 
 /////////////////////////////////////////////////////////////////
 /// getID3() by James Heinrich <info@getid3.org>               //
-//  available at http://getid3.sourceforge.net                 //
-//            or http://www.getid3.org                         //
-//          also https://github.com/JamesHeinrich/getID3       //
-/////////////////////////////////////////////////////////////////
+//  available at https://github.com/JamesHeinrich/getID3       //
+//            or https://www.getid3.org                        //
+//            or http://getid3.sourceforge.net                 //
 //                                                             //
 // Please see readme.txt for more information                  //
 //                                                            ///
@@ -179,7 +178,7 @@ class GetID3
 	 */
 	protected $startup_warning = '';
 
-	const VERSION           = '1.9.15-201803161257';
+	const VERSION           = '1.9.17-201905121748';
 	const FREAD_BUFFER_SIZE = 32768;
 
 	const ATTACHMENTS_NONE   = false;
@@ -268,7 +267,7 @@ class GetID3
 	 *
 	 * @throws Exception
 	 */
-	public function openfile($filename, $filesize=null) {
+	public function openfile($filename, $filesize=null, $fp=null) {
 		try {
 			if (!empty($this->startup_error)) {
 				throw new Exception($this->startup_error);
@@ -294,8 +293,10 @@ class GetID3
 			//$filename = preg_replace('#(?<!gs:)('.preg_quote(DIRECTORY_SEPARATOR).'{2,})#', DIRECTORY_SEPARATOR, $filename);
 
 			// open local file
-			//if (is_readable($filename) && is_file($filename) && ($this->fp = fopen($filename, 'rb'))) { // see http://www.getid3.org/phpBB3/viewtopic.php?t=1720
-			if ((is_readable($filename) || file_exists($filename)) && is_file($filename) && ($this->fp = fopen($filename, 'rb'))) {
+			//if (is_readable($filename) && is_file($filename) && ($this->fp = fopen($filename, 'rb'))) { // see https://www.getid3.org/phpBB3/viewtopic.php?t=1720
+			if (($fp != null) && ((get_resource_type($fp) == 'file') || (get_resource_type($fp) == 'stream'))) {
+				$this->fp = $fp;
+			} elseif ((is_readable($filename) || file_exists($filename)) && is_file($filename) && ($this->fp = fopen($filename, 'rb'))) {
 				// great
 			} else {
 				$errormessagelist = array();
@@ -376,9 +377,9 @@ class GetID3
 	 *
 	 * @return array
 	 */
-	public function analyze($filename, $filesize=null, $original_filename='') {
+	public function analyze($filename, $filesize=null, $original_filename='', $fp=null) {
 		try {
-			if (!$this->openfile($filename, $filesize)) {
+			if (!$this->openfile($filename, $filesize, $fp)) {
 				return $this->info;
 			}
 
@@ -689,7 +690,7 @@ class GetID3
 				'flac' => array(
 							'pattern'   => '^fLaC',
 							'module'    => 'Audio\\Flac',
-							'mime_type' => 'audio/x-flac',
+							'mime_type' => 'audio/flac',
 						),
 
 				// LA   - audio       - Lossless Audio (LA)
@@ -1032,7 +1033,7 @@ class GetID3
 				'gz'  => array(
 							'pattern'   => '^\\x1F\\x8B\\x08',
 							'module'    => 'Archive\\Gzip',
-							'mime_type' => 'application/x-gzip',
+							'mime_type' => 'application/gzip',
 							'fail_id3'  => 'ERROR',
 							'fail_ape'  => 'ERROR',
 						),
@@ -1042,6 +1043,16 @@ class GetID3
 							'pattern'   => '^PK\\x03\\x04',
 							'module'    => 'Archive\\Zip',
 							'mime_type' => 'application/zip',
+							'fail_id3'  => 'ERROR',
+							'fail_ape'  => 'ERROR',
+						),
+
+				// XZ   - data         - XZ compressed data
+				'xz'  => array(
+							'pattern'   => '^\\xFD7zXZ\\x00',
+							'group'     => 'archive',
+							'module'    => 'xz',
+							'mime_type' => 'application/x-xz',
 							'fail_id3'  => 'ERROR',
 							'fail_ape'  => 'ERROR',
 						),
@@ -1112,7 +1123,7 @@ class GetID3
 
 
 		if (preg_match('#\\.mp[123a]$#i', $filename)) {
-			// Too many mp3 encoders on the market put gabage in front of mpeg files
+			// Too many mp3 encoders on the market put garbage in front of mpeg files
 			// use assume format on these if format detection failed
 			$GetFileFormatArray = $this->GetFileFormatArray();
 			$info = $GetFileFormatArray['mp3'];
@@ -1214,6 +1225,7 @@ class GetID3
 						}
 					}
 					if ($tag_key == 'picture') {
+						// pictures can take up a lot of space, and we don't need multiple copies of them; let there be a single copy in [comments][picture], and not elsewhere
 						unset($this->info[$comment_name]['comments'][$tag_key]);
 					}
 				}
@@ -1227,6 +1239,11 @@ class GetID3
 
 				if ($this->option_tags_html) {
 					foreach ($this->info['tags'][$tag_name] as $tag_key => $valuearray) {
+						if ($tag_key == 'picture') {
+							// Do not to try to convert binary picture data to HTML
+							// https://github.com/JamesHeinrich/getID3/issues/178
+							continue;
+						}
 						$this->info['tags_html'][$tag_name][$tag_key] = Utils::recursiveMultiByteCharString2HTML($valuearray, $this->info[$comment_name]['encoding']);
 					}
 				}
@@ -1235,8 +1252,7 @@ class GetID3
 
 		}
 
-		// pictures can take up a lot of space, and we don't need multiple copies of them
-		// let there be a single copy in [comments][picture], and not elsewhere
+		// pictures can take up a lot of space, and we don't need multiple copies of them; let there be a single copy in [comments][picture], and not elsewhere
 		if (!empty($this->info['tags'])) {
 			$unset_keys = array('tags', 'tags_html');
 			foreach ($this->info['tags'] as $tagtype => $tagarray) {
