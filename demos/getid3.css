@@ -17,7 +17,7 @@ h1 {
 	line-height:   26px;
 	margin-top:    12px;
 	margin-bottom: 15px;
-	margin-left:    0px;
+	margin-left:    0;
 	margin-right:   7px;
 	background-color: #e6eaf6;
 	padding-left:   10px;
@@ -29,20 +29,20 @@ h3 {
 	font: bold 13px Verdana, sans-serif;
 	line-height:   26px;
 	margin-top:    12px;
-	margin-bottom:  0px;
-	margin-left:    0px;
+	margin-bottom:  0;
+	margin-left:    0;
 	margin-right:   7px;
 	padding-left:   4px;
 }
 
 ul {
-	margin-top: 0px;
+	margin-top: 0;
 }
 
 p, li {
 	font: 9pt/135% sans-serif;
-	margin-top:    1x;
-	margin-bottom: 0x;
+	margin-top:    1px;
+	margin-bottom: 0;
 }
 
 a, a:link, a:visited {

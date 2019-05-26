@@ -2,15 +2,15 @@
 
 namespace JamesHeinrich\GetID3\Module\Audio;
 
+use JamesHeinrich\GetID3\Module\Handler;
 use JamesHeinrich\GetID3\Utils;
 
 /////////////////////////////////////////////////////////////////
 /// getID3() by James Heinrich <info@getid3.org>               //
-//  available at http://getid3.sourceforge.net                 //
-//            or http://www.getid3.org                         //
-//          also https://github.com/JamesHeinrich/getID3       //
-/////////////////////////////////////////////////////////////////
-// See readme.txt for more details                             //
+//  available at https://github.com/JamesHeinrich/getID3       //
+//            or https://www.getid3.org                        //
+//            or http://getid3.sourceforge.net                 //
+//  see readme.txt for more details                            //
 /////////////////////////////////////////////////////////////////
 //                                                             //
 // module.audio.aac.php                                        //
@@ -18,8 +18,11 @@ use JamesHeinrich\GetID3\Utils;
 //                                                            ///
 /////////////////////////////////////////////////////////////////
 
-class Aac extends \JamesHeinrich\GetID3\Module\Handler
+class Aac extends Handler
 {
+	/**
+	 * @return bool
+	 */
 	public function Analyze() {
 		$info = &$this->getid3->info;
 		$this->fseek($info['avdataoffset']);
@@ -31,8 +34,9 @@ class Aac extends \JamesHeinrich\GetID3\Module\Handler
 		return true;
 	}
 
-
-
+	/**
+	 * @return bool
+	 */
 	public function getAACADIFheaderFilepointer() {
 		$info = &$this->getid3->info;
 		$info['fileformat']          = 'aac';
@@ -72,17 +76,17 @@ class Aac extends \JamesHeinrich\GetID3\Module\Handler
 			$bitoffset += 32;
 			$info['aac']['header']['mpeg_version']        = 4;
 
-			$info['aac']['header']['copyright']           = (bool) (substr($AACheaderBitstream, $bitoffset, 1) == '1');
+			$info['aac']['header']['copyright']           = substr($AACheaderBitstream, $bitoffset, 1) == '1';
 			$bitoffset += 1;
 			if ($info['aac']['header']['copyright']) {
 				$info['aac']['header']['copyright_id']    = Utils::Bin2String(substr($AACheaderBitstream, $bitoffset, 72));
 				$bitoffset += 72;
 			}
-			$info['aac']['header']['original_copy']       = (bool) (substr($AACheaderBitstream, $bitoffset, 1) == '1');
+			$info['aac']['header']['original_copy']       = substr($AACheaderBitstream, $bitoffset, 1) == '1';
 			$bitoffset += 1;
-			$info['aac']['header']['home']                = (bool) (substr($AACheaderBitstream, $bitoffset, 1) == '1');
+			$info['aac']['header']['home']                = substr($AACheaderBitstream, $bitoffset, 1) == '1';
 			$bitoffset += 1;
-			$info['aac']['header']['is_vbr']              = (bool) (substr($AACheaderBitstream, $bitoffset, 1) == '1');
+			$info['aac']['header']['is_vbr']              = substr($AACheaderBitstream, $bitoffset, 1) == '1';
 			$bitoffset += 1;
 			if ($info['aac']['header']['is_vbr']) {
 				$info['audio']['bitrate_mode']            = 'vbr';
@@ -260,7 +264,12 @@ class Aac extends \JamesHeinrich\GetID3\Module\Handler
 
 	}
 
-
+	/**
+	 * @param int  $MaxFramesToScan
+	 * @param bool $ReturnExtendedInfo
+	 *
+	 * @return bool
+	 */
 	public function getAACADTSheaderFilepointer($MaxFramesToScan=1000000, $ReturnExtendedInfo=false) {
 		$info = &$this->getid3->info;
 
@@ -446,6 +455,11 @@ class Aac extends \JamesHeinrich\GetID3\Module\Handler
 		// should never get here.
 	}
 
+	/**
+	 * @param int $samplerateid
+	 *
+	 * @return int|string
+	 */
 	public static function AACsampleRateLookup($samplerateid) {
 		static $AACsampleRateLookup = array();
 		if (empty($AACsampleRateLookup)) {
@@ -469,6 +483,12 @@ class Aac extends \JamesHeinrich\GetID3\Module\Handler
 		return (isset($AACsampleRateLookup[$samplerateid]) ? $AACsampleRateLookup[$samplerateid] : 'invalid');
 	}
 
+	/**
+	 * @param int $profileid
+	 * @param int $mpegversion
+	 *
+	 * @return string
+	 */
 	public static function AACprofileLookup($profileid, $mpegversion) {
 		static $AACprofileLookup = array();
 		if (empty($AACprofileLookup)) {
@@ -484,6 +504,11 @@ class Aac extends \JamesHeinrich\GetID3\Module\Handler
 		return (isset($AACprofileLookup[$mpegversion][$profileid]) ? $AACprofileLookup[$mpegversion][$profileid] : 'invalid');
 	}
 
+	/**
+	 * @param array $program_configs
+	 *
+	 * @return int
+	 */
 	public static function AACchannelCountCalculate($program_configs) {
 		$channels = 0;
 		for ($i = 0; $i < $program_configs['num_front_channel_elements']; $i++) {

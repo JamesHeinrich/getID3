@@ -2,14 +2,14 @@
 
 namespace JamesHeinrich\GetID3\Cache;
 
+use JamesHeinrich\GetID3\Exception;
 use JamesHeinrich\GetID3\GetID3;
 
 /////////////////////////////////////////////////////////////////
 /// getID3() by James Heinrich <info@getid3.org>               //
-//  available at http://getid3.sourceforge.net                 //
-//            or http://www.getid3.org                         //
-//          also https://github.com/JamesHeinrich/getID3       //
-/////////////////////////////////////////////////////////////////
+//  available at https://github.com/JamesHeinrich/getID3       //
+//            or https://www.getid3.org                        //
+//            or http://getid3.sourceforge.net                 //
 //                                                             //
 // extension.cache.mysql.php - part of getID3()                //
 // Please see readme.txt for more information                  //
@@ -74,29 +74,50 @@ use JamesHeinrich\GetID3\GetID3;
 
 class Mysql extends GetID3
 {
-
-	// private vars
+	/**
+	 * @var resource
+	 */
 	private $cursor;
+
+	/**
+	 * @var resource
+	 */
 	private $connection;
 
+	/**
+	 * @var string
+	 */
+	private $table;
 
-	// public: constructor - see top of this file for cache type and cache_options
+
+	/**
+	 * constructor - see top of this file for cache type and cache_options
+	 *
+	 * @param string $host
+	 * @param string $database
+	 * @param string $username
+	 * @param string $password
+	 * @param string $table
+	 *
+	 * @throws \Exception
+	 * @throws Exception
+	 */
 	public function __construct($host, $database, $username, $password, $table='getid3_cache') {
 
 		// Check for mysql support
 		if (!function_exists('mysql_pconnect')) {
-			throw new \Exception('PHP not compiled with mysql support.');
+			throw new Exception('PHP not compiled with mysql support.');
 		}
 
 		// Connect to database
 		$this->connection = mysql_pconnect($host, $username, $password);
 		if (!$this->connection) {
-			throw new \Exception('mysql_pconnect() failed - check permissions and spelling.');
+			throw new Exception('mysql_pconnect() failed - check permissions and spelling.');
 		}
 
 		// Select database
 		if (!mysql_select_db($database, $this->connection)) {
-			throw new \Exception('Cannot use database '.$database);
+			throw new Exception('Cannot use database '.$database);
 		}
 
 		// Set table
@@ -125,7 +146,9 @@ class Mysql extends GetID3
 
 
 
-	// public: clear cache
+	/**
+	 * clear cache
+	 */
 	public function clear_cache() {
 
 		$this->cursor = mysql_query('DELETE FROM `'.mysql_real_escape_string($this->table).'`', $this->connection);
@@ -134,9 +157,18 @@ class Mysql extends GetID3
 
 
 
-	// public: analyze file
-	public function analyze($filename, $filesize=null, $original_filename='') {
+	/**
+	 * analyze file
+	 *
+	 * @param string $filename
+	 * @param int    $filesize
+	 * @param string $original_filename
+	 *
+	 * @return mixed
+	 */
+	public function analyze($filename, $filesize=null, $original_filename='', $fp=null) {
 
+		$filetime = 0;
 		if (file_exists($filename)) {
 
 			// Short-hands
@@ -175,7 +207,11 @@ class Mysql extends GetID3
 
 
 
-	// private: (re)create sql table
+	/**
+	 * (re)create sql table
+	 *
+	 * @param bool $drop
+	 */
 	private function create_table($drop=false) {
 
 		$SQLquery  = 'CREATE TABLE IF NOT EXISTS `'.mysql_real_escape_string($this->table).'` (';
@@ -184,7 +220,7 @@ class Mysql extends GetID3
 		$SQLquery .= ', `filetime` INT(11) NOT NULL DEFAULT \'0\'';
 		$SQLquery .= ', `analyzetime` INT(11) NOT NULL DEFAULT \'0\'';
 		$SQLquery .= ', `value` LONGTEXT NOT NULL';
-		$SQLquery .= ', PRIMARY KEY (`filename`, `filesize`, `filetime`)) ENGINE=MyISAM CHARACTER SET=latin1 COLLATE=latin1_general_ci';
+		$SQLquery .= ', PRIMARY KEY (`filename`, `filesize`, `filetime`))';
 		$this->cursor = mysql_query($SQLquery, $this->connection);
 		echo mysql_error($this->connection);
 	}

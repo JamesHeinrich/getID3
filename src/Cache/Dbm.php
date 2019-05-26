@@ -2,14 +2,14 @@
 
 namespace JamesHeinrich\GetID3\Cache;
 
+use JamesHeinrich\GetID3\Exception;
 use JamesHeinrich\GetID3\GetID3;
 
 /////////////////////////////////////////////////////////////////
 /// getID3() by James Heinrich <info@getid3.org>               //
-//  available at http://getid3.sourceforge.net                 //
-//            or http://www.getid3.org                         //
-//          also https://github.com/JamesHeinrich/getID3       //
-/////////////////////////////////////////////////////////////////
+//  available at https://github.com/JamesHeinrich/getID3       //
+//            or https://www.getid3.org                        //
+//            or http://getid3.sourceforge.net                 //
 //                                                             //
 // extension.cache.dbm.php - part of getID3()                  //
 // Please see readme.txt for more information                  //
@@ -74,30 +74,58 @@ use JamesHeinrich\GetID3\GetID3;
 
 class Dbm extends GetID3
 {
+	/**
+	 * @var resource
+	 */
+	private $dba;
 
-	// public: constructor - see top of this file for cache type and cache_options
+	/**
+	 * @var resource|bool
+	 */
+	private $lock;
+
+	/**
+	 * @var string
+	 */
+	private $cache_type;
+
+	/**
+	 * @var string
+	 */
+	private $dbm_filename;
+
+	/**
+	 * constructor - see top of this file for cache type and cache_options
+	 *
+	 * @param string $cache_type
+	 * @param string $dbm_filename
+	 * @param string $lock_filename
+	 *
+	 * @throws \Exception
+	 * @throws Exception
+	 */
 	public function __construct($cache_type, $dbm_filename, $lock_filename) {
 
 		// Check for dba extension
 		if (!extension_loaded('dba')) {
-			throw new \Exception('PHP is not compiled with dba support, required to use DBM style cache.');
+			throw new Exception('PHP is not compiled with dba support, required to use DBM style cache.');
 		}
 
 		// Check for specific dba driver
 		if (!function_exists('dba_handlers') || !in_array($cache_type, dba_handlers())) {
-			throw new \Exception('PHP is not compiled --with '.$cache_type.' support, required to use DBM style cache.');
+			throw new Exception('PHP is not compiled --with '.$cache_type.' support, required to use DBM style cache.');
 		}
 
 		// Create lock file if needed
 		if (!file_exists($lock_filename)) {
 			if (!touch($lock_filename)) {
-				throw new \Exception('failed to create lock file: '.$lock_filename);
+				throw new Exception('failed to create lock file: '.$lock_filename);
 			}
 		}
 
 		// Open lock file for writing
 		if (!is_writeable($lock_filename)) {
-			throw new \Exception('lock file: '.$lock_filename.' is not writable');
+			throw new Exception('lock file: '.$lock_filename.' is not writable');
 		}
 		$this->lock = fopen($lock_filename, 'w');
 
@@ -107,7 +135,7 @@ class Dbm extends GetID3
 		// Create dbm-file if needed
 		if (!file_exists($dbm_filename)) {
 			if (!touch($dbm_filename)) {
-				throw new \Exception('failed to create dbm file: '.$dbm_filename);
+				throw new Exception('failed to create dbm file: '.$dbm_filename);
 			}
 		}
 
@@ -119,7 +147,7 @@ class Dbm extends GetID3
 			$this->dba = dba_open($dbm_filename, 'n', $cache_type);
 
 			if (!$this->dba) {
-				throw new \Exception('failed to create dbm file: '.$dbm_filename);
+				throw new Exception('failed to create dbm file: '.$dbm_filename);
 			}
 
 			// Insert getID3 version number
@@ -143,7 +171,9 @@ class Dbm extends GetID3
 
 
 
-	// public: destructor
+	/**
+	 * destructor
+	 */
 	public function __destruct() {
 
 		// Close dbm file
@@ -158,7 +188,11 @@ class Dbm extends GetID3
 
 
 
-	// public: clear cache
+	/**
+	 * clear cache
+	 *
+	 * @throws Exception
+	 */
 	public function clear_cache() {
 
 		// Close dbm file
@@ -168,7 +202,7 @@ class Dbm extends GetID3
 		$this->dba = dba_open($this->dbm_filename, 'n', $this->cache_type);
 
 		if (!$this->dba) {
-			throw new \Exception('failed to clear cache/recreate dbm file: '.$this->dbm_filename);
+			throw new Exception('failed to clear cache/recreate dbm file: '.$this->dbm_filename);
 		}
 
 		// Insert getID3 version number
@@ -180,8 +214,16 @@ class Dbm extends GetID3
 
 
 
-	// public: analyze file
-	public function analyze($filename) {
+	/**
+	 * clear cache
+	 *
+	 * @param string $filename
+	 * @param int    $filesize
+	 * @param string $original_filename
+	 *
+	 * @return mixed
+	 */
+	public function analyze($filename, $filesize=null, $original_filename='', $fp=null) {
 
 		if (file_exists($filename)) {
 
@@ -201,7 +243,7 @@ class Dbm extends GetID3
 		$result = parent::analyze($filename);
 
 		// Save result
-		if (file_exists($filename)) {
+		if (isset($key) && file_exists($filename)) {
 			dba_insert($key, serialize($result), $this->dba);
 		}
 

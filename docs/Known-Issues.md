@@ -1,7 +1,7 @@
 Known Bugs/Issues in getID3() that cannot be fixed
 ==================================================
 
-<http://www.getid3.org/phpBB3/viewtopic.php?t=25>
+<https://www.getid3.org/phpBB3/viewtopic.php?t=25>
 
 * 32-bit PHP installations only:
   Files larger than 2GB cannot always be parsed fully by getID3()

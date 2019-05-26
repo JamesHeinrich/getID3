@@ -6,11 +6,11 @@ use JamesHeinrich\GetID3\Utils;
 
 /////////////////////////////////////////////////////////////////
 /// getID3() by James Heinrich <info@getid3.org>               //
-//  available at http://getid3.sourceforge.net                 //
-//            or http://www.getid3.org                         //
-//          also https://github.com/JamesHeinrich/getID3       //
+//  available at https://github.com/JamesHeinrich/getID3       //
+//            or https://www.getid3.org                        //
+//            or http://getid3.sourceforge.net                 //
 /////////////////////////////////////////////////////////////////
-// See readme.txt for more details                             //
+//  see readme.txt for more details                            //
 /////////////////////////////////////////////////////////////////
 //                                                             //
 // write.vorbiscomment.php                                     //
@@ -20,17 +20,38 @@ use JamesHeinrich\GetID3\Utils;
 
 class VorbisComment
 {
-
+	/**
+	 * @var string
+	 */
 	public $filename;
-	public $tag_data;
-	public $warnings = array(); // any non-critical errors will be stored here
-	public $errors   = array(); // any critical errors will be stored here
 
+	/**
+	 * @var array
+	 */
+	public $tag_data;
+
+	/**
+	 * Any non-critical errors will be stored here.
+	 *
+	 * @var array
+	 */
+	public $warnings = array();
+
+	/**
+	 * Any critical errors will be stored here.
+	 *
+	 * @var array
+	 */
+	public $errors   = array();
+
+	/**
+	 * @return bool
+	 */
 	public function WriteVorbisComment() {
 
 		// Create file with new comments
 		$tempcommentsfilename = tempnam(Utils::getTempDirectory(), 'getID3');
-		if (is_writable($tempcommentsfilename) && is_file($tempcommentsfilename) && ($fpcomments = fopen($tempcommentsfilename, 'wb'))) {
+		if (Utils::isWritable($tempcommentsfilename) && is_file($tempcommentsfilename) && ($fpcomments = fopen($tempcommentsfilename, 'wb'))) {
 
 			foreach ($this->tag_data as $key => $value) {
 				foreach ($value as $commentdata) {
@@ -94,11 +115,19 @@ class VorbisComment
 		return true;
 	}
 
+	/**
+	 * @return bool
+	 */
 	public function DeleteVorbisComment() {
 		$this->tag_data = array(array());
 		return $this->WriteVorbisComment();
 	}
 
+	/**
+	 * @param string $originalcommentname
+	 *
+	 * @return string
+	 */
 	public function CleanVorbisCommentName($originalcommentname) {
 		// A case-insensitive field name that may consist of ASCII 0x20 through 0x7D, 0x3D ('=') excluded.
 		// ASCII 0x41 through 0x5A inclusive (A-Z) is to be considered equivalent to ASCII 0x61 through

@@ -1,7 +1,7 @@
 Known Bugs/Issues in getID3() that may be fixed eventually
 ==========================================================
 
-<http://www.getid3.org/phpBB3/viewtopic.php?t=25>
+<https://www.getid3.org/phpBB3/viewtopic.php?t=25>
 
 * Cannot determine bitrate for MPEG video with VBR video data
   (need documentation)

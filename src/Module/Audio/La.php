@@ -4,15 +4,15 @@ namespace JamesHeinrich\GetID3\Module\Audio;
 
 use JamesHeinrich\GetID3\GetID3;
 use JamesHeinrich\GetID3\Module\AudioVideo\Riff;
+use JamesHeinrich\GetID3\Module\Handler;
 use JamesHeinrich\GetID3\Utils;
 
 /////////////////////////////////////////////////////////////////
 /// getID3() by James Heinrich <info@getid3.org>               //
-//  available at http://getid3.sourceforge.net                 //
-//            or http://www.getid3.org                         //
-//          also https://github.com/JamesHeinrich/getID3       //
-/////////////////////////////////////////////////////////////////
-// See readme.txt for more details                             //
+//  available at https://github.com/JamesHeinrich/getID3       //
+//            or https://www.getid3.org                        //
+//            or http://getid3.sourceforge.net                 //
+//  see readme.txt for more details                            //
 /////////////////////////////////////////////////////////////////
 //                                                             //
 // module.audio.la.php                                         //
@@ -20,9 +20,11 @@ use JamesHeinrich\GetID3\Utils;
 //                                                            ///
 /////////////////////////////////////////////////////////////////
 
-class La extends \JamesHeinrich\GetID3\Module\Handler
+class La extends Handler
 {
-
+	/**
+	 * @return bool
+	 */
 	public function Analyze() {
 		$info = &$this->getid3->info;
 
@@ -178,7 +180,7 @@ class La extends \JamesHeinrich\GetID3\Module\Handler
 							fwrite($RIFF_fp, $RIFFdata, strlen($RIFFdata));
 							fclose($RIFF_fp);
 
-							$getid3_temp = new GetID3;
+							$getid3_temp = new GetID3();
 							$getid3_temp->openfile($RIFFtempfilename);
 							$getid3_riff = new Riff($getid3_temp);
 							$getid3_riff->Analyze();

@@ -62,7 +62,6 @@ local.properties
 *.tlb
 *.tli
 *.tlh
-*.tmp
 *.vspscc
 .builds
 *.dotCover
@@ -169,9 +168,8 @@ pip-log.txt
 .DS_Store
 demos/php_error.log
 
-
-#############
-## composer
-#############
+# Composer
 /vendor
 /composer.lock
+/composer.local.json
+/composer.phar

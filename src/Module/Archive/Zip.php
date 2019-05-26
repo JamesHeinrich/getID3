@@ -2,15 +2,15 @@
 
 namespace JamesHeinrich\GetID3\Module\Archive;
 
+use JamesHeinrich\GetID3\Module\Handler;
 use JamesHeinrich\GetID3\Utils;
 
 /////////////////////////////////////////////////////////////////
 /// getID3() by James Heinrich <info@getid3.org>               //
-//  available at http://getid3.sourceforge.net                 //
-//            or http://www.getid3.org                         //
-//          also https://github.com/JamesHeinrich/getID3       //
-/////////////////////////////////////////////////////////////////
-// See readme.txt for more details                             //
+//  available at https://github.com/JamesHeinrich/getID3       //
+//            or https://www.getid3.org                        //
+//            or http://getid3.sourceforge.net                 //
+//  see readme.txt for more details                            //
 /////////////////////////////////////////////////////////////////
 //                                                             //
 // module.archive.zip.php                                      //
@@ -18,9 +18,11 @@ use JamesHeinrich\GetID3\Utils;
 //                                                            ///
 /////////////////////////////////////////////////////////////////
 
-class Zip extends \JamesHeinrich\GetID3\Module\Handler
+class Zip extends Handler
 {
-
+	/**
+	 * @return bool
+	 */
 	public function Analyze() {
 		$info = &$this->getid3->info;
 
@@ -51,7 +53,7 @@ class Zip extends \JamesHeinrich\GetID3\Module\Handler
 
 					$this->fseek($info['zip']['end_central_directory']['directory_offset']);
 					$info['zip']['entries_count'] = 0;
-					while ($centraldirectoryentry = $this->ZIPparseCentralDirectory($this->getid3->fp)) {
+					while ($centraldirectoryentry = $this->ZIPparseCentralDirectory()) {
 						$info['zip']['central_directory'][] = $centraldirectoryentry;
 						$info['zip']['entries_count']++;
 						$info['zip']['compressed_size']   += $centraldirectoryentry['compressed_size'];
@@ -97,15 +99,15 @@ class Zip extends \JamesHeinrich\GetID3\Module\Handler
 					    !empty($info['zip']['files']['_rels']['.rels'])      &&
 					    !empty($info['zip']['files']['docProps']['app.xml']) &&
 					    !empty($info['zip']['files']['docProps']['core.xml'])) {
-						   // http://technet.microsoft.com/en-us/library/cc179224.aspx
-						   $info['fileformat'] = 'zip.msoffice';
-						   if (!empty($ThisFileInfo['zip']['files']['ppt'])) {
-						      $info['mime_type'] = 'application/vnd.openxmlformats-officedocument.presentationml.presentation';
-						   } elseif (!empty($ThisFileInfo['zip']['files']['xl'])) {
-						      $info['mime_type'] = 'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet';
-						   } elseif (!empty($ThisFileInfo['zip']['files']['word'])) {
-						      $info['mime_type'] = 'application/vnd.openxmlformats-officedocument.wordprocessingml.document';
-						   }
+							// http://technet.microsoft.com/en-us/library/cc179224.aspx
+							$info['fileformat'] = 'zip.msoffice';
+							if (!empty($ThisFileInfo['zip']['files']['ppt'])) {
+								$info['mime_type'] = 'application/vnd.openxmlformats-officedocument.presentationml.presentation';
+							} elseif (!empty($ThisFileInfo['zip']['files']['xl'])) {
+								$info['mime_type'] = 'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet';
+							} elseif (!empty($ThisFileInfo['zip']['files']['word'])) {
+								$info['mime_type'] = 'application/vnd.openxmlformats-officedocument.wordprocessingml.document';
+							}
 					}
 
 					return true;
@@ -132,7 +134,9 @@ class Zip extends \JamesHeinrich\GetID3\Module\Handler
 		return true;
 	}
 
-
+	/**
+	 * @return bool
+	 */
 	public function getZIPHeaderFilepointerTopDown() {
 		$info = &$this->getid3->info;
 
@@ -153,7 +157,7 @@ class Zip extends \JamesHeinrich\GetID3\Module\Handler
 		}
 
 		$info['zip']['entries_count']     = 0;
-		while ($centraldirectoryentry = $this->ZIPparseCentralDirectory($this->getid3->fp)) {
+		while ($centraldirectoryentry = $this->ZIPparseCentralDirectory()) {
 			$info['zip']['central_directory'][] = $centraldirectoryentry;
 			$info['zip']['entries_count']++;
 			$info['zip']['compressed_size']   += $centraldirectoryentry['compressed_size'];
@@ -178,7 +182,9 @@ class Zip extends \JamesHeinrich\GetID3\Module\Handler
 		return true;
 	}
 
-
+	/**
+	 * @return bool
+	 */
 	public function getZIPentriesFilepointer() {
 		$info = &$this->getid3->info;
 
@@ -201,7 +207,9 @@ class Zip extends \JamesHeinrich\GetID3\Module\Handler
 		return true;
 	}
 
-
+	/**
+	 * @return array|false
+	 */
 	public function ZIPparseLocalFileHeader() {
 		$LocalFileHeader['offset'] = $this->ftell();
 
@@ -268,7 +276,7 @@ class Zip extends \JamesHeinrich\GetID3\Module\Handler
 			$DataDescriptor = $this->fread(16);
 			$LocalFileHeader['data_descriptor']['signature']         = Utils::LittleEndian2Int(substr($DataDescriptor,  0, 4));
 			if ($LocalFileHeader['data_descriptor']['signature'] != 0x08074B50) { // "PK\x07\x08"
-				$this->getid3->warning[] = 'invalid Local File Header Data Descriptor Signature at offset '.($this->ftell() - 16).' - expecting 08 07 4B 50, found '.Utils::PrintHexBytes($LocalFileHeader['data_descriptor']['signature']);
+				$this->getid3->warning('invalid Local File Header Data Descriptor Signature at offset '.($this->ftell() - 16).' - expecting 08 07 4B 50, found '.Utils::PrintHexBytes($LocalFileHeader['data_descriptor']['signature']));
 				$this->fseek($LocalFileHeader['offset']); // seek back to where filepointer originally was so it can be handled properly
 				return false;
 			}
@@ -297,7 +305,9 @@ class Zip extends \JamesHeinrich\GetID3\Module\Handler
 		return $LocalFileHeader;
 	}
 
-
+	/**
+	 * @return array|false
+	 */
 	public function ZIPparseCentralDirectory() {
 		$CentralDirectory['offset'] = $this->ftell();
 
@@ -354,6 +364,9 @@ class Zip extends \JamesHeinrich\GetID3\Module\Handler
 		return $CentralDirectory;
 	}
 
+	/**
+	 * @return array|false
+	 */
 	public function ZIPparseEndOfCentralDirectory() {
 		$EndOfCentralDirectory['offset'] = $this->ftell();
 
@@ -380,9 +393,15 @@ class Zip extends \JamesHeinrich\GetID3\Module\Handler
 		return $EndOfCentralDirectory;
 	}
 
-
+	/**
+	 * @param int $flagbytes
+	 * @param int $compressionmethod
+	 *
+	 * @return array
+	 */
 	public static function ZIPparseGeneralPurposeFlags($flagbytes, $compressionmethod) {
 		// https://users.cs.jmu.edu/buchhofp/forensics/formats/pkzip-printable.html
+		$ParsedFlags = array();
 		$ParsedFlags['encrypted']               = (bool) ($flagbytes & 0x0001);
 		//                                                             0x0002 -- see below
 		//                                                             0x0004 -- see below
@@ -428,7 +447,11 @@ class Zip extends \JamesHeinrich\GetID3\Module\Handler
 		return $ParsedFlags;
 	}
 
-
+	/**
+	 * @param int $index
+	 *
+	 * @return string
+	 */
 	public static function ZIPversionOSLookup($index) {
 		static $ZIPversionOSLookup = array(
 			0  => 'MS-DOS and OS/2 (FAT / VFAT / FAT32 file systems)',
@@ -456,6 +479,11 @@ class Zip extends \JamesHeinrich\GetID3\Module\Handler
 		return (isset($ZIPversionOSLookup[$index]) ? $ZIPversionOSLookup[$index] : '[unknown]');
 	}
 
+	/**
+	 * @param int $index
+	 *
+	 * @return string
+	 */
 	public static function ZIPcompressionMethodLookup($index) {
 		// http://www.sno.phy.queensu.ca/~phil/exiftool/TagNames/ZIP.html
 		static $ZIPcompressionMethodLookup = array(
@@ -487,6 +515,12 @@ class Zip extends \JamesHeinrich\GetID3\Module\Handler
 		return (isset($ZIPcompressionMethodLookup[$index]) ? $ZIPcompressionMethodLookup[$index] : '[unknown]');
 	}
 
+	/**
+	 * @param int $DOSdate
+	 * @param int $DOStime
+	 *
+	 * @return int
+	 */
 	public static function DOStime2UNIXtime($DOSdate, $DOStime) {
 		// wFatDate
 		// Specifies the MS-DOS date. The date is a packed 16-bit value with the following format:

@@ -4,15 +4,15 @@ namespace JamesHeinrich\GetID3\Module\Audio;
 
 use JamesHeinrich\GetID3\GetID3;
 use JamesHeinrich\GetID3\Module\AudioVideo\Riff;
+use JamesHeinrich\GetID3\Module\Handler;
 use JamesHeinrich\GetID3\Utils;
 
 /////////////////////////////////////////////////////////////////
 /// getID3() by James Heinrich <info@getid3.org>               //
-//  available at http://getid3.sourceforge.net                 //
-//            or http://www.getid3.org                         //
-//          also https://github.com/JamesHeinrich/getID3       //
-/////////////////////////////////////////////////////////////////
-// See readme.txt for more details                             //
+//  available at https://github.com/JamesHeinrich/getID3       //
+//            or https://www.getid3.org                        //
+//            or http://getid3.sourceforge.net                 //
+//  see readme.txt for more details                            //
 /////////////////////////////////////////////////////////////////
 //                                                             //
 // module.audio.wavpack.php                                    //
@@ -20,9 +20,11 @@ use JamesHeinrich\GetID3\Utils;
 //                                                            ///
 /////////////////////////////////////////////////////////////////
 
-class WavPack extends \JamesHeinrich\GetID3\Module\Handler
+class WavPack extends Handler
 {
-
+	/**
+	 * @return bool
+	 */
 	public function Analyze() {
 		$info = &$this->getid3->info;
 
@@ -222,7 +224,7 @@ class WavPack extends \JamesHeinrich\GetID3\Module\Handler
 						case 0x21: // ID_RIFF_HEADER
 							$original_wav_filesize = Utils::LittleEndian2Int(substr($metablock['data'], 4, 4));
 
-							$getid3_temp = new GetID3;
+							$getid3_temp = new GetID3();
 							$getid3_temp->openfile($this->getid3->filename);
 							$getid3_riff = new Riff($getid3_temp);
 							$getid3_riff->ParseRIFFdata($metablock['data']);
@@ -240,10 +242,10 @@ class WavPack extends \JamesHeinrich\GetID3\Module\Handler
 
 
 						case 0x22: // ID_RIFF_TRAILER
-							$metablockRIFFfooter = $metablockRIFFheader.$metablock['data'];
+							$metablockRIFFfooter = isset($metablockRIFFheader) ? $metablockRIFFheader : ''.$metablock['data'];
 
 							$startoffset = $metablock['offset'] + ($metablock['large_block'] ? 4 : 2);
-							$getid3_temp = new GetID3;
+							$getid3_temp = new GetID3();
 							$getid3_temp->openfile($this->getid3->filename);
 							$getid3_temp->info['avdataend']  = $info['avdataend'];
 							//$getid3_temp->info['fileformat'] = 'riff';
@@ -371,7 +373,11 @@ class WavPack extends \JamesHeinrich\GetID3\Module\Handler
 		return true;
 	}
 
-
+	/**
+	 * @param int $id
+	 *
+	 * @return string
+	 */
 	public function WavPackMetablockNameLookup(&$id) {
 		static $WavPackMetablockNameLookup = array(
 			0x00 => 'Dummy',

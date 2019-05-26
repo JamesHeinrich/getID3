@@ -3,15 +3,15 @@
 namespace JamesHeinrich\GetID3\Module\Archive;
 
 use JamesHeinrich\GetID3\GetID3;
+use JamesHeinrich\GetID3\Module\Handler;
 use JamesHeinrich\GetID3\Utils;
 
 /////////////////////////////////////////////////////////////////
 /// getID3() by James Heinrich <info@getid3.org>               //
-//  available at http://getid3.sourceforge.net                 //
-//            or http://www.getid3.org                         //
-//          also https://github.com/JamesHeinrich/getID3       //
-/////////////////////////////////////////////////////////////////
-// See readme.txt for more details                             //
+//  available at https://github.com/JamesHeinrich/getID3       //
+//            or https://www.getid3.org                        //
+//            or http://getid3.sourceforge.net                 //
+//  see readme.txt for more details                            //
 /////////////////////////////////////////////////////////////////
 //                                                             //
 // module.archive.gzip.php                                     //
@@ -24,12 +24,20 @@ use JamesHeinrich\GetID3\Utils;
 //                                                             //
 /////////////////////////////////////////////////////////////////
 
-class Gzip extends \JamesHeinrich\GetID3\Module\Handler
+class Gzip extends Handler
 {
+	/**
+	 * Optional file list - disable for speed.
+	 *
+	 * Decode gzipped files, if possible, and parse recursively (.tar.gz for example).
+	 *
+	 * @var bool
+	 */
+	public $option_gzip_parse_contents = false;
 
-	// public: Optional file list - disable for speed.
-	public $option_gzip_parse_contents = false; // decode gzipped files, if possible, and parse recursively (.tar.gz for example)
-
+	/**
+	 * @return bool
+	 */
 	public function Analyze() {
 		$info = &$this->getid3->info;
 
@@ -49,6 +57,7 @@ class Gzip extends \JamesHeinrich\GetID3\Module\Handler
 		$buffer = $this->fread($info['filesize']);
 
 		$arr_members = explode("\x1F\x8B\x08", $buffer);
+		$num_members = 0;
 		while (true) {
 			$is_wrong_members = false;
 			$num_members = intval(count($arr_members));
@@ -204,11 +213,11 @@ class Gzip extends \JamesHeinrich\GetID3\Module\Handler
 					$inflated = gzinflate($cdata);
 
 					// Calculate CRC32 for inflated content
-					$thisInfo['crc32_valid'] = (bool) (sprintf('%u', crc32($inflated)) == $thisInfo['crc32']);
+					$thisInfo['crc32_valid'] = sprintf('%u', crc32($inflated)) == $thisInfo['crc32'];
 
 					// determine format
 					$formattest = substr($inflated, 0, 32774);
-					$getid3_temp = new GetID3;
+					$getid3_temp = new GetID3();
 					$determined_format = $getid3_temp->GetFileFormat($formattest);
 					unset($getid3_temp);
 
@@ -224,7 +233,7 @@ class Gzip extends \JamesHeinrich\GetID3\Module\Handler
 							if ($fp_temp_tar = fopen($temp_tar_filename, 'w+b')) {
 								fwrite($fp_temp_tar, $inflated);
 								fclose($fp_temp_tar);
-								$getid3_temp = new GetID3;
+								$getid3_temp = new GetID3();
 								$getid3_temp->openfile($temp_tar_filename);
 								$getid3_tar = new Tar($getid3_temp);
 								$getid3_tar->Analyze();
@@ -242,13 +251,21 @@ class Gzip extends \JamesHeinrich\GetID3\Module\Handler
 							// unknown or unhandled format
 							break;
 					}
+				} else {
+					$this->warning('PHP is not compiled with gzinflate() support. Please enable PHP Zlib extension or recompile with the --with-zlib switch');
 				}
 			}
 		}
 		return true;
 	}
 
-	// Converts the OS type
+	/**
+	 * Converts the OS type.
+	 *
+	 * @param string $key
+	 *
+	 * @return string
+	 */
 	public function get_os_type($key) {
 		static $os_type = array(
 			'0'   => 'FAT filesystem (MS-DOS, OS/2, NT/Win32)',
@@ -270,7 +287,13 @@ class Gzip extends \JamesHeinrich\GetID3\Module\Handler
 		return (isset($os_type[$key]) ? $os_type[$key] : '');
 	}
 
-	// Converts the eXtra FLags
+	/**
+	 * Converts the eXtra FLags.
+	 *
+	 * @param string $key
+	 *
+	 * @return string
+	 */
 	public function get_xflag_type($key) {
 		static $xflag_type = array(
 			'0' => 'unknown',

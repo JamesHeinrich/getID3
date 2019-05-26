@@ -4,15 +4,15 @@ namespace JamesHeinrich\GetID3\Module\AudioVideo;
 
 use JamesHeinrich\GetID3\GetID3;
 use JamesHeinrich\GetID3\Module\Audio\Mp3;
+use JamesHeinrich\GetID3\Module\Handler;
 use JamesHeinrich\GetID3\Utils;
 
 /////////////////////////////////////////////////////////////////
 /// getID3() by James Heinrich <info@getid3.org>               //
-//  available at http://getid3.sourceforge.net                 //
-//            or http://www.getid3.org                         //
-//          also https://github.com/JamesHeinrich/getID3       //
-/////////////////////////////////////////////////////////////////
-// See readme.txt for more details                             //
+//  available at https://github.com/JamesHeinrich/getID3       //
+//            or https://www.getid3.org                        //
+//            or http://getid3.sourceforge.net                 //
+//  see readme.txt for more details                            //
 /////////////////////////////////////////////////////////////////
 //                                                             //
 // module.audio-video.mpeg.php                                 //
@@ -20,7 +20,7 @@ use JamesHeinrich\GetID3\Utils;
 //                                                            ///
 /////////////////////////////////////////////////////////////////
 
-class Mpeg extends \JamesHeinrich\GetID3\Module\Handler
+class Mpeg extends Handler
 {
 	const START_CODE_BASE       = "\x00\x00\x01";
 	const VIDEO_PICTURE_START   = "\x00\x00\x01\x00";
@@ -32,7 +32,9 @@ class Mpeg extends \JamesHeinrich\GetID3\Module\Handler
 	const VIDEO_GROUP_START     = "\x00\x00\x01\xB8";
 	const AUDIO_START           = "\x00\x00\x01\xC0";
 
-
+	/**
+	 * @return bool
+	 */
 	public function Analyze() {
 		$info = &$this->getid3->info;
 
@@ -91,11 +93,9 @@ class Mpeg extends \JamesHeinrich\GetID3\Module\Handler
 					break;
 
 				case 0xB3: // sequence_header_code
-					/*
-					Note: purposely doing the less-pretty (and probably a bit slower) method of using string of bits rather than bitwise operations.
-					      Mostly because PHP 32-bit doesn't handle unsigned integers well for bitwise operation.
-					      Also the MPEG stream is designed as a bitstream and often doesn't align nicely with byte boundaries.
-					*/
+					// Note: purposely doing the less-pretty (and probably a bit slower) method of using string of bits rather than bitwise operations.
+					// Mostly because PHP 32-bit doesn't handle unsigned integers well for bitwise operation.
+					// Also the MPEG stream is designed as a bitstream and often doesn't align nicely with byte boundaries.
 					$info['video']['codec'] = 'MPEG-1'; // will be updated if extension_start_code found
 
 					$bitstream = Utils::BigEndian2Bin(substr($MPEGstreamData, $StartCodeOffset + 4, 8));
@@ -126,8 +126,8 @@ class Mpeg extends \JamesHeinrich\GetID3\Module\Handler
 						}
 					}
 
-					$info['mpeg']['video']['pixel_aspect_ratio']      =     self::videoAspectRatioLookup($info['mpeg']['video']['raw']['aspect_ratio_information']);
-					$info['mpeg']['video']['pixel_aspect_ratio_text'] = self::videoAspectRatioTextLookup($info['mpeg']['video']['raw']['aspect_ratio_information']);
+					$info['mpeg']['video']['pixel_aspect_ratio']      =     self::videoAspectRatioLookup($info['mpeg']['video']['raw']['aspect_ratio_information']); // may be overridden later if file turns out to be MPEG-2
+					$info['mpeg']['video']['pixel_aspect_ratio_text'] = self::videoAspectRatioTextLookup($info['mpeg']['video']['raw']['aspect_ratio_information']); // may be overridden later if file turns out to be MPEG-2
 					$info['mpeg']['video']['frame_rate']              =       self::videoFramerateLookup($info['mpeg']['video']['raw']['frame_rate_code']);
 					if ($info['mpeg']['video']['raw']['bitrate'] == 0x3FFFF) { // 18 set bits = VBR
 						//$this->warning('This version of getID3() ['.$this->getid3->version().'] cannot determine average bitrate of VBR MPEG video files');
@@ -173,6 +173,16 @@ class Mpeg extends \JamesHeinrich\GetID3\Module\Handler
 							$info['video']['interlaced']            = !$info['mpeg']['video']['raw']['progressive_sequence'];
 							$info['mpeg']['video']['interlaced']    = !$info['mpeg']['video']['raw']['progressive_sequence'];
 							$info['mpeg']['video']['chroma_format'] = self::chromaFormatTextLookup($info['mpeg']['video']['raw']['chroma_format']);
+
+							if (isset($info['mpeg']['video']['raw']['aspect_ratio_information'])) {
+								// MPEG-2 defines the aspect ratio flag differently from MPEG-1, but the MPEG-2 extension start code may occur after we've already looked up the aspect ratio assuming it was MPEG-1, so re-lookup assuming MPEG-2
+								// This must be done after the extended size is known, so the display aspect ratios can be converted to pixel aspect ratios.
+								$info['mpeg']['video']['pixel_aspect_ratio']      =     self::videoAspectRatioLookup($info['mpeg']['video']['raw']['aspect_ratio_information'], 2, $info['video']['resolution_x'], $info['video']['resolution_y']);
+								$info['mpeg']['video']['pixel_aspect_ratio_text'] = self::videoAspectRatioTextLookup($info['mpeg']['video']['raw']['aspect_ratio_information'], 2);
+								$info['video']['pixel_aspect_ratio'] = $info['mpeg']['video']['pixel_aspect_ratio'];
+								$info['video']['pixel_aspect_ratio_text'] = $info['mpeg']['video']['pixel_aspect_ratio_text'];
+							}
+
 							break;
 
 						case  2: // 0010 Sequence Display Extension ID
@@ -262,7 +272,7 @@ class Mpeg extends \JamesHeinrich\GetID3\Module\Handler
 
 				case 0xB8: // group_of_pictures_header
 					$GOPcounter++;
-					if ($info['mpeg']['video']['bitrate_mode'] == 'vbr') {
+					if (!empty($info['mpeg']['video']['bitrate_mode']) && ($info['mpeg']['video']['bitrate_mode'] == 'vbr')) {
 						$bitstream = Utils::BigEndian2Bin(substr($MPEGstreamData, $StartCodeOffset + 4, 4)); // 27 bits needed for group_of_pictures_header
 						$bitstreamoffset = 0;
 
@@ -278,7 +288,7 @@ class Mpeg extends \JamesHeinrich\GetID3\Module\Handler
 						$GOPheader['closed_gop']         = self::readBitsFromStream($bitstream, $bitstreamoffset,  1); //  1 bit flag: closed_gop
 						$GOPheader['broken_link']        = self::readBitsFromStream($bitstream, $bitstreamoffset,  1); //  1 bit flag: broken_link
 
-						$time_code_separator = ($GOPheader['drop_frame_flag'] ? ';' : ':'); // While non-drop time code is displayed with colons separating the digit pairs—"HH:MM:SS:FF"—drop frame is usually represented with a semi-colon (;) or period (.) as the divider between all the digit pairs—"HH;MM;SS;FF", "HH.MM.SS.FF"
+						$time_code_separator = ($GOPheader['drop_frame_flag'] ? ';' : ':'); // While non-drop time code is displayed with colons separating the digit pairs "HH:MM:SS:FF" drop frame is usually represented with a semi-colon (;) or period (.) as the divider between all the digit pairs "HH;MM;SS;FF", "HH.MM.SS.FF"
 						$GOPheader['time_code'] = sprintf('%02d'.$time_code_separator.'%02d'.$time_code_separator.'%02d'.$time_code_separator.'%02d', $GOPheader['time_code_hours'], $GOPheader['time_code_minutes'], $GOPheader['time_code_seconds'], $GOPheader['time_code_pictures']);
 
 						$info['mpeg']['group_of_pictures'][] = $GOPheader;
@@ -383,7 +393,7 @@ $PackedElementaryStream['additional_header_bytes'] = $additional_header_bytes;
 
 					$info['mpeg']['packed_elementary_streams'][$PackedElementaryStream['stream_type']][$PackedElementaryStream['stream_id']][] = $PackedElementaryStream;
 */
-					$getid3_temp = new GetID3;
+					$getid3_temp = new GetID3();
 					$getid3_temp->openfile($this->getid3->filename);
 					$getid3_temp->info = $info;
 					$getid3_mp3 = new Mp3($getid3_temp);
@@ -506,6 +516,14 @@ echo 'average_File_bitrate = '.number_format(array_sum($vbr_bitrates) / count($v
 		return true;
 	}
 
+	/**
+	 * @param string $bitstream
+	 * @param int    $bitstreamoffset
+	 * @param int    $bits_to_read
+	 * @param bool $return_singlebit_as_boolean
+	 *
+	 * @return bool|float|int
+	 */
 	private function readBitsFromStream(&$bitstream, &$bitstreamoffset, $bits_to_read, $return_singlebit_as_boolean=true) {
 		$return = bindec(substr($bitstream, $bitstreamoffset, $bits_to_read));
 		$bitstreamoffset += $bits_to_read;
@@ -515,7 +533,12 @@ echo 'average_File_bitrate = '.number_format(array_sum($vbr_bitrates) / count($v
 		return $return;
 	}
 
-
+	/**
+	 * @param int $VideoBitrate
+	 * @param int $AudioBitrate
+	 *
+	 * @return float|int
+	 */
 	public static function systemNonOverheadPercentage($VideoBitrate, $AudioBitrate) {
 		$OverheadPercentage = 0;
 
@@ -567,40 +590,89 @@ echo 'average_File_bitrate = '.number_format(array_sum($vbr_bitrates) / count($v
 		return $OverheadPercentage;
 	}
 
-
+	/**
+	 * @param int $rawframerate
+	 *
+	 * @return float
+	 */
 	public static function videoFramerateLookup($rawframerate) {
 		$lookup = array(0, 23.976, 24, 25, 29.97, 30, 50, 59.94, 60);
-		return (isset($lookup[$rawframerate]) ? (float) $lookup[$rawframerate] : (float) 0);
+		return (float) (isset($lookup[$rawframerate]) ? $lookup[$rawframerate] : 0);
 	}
 
-	public static function videoAspectRatioLookup($rawaspectratio) {
-		$lookup = array(0, 1, 0.6735, 0.7031, 0.7615, 0.8055, 0.8437, 0.8935, 0.9157, 0.9815, 1.0255, 1.0695, 1.0950, 1.1575, 1.2015, 0);
-		return (isset($lookup[$rawaspectratio]) ? (float) $lookup[$rawaspectratio] : (float) 0);
+	/**
+	 * @param int $rawaspectratio
+	 * @param int $mpeg_version
+	 * @param int $width
+	 * @param int $height
+	 *
+	 * @return float
+	 */
+	public static function videoAspectRatioLookup($rawaspectratio, $mpeg_version=1, $width=0, $height=0) {
+		$lookup = array(
+			1 => array(0, 1, 0.6735, 0.7031, 0.7615, 0.8055, 0.8437, 0.8935, 0.9157, 0.9815, 1.0255, 1.0695, 1.0950, 1.1575, 1.2015, 0),
+			2 => array(0, 1, 1.3333, 1.7778, 2.2100, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0),
+		);
+		$ratio = (float) (isset($lookup[$mpeg_version][$rawaspectratio]) ? $lookup[$mpeg_version][$rawaspectratio] : 0);
+		if ($mpeg_version == 2 && $ratio != 1) {
+			// Calculate pixel aspect ratio from MPEG-2 display aspect ratio
+			$ratio = $ratio * $height / $width;
+		}
+		return $ratio;
 	}
 
-	public static function videoAspectRatioTextLookup($rawaspectratio) {
-		$lookup = array('forbidden', 'square pixels', '0.6735', '16:9, 625 line, PAL', '0.7615', '0.8055', '16:9, 525 line, NTSC', '0.8935', '4:3, 625 line, PAL, CCIR601', '0.9815', '1.0255', '1.0695', '4:3, 525 line, NTSC, CCIR601', '1.1575', '1.2015', 'reserved');
-		return (isset($lookup[$rawaspectratio]) ? $lookup[$rawaspectratio] : '');
+	/**
+	 * @param int $rawaspectratio
+	 * @param int $mpeg_version
+	 *
+	 * @return string
+	 */
+	public static function videoAspectRatioTextLookup($rawaspectratio, $mpeg_version=1) {
+		$lookup = array(
+			1 => array('forbidden', 'square pixels', '0.6735', '16:9, 625 line, PAL', '0.7615', '0.8055', '16:9, 525 line, NTSC', '0.8935', '4:3, 625 line, PAL, CCIR601', '0.9815', '1.0255', '1.0695', '4:3, 525 line, NTSC, CCIR601', '1.1575', '1.2015', 'reserved'),
+			2 => array('forbidden', 'square pixels', '4:3', '16:9', '2.21:1', 'reserved', 'reserved', 'reserved', 'reserved', 'reserved', 'reserved', 'reserved', 'reserved', 'reserved', 'reserved', 'reserved'), // http://dvd.sourceforge.net/dvdinfo/mpeghdrs.html
+		);
+		return (isset($lookup[$mpeg_version][$rawaspectratio]) ? $lookup[$mpeg_version][$rawaspectratio] : '');
 	}
 
+	/**
+	 * @param int $video_format
+	 *
+	 * @return string
+	 */
 	public static function videoFormatTextLookup($video_format) {
 		// ISO/IEC 13818-2, section 6.3.6, Table 6-6. Meaning of video_format
 		$lookup = array('component', 'PAL', 'NTSC', 'SECAM', 'MAC', 'Unspecified video format', 'reserved(6)', 'reserved(7)');
 		return (isset($lookup[$video_format]) ? $lookup[$video_format] : '');
 	}
 
+	/**
+	 * @param int $scalable_mode
+	 *
+	 * @return string
+	 */
 	public static function scalableModeTextLookup($scalable_mode) {
 		// ISO/IEC 13818-2, section 6.3.8, Table 6-10. Definition of scalable_mode
 		$lookup = array('data partitioning', 'spatial scalability', 'SNR scalability', 'temporal scalability');
 		return (isset($lookup[$scalable_mode]) ? $lookup[$scalable_mode] : '');
 	}
 
+	/**
+	 * @param int $picture_structure
+	 *
+	 * @return string
+	 */
 	public static function pictureStructureTextLookup($picture_structure) {
 		// ISO/IEC 13818-2, section 6.3.11, Table 6-14 Meaning of picture_structure
 		$lookup = array('reserved', 'Top Field', 'Bottom Field', 'Frame picture');
 		return (isset($lookup[$picture_structure]) ? $lookup[$picture_structure] : '');
 	}
 
+	/**
+	 * @param int $chroma_format
+	 *
+	 * @return string
+	 */
 	public static function chromaFormatTextLookup($chroma_format) {
 		// ISO/IEC 13818-2, section 6.3.11, Table 6-14 Meaning of picture_structure
 		$lookup = array('reserved', '4:2:0', '4:2:2', '4:4:4');

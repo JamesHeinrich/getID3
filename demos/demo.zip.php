@@ -6,14 +6,13 @@ require __DIR__ . "/../vendor/autoload.php";
 
 /////////////////////////////////////////////////////////////////
 /// getID3() by James Heinrich <info@getid3.org>               //
-//  available at http://getid3.sourceforge.net                 //
-//            or http://www.getid3.org                         //
-//          also https://github.com/JamesHeinrich/getID3       //
-/////////////////////////////////////////////////////////////////
+//  available at https://github.com/JamesHeinrich/getID3       //
+//            or https://www.getid3.org                        //
+//            or http://getid3.sourceforge.net                 //
 //                                                             //
 // /demo/demo.zip.php - part of getID3()                       //
 // Sample script how to use getID3() to decompress zip files   //
-// See readme.txt for more details                             //
+//  see readme.txt for more details                            //
 //                                                            ///
 /////////////////////////////////////////////////////////////////
 
@@ -21,26 +20,26 @@ require __DIR__ . "/../vendor/autoload.php";
 function UnzipFileContents($filename, &$errors) {
 	$errors = array();
 	$DecompressedFileContents = array();
-	$getid3 = new GetID3\GetID3;
+	$getid3 = new GetID3\GetID3();
 	$getid3->info['filesize'] = filesize($filename);
 	ob_start();
 	if ($getid3->fp = fopen($filename, 'rb')) {
 		ob_end_clean();
 		$getid3_zip = new GetID3\Module\Archive\Zip($getid3);
-		$getid3_zip->analyze($filename);
+		$getid3_zip->analyze();
 		if (($getid3->info['fileformat'] == 'zip') && !empty($getid3->info['zip']['files'])) {
 			if (!empty($getid3->info['zip']['central_directory'])) {
 				$ZipDirectoryToWalk = $getid3->info['zip']['central_directory'];
 			} elseif (!empty($getid3->info['zip']['entries'])) {
 				$ZipDirectoryToWalk = $getid3->info['zip']['entries'];
 			} else {
-				$errors[] = 'failed to parse ZIP attachment "'.$piece_filename.'" (no central directory)<br>';
+				$errors[] = 'failed to parse ZIP attachment "'.$filename.'" (no central directory)<br>';
 				fclose($getid3->fp);
 				return false;
 			}
 			foreach ($ZipDirectoryToWalk as $key => $valuearray) {
 				fseek($getid3->fp, $valuearray['entry_offset'], SEEK_SET);
-				$LocalFileHeader = $getid3_zip->ZIPparseLocalFileHeader($getid3->fp);
+				$LocalFileHeader = $getid3_zip->ZIPparseLocalFileHeader();
 				if ($LocalFileHeader['flags']['encrypted']) {
 					// password-protected
 					$DecompressedFileContents[$valuearray['filename']] = '';

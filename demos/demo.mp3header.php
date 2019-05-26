@@ -1,4 +1,15 @@
 <?php
+/////////////////////////////////////////////////////////////////
+/// getID3() by James Heinrich <info@getid3.org>               //
+//  available at https://github.com/JamesHeinrich/getID3       //
+//            or https://www.getid3.org                        //
+//            or http://getid3.sourceforge.net                 //
+//                                                             //
+// /demo/demo.mp3header.php - part of getID3()                 //
+// Sample script for decoding MP3 header bytes                 //
+//  see readme.txt for more details                            //
+//                                                            ///
+/////////////////////////////////////////////////////////////////
 
 if (!function_exists('PrintHexBytes')) {
 	function PrintHexBytes($string) {
@@ -42,7 +53,7 @@ if (!function_exists('table_var_dump')) {
 						require_once(GETID3_INCLUDEPATH.'getid3.getimagesize.php');
 						$imageinfo = array();
 						if ($imagechunkcheck = GetDataImageSize($value, $imageinfo)) {
-							$DumpedImageSRC = (!empty($_REQUEST['filename']) ? $_REQUEST['filename'] : '.getid3').'.'.$variable['dataoffset'].'.'.ImageTypesLookup($imagechunkcheck[2]);
+							$DumpedImageSRC = (!empty($_REQUEST['filename']) ? $_REQUEST['filename'] : '.getid3').'.'.$variable['dataoffset'].'.'.image_type_to_mime_type($imagechunkcheck[2]);
 							if ($tempimagefile = fopen($DumpedImageSRC, 'wb')) {
 								fwrite($tempimagefile, $value);
 								fclose($tempimagefile);
@@ -91,7 +102,7 @@ if (!function_exists('table_var_dump')) {
 				$imageinfo = array();
 				if (($imagechunkcheck = GetDataImageSize(substr($variable, 0, 32768), $imageinfo)) && ($imagechunkcheck[2] >= 1) && ($imagechunkcheck[2] <= 3)) {
 					$returnstring .= '<table border="1" cellspacing="0" cellpadding="2">';
-					$returnstring .= '<tr><td><b>type</b></td><td>'.ImageTypesLookup($imagechunkcheck[2]).'</td></tr>';
+					$returnstring .= '<tr><td><b>type</b></td><td>'.image_type_to_mime_type($imagechunkcheck[2]).'</td></tr>';
 					$returnstring .= '<tr><td><b>width</b></td><td>'.number_format($imagechunkcheck[0]).' px</td></tr>';
 					$returnstring .= '<tr><td><b>height</b></td><td>'.number_format($imagechunkcheck[1]).' px</td></tr>';
 					$returnstring .= '<tr><td><b>size</b></td><td>'.number_format(strlen($variable)).' bytes</td></tr></table>';
@@ -1352,24 +1363,24 @@ echo '<input type="text" name="HeaderHexBytes" value="'.htmlentities(isset($_POS
 echo '<input type="submit" name="Analyze" value="Analyze"></form>';
 echo '<hr>';
 
-echo '<form action="'.htmlentities($_SERVER['PHP_SELF'], ENT_QUOTES).'" METHOD="get">';
+echo '<form action="'.htmlentities($_SERVER['PHP_SELF'], ENT_QUOTES).'" method="get">';
 echo 'Generate a MPEG-audio 4-byte header from these values:<BR>';
 echo '<table border="0">';
 
 $MPEGgenerateValues = array(
-								'version'=>array('1', '2', '2.5'),
-								'layer'=>array('I', 'II', 'III'),
-								'protection'=>array('Y', 'N'),
-								'bitrate'=>array('free', '8', '16', '24', '32', '40', '48', '56', '64', '80', '96', '112', '128', '144', '160', '176', '192', '224', '256', '288', '320', '352', '384', '416', '448'),
-								'frequency'=>array('8000', '11025', '12000', '16000', '22050', '24000', '32000', '44100', '48000'),
-								'padding'=>array('Y', 'N'),
-								'private'=>array('Y', 'N'),
-								'channelmode'=>array('stereo', 'joint stereo', 'dual channel', 'mono'),
-								'modeextension'=>array('none', 'IS', 'MS', 'IS+MS', '4-31', '8-31', '12-31', '16-31'),
-								'copyright'=>array('Y', 'N'),
-								'original'=>array('Y', 'N'),
-								'emphasis'=>array('none', '50/15ms', 'CCIT J.17')
-							);
+	'version'       => array('1', '2', '2.5'),
+	'layer'         => array('I', 'II', 'III'),
+	'protection'    => array('Y', 'N'),
+	'bitrate'       => array('free', '8', '16', '24', '32', '40', '48', '56', '64', '80', '96', '112', '128', '144', '160', '176', '192', '224', '256', '288', '320', '352', '384', '416', '448'),
+	'frequency'     => array('8000', '11025', '12000', '16000', '22050', '24000', '32000', '44100', '48000'),
+	'padding'       => array('Y', 'N'),
+	'private'       => array('Y', 'N'),
+	'channelmode'   => array('stereo', 'joint stereo', 'dual channel', 'mono'),
+	'modeextension' => array('none', 'IS', 'MS', 'IS+MS', '4-31', '8-31', '12-31', '16-31'),
+	'copyright'     => array('Y', 'N'),
+	'original'      => array('Y', 'N'),
+	'emphasis'      => array('none', '50/15ms', 'CCIT J.17'),
+);
 
 foreach ($MPEGgenerateValues as $name => $dataarray) {
 	echo '<tr><th>'.$name.':</th><td><select name="'.$name.'">';
@@ -1572,7 +1583,7 @@ function MPEGaudioCRCLookup($CRCbit) {
 /////////////////////////////////////////////////////////////////
 /// getID3() by James Heinrich <info@getid3.org>               //
 //  available at http://getid3.sourceforge.net                ///
-//            or http://www.getid3.org                        ///
+//            or https://www.getid3.org                       ///
 /////////////////////////////////////////////////////////////////
 //                                                             //
 // getid3.mp3.php - part of getID3()                           //

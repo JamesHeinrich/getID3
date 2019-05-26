@@ -4,15 +4,15 @@ namespace JamesHeinrich\GetID3\Module\Audio;
 
 use JamesHeinrich\GetID3\GetID3;
 use JamesHeinrich\GetID3\Module\AudioVideo\Riff;
+use JamesHeinrich\GetID3\Module\Handler;
 use JamesHeinrich\GetID3\Utils;
 
 /////////////////////////////////////////////////////////////////
 /// getID3() by James Heinrich <info@getid3.org>               //
-//  available at http://getid3.sourceforge.net                 //
-//            or http://www.getid3.org                         //
-//          also https://github.com/JamesHeinrich/getID3       //
-/////////////////////////////////////////////////////////////////
-// See readme.txt for more details                             //
+//  available at https://github.com/JamesHeinrich/getID3       //
+//            or https://www.getid3.org                        //
+//            or http://getid3.sourceforge.net                 //
+//  see readme.txt for more details                            //
 /////////////////////////////////////////////////////////////////
 //                                                             //
 // module.audio.lpac.php                                       //
@@ -20,15 +20,18 @@ use JamesHeinrich\GetID3\Utils;
 //                                                            ///
 /////////////////////////////////////////////////////////////////
 
-class Lpac extends \JamesHeinrich\GetID3\Module\Handler
+class Lpac extends Handler
 {
-
+	/**
+	 * @return bool
+	 */
 	public function Analyze() {
 		$info = &$this->getid3->info;
 
 		$this->fseek($info['avdataoffset']);
 		$LPACheader = $this->fread(14);
-		if (substr($LPACheader, 0, 4) != 'LPAC') {
+		$StreamMarker = substr($LPACheader, 0, 4);
+		if ($StreamMarker != 'LPAC') {
 			$this->error('Expected "LPAC" at offset '.$info['avdataoffset'].', found "'.$StreamMarker.'"');
 			return false;
 		}
@@ -80,7 +83,7 @@ class Lpac extends \JamesHeinrich\GetID3\Module\Handler
 				break;
 		}
 
-		$getid3_temp = new GetID3;
+		$getid3_temp = new GetID3();
 		$getid3_temp->openfile($this->getid3->filename);
 		$getid3_temp->info = $info;
 		$getid3_riff = new Riff($getid3_temp);

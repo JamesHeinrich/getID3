@@ -3,16 +3,16 @@
 namespace JamesHeinrich\GetID3\Module\Audio;
 
 use JamesHeinrich\GetID3\GetID3;
+use JamesHeinrich\GetID3\Module\Handler;
 use JamesHeinrich\GetID3\Module\Tag\ID3v2;
 use JamesHeinrich\GetID3\Utils;
 
 /////////////////////////////////////////////////////////////////
 /// getID3() by James Heinrich <info@getid3.org>               //
-//  available at http://getid3.sourceforge.net                 //
-//            or http://www.getid3.org                         //
-//          also https://github.com/JamesHeinrich/getID3       //
-/////////////////////////////////////////////////////////////////
-// See readme.txt for more details                             //
+//  available at https://github.com/JamesHeinrich/getID3       //
+//            or https://www.getid3.org                        //
+//            or http://getid3.sourceforge.net                 //
+//  see readme.txt for more details                            //
 /////////////////////////////////////////////////////////////////
 //                                                             //
 // module.audio.la.php                                         //
@@ -20,8 +20,11 @@ use JamesHeinrich\GetID3\Utils;
 //                                                            ///
 /////////////////////////////////////////////////////////////////
 
-class Bonk extends \JamesHeinrich\GetID3\Module\Handler
+class Bonk extends Handler
 {
+	/**
+	 * @return bool
+	 */
 	public function Analyze() {
 		$info = &$this->getid3->info;
 
@@ -119,6 +122,9 @@ class Bonk extends \JamesHeinrich\GetID3\Module\Handler
 
 	}
 
+	/**
+	 * @param string $BonkTagName
+	 */
 	public function HandleBonkTags($BonkTagName) {
 		$info = &$this->getid3->info;
 		switch ($BonkTagName) {
@@ -197,7 +203,7 @@ class Bonk extends \JamesHeinrich\GetID3\Module\Handler
 			case ' ID3':
 				$info['audio']['encoder'] = 'Extended BONK v0.9+';
 
-				$getid3_temp = new GetID3;
+				$getid3_temp = new GetID3();
 				$getid3_temp->openfile($this->getid3->filename);
 				$getid3_id3v2 = new ID3v2($getid3_temp);
 				$getid3_id3v2->StartingOffset = $info['bonk'][' ID3']['offset'] + 2;
@@ -215,6 +221,12 @@ class Bonk extends \JamesHeinrich\GetID3\Module\Handler
 		}
 	}
 
+	/**
+	 * @param string $PossibleBonkTag
+	 * @param bool   $ignorecase
+	 *
+	 * @return bool
+	 */
 	public static function BonkIsValidTagName($PossibleBonkTag, $ignorecase=false) {
 		static $BonkIsValidTagName = array('BONK', 'INFO', ' ID3', 'META');
 		foreach ($BonkIsValidTagName as $validtagname) {

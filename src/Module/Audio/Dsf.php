@@ -3,16 +3,16 @@
 namespace JamesHeinrich\GetID3\Module\Audio;
 
 use JamesHeinrich\GetID3\GetID3;
+use JamesHeinrich\GetID3\Module\Handler;
 use JamesHeinrich\GetID3\Module\Tag\ID3v2;
 use JamesHeinrich\GetID3\Utils;
 
 /////////////////////////////////////////////////////////////////
 /// getID3() by James Heinrich <info@getid3.org>               //
-//  available at http://getid3.sourceforge.net                 //
-//            or http://www.getid3.org                         //
-//          also https://github.com/JamesHeinrich/getID3       //
-/////////////////////////////////////////////////////////////////
-// See readme.txt for more details                             //
+//  available at https://github.com/JamesHeinrich/getID3       //
+//            or https://www.getid3.org                        //
+//            or http://getid3.sourceforge.net                 //
+//  see readme.txt for more details                            //
 /////////////////////////////////////////////////////////////////
 //                                                             //
 // module.audio.dsf.php                                        //
@@ -20,9 +20,11 @@ use JamesHeinrich\GetID3\Utils;
 //                                                            ///
 /////////////////////////////////////////////////////////////////
 
-class Dsf extends \JamesHeinrich\GetID3\Module\Handler
+class Dsf extends Handler
 {
-
+	/**
+	 * @return bool
+	 */
 	public function Analyze() {
 		$info = &$this->getid3->info;
 
@@ -121,7 +123,11 @@ class Dsf extends \JamesHeinrich\GetID3\Module\Handler
 		return true;
 	}
 
-
+	/**
+	 * @param int $channel_type_id
+	 *
+	 * @return string
+	 */
 	public static function DSFchannelTypeLookup($channel_type_id) {
 		static $DSFchannelTypeLookup = array(
 			                  // interleaving order:

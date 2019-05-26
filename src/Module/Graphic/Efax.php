@@ -2,15 +2,15 @@
 
 namespace JamesHeinrich\GetID3\Module\Graphic;
 
+use JamesHeinrich\GetID3\Module\Handler;
 use JamesHeinrich\GetID3\Utils;
 
 /////////////////////////////////////////////////////////////////
 /// getID3() by James Heinrich <info@getid3.org>               //
-//  available at http://getid3.sourceforge.net                 //
-//            or http://www.getid3.org                         //
-//          also https://github.com/JamesHeinrich/getID3       //
-/////////////////////////////////////////////////////////////////
-// See readme.txt for more details                             //
+//  available at https://github.com/JamesHeinrich/getID3       //
+//            or https://www.getid3.org                        //
+//            or http://getid3.sourceforge.net                 //
+//  see readme.txt for more details                            //
 /////////////////////////////////////////////////////////////////
 //                                                             //
 // module.archive.efax.php                                     //
@@ -18,9 +18,11 @@ use JamesHeinrich\GetID3\Utils;
 //                                                            ///
 /////////////////////////////////////////////////////////////////
 
-class Efax extends \JamesHeinrich\GetID3\Module\Handler
+class Efax extends Handler
 {
-
+	/**
+	 * @return bool
+	 */
 	public function Analyze() {
 		$info = &$this->getid3->info;
 
@@ -45,8 +47,8 @@ class Efax extends \JamesHeinrich\GetID3\Module\Handler
 		$info['efax']['header']['pages']      = Utils::LittleEndian2Int(substr($efaxheader, 198, 2));
 		$info['efax']['header']['data_bytes'] = Utils::LittleEndian2Int(substr($efaxheader, 202, 4));
 
-$this->error('eFax parsing not enabled in this version of getID3() ['.$this->getid3->version().']');
-return false;
+		$this->error('eFax parsing not enabled in this version of getID3() ['.$this->getid3->version().']');
+		return false;
 
 		return true;
 	}

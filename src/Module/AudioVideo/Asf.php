@@ -2,16 +2,17 @@
 
 namespace JamesHeinrich\GetID3\Module\AudioVideo;
 
+use JamesHeinrich\GetID3\GetID3;
+use JamesHeinrich\GetID3\Module\Handler;
 use JamesHeinrich\GetID3\Utils;
 use JamesHeinrich\GetID3\Module\Tag\ID3v2;
 
 /////////////////////////////////////////////////////////////////
 /// getID3() by James Heinrich <info@getid3.org>               //
-//  available at http://getid3.sourceforge.net                 //
-//            or http://www.getid3.org                         //
-//          also https://github.com/JamesHeinrich/getID3       //
-/////////////////////////////////////////////////////////////////
-// See readme.txt for more details                             //
+//  available at https://github.com/JamesHeinrich/getID3       //
+//            or https://www.getid3.org                        //
+//            or http://getid3.sourceforge.net                 //
+//  see readme.txt for more details                            //
 /////////////////////////////////////////////////////////////////
 //                                                             //
 // module.audio-video.asf.php                                  //
@@ -19,10 +20,12 @@ use JamesHeinrich\GetID3\Module\Tag\ID3v2;
 //                                                            ///
 /////////////////////////////////////////////////////////////////
 
-class Asf extends \JamesHeinrich\GetID3\Module\Handler
+class Asf extends Handler
 {
-
-	public function __construct(getID3 $getid3) {
+	/**
+	 * @param GetID3 $getid3
+	 */
+	public function __construct(GetID3 $getid3) {
 		parent::__construct($getid3);
 
 		// initialize all GUID constants
@@ -34,6 +37,9 @@ class Asf extends \JamesHeinrich\GetID3\Module\Handler
 		}
 	}
 
+	/**
+	 * @return bool
+	 */
 	public function Analyze() {
 		$info = &$this->getid3->info;
 
@@ -87,6 +93,8 @@ class Asf extends \JamesHeinrich\GetID3\Module\Handler
 		$NextObjectOffset = $this->ftell();
 		$ASFHeaderData = $this->fread($thisfile_asf_headerobject['objectsize'] - 30);
 		$offset = 0;
+		$thisfile_asf_streambitratepropertiesobject = array();
+		$thisfile_asf_codeclistobject = array();
 
 		for ($HeaderObjectsCounter = 0; $HeaderObjectsCounter < $thisfile_asf_headerobject['headerobjects']; $HeaderObjectsCounter++) {
 			$NextObjectGUID = substr($ASFHeaderData, $offset, 16);
@@ -972,18 +980,18 @@ class Asf extends \JamesHeinrich\GetID3\Module\Handler
 					break;
 			}
 		}
-		if (isset($thisfile_asf_streambitrateproperties['bitrate_records_count'])) {
+		if (isset($thisfile_asf_streambitratepropertiesobject['bitrate_records_count'])) {
 			$ASFbitrateAudio = 0;
 			$ASFbitrateVideo = 0;
-			for ($BitrateRecordsCounter = 0; $BitrateRecordsCounter < $thisfile_asf_streambitrateproperties['bitrate_records_count']; $BitrateRecordsCounter++) {
+			for ($BitrateRecordsCounter = 0; $BitrateRecordsCounter < $thisfile_asf_streambitratepropertiesobject['bitrate_records_count']; $BitrateRecordsCounter++) {
 				if (isset($thisfile_asf_codeclistobject['codec_entries'][$BitrateRecordsCounter])) {
 					switch ($thisfile_asf_codeclistobject['codec_entries'][$BitrateRecordsCounter]['type_raw']) {
 						case 1:
-							$ASFbitrateVideo += $thisfile_asf_streambitrateproperties['bitrate_records'][$BitrateRecordsCounter]['bitrate'];
+							$ASFbitrateVideo += $thisfile_asf_streambitratepropertiesobject['bitrate_records'][$BitrateRecordsCounter]['bitrate'];
 							break;
 
 						case 2:
-							$ASFbitrateAudio += $thisfile_asf_streambitrateproperties['bitrate_records'][$BitrateRecordsCounter]['bitrate'];
+							$ASFbitrateAudio += $thisfile_asf_streambitratepropertiesobject['bitrate_records'][$BitrateRecordsCounter]['bitrate'];
 							break;
 
 						default:
@@ -1442,6 +1450,11 @@ class Asf extends \JamesHeinrich\GetID3\Module\Handler
 		return true;
 	}
 
+	/**
+	 * @param int $CodecListType
+	 *
+	 * @return string
+	 */
 	public static function codecListObjectTypeLookup($CodecListType) {
 		static $lookup = array(
 			0x0001 => 'Video Codec',
@@ -1452,6 +1465,9 @@ class Asf extends \JamesHeinrich\GetID3\Module\Handler
 		return (isset($lookup[$CodecListType]) ? $lookup[$CodecListType] : 'Invalid Codec Type');
 	}
 
+	/**
+	 * @return array
+	 */
 	public static function KnownGUIDs() {
 		static $GUIDarray = array(
 			'GETID3_ASF_Extended_Stream_Properties_Object'   => '14E6A5CB-C672-4332-8399-A96952065B5A',
@@ -1566,6 +1582,11 @@ class Asf extends \JamesHeinrich\GetID3\Module\Handler
 		return $GUIDarray;
 	}
 
+	/**
+	 * @param string $GUIDstring
+	 *
+	 * @return string|false
+	 */
 	public static function GUIDname($GUIDstring) {
 		static $GUIDarray = array();
 		if (empty($GUIDarray)) {
@@ -1574,6 +1595,11 @@ class Asf extends \JamesHeinrich\GetID3\Module\Handler
 		return array_search($GUIDstring, $GUIDarray);
 	}
 
+	/**
+	 * @param int $id
+	 *
+	 * @return string
+	 */
 	public static function ASFIndexObjectIndexTypeLookup($id) {
 		static $ASFIndexObjectIndexTypeLookup = array();
 		if (empty($ASFIndexObjectIndexTypeLookup)) {
@@ -1584,6 +1610,11 @@ class Asf extends \JamesHeinrich\GetID3\Module\Handler
 		return (isset($ASFIndexObjectIndexTypeLookup[$id]) ? $ASFIndexObjectIndexTypeLookup[$id] : 'invalid');
 	}
 
+	/**
+	 * @param string $GUIDstring
+	 *
+	 * @return string
+	 */
 	public static function GUIDtoBytestring($GUIDstring) {
 		// Microsoft defines these 16-byte (128-bit) GUIDs in the strangest way:
 		// first 4 bytes are in little-endian order
@@ -1619,6 +1650,11 @@ class Asf extends \JamesHeinrich\GetID3\Module\Handler
 		return $hexbytecharstring;
 	}
 
+	/**
+	 * @param string $Bytestring
+	 *
+	 * @return string
+	 */
 	public static function BytestringToGUID($Bytestring) {
 		$GUIDstring  = str_pad(dechex(ord($Bytestring{3})),  2, '0', STR_PAD_LEFT);
 		$GUIDstring .= str_pad(dechex(ord($Bytestring{2})),  2, '0', STR_PAD_LEFT);
@@ -1644,6 +1680,12 @@ class Asf extends \JamesHeinrich\GetID3\Module\Handler
 		return strtoupper($GUIDstring);
 	}
 
+	/**
+	 * @param int  $FILETIME
+	 * @param bool $round
+	 *
+	 * @return float|int
+	 */
 	public static function FILETIMEtoUNIXtime($FILETIME, $round=true) {
 		// FILETIME is a 64-bit unsigned integer representing
 		// the number of 100-nanosecond intervals since January 1, 1601
@@ -1655,6 +1697,11 @@ class Asf extends \JamesHeinrich\GetID3\Module\Handler
 		return ($FILETIME - 116444736000000000) / 10000000;
 	}
 
+	/**
+	 * @param int $WMpictureType
+	 *
+	 * @return string
+	 */
 	public static function WMpictureTypeLookup($WMpictureType) {
 		static $lookup = null;
 		if ($lookup === null) {
@@ -1686,6 +1733,12 @@ class Asf extends \JamesHeinrich\GetID3\Module\Handler
 		return (isset($lookup[$WMpictureType]) ? $lookup[$WMpictureType] : '');
 	}
 
+	/**
+	 * @param string $asf_header_extension_object_data
+	 * @param int    $unhandled_sections
+	 *
+	 * @return array
+	 */
 	public function HeaderExtensionObjectDataParse(&$asf_header_extension_object_data, &$unhandled_sections) {
 		// http://msdn.microsoft.com/en-us/library/bb643323.aspx
 
@@ -1932,7 +1985,11 @@ class Asf extends \JamesHeinrich\GetID3\Module\Handler
 		return $HeaderExtensionObjectParsed;
 	}
 
-
+	/**
+	 * @param int $id
+	 *
+	 * @return string
+	 */
 	public static function metadataLibraryObjectDataTypeLookup($id) {
 		static $lookup = array(
 			0x0000 => 'Unicode string', // The data consists of a sequence of Unicode characters
@@ -1946,6 +2003,11 @@ class Asf extends \JamesHeinrich\GetID3\Module\Handler
 		return (isset($lookup[$id]) ? $lookup[$id] : 'invalid');
 	}
 
+	/**
+	 * @param string $data
+	 *
+	 * @return array
+	 */
 	public function ASF_WMpicture(&$data) {
 		//typedef struct _WMPicture{
 		//  LPWSTR  pwszMIMEType;
@@ -1996,14 +2058,24 @@ class Asf extends \JamesHeinrich\GetID3\Module\Handler
 		return $WMpicture;
 	}
 
-
-	// Remove terminator 00 00 and convert UTF-16LE to Latin-1
+	/**
+	 * Remove terminator 00 00 and convert UTF-16LE to Latin-1.
+	 *
+	 * @param string $string
+	 *
+	 * @return string
+	 */
 	public static function TrimConvert($string) {
 		return trim(Utils::iconv_fallback('UTF-16LE', 'ISO-8859-1', self::TrimTerm($string)), ' ');
 	}
 
-
-	// Remove terminator 00 00
+	/**
+	 * Remove terminator 00 00.
+	 *
+	 * @param string $string
+	 *
+	 * @return string
+	 */
 	public static function TrimTerm($string) {
 		// remove terminator, only if present (it should be, but...)
 		if (substr($string, -2) === "\x00\x00") {

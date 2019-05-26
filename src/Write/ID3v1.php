@@ -8,11 +8,10 @@ use JamesHeinrich\GetID3\Utils;
 
 /////////////////////////////////////////////////////////////////
 /// getID3() by James Heinrich <info@getid3.org>               //
-//  available at http://getid3.sourceforge.net                 //
-//            or http://www.getid3.org                         //
-//          also https://github.com/JamesHeinrich/getID3       //
-/////////////////////////////////////////////////////////////////
-// See readme.txt for more details                             //
+//  available at https://github.com/JamesHeinrich/getID3       //
+//            or https://www.getid3.org                        //
+//            or http://getid3.sourceforge.net                 //
+//  see readme.txt for more details                            //
 /////////////////////////////////////////////////////////////////
 //                                                             //
 // write.id3v1.php                                             //
@@ -22,15 +21,41 @@ use JamesHeinrich\GetID3\Utils;
 
 class ID3v1
 {
+	/**
+	 * @var string
+	 */
 	public $filename;
-	public $filesize;
-	public $tag_data;
-	public $warnings = array(); // any non-critical errors will be stored here
-	public $errors   = array(); // any critical errors will be stored here
 
+	/**
+	 * @var int
+	 */
+	public $filesize;
+
+	/**
+	 * @var array
+	 */
+	public $tag_data;
+
+	/**
+	 * Any non-critical errors will be stored here.
+	 *
+	 * @var array
+	 */
+	public $warnings = array();
+
+	/**
+	 * Any critical errors will be stored here.
+	 *
+	 * @var array
+	 */
+	public $errors   = array();
+
+	/**
+	 * @return bool
+	 */
 	public function WriteID3v1() {
 		// File MUST be writeable - CHMOD(646) at least
-		if (!empty($this->filename) && is_readable($this->filename) && is_writable($this->filename) && is_file($this->filename)) {
+		if (!empty($this->filename) && is_readable($this->filename) && Utils::isWritable($this->filename) && is_file($this->filename)) {
 			$this->setRealFileSize();
 			if (($this->filesize <= 0) || !Utils::intValueSupported($this->filesize)) {
 				$this->errors[] = 'Unable to WriteID3v1('.$this->filename.') because filesize ('.$this->filesize.') is larger than '.round(PHP_INT_MAX / 1073741824).'GB';
@@ -66,6 +91,9 @@ class ID3v1
 		return false;
 	}
 
+	/**
+	 * @return bool
+	 */
 	public function FixID3v1Padding() {
 		// ID3v1 data is supposed to be padded with NULL characters, but some taggers incorrectly use spaces
 		// This function rewrites the ID3v1 tag with correct padding
@@ -79,6 +107,7 @@ class ID3v1
 		$getID3->option_tag_id3v1  = true;
 		$ThisFileInfo = $getID3->analyze($this->filename);
 		if (isset($ThisFileInfo['tags']['id3v1'])) {
+			$id3v1data = array();
 			foreach ($ThisFileInfo['tags']['id3v1'] as $key => $value) {
 				$id3v1data[$key] = implode(',', $value);
 			}
@@ -88,9 +117,12 @@ class ID3v1
 		return false;
 	}
 
+	/**
+	 * @return bool
+	 */
 	public function RemoveID3v1() {
 		// File MUST be writeable - CHMOD(646) at least
-		if (!empty($this->filename) && is_readable($this->filename) && is_writable($this->filename) && is_file($this->filename)) {
+		if (!empty($this->filename) && is_readable($this->filename) && Utils::isWritable($this->filename) && is_file($this->filename)) {
 			$this->setRealFileSize();
 			if (($this->filesize <= 0) || !Utils::intValueSupported($this->filesize)) {
 				$this->errors[] = 'Unable to RemoveID3v1('.$this->filename.') because filesize ('.$this->filesize.') is larger than '.round(PHP_INT_MAX / 1073741824).'GB';
@@ -116,6 +148,9 @@ class ID3v1
 		return false;
 	}
 
+	/**
+	 * @return bool
+	 */
 	public function setRealFileSize() {
 		if (PHP_INT_MAX > 2147483647) {
 			$this->filesize = filesize($this->filename);

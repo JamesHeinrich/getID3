@@ -7,11 +7,10 @@ use JamesHeinrich\GetID3\Utils;
 
 /////////////////////////////////////////////////////////////////
 /// getID3() by James Heinrich <info@getid3.org>               //
-//  available at http://getid3.sourceforge.net                 //
-//            or http://www.getid3.org                         //
-//          also https://github.com/JamesHeinrich/getID3       //
-/////////////////////////////////////////////////////////////////
-// See readme.txt for more details                             //
+//  available at https://github.com/JamesHeinrich/getID3       //
+//            or https://www.getid3.org                        //
+//            or http://getid3.sourceforge.net                 //
+//  see readme.txt for more details                            //
 /////////////////////////////////////////////////////////////////
 //                                                             //
 // write.apetag.php                                            //
@@ -21,13 +20,40 @@ use JamesHeinrich\GetID3\Utils;
 
 class ApeTag
 {
-
+	/**
+	 * @var string
+	 */
 	public $filename;
-	public $tag_data;
-	public $always_preserve_replaygain = true;    // ReplayGain / MP3gain tags will be copied from old tag even if not passed in data
-	public $warnings                   = array(); // any non-critical errors will be stored here
-	public $errors                     = array(); // any critical errors will be stored here
 
+	/**
+	 * @var array
+	 */
+	public $tag_data;
+
+	/**
+	 * ReplayGain / MP3gain tags will be copied from old tag even if not passed in data.
+	 *
+	 * @var bool
+	 */
+	public $always_preserve_replaygain = true;
+
+	/**
+	 * Any non-critical errors will be stored here.
+	 *
+	 * @var array
+	 */
+	public $warnings                   = array();
+
+	/**
+	 * Any critical errors will be stored here.
+	 *
+	 * @var array
+	 */
+	public $errors                     = array();
+
+	/**
+	 * @return bool
+	 */
 	public function WriteAPEtag() {
 		// NOTE: All data passed to this function must be UTF-8 format
 
@@ -55,7 +81,7 @@ class ApeTag
 		}
 
 		if ($APEtag = $this->GenerateAPEtag()) {
-			if (is_writable($this->filename) && is_file($this->filename) && ($fp = fopen($this->filename, 'a+b'))) {
+			if (Utils::isWritable($this->filename) && is_file($this->filename) && ($fp = fopen($this->filename, 'a+b'))) {
 				$oldignoreuserabort = ignore_user_abort(true);
 				flock($fp, LOCK_EX);
 
@@ -90,11 +116,14 @@ class ApeTag
 		return false;
 	}
 
+	/**
+	 * @return bool
+	 */
 	public function DeleteAPEtag() {
 		$getID3 = new GetID3;
 		$ThisFileInfo = $getID3->analyze($this->filename);
 		if (isset($ThisFileInfo['ape']['tag_offset_start']) && isset($ThisFileInfo['ape']['tag_offset_end'])) {
-			if (is_writable($this->filename) && is_file($this->filename) && ($fp = fopen($this->filename, 'a+b'))) {
+			if (Utils::isWritable($this->filename) && is_file($this->filename) && ($fp = fopen($this->filename, 'a+b'))) {
 
 				flock($fp, LOCK_EX);
 				$oldignoreuserabort = ignore_user_abort(true);
@@ -123,7 +152,9 @@ class ApeTag
 		return true;
 	}
 
-
+	/**
+	 * @return string|false
+	 */
 	public function GenerateAPEtag() {
 		// NOTE: All data passed to this function must be UTF-8 format
 
@@ -158,6 +189,12 @@ class ApeTag
 		return $this->GenerateAPEtagHeaderFooter($items, true).implode('', $items).$this->GenerateAPEtagHeaderFooter($items, false);
 	}
 
+	/**
+	 * @param array $items
+	 * @param bool  $isheader
+	 *
+	 * @return string
+	 */
 	public function GenerateAPEtagHeaderFooter(&$items, $isheader=false) {
 		$tagdatalength = 0;
 		foreach ($items as $itemdata) {
@@ -174,6 +211,15 @@ class ApeTag
 		return $APEheader;
 	}
 
+	/**
+	 * @param bool $header
+	 * @param bool $footer
+	 * @param bool $isheader
+	 * @param int  $encodingid
+	 * @param bool $readonly
+	 *
+	 * @return string
+	 */
 	public function GenerateAPEtagFlags($header=true, $footer=true, $isheader=false, $encodingid=0, $readonly=false) {
 		$APEtagFlags = array_fill(0, 4, 0);
 		if ($header) {
@@ -199,6 +245,11 @@ class ApeTag
 		return chr($APEtagFlags[3]).chr($APEtagFlags[2]).chr($APEtagFlags[1]).chr($APEtagFlags[0]);
 	}
 
+	/**
+	 * @param string $itemkey
+	 *
+	 * @return string
+	 */
 	public function CleanAPEtagItemKey($itemkey) {
 		$itemkey = preg_replace("#[^\x20-\x7E]#i", '', $itemkey);
 

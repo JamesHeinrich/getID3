@@ -8,11 +8,10 @@ use JamesHeinrich\GetID3\Utils;
 
 /////////////////////////////////////////////////////////////////
 /// getID3() by James Heinrich <info@getid3.org>               //
-//  available at http://getid3.sourceforge.net                 //
-//            or http://www.getid3.org                         //
-//          also https://github.com/JamesHeinrich/getID3       //
-/////////////////////////////////////////////////////////////////
-// See readme.txt for more details                             //
+//  available at https://github.com/JamesHeinrich/getID3       //
+//            or https://www.getid3.org                        //
+//            or http://getid3.sourceforge.net                 //
+//  see readme.txt for more details                            //
 /////////////////////////////////////////////////////////////////
 ///                                                            //
 // write.id3v2.php                                             //
@@ -22,29 +21,93 @@ use JamesHeinrich\GetID3\Utils;
 
 class ID3v2
 {
+	/**
+	 * @var string
+	 */
 	public $filename;
-	public $tag_data;
-	public $fread_buffer_size           = 32768;    // read buffer size in bytes
-	public $paddedlength                = 4096;     // minimum length of ID3v2 tag in bytes
-	public $majorversion                = 3;        // ID3v2 major version (2, 3 (recommended), 4)
-	public $minorversion                = 0;        // ID3v2 minor version - always 0
-	public $merge_existing_data         = false;    // if true, merge new data with existing tags; if false, delete old tag data and only write new tags
-	public $id3v2_default_encodingid    = 0;        // default text encoding (ISO-8859-1) if not explicitly passed
-	public $id3v2_use_unsynchronisation = false;    // the specs say it should be TRUE, but most other ID3v2-aware programs are broken if unsynchronization is used, so by default don't use it.
-	public $warnings                    = array();  // any non-critical errors will be stored here
-	public $errors                      = array();  // any critical errors will be stored here
 
+	/**
+	 * @var array
+	 */
+	public $tag_data;
+
+	/**
+	 * Read buffer size in bytes.
+	 *
+	 * @var int
+	 */
+	public $fread_buffer_size           = 32768;
+
+	/**
+	 * Minimum length of ID3v2 tag in bytes.
+	 *
+	 * @var int
+	 */
+	public $paddedlength                = 4096;
+
+	/**
+	 * ID3v2 major version (2, 3 (recommended), 4).
+	 *
+	 * @var int
+	 */
+	public $majorversion                = 3;
+
+	/**
+	 * ID3v2 minor version - always 0.
+	 *
+	 * @var int
+	 */
+	public $minorversion                = 0;
+
+	/**
+	 * If true, merge new data with existing tags; if false, delete old tag data and only write new tags.
+	 *
+	 * @var bool
+	 */
+	public $merge_existing_data         = false;
+
+	/**
+	 * Default text encoding (ISO-8859-1) if not explicitly passed.
+	 *
+	 * @var int
+	 */
+	public $id3v2_default_encodingid    = 0;
+
+	/**
+	 * The specs say it should be TRUE, but most other ID3v2-aware programs are broken if unsynchronization is used,
+	 * so by default don't use it.
+	 *
+	 * @var bool
+	 */
+	public $id3v2_use_unsynchronisation = false;
+
+	/**
+	 * Any non-critical errors will be stored here.
+	 *
+	 * @var array
+	 */
+	public $warnings                    = array();
+
+	/**
+	 * Any critical errors will be stored here.
+	 *
+	 * @var array
+	 */
+	public $errors                      = array();
+
+	/**
+	 * @return bool
+	 */
 	public function WriteID3v2() {
 		// File MUST be writeable - CHMOD(646) at least. It's best if the
 		// directory is also writeable, because that method is both faster and less susceptible to errors.
 
-		if (!empty($this->filename) && (is_writeable($this->filename) || (!file_exists($this->filename) && is_writeable(dirname($this->filename))))) {
+		if (!empty($this->filename) && (Utils::isWritable($this->filename) || (!file_exists($this->filename) && Utils::isWritable(dirname($this->filename))))) {
 			// Initialize getID3 engine
 			$getID3 = new GetID3;
 			$OldThisFileInfo = $getID3->analyze($this->filename);
 			if (!Utils::intValueSupported($OldThisFileInfo['filesize'])) {
 				$this->errors[] = 'Unable to write ID3v2 because file is larger than '.round(PHP_INT_MAX / 1073741824).'GB';
-				fclose($fp_source);
 				return false;
 			}
 			if ($this->merge_existing_data) {
@@ -57,12 +120,12 @@ class ID3v2
 
 			if ($NewID3v2Tag = $this->GenerateID3v2Tag()) {
 
-				if (file_exists($this->filename) && is_writeable($this->filename) && isset($OldThisFileInfo['id3v2']['headerlength']) && ($OldThisFileInfo['id3v2']['headerlength'] == strlen($NewID3v2Tag))) {
+				if (file_exists($this->filename) && Utils::isWritable($this->filename) && isset($OldThisFileInfo['id3v2']['headerlength']) && ($OldThisFileInfo['id3v2']['headerlength'] == strlen($NewID3v2Tag))) {
 
 					// best and fastest method - insert-overwrite existing tag (padded to length of old tag if neccesary)
 					if (file_exists($this->filename)) {
 
-						if (is_readable($this->filename) && is_writable($this->filename) && is_file($this->filename) && ($fp = fopen($this->filename, 'r+b'))) {
+						if (is_readable($this->filename) && Utils::isWritable($this->filename) && is_file($this->filename) && ($fp = fopen($this->filename, 'r+b'))) {
 							rewind($fp);
 							fwrite($fp, $NewID3v2Tag, strlen($NewID3v2Tag));
 							fclose($fp);
@@ -72,7 +135,7 @@ class ID3v2
 
 					} else {
 
-						if (is_writable($this->filename) && is_file($this->filename) && ($fp = fopen($this->filename, 'wb'))) {
+						if (Utils::isWritable($this->filename) && is_file($this->filename) && ($fp = fopen($this->filename, 'wb'))) {
 							rewind($fp);
 							fwrite($fp, $NewID3v2Tag, strlen($NewID3v2Tag));
 							fclose($fp);
@@ -86,7 +149,7 @@ class ID3v2
 
 					if ($tempfilename = tempnam(Utils::getTempDirectory(), 'getID3')) {
 						if (is_readable($this->filename) && is_file($this->filename) && ($fp_source = fopen($this->filename, 'rb'))) {
-							if (is_writable($tempfilename) && is_file($tempfilename) && ($fp_temp = fopen($tempfilename, 'wb'))) {
+							if (Utils::isWritable($tempfilename) && is_file($tempfilename) && ($fp_temp = fopen($tempfilename, 'wb'))) {
 
 								fwrite($fp_temp, $NewID3v2Tag, strlen($NewID3v2Tag));
 
@@ -134,10 +197,13 @@ class ID3v2
 		return false;
 	}
 
+	/**
+	 * @return bool
+	 */
 	public function RemoveID3v2() {
 		// File MUST be writeable - CHMOD(646) at least. It's best if the
 		// directory is also writeable, because that method is both faster and less susceptible to errors.
-		if (is_writeable(dirname($this->filename))) {
+		if (Utils::isWritable(dirname($this->filename))) {
 
 			// preferred method - only one copying operation, minimal chance of corrupting
 			// original file if script is interrupted, but required directory to be writeable
@@ -155,7 +221,7 @@ class ID3v2
 				if ($OldThisFileInfo['avdataoffset'] !== false) {
 					fseek($fp_source, $OldThisFileInfo['avdataoffset']);
 				}
-				if (is_writable($this->filename) && is_file($this->filename) && ($fp_temp = fopen($this->filename.'getid3tmp', 'w+b'))) {
+				if (Utils::isWritable($this->filename) && is_file($this->filename) && ($fp_temp = fopen($this->filename.'getid3tmp', 'w+b'))) {
 					while ($buffer = fread($fp_source, $this->fread_buffer_size)) {
 						fwrite($fp_temp, $buffer, strlen($buffer));
 					}
@@ -172,7 +238,7 @@ class ID3v2
 			}
 			rename($this->filename.'getid3tmp', $this->filename);
 
-		} elseif (is_writable($this->filename)) {
+		} elseif (Utils::isWritable($this->filename)) {
 
 			// less desirable alternate method - double-copies the file, overwrites original file
 			// and could corrupt source file if the script is interrupted or an error occurs.
@@ -195,7 +261,7 @@ class ID3v2
 						fwrite($fp_temp, $buffer, strlen($buffer));
 					}
 					fclose($fp_source);
-					if (is_writable($this->filename) && is_file($this->filename) && ($fp_source = fopen($this->filename, 'wb'))) {
+					if (Utils::isWritable($this->filename) && is_file($this->filename) && ($fp_source = fopen($this->filename, 'wb'))) {
 						rewind($fp_temp);
 						while ($buffer = fread($fp_temp, $this->fread_buffer_size)) {
 							fwrite($fp_source, $buffer, strlen($buffer));
@@ -225,8 +291,13 @@ class ID3v2
 		return true;
 	}
 
-
+	/**
+	 * @param array $flags
+	 *
+	 * @return string|false
+	 */
 	public function GenerateID3v2TagFlags($flags) {
+		$flag = null;
 		switch ($this->majorversion) {
 			case 4:
 				// %abcd0000
@@ -259,8 +330,21 @@ class ID3v2
 		return chr(bindec($flag));
 	}
 
-
+	/**
+	 * @param bool $TagAlter
+	 * @param bool $FileAlter
+	 * @param bool $ReadOnly
+	 * @param bool $Compression
+	 * @param bool $Encryption
+	 * @param bool $GroupingIdentity
+	 * @param bool $Unsynchronisation
+	 * @param bool $DataLengthIndicator
+	 *
+	 * @return string|false
+	 */
 	public function GenerateID3v2FrameFlags($TagAlter=false, $FileAlter=false, $ReadOnly=false, $Compression=false, $Encryption=false, $GroupingIdentity=false, $Unsynchronisation=false, $DataLengthIndicator=false) {
+		$flag1 = null;
+		$flag2 = null;
 		switch ($this->majorversion) {
 			case 4:
 				// %0abc0000 %0h00kmnp
@@ -300,6 +384,12 @@ class ID3v2
 		return chr(bindec($flag1)).chr(bindec($flag2));
 	}
 
+	/**
+	 * @param string $frame_name
+	 * @param array  $source_data_array
+	 *
+	 * @return string|false
+	 */
 	public function GenerateID3v2FrameData($frame_name, $source_data_array) {
 		if (!Tag::IsValidID3v2FrameName($frame_name, $this->majorversion)) {
 			return false;
@@ -331,7 +421,7 @@ class ID3v2
 					// Description       <text string according to encoding> $00 (00)
 					// Value             <text string according to encoding>
 					$source_data_array['encodingid'] = (isset($source_data_array['encodingid']) ? $source_data_array['encodingid'] : $this->id3v2_default_encodingid);
-					if (!$this->ID3v2IsValidTextEncoding($source_data_array['encodingid'], $this->majorversion)) {
+					if (!$this->ID3v2IsValidTextEncoding($source_data_array['encodingid'])) {
 						$this->errors[] = 'Invalid Text Encoding in '.$frame_name.' ('.$source_data_array['encodingid'].') for ID3v2.'.$this->majorversion;
 					} else {
 						$framedata .= chr($source_data_array['encodingid']);
@@ -346,9 +436,9 @@ class ID3v2
 					// Description       <text string according to encoding> $00 (00)
 					// URL               <text string>
 					$source_data_array['encodingid'] = (isset($source_data_array['encodingid']) ? $source_data_array['encodingid'] : $this->id3v2_default_encodingid);
-					if (!$this->ID3v2IsValidTextEncoding($source_data_array['encodingid'], $this->majorversion)) {
+					if (!$this->ID3v2IsValidTextEncoding($source_data_array['encodingid'])) {
 						$this->errors[] = 'Invalid Text Encoding in '.$frame_name.' ('.$source_data_array['encodingid'].') for ID3v2.'.$this->majorversion;
-					} elseif (!isset($source_data_array['data']) || !$this->IsValidURL($source_data_array['data'], false, false)) {
+					} elseif (!isset($source_data_array['data']) || !$this->IsValidURL($source_data_array['data'], false)) {
 						//$this->errors[] = 'Invalid URL in '.$frame_name.' ('.$source_data_array['data'].')';
 						// probably should be an error, need to rewrite IsValidURL() to handle other encodings
 						$this->warnings[] = 'Invalid URL in '.$frame_name.' ('.$source_data_array['data'].')';
@@ -364,7 +454,7 @@ class ID3v2
 					// Text encoding     $xx
 					// People list strings    <textstrings>
 					$source_data_array['encodingid'] = (isset($source_data_array['encodingid']) ? $source_data_array['encodingid'] : $this->id3v2_default_encodingid);
-					if (!$this->ID3v2IsValidTextEncoding($source_data_array['encodingid'], $this->majorversion)) {
+					if (!$this->ID3v2IsValidTextEncoding($source_data_array['encodingid'])) {
 						$this->errors[] = 'Invalid Text Encoding in '.$frame_name.' ('.$source_data_array['encodingid'].') for ID3v2.'.$this->majorversion;
 					} else {
 						$framedata .= chr($source_data_array['encodingid']);
@@ -397,13 +487,14 @@ class ID3v2
 							if (!$this->ID3v2IsValidETCOevent($val['typeid'])) {
 								$this->errors[] = 'Invalid Event Type byte in '.$frame_name.' ('.$val['typeid'].')';
 							} elseif (($key != 'timestampformat') && ($key != 'flags')) {
-								if (($val['timestamp'] > 0) && ($previousETCOtimestamp >= $val['timestamp'])) {
+								if (($val['timestamp'] > 0) && isset($previousETCOtimestamp) && ($previousETCOtimestamp >= $val['timestamp'])) {
 									//   The 'Time stamp' is set to zero if directly at the beginning of the sound
 									//   or after the previous event. All events MUST be sorted in chronological order.
 									$this->errors[] = 'Out-of-order timestamp in '.$frame_name.' ('.$val['timestamp'].') for Event Type ('.$val['typeid'].')';
 								} else {
 									$framedata .= chr($val['typeid']);
 									$framedata .= Utils::BigEndian2String($val['timestamp'], 4, false);
+									$previousETCOtimestamp = $val['timestamp'];
 								}
 							}
 						}
@@ -453,6 +544,7 @@ class ID3v2
 					} else {
 						$this->errors[] = 'Invalid Bits For Milliseconds Deviation in '.$frame_name.' ('.$source_data_array['bitsformsdeviation'].')';
 					}
+					$unwrittenbitstream = '';
 					foreach ($source_data_array as $key => $val) {
 						if (($key != 'framesbetweenreferences') && ($key != 'bytesbetweenreferences') && ($key != 'msbetweenreferences') && ($key != 'bitsforbytesdeviation') && ($key != 'bitsformsdeviation') && ($key != 'flags')) {
 							$unwrittenbitstream .= str_pad(Utils::Dec2Bin($val['bytedeviation']), $source_data_array['bitsforbytesdeviation'], '0', STR_PAD_LEFT);
@@ -617,7 +709,7 @@ class ID3v2
 					if (!$this->IsWithinBitRange($source_data_array['bitsvolume'], 8, false)) {
 						$this->errors[] = 'Invalid Bits For Volume Description byte in '.$frame_name.' ('.$source_data_array['bitsvolume'].') (range = 1 to 255)';
 					} else {
-						$incdecflag .= '00';
+						$incdecflag  = '00';
 						$incdecflag .= $source_data_array['incdec']['right']     ? '1' : '0';     // a - Relative volume change, right
 						$incdecflag .= $source_data_array['incdec']['left']      ? '1' : '0';      // b - Relative volume change, left
 						$incdecflag .= $source_data_array['incdec']['rightrear'] ? '1' : '0'; // c - Relative volume change, right back
@@ -762,7 +854,7 @@ class ID3v2
 						$this->errors[] = 'Invalid Picture Type byte in '.$frame_name.' ('.$source_data_array['picturetypeid'].') for ID3v2.'.$this->majorversion;
 					} elseif (($this->majorversion >= 3) && (!$this->ID3v2IsValidAPICimageformat($source_data_array['mime']))) {
 						$this->errors[] = 'Invalid MIME Type in '.$frame_name.' ('.$source_data_array['mime'].') for ID3v2.'.$this->majorversion;
-					} elseif (($source_data_array['mime'] == '-->') && (!$this->IsValidURL($source_data_array['data'], false, false))) {
+					} elseif (($source_data_array['mime'] == '-->') && (!$this->IsValidURL($source_data_array['data'], false))) {
 						//$this->errors[] = 'Invalid URL in '.$frame_name.' ('.$source_data_array['data'].')';
 						// probably should be an error, need to rewrite IsValidURL() to handle other encodings
 						$this->warnings[] = 'Invalid URL in '.$frame_name.' ('.$source_data_array['data'].')';
@@ -835,7 +927,7 @@ class ID3v2
 						$this->errors[] = 'Invalid Offset To Next Tag in '.$frame_name;
 					} else {
 						$framedata .= Utils::BigEndian2String($source_data_array['buffersize'], 3, false);
-						$flag .= '0000000';
+						$flag  = '0000000';
 						$flag .= $source_data_array['flags']['embededinfo'] ? '1' : '0';
 						$framedata .= chr(bindec($flag));
 						$framedata .= Utils::BigEndian2String($source_data_array['nexttagoffset'], 4, false);
@@ -867,7 +959,7 @@ class ID3v2
 					// ID and additional data         <text string(s)>
 					if (!Tag::IsValidID3v2FrameName($source_data_array['frameid'], $this->majorversion)) {
 						$this->errors[] = 'Invalid Frame Identifier in '.$frame_name.' ('.$source_data_array['frameid'].')';
-					} elseif (!$this->IsValidURL($source_data_array['data'], true, false)) {
+					} elseif (!$this->IsValidURL($source_data_array['data'], true)) {
 						//$this->errors[] = 'Invalid URL in '.$frame_name.' ('.$source_data_array['data'].')';
 						// probably should be an error, need to rewrite IsValidURL() to handle other encodings
 						$this->warnings[] = 'Invalid URL in '.$frame_name.' ('.$source_data_array['data'].')';
@@ -914,6 +1006,7 @@ class ID3v2
 								} else {
 									$this->errors[] = $source_data_array['frameid'].' is not a valid Frame Identifier in '.$frame_name.' (in ID3v2.'.$this->majorversion.')';
 								}
+								break;
 
 							default:
 								if ((substr($source_data_array['frameid'], 0, 1) == 'T') || (substr($source_data_array['frameid'], 0, 1) == 'W')) {
@@ -966,9 +1059,9 @@ class ID3v2
 					$source_data_array['encodingid'] = (isset($source_data_array['encodingid']) ? $source_data_array['encodingid'] : $this->id3v2_default_encodingid);
 					if (!$this->ID3v2IsValidTextEncoding($source_data_array['encodingid'])) {
 						$this->errors[] = 'Invalid Text Encoding in '.$frame_name.' ('.$source_data_array['encodingid'].')';
-					} elseif (!$this->IsANumber($source_data_array['pricepaid']['value'], false)) {
+					} elseif (!Tag::IsANumber($source_data_array['pricepaid']['value'], false)) {
 						$this->errors[] = 'Invalid Price Paid in '.$frame_name.' ('.$source_data_array['pricepaid']['value'].')';
-					} elseif (!$this->IsValidDateStampString($source_data_array['purchasedate'])) {
+					} elseif (!Tag::IsValidDateStampString($source_data_array['purchasedate'])) {
 						$this->errors[] = 'Invalid Date Of Purchase in '.$frame_name.' ('.$source_data_array['purchasedate'].') (format = YYYYMMDD)';
 					} else {
 						$framedata .= chr($source_data_array['encodingid']);
@@ -992,9 +1085,9 @@ class ID3v2
 					$source_data_array['encodingid'] = (isset($source_data_array['encodingid']) ? $source_data_array['encodingid'] : $this->id3v2_default_encodingid);
 					if (!$this->ID3v2IsValidTextEncoding($source_data_array['encodingid'])) {
 						$this->errors[] = 'Invalid Text Encoding in '.$frame_name.' ('.$source_data_array['encodingid'].')';
-					} elseif (!$this->IsValidDateStampString($source_data_array['pricevaliduntil'])) {
+					} elseif (!Tag::IsValidDateStampString($source_data_array['pricevaliduntil'])) {
 						$this->errors[] = 'Invalid Valid Until date in '.$frame_name.' ('.$source_data_array['pricevaliduntil'].') (format = YYYYMMDD)';
-					} elseif (!$this->IsValidURL($source_data_array['contacturl'], false, true)) {
+					} elseif (!$this->IsValidURL($source_data_array['contacturl'], false)) {
 						$this->errors[] = 'Invalid Contact URL in '.$frame_name.' ('.$source_data_array['contacturl'].') (allowed schemes: http, https, ftp, mailto)';
 					} elseif (!$this->ID3v2IsValidCOMRreceivedAs($source_data_array['receivedasid'])) {
 						$this->errors[] = 'Invalid Received As byte in '.$frame_name.' ('.$source_data_array['contacturl'].') (range = 0 to 8)';
@@ -1003,6 +1096,7 @@ class ID3v2
 					} else {
 						$framedata .= chr($source_data_array['encodingid']);
 						unset($pricestring);
+						$pricestrings = array();
 						foreach ($source_data_array['price'] as $key => $val) {
 							if ($this->ID3v2IsValidPriceString($key.$val['value'])) {
 								$pricestrings[] = $key.$val['value'];
@@ -1155,7 +1249,7 @@ class ID3v2
 					} elseif ($frame_name{0} == 'W') {
 						// 4.3. W???  URL link frames
 						// URL              <text string>
-						if (!$this->IsValidURL($source_data_array['data'], false, false)) {
+						if (!$this->IsValidURL($source_data_array['data'], false)) {
 							//$this->errors[] = 'Invalid URL in '.$frame_name.' ('.$source_data_array['data'].')';
 							// probably should be an error, need to rewrite IsValidURL() to handle other encodings
 							$this->warnings[] = 'Invalid URL in '.$frame_name.' ('.$source_data_array['data'].')';
@@ -1174,6 +1268,12 @@ class ID3v2
 		return $framedata;
 	}
 
+	/**
+	 * @param string|null $frame_name
+	 * @param array       $source_data_array
+	 *
+	 * @return bool
+	 */
 	public function ID3v2FrameIsAllowed($frame_name, $source_data_array) {
 		static $PreviousFrames = array();
 
@@ -1530,6 +1630,11 @@ class ID3v2
 		return true;
 	}
 
+	/**
+	 * @param bool $noerrorsonly
+	 *
+	 * @return string|false
+	 */
 	public function GenerateID3v2Tag($noerrorsonly=true) {
 		$this->ID3v2FrameIsAllowed(null, ''); // clear static array in case this isn't the first call to $this->GenerateID3v2Tag()
 
@@ -1644,20 +1749,31 @@ class ID3v2
 		return false;
 	}
 
+	/**
+	 * @param string $pricestring
+	 *
+	 * @return bool
+	 */
 	public function ID3v2IsValidPriceString($pricestring) {
 		if (Tag::LanguageLookup(substr($pricestring, 0, 3), true) == '') {
 			return false;
-		} elseif (!$this->IsANumber(substr($pricestring, 3), true)) {
+		} elseif (!Tag::IsANumber(substr($pricestring, 3), true)) {
 			return false;
 		}
 		return true;
 	}
 
+	/**
+	 * @param string $framename
+	 *
+	 * @return bool
+	 */
 	public function ID3v2FrameFlagsLookupTagAlter($framename) {
 		// unfinished
 		switch ($framename) {
 			case 'RGAD':
 				$allow = true;
+				break;
 			default:
 				$allow = false;
 				break;
@@ -1665,6 +1781,11 @@ class ID3v2
 		return $allow;
 	}
 
+	/**
+	 * @param string $framename
+	 *
+	 * @return bool
+	 */
 	public function ID3v2FrameFlagsLookupFileAlter($framename) {
 		// unfinished
 		switch ($framename) {
@@ -1678,6 +1799,11 @@ class ID3v2
 		}
 	}
 
+	/**
+	 * @param int $eventid
+	 *
+	 * @return bool
+	 */
 	public function ID3v2IsValidETCOevent($eventid) {
 		if (($eventid < 0) || ($eventid > 0xFF)) {
 			// outside range of 1 byte
@@ -1698,6 +1824,11 @@ class ID3v2
 		return true;
 	}
 
+	/**
+	 * @param int $contenttype
+	 *
+	 * @return bool
+	 */
 	public function ID3v2IsValidSYLTtype($contenttype) {
 		if (($contenttype >= 0) && ($contenttype <= 8) && ($this->majorversion == 4)) {
 			return true;
@@ -1707,6 +1838,11 @@ class ID3v2
 		return false;
 	}
 
+	/**
+	 * @param int $channeltype
+	 *
+	 * @return bool
+	 */
 	public function ID3v2IsValidRVA2channeltype($channeltype) {
 		if (($channeltype >= 0) && ($channeltype <= 8) && ($this->majorversion == 4)) {
 			return true;
@@ -1714,6 +1850,11 @@ class ID3v2
 		return false;
 	}
 
+	/**
+	 * @param int $picturetype
+	 *
+	 * @return bool
+	 */
 	public function ID3v2IsValidAPICpicturetype($picturetype) {
 		if (($picturetype >= 0) && ($picturetype <= 0x14) && ($this->majorversion >= 2) && ($this->majorversion <= 4)) {
 			return true;
@@ -1721,6 +1862,11 @@ class ID3v2
 		return false;
 	}
 
+	/**
+	 * @param int|string $imageformat
+	 *
+	 * @return bool
+	 */
 	public function ID3v2IsValidAPICimageformat($imageformat) {
 		if ($imageformat == '-->') {
 			return true;
@@ -1736,6 +1882,11 @@ class ID3v2
 		return false;
 	}
 
+	/**
+	 * @param int $receivedas
+	 *
+	 * @return bool
+	 */
 	public function ID3v2IsValidCOMRreceivedAs($receivedas) {
 		if (($this->majorversion >= 3) && ($receivedas >= 0) && ($receivedas <= 8)) {
 			return true;
@@ -1743,6 +1894,11 @@ class ID3v2
 		return false;
 	}
 
+	/**
+	 * @param int $RGADname
+	 *
+	 * @return bool
+	 */
 	public static function ID3v2IsValidRGADname($RGADname) {
 		if (($RGADname >= 0) && ($RGADname <= 2)) {
 			return true;
@@ -1750,6 +1906,11 @@ class ID3v2
 		return false;
 	}
 
+	/**
+	 * @param int $RGADoriginator
+	 *
+	 * @return bool
+	 */
 	public static function ID3v2IsValidRGADoriginator($RGADoriginator) {
 		if (($RGADoriginator >= 0) && ($RGADoriginator <= 3)) {
 			return true;
@@ -1757,6 +1918,11 @@ class ID3v2
 		return false;
 	}
 
+	/**
+	 * @param int $textencodingbyte
+	 *
+	 * @return bool
+	 */
 	public function ID3v2IsValidTextEncoding($textencodingbyte) {
 		// 0 = ISO-8859-1
 		// 1 = UTF-16 with BOM
@@ -1770,6 +1936,11 @@ class ID3v2
 		return isset($ID3v2IsValidTextEncoding_cache[$this->majorversion][$textencodingbyte]);
 	}
 
+	/**
+	 * @param string $data
+	 *
+	 * @return string
+	 */
 	public static function Unsynchronise($data) {
 		// Whenever a false synchronisation is found within the tag, one zeroed
 		// byte is inserted after the first false synchronisation byte. The
@@ -1800,6 +1971,11 @@ class ID3v2
 		return $unsyncheddata;
 	}
 
+	/**
+	 * @param mixed $var
+	 *
+	 * @return bool
+	 */
 	public function is_hash($var) {
 		// written by dev-nullØchristophe*vg
 		// taken from http://www.php.net/manual/en/function.array-merge-recursive.php
@@ -1815,6 +1991,12 @@ class ID3v2
 		return false;
 	}
 
+	/**
+	 * @param mixed $arr1
+	 * @param mixed $arr2
+	 *
+	 * @return array
+	 */
 	public function array_join_merge($arr1, $arr2) {
 		// written by dev-nullØchristophe*vg
 		// taken from http://www.php.net/manual/en/function.array-merge-recursive.php
@@ -1839,10 +2021,22 @@ class ID3v2
 		}
 	}
 
+	/**
+	 * @param string $mimestring
+	 *
+	 * @return false|int
+	 */
 	public static function IsValidMIMEstring($mimestring) {
 		return preg_match('#^.+/.+$#', $mimestring);
 	}
 
+	/**
+	 * @param int  $number
+	 * @param int  $maxbits
+	 * @param bool $signed
+	 *
+	 * @return bool
+	 */
 	public static function IsWithinBitRange($number, $maxbits, $signed=false) {
 		if ($signed) {
 			if (($number > (0 - pow(2, $maxbits - 1))) && ($number <= pow(2, $maxbits - 1))) {
@@ -1856,6 +2050,11 @@ class ID3v2
 		return false;
 	}
 
+	/**
+	 * @param string $email
+	 *
+	 * @return false|int|mixed
+	 */
 	public static function IsValidEmail($email) {
 		if (function_exists('filter_var')) {
 			return filter_var($email, FILTER_VALIDATE_EMAIL);
@@ -1864,6 +2063,12 @@ class ID3v2
 		return preg_match('#^[^ ]+@[a-z\\-\\.]+\\.[a-z]{2,}$#', $email);
 	}
 
+	/**
+	 * @param string $url
+	 * @param bool   $allowUserPass
+	 *
+	 * @return bool
+	 */
 	public static function IsValidURL($url, $allowUserPass=false) {
 		if ($url == '') {
 			return false;
@@ -1876,7 +2081,7 @@ class ID3v2
 			}
 		}
 		// 2016-06-08: relax URL checking to avoid falsely rejecting valid URLs, leave URL validation to the user
-		// http://www.getid3.org/phpBB3/viewtopic.php?t=1926
+		// https://www.getid3.org/phpBB3/viewtopic.php?t=1926
 		return true;
 		/*
 		if ($parts = $this->safe_parse_url($url)) {
@@ -1900,6 +2105,11 @@ class ID3v2
 		*/
 	}
 
+	/**
+	 * @param string $url
+	 *
+	 * @return array
+	 */
 	public static function safe_parse_url($url) {
 		$parts = @parse_url($url);
 		$parts['scheme'] = (isset($parts['scheme']) ? $parts['scheme'] : '');
@@ -1911,6 +2121,12 @@ class ID3v2
 		return $parts;
 	}
 
+	/**
+	 * @param int    $majorversion
+	 * @param string $long_description
+	 *
+	 * @return string
+	 */
 	public static function ID3v2ShortFrameNameLookup($majorversion, $long_description) {
 		$long_description = str_replace(' ', '_', strtolower(trim($long_description)));
 		static $ID3v2ShortFrameNameLookup = array();
@@ -1979,7 +2195,7 @@ class ID3v2
 			$ID3v2ShortFrameNameLookup[2]['text']                              = 'TXX';
 			$ID3v2ShortFrameNameLookup[2]['year']                              = 'TYE';
 			$ID3v2ShortFrameNameLookup[2]['unique_file_identifier']            = 'UFI';
-			$ID3v2ShortFrameNameLookup[2]['unsychronised_lyric']               = 'ULT';
+			$ID3v2ShortFrameNameLookup[2]['unsynchronised_lyric']              = 'ULT';
 			$ID3v2ShortFrameNameLookup[2]['url_file']                          = 'WAF';
 			$ID3v2ShortFrameNameLookup[2]['url_artist']                        = 'WAR';
 			$ID3v2ShortFrameNameLookup[2]['url_source']                        = 'WAS';
@@ -2054,7 +2270,7 @@ class ID3v2
 			$ID3v2ShortFrameNameLookup[3]['text']                              = 'TXXX';
 			$ID3v2ShortFrameNameLookup[3]['unique_file_identifier']            = 'UFID';
 			$ID3v2ShortFrameNameLookup[3]['terms_of_use']                      = 'USER';
-			$ID3v2ShortFrameNameLookup[3]['unsychronised_lyric']               = 'USLT';
+			$ID3v2ShortFrameNameLookup[3]['unsynchronised_lyric']              = 'USLT';
 			$ID3v2ShortFrameNameLookup[3]['commercial_information']            = 'WCOM';
 			$ID3v2ShortFrameNameLookup[3]['copyright']                         = 'WCOP';
 			$ID3v2ShortFrameNameLookup[3]['url_file']                          = 'WOAF';
@@ -2100,6 +2316,7 @@ class ID3v2
 			$ID3v2ShortFrameNameLookup[4]['performer_sort_order']              = 'TSOP';
 			$ID3v2ShortFrameNameLookup[4]['title_sort_order']                  = 'TSOT';
 			$ID3v2ShortFrameNameLookup[4]['set_subtitle']                      = 'TSST';
+			$ID3v2ShortFrameNameLookup[4]['year']                              = 'TDRC'; // subset of ISO 8601: valid timestamps are yyyy, yyyy-MM, yyyy-MM-dd, yyyy-MM-ddTHH, yyyy-MM-ddTHH:mm and yyyy-MM-ddTHH:mm:ss. All time stamps are UTC
 		}
 		return (isset($ID3v2ShortFrameNameLookup[$majorversion][strtolower($long_description)]) ? $ID3v2ShortFrameNameLookup[$majorversion][strtolower($long_description)] : '');
 

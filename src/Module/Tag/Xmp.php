@@ -4,11 +4,10 @@ namespace JamesHeinrich\GetID3\Module\Tag;
 
 /////////////////////////////////////////////////////////////////
 /// getID3() by James Heinrich <info@getid3.org>               //
-//  available at http://getid3.sourceforge.net                 //
-//            or http://www.getid3.org                         //
-//          also https://github.com/JamesHeinrich/getID3       //
-/////////////////////////////////////////////////////////////////
-// See readme.txt for more details                             //
+//  available at https://github.com/JamesHeinrich/getID3       //
+//            or https://www.getid3.org                        //
+//            or http://getid3.sourceforge.net                 //
+//  see readme.txt for more details                            //
 /////////////////////////////////////////////////////////////////
 //                                                             //
 // module.tag.xmp.php                                          //
@@ -83,8 +82,8 @@ class Xmp
 	* Reads all the JPEG header segments from an JPEG image file into an array
 	*
 	* @param string $filename - the filename of the JPEG file to read
-	* @return array $headerdata - Array of JPEG header segments
-	* @return boolean FALSE - if headers could not be read
+	* @return array|boolean  $headerdata - Array of JPEG header segments,
+	*                        FALSE - if headers could not be read
 	*/
 	public function _get_jpeg_header_data($filename)
 	{
@@ -126,6 +125,7 @@ class Xmp
 		// Flag that we havent yet hit the compressed image data
 		$hit_compressed_image_data = false;
 
+		$headerdata = array();
 		// Cycle through the file until, one of: 1) an EOI (End of image) marker is hit,
 		//                                       2) we have hit the compressed image data (no more headers are allowed after data)
 		//                                       3) or end of file is hit
@@ -193,8 +193,8 @@ class Xmp
 	* Retrieves XMP information from an APP1 JPEG segment and returns the raw XML text as a string.
 	*
 	* @param string $filename - the filename of the JPEG file to read
-	* @return string $xmp_data - the string of raw XML text
-	* @return boolean FALSE - if an APP 1 XMP segment could not be found, or if an error occured
+	* @return string|boolean $xmp_data - the string of raw XML text,
+	*                        FALSE - if an APP 1 XMP segment could not be found, or if an error occured
 	*/
 	public function _get_XMP_text($filename)
 	{
@@ -214,7 +214,7 @@ class Xmp
 					// Return the XMP text
 					$xmp_data = substr($jpeg_header_data[$i]['SegData'], 29);
 
-					return trim($xmp_data); // trim() should not be neccesary, but some files found in the wild with null-terminated block (known samples from Apple Aperture) causes problems elsewhere (see http://www.getid3.org/phpBB3/viewtopic.php?f=4&t=1153)
+					return trim($xmp_data); // trim() should not be neccesary, but some files found in the wild with null-terminated block (known samples from Apple Aperture) causes problems elsewhere (see https://www.getid3.org/phpBB3/viewtopic.php?f=4&t=1153)
 				}
 			}
 		}
@@ -225,9 +225,9 @@ class Xmp
 	* Parses a string containing XMP data (XML), and returns an array
 	* which contains all the XMP (XML) information.
 	*
-	* @param string $xml_text - a string containing the XMP data (XML) to be parsed
-	* @return array $xmp_array - an array containing all xmp details retrieved.
-	* @return boolean FALSE - couldn't parse the XMP data
+	* @param string $xmltext - a string containing the XMP data (XML) to be parsed
+	* @return array|boolean $xmp_array - an array containing all xmp details retrieved,
+	*                       FALSE - couldn't parse the XMP data.
 	*/
 	public function read_XMP_array_from_text($xmltext)
 	{
@@ -313,10 +313,12 @@ class Xmp
 									}
 								}
 							}
+							break;
 						case 'cdata':
 						case 'close':
 							break;
 					}
+					break;
 
 				case 'rdf:ID':
 				case 'rdf:nodeID':
@@ -399,7 +401,7 @@ class Xmp
 	/**
 	* Constructor
 	*
-	* @param string - Name of the image file to access and extract XMP information from.
+	* @param string $sFilename - Name of the image file to access and extract XMP information from.
 	*/
 	public function __construct($sFilename)
 	{
@@ -411,8 +413,11 @@ class Xmp
 			$xmp_data = $this->_get_XMP_text($sFilename);
 			if ($xmp_data)
 			{
-				$this->_aXMP = $this->read_XMP_array_from_text($xmp_data);
-				$this->_bXMPParse = true;
+				$aXMP = $this->read_XMP_array_from_text($xmp_data);
+				if ($aXMP !== false) {
+					$this->_aXMP = (array) $aXMP;
+					$this->_bXMPParse = true;
+				}
 			}
 		}
 	}

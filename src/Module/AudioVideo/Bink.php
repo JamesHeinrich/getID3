@@ -2,15 +2,15 @@
 
 namespace JamesHeinrich\GetID3\Module\AudioVideo;
 
+use JamesHeinrich\GetID3\Module\Handler;
 use JamesHeinrich\GetID3\Utils;
 
 /////////////////////////////////////////////////////////////////
 /// getID3() by James Heinrich <info@getid3.org>               //
-//  available at http://getid3.sourceforge.net                 //
-//            or http://www.getid3.org                         //
-//          also https://github.com/JamesHeinrich/getID3       //
-/////////////////////////////////////////////////////////////////
-// See readme.txt for more details                             //
+//  available at https://github.com/JamesHeinrich/getID3       //
+//            or https://www.getid3.org                        //
+//            or http://getid3.sourceforge.net                 //
+//  see readme.txt for more details                            //
 /////////////////////////////////////////////////////////////////
 //                                                             //
 // module.audio.bink.php                                       //
@@ -18,13 +18,15 @@ use JamesHeinrich\GetID3\Utils;
 //                                                            ///
 /////////////////////////////////////////////////////////////////
 
-class Bink extends \JamesHeinrich\GetID3\Module\Handler
+class Bink extends Handler
 {
-
+	/**
+	 * @return bool
+	 */
 	public function Analyze() {
 		$info = &$this->getid3->info;
 
-$this->error('Bink / Smacker files not properly processed by this version of getID3() ['.$this->getid3->version().']');
+		$this->error('Bink / Smacker files not properly processed by this version of getID3() ['.$this->getid3->version().']');
 
 		$this->fseek($info['avdataoffset']);
 		$fileTypeID = $this->fread(3);
@@ -47,6 +49,9 @@ $this->error('Bink / Smacker files not properly processed by this version of get
 
 	}
 
+	/**
+	 * @return bool
+	 */
 	public function ParseBink() {
 		$info = &$this->getid3->info;
 		$info['fileformat']          = 'bink';
@@ -64,6 +69,9 @@ $this->error('Bink / Smacker files not properly processed by this version of get
 		return true;
 	}
 
+	/**
+	 * @return bool
+	 */
 	public function ParseSmacker() {
 		$info = &$this->getid3->info;
 		$info['fileformat']          = 'smacker';
