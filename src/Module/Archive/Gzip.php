@@ -217,7 +217,7 @@ class Gzip extends Handler
 
 					// determine format
 					$formattest = substr($inflated, 0, 32774);
-					$getid3_temp = new GetID3;
+					$getid3_temp = new GetID3();
 					$determined_format = $getid3_temp->GetFileFormat($formattest);
 					unset($getid3_temp);
 
@@ -233,7 +233,7 @@ class Gzip extends Handler
 							if ($fp_temp_tar = fopen($temp_tar_filename, 'w+b')) {
 								fwrite($fp_temp_tar, $inflated);
 								fclose($fp_temp_tar);
-								$getid3_temp = new GetID3;
+								$getid3_temp = new GetID3();
 								$getid3_temp->openfile($temp_tar_filename);
 								$getid3_tar = new Tar($getid3_temp);
 								$getid3_tar->Analyze();

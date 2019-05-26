@@ -1,7 +1,7 @@
 Known Bugs/Issues in other programs
 ===================================
 
-<http://www.getid3.org/phpBB3/viewtopic.php?t=25>
+<https://www.getid3.org/phpBB3/viewtopic.php?t=25>
 
 * Windows Media Player (up to v11) and iTunes (up to v10+) do
     not correctly handle ID3v2.3 tags with UTF-16BE+BOM

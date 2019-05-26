@@ -83,7 +83,7 @@ class Lpac extends Handler
 				break;
 		}
 
-		$getid3_temp = new GetID3;
+		$getid3_temp = new GetID3();
 		$getid3_temp->openfile($this->getid3->filename);
 		$getid3_temp->info = $info;
 		$getid3_riff = new Riff($getid3_temp);

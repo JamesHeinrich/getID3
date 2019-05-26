@@ -2,6 +2,8 @@
 
 namespace JamesHeinrich\GetID3\Module\Misc;
 
+use JamesHeinrich\GetID3\Module\Handler;
+
 /////////////////////////////////////////////////////////////////
 /// getID3() by James Heinrich <info@getid3.org>               //
 //  available at https://github.com/JamesHeinrich/getID3       //
@@ -27,8 +29,6 @@ namespace JamesHeinrich\GetID3\Module\Misc;
  *
  * This is a PHP conversion of CueSharp 0.5 by Wyatt O'Day (wyday.com/cuesharp)
  */
-
-use JamesHeinrich\GetID3\Module\Handler;
 
 /**
  * A CueSheet class used to open and parse cuesheets.

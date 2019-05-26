@@ -274,14 +274,14 @@ class Ogg extends Handler
 
 			$info['ogg']['flac']['header']['version_major']  =                         ord(substr($filedata,  5, 1));
 			$info['ogg']['flac']['header']['version_minor']  =                         ord(substr($filedata,  6, 1));
-			$info['ogg']['flac']['header']['header_packets'] =   getid3_lib::BigEndian2Int(substr($filedata,  7, 2)) + 1; // "A two-byte, big-endian binary number signifying the number of header (non-audio) packets, not including this one. This number may be zero (0x0000) to signify 'unknown' but be aware that some decoders may not be able to handle such streams."
+			$info['ogg']['flac']['header']['header_packets'] =   Utils::BigEndian2Int(substr($filedata,  7, 2)) + 1; // "A two-byte, big-endian binary number signifying the number of header (non-audio) packets, not including this one. This number may be zero (0x0000) to signify 'unknown' but be aware that some decoders may not be able to handle such streams."
 			$info['ogg']['flac']['header']['magic']          =                             substr($filedata,  9, 4);
 			if ($info['ogg']['flac']['header']['magic'] != 'fLaC') {
-				$this->error('Ogg-FLAC expecting "fLaC", found "'.$info['ogg']['flac']['header']['magic'].'" ('.trim(getid3_lib::PrintHexBytes($info['ogg']['flac']['header']['magic'])).')');
+				$this->error('Ogg-FLAC expecting "fLaC", found "'.$info['ogg']['flac']['header']['magic'].'" ('.trim(Utils::PrintHexBytes($info['ogg']['flac']['header']['magic'])).')');
 				return false;
 			}
-			$info['ogg']['flac']['header']['STREAMINFO_bytes'] = getid3_lib::BigEndian2Int(substr($filedata, 13, 4));
-			$info['flac']['STREAMINFO'] = getid3_flac::parseSTREAMINFOdata(substr($filedata, 17, 34));
+			$info['ogg']['flac']['header']['STREAMINFO_bytes'] = Utils::BigEndian2Int(substr($filedata, 13, 4));
+			$info['flac']['STREAMINFO'] = Flac::parseSTREAMINFOdata(substr($filedata, 17, 34));
 			if (!empty($info['flac']['STREAMINFO']['sample_rate'])) {
 				$info['audio']['bitrate_mode']    = 'vbr';
 				$info['audio']['sample_rate']     = $info['flac']['STREAMINFO']['sample_rate'];

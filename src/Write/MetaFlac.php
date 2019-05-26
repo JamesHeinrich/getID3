@@ -49,6 +49,7 @@ class MetaFlac
 	 * @return bool
 	 */
 	public function WriteMetaFLAC() {
+
 		$tempfilenames = array();
 
 
@@ -57,31 +58,6 @@ class MetaFlac
 				$temppicturefilename = tempnam(Utils::getTempDirectory(), 'getID3');
 				$tempfilenames[] = $temppicturefilename;
 				if (Utils::isWritable($temppicturefilename) && is_file($temppicturefilename) && ($fpcomments = fopen($temppicturefilename, 'wb'))) {
-					// https://xiph.org/flac/documentation_tools_flac.html#flac_options_picture
-					// [TYPE]|[MIME-TYPE]|[DESCRIPTION]|[WIDTHxHEIGHTxDEPTH[/COLORS]]|FILE
-					fwrite($fpcomments, $picturedetails['data']);
-					fclose($fpcomments);
-					$picture_typeid = (!empty($picturedetails['picturetypeid']) ? $this->ID3v2toFLACpictureTypes($picturedetails['picturetypeid']) : 3); // default to "3:Cover (front)"
-					$picture_mimetype = (!empty($picturedetails['mime']) ? $picturedetails['mime'] : ''); // should be auto-detected
-					$picture_width_height_depth = '';
-					$this->pictures[] = $picture_typeid.'|'.$picture_mimetype.'|'.preg_replace('#[^\x20-\x7B\x7D-\x7F]#', '', $picturedetails['description']).'|'.$picture_width_height_depth.'|'.$temppicturefilename;
-				} else {
-					$this->errors[] = 'failed to open temporary tags file, tags not written - fopen("'.$temppicturefilename.'", "wb")';
-					return false;
-				}
-			}
-			unset($this->tag_data['ATTACHED_PICTURE']);
-		}
-
-
-		$tempfilenames = array();
-
-
-		if (!empty($this->tag_data['ATTACHED_PICTURE'])) {
-			foreach ($this->tag_data['ATTACHED_PICTURE'] as $key => $picturedetails) {
-				$temppicturefilename = tempnam(GETID3_TEMP_DIR, 'getID3');
-				$tempfilenames[] = $temppicturefilename;
-				if (getID3::is_writable($temppicturefilename) && is_file($temppicturefilename) && ($fpcomments = fopen($temppicturefilename, 'wb'))) {
 					// https://xiph.org/flac/documentation_tools_flac.html#flac_options_picture
 					// [TYPE]|[MIME-TYPE]|[DESCRIPTION]|[WIDTHxHEIGHTxDEPTH[/COLORS]]|FILE
 					fwrite($fpcomments, $picturedetails['data']);

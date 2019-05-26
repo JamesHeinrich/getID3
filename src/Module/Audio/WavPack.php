@@ -224,7 +224,7 @@ class WavPack extends Handler
 						case 0x21: // ID_RIFF_HEADER
 							$original_wav_filesize = Utils::LittleEndian2Int(substr($metablock['data'], 4, 4));
 
-							$getid3_temp = new GetID3;
+							$getid3_temp = new GetID3();
 							$getid3_temp->openfile($this->getid3->filename);
 							$getid3_riff = new Riff($getid3_temp);
 							$getid3_riff->ParseRIFFdata($metablock['data']);
@@ -245,7 +245,7 @@ class WavPack extends Handler
 							$metablockRIFFfooter = isset($metablockRIFFheader) ? $metablockRIFFheader : ''.$metablock['data'];
 
 							$startoffset = $metablock['offset'] + ($metablock['large_block'] ? 4 : 2);
-							$getid3_temp = new GetID3;
+							$getid3_temp = new GetID3();
 							$getid3_temp->openfile($this->getid3->filename);
 							$getid3_temp->info['avdataend']  = $info['avdataend'];
 							//$getid3_temp->info['fileformat'] = 'riff';

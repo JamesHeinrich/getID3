@@ -137,7 +137,7 @@ abstract class Handler {
 
 		//return fread($this->getid3->fp, $bytes);
 		/*
-		* http://www.getid3.org/phpBB3/viewtopic.php?t=1930
+		* https://www.getid3.org/phpBB3/viewtopic.php?t=1930
 		* "I found out that the root cause for the problem was how getID3 uses the PHP system function fread().
 		* It seems to assume that fread() would always return as many bytes as were requested.
 		* However, according the PHP manual (http://php.net/manual/en/function.fread.php), this is the case only with regular local files, but not e.g. with Linux pipes.
@@ -145,8 +145,9 @@ abstract class Handler {
 		*/
 		$contents = '';
 		do {
-			if ($this->getid3->memory_limit && ($bytes > $this->getid3->memory_limit)) {
-				throw new Exception('cannot fread('.$bytes.' from '.$this->ftell().') that is more than available PHP memory', 10);
+			//if (($this->getid3->memory_limit > 0) && ($bytes > $this->getid3->memory_limit)) {
+			if (($this->getid3->memory_limit > 0) && (($bytes / $this->getid3->memory_limit) > 0.99)) { // enable a more-fuzzy match to prevent close misses generating errors like "PHP Fatal error: Allowed memory size of 33554432 bytes exhausted (tried to allocate 33554464 bytes)"
+				throw new Exception('cannot fread('.$bytes.' from '.$this->ftell().') that is more than available PHP memory ('.$this->getid3->memory_limit.')', 10);
 			}
 			$part = fread($this->getid3->fp, $bytes);
 			$partLength  = strlen($part);

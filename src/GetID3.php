@@ -1050,8 +1050,7 @@ class GetID3
 				// XZ   - data         - XZ compressed data
 				'xz'  => array(
 							'pattern'   => '^\\xFD7zXZ\\x00',
-							'group'     => 'archive',
-							'module'    => 'xz',
+							'module'    => 'Archive\\Xz',
 							'mime_type' => 'application/x-xz',
 							'fail_id3'  => 'ERROR',
 							'fail_ape'  => 'ERROR',

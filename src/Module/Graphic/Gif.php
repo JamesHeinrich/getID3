@@ -7,11 +7,10 @@ use JamesHeinrich\GetID3\Utils;
 
 /////////////////////////////////////////////////////////////////
 /// getID3() by James Heinrich <info@getid3.org>               //
-//  available at http://getid3.sourceforge.net                 //
-//            or http://www.getid3.org                         //
-//          also https://github.com/JamesHeinrich/getID3       //
-/////////////////////////////////////////////////////////////////
-// See readme.txt for more details                             //
+//  available at https://github.com/JamesHeinrich/getID3       //
+//            or https://www.getid3.org                        //
+//            or http://getid3.sourceforge.net                 //
+//  see readme.txt for more details                            //
 /////////////////////////////////////////////////////////////////
 //                                                             //
 // module.graphic.gif.php                                      //
@@ -46,11 +45,14 @@ class Gif extends Handler
 		$magic = 'GIF';
 		if ($info['gif']['header']['raw']['identifier'] != $magic) {
 			$this->error('Expecting "'.Utils::PrintHexBytes($magic).'" at offset '.$info['avdataoffset'].', found "'.Utils::PrintHexBytes($info['gif']['header']['raw']['identifier']).'"');
-			$info['error'][] = 'Expecting "'.Utils::PrintHexBytes($magic).'" at offset '.$info['avdataoffset'].', found "'.Utils::PrintHexBytes($info['gif']['header']['raw']['identifier']).'"';
 			unset($info['fileformat']);
 			unset($info['gif']);
 			return false;
 		}
+
+		//if (!$this->getid3->option_extra_info) {
+		//	$this->warning('GIF Extensions and Global Color Table not returned due to !getid3->option_extra_info');
+		//}
 
 		$info['gif']['header']['raw']['version']               =                              substr($GIFheader, $offset, 3);
 		$offset += 3;
@@ -91,16 +93,20 @@ class Gif extends Handler
 
 		if ($info['gif']['header']['flags']['global_color_table']) {
 			$GIFcolorTable = $this->fread(3 * $info['gif']['header']['global_color_size']);
-			$offset = 0;
-			for ($i = 0; $i < $info['gif']['header']['global_color_size']; $i++) {
-				$red   = Utils::LittleEndian2Int(substr($GIFcolorTable, $offset++, 1));
-				$green = Utils::LittleEndian2Int(substr($GIFcolorTable, $offset++, 1));
-				$blue  = Utils::LittleEndian2Int(substr($GIFcolorTable, $offset++, 1));
-				$info['gif']['global_color_table'][$i] = (($red << 16) | ($green << 8) | ($blue));
+			if ($this->getid3->option_extra_info) {
+				$offset = 0;
+				for ($i = 0; $i < $info['gif']['header']['global_color_size']; $i++) {
+					$red   = Utils::LittleEndian2Int(substr($GIFcolorTable, $offset++, 1));
+					$green = Utils::LittleEndian2Int(substr($GIFcolorTable, $offset++, 1));
+					$blue  = Utils::LittleEndian2Int(substr($GIFcolorTable, $offset++, 1));
+					$info['gif']['global_color_table'][$i] = (($red << 16) | ($green << 8) | ($blue));
+					$info['gif']['global_color_table_rgb'][$i] = sprintf('%02X%02X%02X', $red, $green, $blue);
+				}
 			}
 		}
 
 		// Image Descriptor
+		$info['gif']['animation']['animated'] = false;
 		while (!feof($this->getid3->fp)) {
 			$NextBlockTest = $this->fread(1);
 			switch ($NextBlockTest) {
@@ -171,7 +177,9 @@ class Gif extends Handler
 						}
 					}
 
-					$info['gif']['extension_blocks'][] = $ExtensionBlock;
+					if ($this->getid3->option_extra_info) {
+						$info['gif']['extension_blocks'][] = $ExtensionBlock;
+					}
 					break;
 
 				case ';':

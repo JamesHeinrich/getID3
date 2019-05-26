@@ -20,7 +20,7 @@ require __DIR__ . "/../vendor/autoload.php";
 function UnzipFileContents($filename, &$errors) {
 	$errors = array();
 	$DecompressedFileContents = array();
-	$getid3 = new GetID3\GetID3;
+	$getid3 = new GetID3\GetID3();
 	$getid3->info['filesize'] = filesize($filename);
 	ob_start();
 	if ($getid3->fp = fopen($filename, 'rb')) {

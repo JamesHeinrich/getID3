@@ -180,7 +180,7 @@ class La extends Handler
 							fwrite($RIFF_fp, $RIFFdata, strlen($RIFFdata));
 							fclose($RIFF_fp);
 
-							$getid3_temp = new GetID3;
+							$getid3_temp = new GetID3();
 							$getid3_temp->openfile($RIFFtempfilename);
 							$getid3_riff = new Riff($getid3_temp);
 							$getid3_riff->Analyze();

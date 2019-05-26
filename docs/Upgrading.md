@@ -86,6 +86,33 @@ getid3_write_real                   Write\Real
 getid3_write_vorbiscomment          Write\VorbisComment
 ```
 
+```php
+Old constant                        New constant
+GETID3_MIDI_MAGIC_MTHD              JamesHeinrich\GetID3\Module\Audio\Midi::MAGIC_MTHD
+GETID3_MIDI_MAGIC_MTRK              JamesHeinrich\GetID3\Module\Audio\Midi::MAGIC_MTRK
+GETID3_MP3_VALID_CHECK_FRAMES       JamesHeinrich\GetID3\Module\Audio\Mp3::VALID_CHECK_FRAMES
+GETID3_FLV_TAG_AUDIO                JamesHeinrich\GetID3\Module\AudioVideo\Flv::TAG_AUDIO
+GETID3_FLV_TAG_VIDEO                JamesHeinrich\GetID3\Module\AudioVideo\Flv::TAG_VIDEO
+GETID3_FLV_TAG_META                 JamesHeinrich\GetID3\Module\AudioVideo\Flv::TAG_META
+GETID3_FLV_VIDEO_H263               JamesHeinrich\GetID3\Module\AudioVideo\Flv::VIDEO_H263
+GETID3_FLV_VIDEO_SCREEN             JamesHeinrich\GetID3\Module\AudioVideo\Flv::VIDEO_SCREEN
+GETID3_FLV_VIDEO_VP6FLV             JamesHeinrich\GetID3\Module\AudioVideo\Flv::VIDEO_VP6FLV
+GETID3_FLV_VIDEO_VP6FLV_ALPHA       JamesHeinrich\GetID3\Module\AudioVideo\Flv::VIDEO_VP6FLV_ALPHA
+GETID3_FLV_VIDEO_SCREENV2           JamesHeinrich\GetID3\Module\AudioVideo\Flv::VIDEO_SCREENV2
+GETID3_FLV_VIDEO_H264               JamesHeinrich\GetID3\Module\AudioVideo\Flv::VIDEO_H264
+H264_AVC_SEQUENCE_HEADER            JamesHeinrich\GetID3\Module\AudioVideo\Flv::H264_AVC_SEQUENCE_HEADER
+H264_PROFILE_BASELINE               JamesHeinrich\GetID3\Module\AudioVideo\Flv::H264_PROFILE_BASELINE
+H264_PROFILE_MAIN                   JamesHeinrich\GetID3\Module\AudioVideo\Flv::H264_PROFILE_MAIN
+H264_PROFILE_EXTENDED               JamesHeinrich\GetID3\Module\AudioVideo\Flv::H264_PROFILE_EXTENDED
+H264_PROFILE_HIGH                   JamesHeinrich\GetID3\Module\AudioVideo\Flv::H264_PROFILE_HIGH
+H264_PROFILE_HIGH10                 JamesHeinrich\GetID3\Module\AudioVideo\Flv::H264_PROFILE_HIGH10
+H264_PROFILE_HIGH422                JamesHeinrich\GetID3\Module\AudioVideo\Flv::H264_PROFILE_HIGH422
+H264_PROFILE_HIGH444                JamesHeinrich\GetID3\Module\AudioVideo\Flv::H264_PROFILE_HIGH444
+H264_PROFILE_HIGH444_PREDICTIVE     JamesHeinrich\GetID3\Module\AudioVideo\Flv::H264_PROFILE_HIGH444_PREDICTIVE
+EBML_ID_*                           JamesHeinrich\GetID3\Module\AudioVideo\Matroska::ID_*
+
+```
+
 
 __Temp Directory__
 Previously the temp directory could be set by defining a global constant called GETID3_TEMP_DIR  

@@ -74,7 +74,7 @@ class Avr extends Handler
 		$info['avr']['raw']['magic'] = substr($AVRheader,  0,  4);
 		$magic = '2BIT';
 		if ($info['avr']['raw']['magic'] != $magic) {
-			$this->error($info['error'][] = 'Expecting "'.Utils::PrintHexBytes($magic).'" at offset '.$info['avdataoffset'].', found "'.Utils::PrintHexBytes($info['avr']['raw']['magic']).'"');
+			$this->error('Expecting "'.Utils::PrintHexBytes($magic).'" at offset '.$info['avdataoffset'].', found "'.Utils::PrintHexBytes($info['avr']['raw']['magic']).'"');
 			unset($info['fileformat']);
 			unset($info['avr']);
 			return false;

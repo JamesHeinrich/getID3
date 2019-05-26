@@ -2092,9 +2092,9 @@ class ID3v2 extends Handler
 						case 'APIC':
 							if (preg_match('#^([^\\x00]+)*\\x00(.)([^\\x00]+)*\\x00(.+)$#s', $subframe['text'], $matches)) {
 								list($dummy, $subframe_apic_mime, $subframe_apic_picturetype, $subframe_apic_description, $subframe_apic_picturedata) = $matches;
-								$subframe['image_mime']   = trim(getid3_lib::iconv_fallback($subframe['encoding'], $info['encoding'], $subframe_apic_mime));
+								$subframe['image_mime']   = trim(Utils::iconv_fallback($subframe['encoding'], $info['encoding'], $subframe_apic_mime));
 								$subframe['picture_type'] = $this->APICPictureTypeLookup($subframe_apic_picturetype);
-								$subframe['description']  = trim(getid3_lib::iconv_fallback($subframe['encoding'], $info['encoding'], $subframe_apic_description));
+								$subframe['description']  = trim(Utils::iconv_fallback($subframe['encoding'], $info['encoding'], $subframe_apic_description));
 								if (strlen($this->TextEncodingTerminatorLookup($subframe['encoding'])) == 2) {
 									// the null terminator between "description" and "picture data" could be either 1 byte (ISO-8859-1, UTF-8) or two bytes (UTF-16)
 									// the above regex assumes one byte, if it's actually two then strip the second one here

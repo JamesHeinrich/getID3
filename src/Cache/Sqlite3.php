@@ -181,7 +181,7 @@ class Sqlite3 extends GetID3
 	 *
 	 * @return mixed|false
 	 */
-	public function analyze($filename, $filesize=null, $original_filename='') {
+	public function analyze($filename, $filesize=null, $original_filename='', $fp=null) {
 		if (!file_exists($filename)) {
 			return false;
 		}

@@ -203,7 +203,7 @@ class Bonk extends Handler
 			case ' ID3':
 				$info['audio']['encoder'] = 'Extended BONK v0.9+';
 
-				$getid3_temp = new GetID3;
+				$getid3_temp = new GetID3();
 				$getid3_temp->openfile($this->getid3->filename);
 				$getid3_id3v2 = new ID3v2($getid3_temp);
 				$getid3_id3v2->StartingOffset = $info['bonk'][' ID3']['offset'] + 2;

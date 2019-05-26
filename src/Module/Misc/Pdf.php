@@ -2,6 +2,8 @@
 
 namespace JamesHeinrich\GetID3\Module\Misc;
 
+use JamesHeinrich\GetID3\Module\Handler;
+
 /////////////////////////////////////////////////////////////////
 /// getID3() by James Heinrich <info@getid3.org>               //
 //  available at https://github.com/JamesHeinrich/getID3       //
@@ -14,8 +16,6 @@ namespace JamesHeinrich\GetID3\Module\Misc;
 // module for analyzing PDF files                              //
 //                                                            ///
 /////////////////////////////////////////////////////////////////
-
-use JamesHeinrich\GetID3\Module\Handler;
 
 class Pdf extends Handler
 {

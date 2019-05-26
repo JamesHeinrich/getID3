@@ -200,7 +200,7 @@ class Mysqli extends GetID3
 	 *
 	 * @return mixed
 	 */
-	public function analyze($filename, $filesize=null, $original_filename='') {
+	public function analyze($filename, $filesize=null, $original_filename='', $fp=null) {
 
 		$filetime = 0;
 		if (file_exists($filename)) {
