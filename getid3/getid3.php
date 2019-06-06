@@ -834,7 +834,7 @@ class getID3
 
 				// DSS  - audio       - Digital Speech Standard
 				'dss'  => array(
-							'pattern'   => '^[\\x02-\\x06]ds[s2]',
+							'pattern'   => '^[\\x02-\\x08]ds[s2]',
 							'group'     => 'audio',
 							'module'    => 'dss',
 							'mime_type' => 'application/octet-stream',
