@@ -237,7 +237,7 @@ class getid3_apetag extends getid3_handler
 				case 'tracknumber':
 					if (is_array($thisfile_ape_items_current['data'])) {
 						foreach ($thisfile_ape_items_current['data'] as $comment) {
-							$thisfile_ape['comments']['track'][] = $comment;
+							$thisfile_ape['comments']['track_number'][] = $comment;
 						}
 					}
 					break;

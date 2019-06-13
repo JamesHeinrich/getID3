@@ -480,8 +480,8 @@ if (!empty($_REQUEST['scan']) || !empty($_REQUEST['newscan']) || !empty($_REQUES
 			}
 
 			$this_track_track = '';
-			if (!empty($ThisFileInfo['comments']['track'])) {
-				foreach ($ThisFileInfo['comments']['track'] as $key => $value) {
+			if (!empty($ThisFileInfo['comments']['track_number'])) {
+				foreach ($ThisFileInfo['comments']['track_number'] as $key => $value) {
 					if (strlen($value) > strlen($this_track_track)) {
 						$this_track_track = str_pad($value, 2, '0', STR_PAD_LEFT);
 					}
@@ -902,7 +902,7 @@ if (!empty($_REQUEST['scan']) || !empty($_REQUEST['newscan']) || !empty($_REQUES
 		header('Content-type: audio/x-mpegurl');
 		echo '#EXTM3U'."\n";
 		while ($row = mysql_fetch_array($result)) {
-			if ((strlen($row['track']) > 0) && ($row['track'] < 1) || ($row['track'] > 99)) {
+			if ((strlen($row['track_number']) > 0) && ($row['track_number'] < 1) || ($row['track_number'] > 99)) {
 				echo WindowsShareSlashTranslate($row['filename'])."\n";
 			}
 		}
@@ -915,12 +915,12 @@ if (!empty($_REQUEST['scan']) || !empty($_REQUEST['newscan']) || !empty($_REQUES
 		echo '<table border="1" cellspacing="0" cellpadding="3">';
 		echo '<tr><th>m3u</th><th>filename</th><th>track</th></tr>';
 		while ($row = mysql_fetch_array($result)) {
-			if ((strlen($row['track']) > 0) && ($row['track'] < 1) || ($row['track'] > 99)) {
+			if ((strlen($row['track_number']) > 0) && ($row['track_number'] < 1) || ($row['track_number'] > 99)) {
 				$TrackZeroCounter++;
 				echo '<tr>';
 				echo '<td><a href="'.htmlentities($_SERVER['PHP_SELF'].'?m3ufilename='.urlencode($row['filename']), ENT_QUOTES).'">m3u</a></td>';
 				echo '<td><a href="'.htmlentities('demo.browse.php?filename='.rawurlencode($row['filename']), ENT_QUOTES).'">'.htmlentities($row['filename']).'</a></td>';
-				echo '<td>'.htmlentities($row['track']).'</td>';
+				echo '<td>'.htmlentities($row['track_number']).'</td>';
 				echo '</tr>';
 			}
 		}
@@ -993,7 +993,7 @@ if (!empty($_REQUEST['scan']) || !empty($_REQUEST['newscan']) || !empty($_REQUES
 			echo '<tr>';
 			echo '<td><a href="'.htmlentities($_SERVER['PHP_SELF'].'?m3ufilename='.urlencode($row['filename']), ENT_QUOTES).'">m3u</a></td>';
 			echo '<td><a href="'.htmlentities('demo.browse.php?filename='.rawurlencode($row['filename']), ENT_QUOTES).'">'.htmlentities($row['filename']).'</a></td>';
-			echo '<td>'.htmlentities($row['track']).'</td>';
+			echo '<td>'.htmlentities($row['track_number']).'</td>';
 			echo '<td>'.htmlentities($row['album']).'</td>';
 			echo '</tr>';
 		}
@@ -1018,7 +1018,7 @@ if (!empty($_REQUEST['scan']) || !empty($_REQUEST['newscan']) || !empty($_REQUES
 
 	$NotOKfiles        = 0;
 	$Autofixedfiles    = 0;
-	$FieldsToCompare   = array('title', 'artist', 'album', 'year', 'genre', 'comment', 'track');
+	$FieldsToCompare   = array('title', 'artist', 'album', 'year', 'genre', 'comment', 'track_number');
 	$TagsToCompare     = array('id3v2'=>false, 'ape'=>false, 'lyrics3'=>false, 'id3v1'=>false);
 	$ID3v1FieldLengths = array('title'=>30, 'artist'=>30, 'album'=>30, 'year'=>4, 'genre'=>99, 'comment'=>28);
 	if (strpos($_REQUEST['unsynchronizedtags'], '2') !== false) {
@@ -1085,16 +1085,12 @@ if (!empty($_REQUEST['scan']) || !empty($_REQUEST['newscan']) || !empty($_REQUES
 		}
 
 		if (isset($Comments['ape']['tracknumber'])) {
-			$Comments['ape']['track'] = $Comments['ape']['tracknumber'];
+			$Comments['ape']['track_number'] = $Comments['ape']['tracknumber'];
 			unset($Comments['ape']['tracknumber']);
 		}
-		if (isset($Comments['ape']['track_number'])) {
-			$Comments['ape']['track'] = $Comments['ape']['track_number'];
-			unset($Comments['ape']['track_number']);
-		}
-		if (isset($Comments['id3v2']['track_number'])) {
-			$Comments['id3v2']['track'] = $Comments['id3v2']['track_number'];
-			unset($Comments['id3v2']['track_number']);
+		if (isset($Comments['ape']['track'])) {
+			$Comments['ape']['track_number'] = $Comments['ape']['track'];
+			unset($Comments['ape']['track']);
 		}
 		if (!empty($Comments['all']['track'])) {
 			$besttrack = '';
@@ -1103,7 +1099,7 @@ if (!empty($_REQUEST['scan']) || !empty($_REQUEST['newscan']) || !empty($_REQUES
 					$besttrack = $value;
 				}
 			}
-			$Comments['all']['track'] = array(0=>$besttrack);
+			$Comments['all']['track_number'] = array(0=>$besttrack);
 		}
 
 		$ThisLine  = '<tr>';
@@ -1141,7 +1137,7 @@ if (!empty($_REQUEST['scan']) || !empty($_REQUEST['newscan']) || !empty($_REQUES
 								$tagvalues .= $fieldname.' = '.(isset($Comments[$tagtype][$fieldname][0]) ? $Comments[$tagtype][$fieldname][0] : '')."\n";
 							}
 
-						} elseif ($fieldname == 'track') {
+						} elseif ($fieldname == 'track_number') {
 
 							// intval('01/20') == intval('1')
 							$trackA = (isset($Comments[$tagtype][$fieldname][0]) ? $Comments[$tagtype][$fieldname][0] : '');

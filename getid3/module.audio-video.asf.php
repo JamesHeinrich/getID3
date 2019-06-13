@@ -797,17 +797,17 @@ class getid3_asf extends getid3_handler
 							case 'wm/tracknumber':
 							case 'tracknumber':
 								// be careful casting to int: casting unicode strings to int gives unexpected results (stops parsing at first non-numeric character)
-								$thisfile_asf_comments['track'] = array($this->TrimTerm($thisfile_asf_extendedcontentdescriptionobject_contentdescriptor_current['value']));
-								foreach ($thisfile_asf_comments['track'] as $key => $value) {
+								$thisfile_asf_comments['track_number'] = array($this->TrimTerm($thisfile_asf_extendedcontentdescriptionobject_contentdescriptor_current['value']));
+								foreach ($thisfile_asf_comments['track_number'] as $key => $value) {
 									if (preg_match('/^[0-9\x00]+$/', $value)) {
-										$thisfile_asf_comments['track'][$key] = intval(str_replace("\x00", '', $value));
+										$thisfile_asf_comments['track_number'][$key] = intval(str_replace("\x00", '', $value));
 									}
 								}
 								break;
 
 							case 'wm/track':
-								if (empty($thisfile_asf_comments['track'])) {
-									$thisfile_asf_comments['track'] = array(1 + $this->TrimConvert($thisfile_asf_extendedcontentdescriptionobject_contentdescriptor_current['value']));
+								if (empty($thisfile_asf_comments['track_number'])) {
+									$thisfile_asf_comments['track_number'] = array(1 + $this->TrimConvert($thisfile_asf_extendedcontentdescriptionobject_contentdescriptor_current['value']));
 								}
 								break;
 

@@ -782,8 +782,8 @@ if (!function_exists('ID3v1matchesID3v2')) {
 		if (trim($id3v1['genre']) != trim($id3v2['genre'])) {
 			return false;
 		}
-		if (isset($id3v1['track'])) {
-			if (!isset($id3v1['track']) || (trim($id3v1['track']) != trim($id3v2['track']))) {
+		if (isset($id3v1['track_number'])) {
+			if (!isset($id3v1['track_number']) || (trim($id3v1['track_number']) != trim($id3v2['track_number']))) {
 				return false;
 			}
 			if (trim($id3v1['comment']) != trim(substr($id3v2['comment'], 0, 28))) {

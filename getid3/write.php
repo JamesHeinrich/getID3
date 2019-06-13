@@ -311,9 +311,9 @@ class getid3_writetags
 			}
 		}
 
-		// Convert "TRACK" to "TRACKNUMBER" (if needed) for compatability with all formats
-		if (isset($this->tag_data['TRACK']) && !isset($this->tag_data['TRACKNUMBER'])) {
-			$this->tag_data['TRACKNUMBER'] = $this->tag_data['TRACK'];
+		// Convert "TRACK" to "TRACK_NUMBER" (if needed) for compatability with all formats
+		if (isset($this->tag_data['TRACK']) && !isset($this->tag_data['TRACK_NUMBER'])) {
+			$this->tag_data['TRACK_NUMBER'] = $this->tag_data['TRACK'];
 			unset($this->tag_data['TRACK']);
 		}
 
@@ -559,14 +559,14 @@ class getid3_writetags
 				}
 			}
 		}
-		$tag_data_id3v1['title']   =        getid3_lib::iconv_fallback($this->tag_encoding, 'ISO-8859-1', implode(' ', (isset($this->tag_data['TITLE']      ) ? $this->tag_data['TITLE']       : array())));
-		$tag_data_id3v1['artist']  =        getid3_lib::iconv_fallback($this->tag_encoding, 'ISO-8859-1', implode(' ', (isset($this->tag_data['ARTIST']     ) ? $this->tag_data['ARTIST']      : array())));
-		$tag_data_id3v1['album']   =        getid3_lib::iconv_fallback($this->tag_encoding, 'ISO-8859-1', implode(' ', (isset($this->tag_data['ALBUM']      ) ? $this->tag_data['ALBUM']       : array())));
-		$tag_data_id3v1['year']    =        getid3_lib::iconv_fallback($this->tag_encoding, 'ISO-8859-1', implode(' ', (isset($this->tag_data['YEAR']       ) ? $this->tag_data['YEAR']        : array())));
-		$tag_data_id3v1['comment'] =        getid3_lib::iconv_fallback($this->tag_encoding, 'ISO-8859-1', implode(' ', (isset($this->tag_data['COMMENT']    ) ? $this->tag_data['COMMENT']     : array())));
-		$tag_data_id3v1['track']   = intval(getid3_lib::iconv_fallback($this->tag_encoding, 'ISO-8859-1', implode(' ', (isset($this->tag_data['TRACKNUMBER']) ? $this->tag_data['TRACKNUMBER'] : array()))));
-		if ($tag_data_id3v1['track'] <= 0) {
-			$tag_data_id3v1['track'] = '';
+		$tag_data_id3v1['title']        =        getid3_lib::iconv_fallback($this->tag_encoding, 'ISO-8859-1', implode(' ', (isset($this->tag_data['TITLE']       ) ? $this->tag_data['TITLE']        : array())));
+		$tag_data_id3v1['artist']       =        getid3_lib::iconv_fallback($this->tag_encoding, 'ISO-8859-1', implode(' ', (isset($this->tag_data['ARTIST']      ) ? $this->tag_data['ARTIST']       : array())));
+		$tag_data_id3v1['album']        =        getid3_lib::iconv_fallback($this->tag_encoding, 'ISO-8859-1', implode(' ', (isset($this->tag_data['ALBUM']       ) ? $this->tag_data['ALBUM']        : array())));
+		$tag_data_id3v1['year']         =        getid3_lib::iconv_fallback($this->tag_encoding, 'ISO-8859-1', implode(' ', (isset($this->tag_data['YEAR']        ) ? $this->tag_data['YEAR']         : array())));
+		$tag_data_id3v1['comment']      =        getid3_lib::iconv_fallback($this->tag_encoding, 'ISO-8859-1', implode(' ', (isset($this->tag_data['COMMENT']     ) ? $this->tag_data['COMMENT']      : array())));
+		$tag_data_id3v1['track_number'] = intval(getid3_lib::iconv_fallback($this->tag_encoding, 'ISO-8859-1', implode(' ', (isset($this->tag_data['TRACK_NUMBER']) ? $this->tag_data['TRACK_NUMBER'] : array()))));
+		if ($tag_data_id3v1['track_number'] <= 0) {
+			$tag_data_id3v1['track_number'] = '';
 		}
 
 		$this->MergeExistingTagData('id3v1', $tag_data_id3v1);

@@ -46,8 +46,8 @@ class getid3_id3v1 extends getid3_handler
 			// If second-last byte of comment field is null and last byte of comment field is non-null
 			// then this is ID3v1.1 and the comment field is 28 bytes long and the 30th byte is the track number
 			if (($id3v1tag{125} === "\x00") && ($id3v1tag{126} !== "\x00")) {
-				$ParsedID3v1['track']   = ord(substr($ParsedID3v1['comment'], 29,  1));
-				$ParsedID3v1['comment'] =     substr($ParsedID3v1['comment'],  0, 28);
+				$ParsedID3v1['track_number'] = ord(substr($ParsedID3v1['comment'], 29,  1));
+				$ParsedID3v1['comment']      =     substr($ParsedID3v1['comment'],  0, 28);
 			}
 			$ParsedID3v1['comment'] = $this->cutfield($ParsedID3v1['comment']);
 
@@ -91,7 +91,7 @@ class getid3_id3v1 extends getid3_handler
 											$ParsedID3v1['year'],
 											(isset($ParsedID3v1['genre']) ? $this->LookupGenreID($ParsedID3v1['genre']) : false),
 											$ParsedID3v1['comment'],
-											(!empty($ParsedID3v1['track']) ? $ParsedID3v1['track'] : ''));
+											(!empty($ParsedID3v1['track_number']) ? $ParsedID3v1['track_number'] : ''));
 			$ParsedID3v1['padding_valid'] = true;
 			if ($id3v1tag !== $GoodFormatID3v1tag) {
 				$ParsedID3v1['padding_valid'] = false;

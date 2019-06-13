@@ -44,7 +44,7 @@ $TagData = array(
 	'year'                   => array('2004'),
 	'genre'                  => array('Rock'),
 	'comment'                => array('excellent!'),
-	'track'                  => array('04/16'),
+	'track_number'           => array('04/16'),
 	'popularimeter'          => array('email'=>'user@example.net', 'rating'=>128, 'data'=>0),
 	'unique_file_identifier' => array('ownerid'=>'user@example.net', 'data'=>md5(time())),
 );

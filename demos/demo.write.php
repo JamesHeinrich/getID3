@@ -62,7 +62,7 @@ if (isset($_POST['WriteTags'])) {
 			$TagData['genre'][] = $_POST['GenreOther'];
 		}
 		if (!empty($_POST['Track'])) {
-			$TagData['track'][] = $_POST['Track'].(!empty($_POST['TracksTotal']) ? '/'.$_POST['TracksTotal'] : '');
+			$TagData['track_number'][] = $_POST['Track'].(!empty($_POST['TracksTotal']) ? '/'.$_POST['TracksTotal'] : '');
 		}
 
 		if (!empty($_FILES['userfile']['tmp_name'])) {
@@ -167,8 +167,8 @@ if (!empty($Filename)) {
 		$TrackNumber = '';
 		if (!empty($OldThisFileInfo['comments']['track_number']) && is_array($OldThisFileInfo['comments']['track_number'])) {
 			$RawTrackNumberArray = $OldThisFileInfo['comments']['track_number'];
-		} elseif (!empty($OldThisFileInfo['comments']['track']) && is_array($OldThisFileInfo['comments']['track'])) {
-			$RawTrackNumberArray = $OldThisFileInfo['comments']['track'];
+		} elseif (!empty($OldThisFileInfo['comments']['track_number']) && is_array($OldThisFileInfo['comments']['track_number'])) {
+			$RawTrackNumberArray = $OldThisFileInfo['comments']['track_number'];
 		} else {
 			$RawTrackNumberArray = array();
 		}

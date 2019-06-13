@@ -2654,7 +2654,7 @@ class getid3_quicktime extends getid3_handler
 			$handyatomtranslatorarray["\xA9".'src'] = 'source_credit';
 			$handyatomtranslatorarray["\xA9".'swr'] = 'software';
 			$handyatomtranslatorarray["\xA9".'too'] = 'encoding_tool';       // iTunes 4.0
-			$handyatomtranslatorarray["\xA9".'trk'] = 'track';
+			$handyatomtranslatorarray["\xA9".'trk'] = 'track_number';
 			$handyatomtranslatorarray["\xA9".'url'] = 'url';
 			$handyatomtranslatorarray["\xA9".'wrn'] = 'warning';
 			$handyatomtranslatorarray["\xA9".'wrt'] = 'composer';
