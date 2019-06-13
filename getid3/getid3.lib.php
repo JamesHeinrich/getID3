@@ -1281,6 +1281,16 @@ class getid3_lib
 
 		// mb_convert_encoding() available
 		if (function_exists('mb_convert_encoding')) {
+			if ((strtoupper($in_charset) == 'UTF-16') && (substr($string, 0, 2) != "\xFE\xFF") && (substr($string, 0, 2) != "\xFF\xFE")) {
+				// if BOM missing, mb_convert_encoding will mishandle the conversion, assume UTF-16BE and prepend appropriate BOM
+				$string = "\xFF\xFE".$string;
+			}
+			if ((strtoupper($in_charset) == 'UTF-16') && (strtoupper($out_charset) == 'UTF-8')) {
+				if (($string == "\xFF\xFE") || ($string == "\xFE\xFF")) {
+					// if string consists of only BOM, mb_convert_encoding will return the BOM unmodified
+					return '';
+				}
+			}
 			if ($converted_string = @mb_convert_encoding($string, $out_charset, $in_charset)) {
 				switch ($out_charset) {
 					case 'ISO-8859-1':
@@ -1290,9 +1300,9 @@ class getid3_lib
 				return $converted_string;
 			}
 			return $string;
-		}
+
 		// iconv() available
-		else if (function_exists('iconv')) {
+		} elseif (function_exists('iconv')) {
 			if ($converted_string = @iconv($in_charset, $out_charset.'//TRANSLIT', $string)) {
 				switch ($out_charset) {
 					case 'ISO-8859-1':
