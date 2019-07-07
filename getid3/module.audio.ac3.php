@@ -760,7 +760,11 @@ class getid3_ac3 extends getid3_handler
 		}
 		if (($fscod == 1) && $padding) {
 			// frame lengths are padded by 1 word (16 bits) at 44100
-			$frameSizeLookup[$frmsizecod] += 2;
+			if (is_array($frameSizeLookup[$frmsizecod])) {
+				$frameSizeLookup[$frmsizecod][0] += 2;
+			}else{
+				$framesizeidmeSizeLookup[$frmsizecod] += 2;
+			}
 		}
 		return (isset($frameSizeLookup[$framesizeid][$fscod]) ? $frameSizeLookup[$framesizeid][$fscod] : false);
 	}
