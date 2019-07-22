@@ -173,6 +173,7 @@ class getid3_wavpack extends getid3_handler
 				}
 				$metablock['size'] = getid3_lib::LittleEndian2Int(substr($metablockheader, 1)) * 2; // size is stored in words
 				$metablock['data'] = null;
+				$metablock['comments'] = array();
 
 				if ($metablock['size'] > 0) {
 

@@ -1688,18 +1688,18 @@ class getid3_write_id3v2
 							if ($noerrorsonly) {
 								return false;
 							} else {
-								unset($frame_name);
+								$frame_name = null;
 							}
 						}
 					} else {
 						// ignore any invalid frame names, including 'title', 'header', etc
 						$this->warnings[] = 'Ignoring invalid ID3v2 frame type: "'.$frame_name.'"';
-						unset($frame_name);
+						$frame_name = null;
 						unset($frame_length);
 						unset($frame_flags);
 						unset($frame_data);
 					}
-					if (isset($frame_name) && isset($frame_length) && isset($frame_flags) && isset($frame_data)) {
+					if (null !== $frame_name && isset($frame_length) && isset($frame_flags) && isset($frame_data)) {
 						$tagstring .= $frame_name.$frame_length.$frame_flags.$frame_data;
 					}
 				}
@@ -1723,7 +1723,7 @@ class getid3_write_id3v2
 			}
 
 			$footer = false; // ID3v2 footers not yet supported in getID3()
-			if (!$footer && ($this->paddedlength > (strlen($tagstring) + getid3_id3v2::ID3v2HeaderLength($this->majorversion)))) {
+			if (/*!$footer && */($this->paddedlength > (strlen($tagstring) + getid3_id3v2::ID3v2HeaderLength($this->majorversion)))) {
 				// pad up to $paddedlength bytes if unpadded tag is shorter than $paddedlength
 				// "Furthermore it MUST NOT have any padding when a tag footer is added to the tag."
 				if (($this->paddedlength - strlen($tagstring) - getid3_id3v2::ID3v2HeaderLength($this->majorversion)) > 0) {

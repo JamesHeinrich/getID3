@@ -266,14 +266,16 @@ class getID3
 		}
 
 		// Check memory
-		$this->memory_limit = ini_get('memory_limit');
-		if (preg_match('#([0-9]+) ?M#i', $this->memory_limit, $matches)) {
+		$memoryLimit = ini_get('memory_limit');
+		if (preg_match('#([0-9]+) ?M#i', $memoryLimit, $matches)) {
 			// could be stored as "16M" rather than 16777216 for example
-			$this->memory_limit = $matches[1] * 1048576;
-		} elseif (preg_match('#([0-9]+) ?G#i', $this->memory_limit, $matches)) { // The 'G' modifier is available since PHP 5.1.0
+			$memoryLimit = $matches[1] * 1048576;
+		} elseif (preg_match('#([0-9]+) ?G#i', $memoryLimit, $matches)) { // The 'G' modifier is available since PHP 5.1.0
 			// could be stored as "2G" rather than 2147483648 for example
-			$this->memory_limit = $matches[1] * 1073741824;
+			$memoryLimit = $matches[1] * 1073741824;
 		}
+		$this->memory_limit = $memoryLimit;
+
 		if ($this->memory_limit <= 0) {
 			// memory limits probably disabled
 		} elseif ($this->memory_limit <= 4194304) {
@@ -287,7 +289,7 @@ class getID3
 			$this->warning('WARNING: Safe mode is on, shorten support disabled, md5data/sha1data for ogg vorbis disabled, ogg vorbos/flac tag writing disabled.');
 		}
 
-		if (($mbstring_func_overload = ini_get('mbstring.func_overload')) && ($mbstring_func_overload & 0x02)) {
+		if (($mbstring_func_overload = (int) ini_get('mbstring.func_overload')) && ($mbstring_func_overload & 0x02)) {
 			// http://php.net/manual/en/mbstring.overload.php
 			// "mbstring.func_overload in php.ini is a positive value that represents a combination of bitmasks specifying the categories of functions to be overloaded. It should be set to 1 to overload the mail() function. 2 for string functions, 4 for regular expression functions"
 			// getID3 cannot run when string functions are overloaded. It doesn't matter if mail() or ereg* functions are overloaded since getID3 does not use those.
@@ -400,8 +402,9 @@ class getID3
 	}
 
 	/**
-	 * @param string $filename
-	 * @param int    $filesize
+	 * @param string   $filename
+	 * @param int      $filesize
+	 * @param resource $fp
 	 *
 	 * @return bool
 	 *
@@ -511,9 +514,10 @@ class getID3
 	/**
 	 * analyze file
 	 *
-	 * @param string $filename
-	 * @param int    $filesize
-	 * @param string $original_filename
+	 * @param string   $filename
+	 * @param int      $filesize
+	 * @param string   $original_filename
+	 * @param resource $fp
 	 *
 	 * @return array
 	 */

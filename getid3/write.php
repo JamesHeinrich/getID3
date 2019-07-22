@@ -665,7 +665,7 @@ class getid3_writetags
 								// note: some software, notably Windows Media Player and iTunes are broken and treat files tagged with UTF-16BE (with BOM) as corrupt
 								// therefore we force data to UTF-16LE and manually prepend the BOM
 								$ID3v2_tag_data_converted = false;
-								if (!$ID3v2_tag_data_converted && ($this->tag_encoding == 'ISO-8859-1')) {
+								if (/*!$ID3v2_tag_data_converted && */($this->tag_encoding == 'ISO-8859-1')) {
 									// great, leave data as-is for minimum compatability problems
 									$tag_data_id3v2[$ID3v2_framename][$key]['encodingid'] = 0;
 									$tag_data_id3v2[$ID3v2_framename][$key]['data']       = $value;

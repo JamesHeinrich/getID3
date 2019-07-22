@@ -15,10 +15,10 @@
 class getid3_lib
 {
 	/**
-	 * @param string $string
-	 * @param bool   $hex
-	 * @param bool   $spaces
-	 * @param string $htmlencoding
+	 * @param string      $string
+	 * @param bool        $hex
+	 * @param bool        $spaces
+	 * @param string|bool $htmlencoding
 	 *
 	 * @return string
 	 */
@@ -500,8 +500,8 @@ class getid3_lib
 	}
 
 	/**
-	 * @param array $array1
-	 * @param array $array2
+	 * @param mixed $array1
+	 * @param mixed $array2
 	 *
 	 * @return array|false
 	 */
@@ -523,8 +523,8 @@ class getid3_lib
 	}
 
 	/**
-	 * @param array $array1
-	 * @param array $array2
+	 * @param mixed $array1
+	 * @param mixed $array2
 	 *
 	 * @return array|false
 	 */
@@ -544,8 +544,8 @@ class getid3_lib
 	}
 
 	/**
-	 * @param array $array1
-	 * @param array $array2
+	 * @param mixed $array1
+	 * @param mixed $array2
 	 *
 	 * @return array|false|null
 	 */
@@ -735,7 +735,7 @@ class getid3_lib
 	}
 
 	/**
-	* @param SimpleXMLElement|array $XMLobject
+	* @param SimpleXMLElement|array|mixed $XMLobject
 	*
 	* @return array
 	*/
@@ -1496,12 +1496,11 @@ class getid3_lib
 
 			// yes this is ugly, feel free to suggest a better way
 			if (include_once(dirname(__FILE__).'/getid3.php')) {
-				if ($getid3_temp = new getID3()) {
-					if ($getid3_temp_tempdir = $getid3_temp->tempdir) {
-						$tempdir = $getid3_temp_tempdir;
-					}
-					unset($getid3_temp, $getid3_temp_tempdir);
+				$getid3_temp = new getID3();
+				if ($getid3_temp_tempdir = $getid3_temp->tempdir) {
+					$tempdir = $getid3_temp_tempdir;
 				}
+				unset($getid3_temp, $getid3_temp_tempdir);
 			}
 		}
 		$GetDataImageSize = false;

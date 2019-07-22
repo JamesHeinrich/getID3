@@ -215,13 +215,14 @@ class getID3_cached_dbm extends getID3
 	/**
 	 * clear cache
 	 *
-	 * @param string $filename
-	 * @param int    $filesize
-	 * @param string $original_filename
+	 * @param string   $filename
+	 * @param int      $filesize
+	 * @param string   $original_filename
+	 * @param resource $fp
 	 *
 	 * @return mixed
 	 */
-	public function analyze($filename, $filesize=null, $original_filename='') {
+	public function analyze($filename, $filesize=null, $original_filename='', $fp=null) {
 
 		if (file_exists($filename)) {
 
@@ -238,7 +239,7 @@ class getID3_cached_dbm extends getID3
 		}
 
 		// Miss
-		$result = parent::analyze($filename);
+		$result = parent::analyze($filename, $filesize, $original_filename, $fp);
 
 		// Save result
 		if (isset($key) && file_exists($filename)) {

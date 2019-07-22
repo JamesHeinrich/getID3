@@ -483,8 +483,9 @@ class getid3_real extends getid3_handler
 			$ParsedArray['fourcc'] = $ParsedArray['fourcc3'];
 
 		}
+		/** @var string[]|false[] $value */
 		foreach ($ParsedArray['comments'] as $key => $value) {
-			if ($ParsedArray['comments'][$key][0] === false) {
+			if ($value[0] === false) {
 				$ParsedArray['comments'][$key][0] = '';
 			}
 		}

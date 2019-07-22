@@ -172,13 +172,14 @@ class getID3_cached_sqlite3 extends getID3
 	/**
 	 * analyze file and cache them, if cached pull from the db
 	 *
-	 * @param string  $filename
-	 * @param integer $filesize
-	 * @param string  $original_filename
+	 * @param string   $filename
+	 * @param integer  $filesize
+	 * @param string   $original_filename
+	 * @param resource $fp
 	 *
 	 * @return mixed|false
 	 */
-	public function analyze($filename, $filesize=null, $original_filename='') {
+	public function analyze($filename, $filesize=null, $original_filename='', $fp=null) {
 		if (!file_exists($filename)) {
 			return false;
 		}
@@ -201,7 +202,7 @@ class getID3_cached_sqlite3 extends getID3
 			return unserialize(base64_decode($result));
 		}
 		// if it hasn't been analyzed before, then do it now
-		$analysis = parent::analyze($filename, $filesize, $original_filename);
+		$analysis = parent::analyze($filename, $filesize, $original_filename, $fp);
 		// Save result
 		$sql = $this->getQuery('cache_file');
 		$stmt = $db->prepare($sql);
