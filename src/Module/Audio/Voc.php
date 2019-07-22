@@ -64,7 +64,7 @@ class Voc extends Handler
 
 			$BlockOffset    = $this->ftell();
 			$BlockData      = $this->fread(4);
-			$BlockType      = ord($BlockData{0});
+			$BlockType      = ord($BlockData[0]);
 			$BlockSize      = Utils::LittleEndian2Int(substr($BlockData, 1, 3));
 			$ThisBlock      = array();
 
