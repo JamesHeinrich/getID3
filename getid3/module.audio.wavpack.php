@@ -102,8 +102,8 @@ class getid3_wavpack extends getid3_handler
 					return false;
 				}
 
-				$info['wavpack']['blockheader']['minor_version'] = ord($wavpackheader{8});
-				$info['wavpack']['blockheader']['major_version'] = ord($wavpackheader{9});
+				$info['wavpack']['blockheader']['minor_version'] = ord($wavpackheader[8]);
+				$info['wavpack']['blockheader']['major_version'] = ord($wavpackheader[9]);
 
 				if (($info['wavpack']['blockheader']['major_version'] != 4) ||
 					(($info['wavpack']['blockheader']['minor_version'] < 4) &&
@@ -122,8 +122,8 @@ class getid3_wavpack extends getid3_handler
 						return false;
 				}
 
-				$info['wavpack']['blockheader']['track_number']  = ord($wavpackheader{10}); // unused
-				$info['wavpack']['blockheader']['index_number']  = ord($wavpackheader{11}); // unused
+				$info['wavpack']['blockheader']['track_number']  = ord($wavpackheader[10]); // unused
+				$info['wavpack']['blockheader']['index_number']  = ord($wavpackheader[11]); // unused
 				$info['wavpack']['blockheader']['total_samples'] = getid3_lib::LittleEndian2Int(substr($wavpackheader, 12,  4));
 				$info['wavpack']['blockheader']['block_index']   = getid3_lib::LittleEndian2Int(substr($wavpackheader, 16,  4));
 				$info['wavpack']['blockheader']['block_samples'] = getid3_lib::LittleEndian2Int(substr($wavpackheader, 20,  4));
@@ -153,7 +153,7 @@ class getid3_wavpack extends getid3_handler
 				if (feof($this->getid3->fp)) {
 					break;
 				}
-				$metablock['id'] = ord($metablockheader{0});
+				$metablock['id'] = ord($metablockheader[0]);
 				$metablock['function_id'] = ($metablock['id'] & 0x3F);
 				$metablock['function_name'] = $this->WavPackMetablockNameLookup($metablock['function_id']);
 

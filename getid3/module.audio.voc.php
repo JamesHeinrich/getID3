@@ -61,7 +61,7 @@ class getid3_voc extends getid3_handler
 
 			$BlockOffset    = $this->ftell();
 			$BlockData      = $this->fread(4);
-			$BlockType      = ord($BlockData{0});
+			$BlockType      = ord($BlockData[0]);
 			$BlockSize      = getid3_lib::LittleEndian2Int(substr($BlockData, 1, 3));
 			$ThisBlock      = array();
 

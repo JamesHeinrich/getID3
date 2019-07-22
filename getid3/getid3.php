@@ -551,8 +551,8 @@ class getID3
 				$header = fread($this->fp, 10);
 				if ((substr($header, 0, 3) == 'ID3') && (strlen($header) == 10)) {
 					$this->info['id3v2']['header']        = true;
-					$this->info['id3v2']['majorversion']  = ord($header{3});
-					$this->info['id3v2']['minorversion']  = ord($header{4});
+					$this->info['id3v2']['majorversion']  = ord($header[3]);
+					$this->info['id3v2']['minorversion']  = ord($header[4]);
 					$this->info['avdataoffset']          += getid3_lib::BigEndian2Int(substr($header, 6, 4), 1) + 10; // length of ID3v2 tag in 10-byte header doesn't include 10-byte header length
 				}
 			}
