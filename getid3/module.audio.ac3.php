@@ -687,7 +687,7 @@ class getid3_ac3 extends getid3_handler
 		// -8    -42.14 dB
 
 		$fourbit = str_pad(decbin(($compre & 0xF0) >> 4), 4, '0', STR_PAD_LEFT);
-		if ($fourbit{0} == '1') {
+		if ($fourbit[0] == '1') {
 			$log_gain = -8 + bindec(substr($fourbit, 1));
 		} else {
 			$log_gain = bindec(substr($fourbit, 1));

@@ -675,7 +675,7 @@ class getid3_writetags
 									do {
 										// if UTF-8 string does not include any characters above chr(127) then it is identical to ISO-8859-1
 										for ($i = 0; $i < strlen($value); $i++) {
-											if (ord($value{$i}) > 127) {
+											if (ord($value[$i]) > 127) {
 												break 2;
 											}
 										}

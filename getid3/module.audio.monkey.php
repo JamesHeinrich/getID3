@@ -162,7 +162,7 @@ class getid3_monkey extends getid3_handler
 				$info['md5_data_source'] = '';
 				$md5 = $thisfile_monkeysaudio_raw['cFileMD5'];
 				for ($i = 0; $i < strlen($md5); $i++) {
-					$info['md5_data_source'] .= str_pad(dechex(ord($md5{$i})), 2, '00', STR_PAD_LEFT);
+					$info['md5_data_source'] .= str_pad(dechex(ord($md5[$i])), 2, '00', STR_PAD_LEFT);
 				}
 				if (!preg_match('/^[0-9a-f]{32}$/', $info['md5_data_source'])) {
 					unset($info['md5_data_source']);

@@ -72,7 +72,7 @@ if (isset($_REQUEST['deletefile']) && GETID3_DEMO_BROWSE_ALLOW_DELETE_LINK) {
 		$deletefilemessage = 'FAILED to delete '.$_REQUEST['deletefile'].' - file does not exist';
 	}
 	if (isset($_REQUEST['noalert'])) {
-		echo '<span style="font-weight: bold; color: #'.(($deletefilemessage{0} == 'F') ? 'FF0000' : '008000').';">'.htmlentities($deletefilemessage, ENT_QUOTES).'</span><hr>';
+		echo '<span style="font-weight: bold; color: #'.(($deletefilemessage[0] == 'F') ? 'FF0000' : '008000').';">'.htmlentities($deletefilemessage, ENT_QUOTES).'</span><hr>';
 	} else {
 		echo '<script type="text/javascript">alert("'.addslashes($deletefilemessage).'");</script>';
 	}

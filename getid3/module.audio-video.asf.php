@@ -1653,26 +1653,26 @@ class getid3_asf extends getid3_handler
 	 * @return string
 	 */
 	public static function BytestringToGUID($Bytestring) {
-		$GUIDstring  = str_pad(dechex(ord($Bytestring{3})),  2, '0', STR_PAD_LEFT);
-		$GUIDstring .= str_pad(dechex(ord($Bytestring{2})),  2, '0', STR_PAD_LEFT);
-		$GUIDstring .= str_pad(dechex(ord($Bytestring{1})),  2, '0', STR_PAD_LEFT);
-		$GUIDstring .= str_pad(dechex(ord($Bytestring{0})),  2, '0', STR_PAD_LEFT);
+		$GUIDstring  = str_pad(dechex(ord($Bytestring[3])),  2, '0', STR_PAD_LEFT);
+		$GUIDstring .= str_pad(dechex(ord($Bytestring[2])),  2, '0', STR_PAD_LEFT);
+		$GUIDstring .= str_pad(dechex(ord($Bytestring[1])),  2, '0', STR_PAD_LEFT);
+		$GUIDstring .= str_pad(dechex(ord($Bytestring[0])),  2, '0', STR_PAD_LEFT);
 		$GUIDstring .= '-';
-		$GUIDstring .= str_pad(dechex(ord($Bytestring{5})),  2, '0', STR_PAD_LEFT);
-		$GUIDstring .= str_pad(dechex(ord($Bytestring{4})),  2, '0', STR_PAD_LEFT);
+		$GUIDstring .= str_pad(dechex(ord($Bytestring[5])),  2, '0', STR_PAD_LEFT);
+		$GUIDstring .= str_pad(dechex(ord($Bytestring[4])),  2, '0', STR_PAD_LEFT);
 		$GUIDstring .= '-';
-		$GUIDstring .= str_pad(dechex(ord($Bytestring{7})),  2, '0', STR_PAD_LEFT);
-		$GUIDstring .= str_pad(dechex(ord($Bytestring{6})),  2, '0', STR_PAD_LEFT);
+		$GUIDstring .= str_pad(dechex(ord($Bytestring[7])),  2, '0', STR_PAD_LEFT);
+		$GUIDstring .= str_pad(dechex(ord($Bytestring[6])),  2, '0', STR_PAD_LEFT);
 		$GUIDstring .= '-';
-		$GUIDstring .= str_pad(dechex(ord($Bytestring{8})),  2, '0', STR_PAD_LEFT);
-		$GUIDstring .= str_pad(dechex(ord($Bytestring{9})),  2, '0', STR_PAD_LEFT);
+		$GUIDstring .= str_pad(dechex(ord($Bytestring[8])),  2, '0', STR_PAD_LEFT);
+		$GUIDstring .= str_pad(dechex(ord($Bytestring[9])),  2, '0', STR_PAD_LEFT);
 		$GUIDstring .= '-';
-		$GUIDstring .= str_pad(dechex(ord($Bytestring{10})), 2, '0', STR_PAD_LEFT);
-		$GUIDstring .= str_pad(dechex(ord($Bytestring{11})), 2, '0', STR_PAD_LEFT);
-		$GUIDstring .= str_pad(dechex(ord($Bytestring{12})), 2, '0', STR_PAD_LEFT);
-		$GUIDstring .= str_pad(dechex(ord($Bytestring{13})), 2, '0', STR_PAD_LEFT);
-		$GUIDstring .= str_pad(dechex(ord($Bytestring{14})), 2, '0', STR_PAD_LEFT);
-		$GUIDstring .= str_pad(dechex(ord($Bytestring{15})), 2, '0', STR_PAD_LEFT);
+		$GUIDstring .= str_pad(dechex(ord($Bytestring[10])), 2, '0', STR_PAD_LEFT);
+		$GUIDstring .= str_pad(dechex(ord($Bytestring[11])), 2, '0', STR_PAD_LEFT);
+		$GUIDstring .= str_pad(dechex(ord($Bytestring[12])), 2, '0', STR_PAD_LEFT);
+		$GUIDstring .= str_pad(dechex(ord($Bytestring[13])), 2, '0', STR_PAD_LEFT);
+		$GUIDstring .= str_pad(dechex(ord($Bytestring[14])), 2, '0', STR_PAD_LEFT);
+		$GUIDstring .= str_pad(dechex(ord($Bytestring[15])), 2, '0', STR_PAD_LEFT);
 
 		return strtoupper($GUIDstring);
 	}

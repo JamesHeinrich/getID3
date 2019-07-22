@@ -44,13 +44,13 @@ class getid3_tar extends getid3_handler
 			// check the block
 			$checksum = 0;
 			for ($i = 0; $i < 148; $i++) {
-				$checksum += ord($buffer{$i});
+				$checksum += ord($buffer[$i]);
 			}
 			for ($i = 148; $i < 156; $i++) {
 				$checksum += ord(' ');
 			}
 			for ($i = 156; $i < 512; $i++) {
-				$checksum += ord($buffer{$i});
+				$checksum += ord($buffer[$i]);
 			}
 			$attr    = unpack($unpack_header, $buffer);
 			$name    =       (isset($attr['fname']  ) ? trim($attr['fname']  ) : '');
