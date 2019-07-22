@@ -48,7 +48,7 @@ class ID3v1 extends Handler
 
 			// If second-last byte of comment field is null and last byte of comment field is non-null
 			// then this is ID3v1.1 and the comment field is 28 bytes long and the 30th byte is the track number
-			if (($id3v1tag{125} === "\x00") && ($id3v1tag{126} !== "\x00")) {
+			if (($id3v1tag[125] === "\x00") && ($id3v1tag[126] !== "\x00")) {
 				$ParsedID3v1['track']   = ord(substr($ParsedID3v1['comment'], 29,  1));
 				$ParsedID3v1['comment'] =     substr($ParsedID3v1['comment'],  0, 28);
 			}

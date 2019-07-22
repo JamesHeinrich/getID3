@@ -705,7 +705,7 @@ class Mp3 extends Handler
 				if ($thisfile_mpeg_audio['xing_flags']['toc']) {
 					$LAMEtocData = substr($headerstring, $VBRidOffset + 16, 100);
 					for ($i = 0; $i < 100; $i++) {
-						$thisfile_mpeg_audio['toc'][$i] = ord($LAMEtocData{$i});
+						$thisfile_mpeg_audio['toc'][$i] = ord($LAMEtocData[$i]);
 					}
 				}
 				if ($thisfile_mpeg_audio['xing_flags']['vbr_scale']) {
@@ -1177,9 +1177,9 @@ class Mp3 extends Handler
 
 		$SyncPattern1 = substr($MPEGaudioData, 0, 4);
 		// may be different pattern due to padding
-		$SyncPattern2 = $SyncPattern1{0}.$SyncPattern1{1}.chr(ord($SyncPattern1{2}) | 0x02).$SyncPattern1{3};
+		$SyncPattern2 = $SyncPattern1[0].$SyncPattern1[1].chr(ord($SyncPattern1[2]) | 0x02).$SyncPattern1[3];
 		if ($SyncPattern2 === $SyncPattern1) {
-			$SyncPattern2 = $SyncPattern1{0}.$SyncPattern1{1}.chr(ord($SyncPattern1{2}) & 0xFD).$SyncPattern1{3};
+			$SyncPattern2 = $SyncPattern1[0].$SyncPattern1[1].chr(ord($SyncPattern1[2]) & 0xFD).$SyncPattern1[3];
 		}
 
 		$framelength = false;
@@ -1284,9 +1284,9 @@ class Mp3 extends Handler
 			if (strlen($head4) < 4) {
 				break;
 			}
-			if ($head4{0} != "\xFF") {
+			if ($head4[0] != "\xFF") {
 				for ($i = 1; $i < 4; $i++) {
-					if ($head4{$i} == "\xFF") {
+					if ($head4[$i] == "\xFF") {
 						$this->fseek($i - 4, SEEK_CUR);
 						continue 2;
 					}
@@ -1318,7 +1318,7 @@ class Mp3 extends Handler
 					$WhereWeWere = $this->ftell();
 					$this->fseek($MPEGaudioHeaderLengthCache[$head4] - 4, SEEK_CUR);
 					$next4 = $this->fread(4);
-					if ($next4{0} == "\xFF") {
+					if ($next4[0] == "\xFF") {
 						if (!isset($MPEGaudioHeaderDecodeCache[$next4])) {
 							$MPEGaudioHeaderDecodeCache[$next4] = self::MPEGaudioHeaderDecode($next4);
 						}
@@ -1463,7 +1463,7 @@ class Mp3 extends Handler
 				return false;
 			}
 
-			if (($header{$SynchSeekOffset} == "\xFF") && ($header{($SynchSeekOffset + 1)} > "\xE0")) { // synch detected
+			if (($header[$SynchSeekOffset] == "\xFF") && ($header[($SynchSeekOffset + 1)] > "\xE0")) { // synch detected
 				$FirstFrameAVDataOffset = null;
 				if (!isset($FirstFrameThisfileInfo) && !isset($info['mpeg']['audio'])) {
 					$FirstFrameThisfileInfo = $info;
@@ -1558,7 +1558,7 @@ class Mp3 extends Handler
 								$this->fseek($scan_start_offset[$current_segment]);
 								$buffer_4k = $this->fread(4096);
 								for ($j = 0; $j < (strlen($buffer_4k) - 4); $j++) {
-									if (($buffer_4k{$j} == "\xFF") && ($buffer_4k{($j + 1)} > "\xE0")) { // synch detected
+									if (($buffer_4k[$j] == "\xFF") && ($buffer_4k[($j + 1)] > "\xE0")) { // synch detected
 										if ($this->decodeMPEGaudioHeader($scan_start_offset[$current_segment] + $j, $dummy, false, false, $FastMode)) {
 											$calculated_next_offset = $scan_start_offset[$current_segment] + $j + $dummy['mpeg']['audio']['framelength'];
 											if ($this->decodeMPEGaudioHeader($calculated_next_offset, $dummy, false, false, $FastMode)) {
@@ -1880,18 +1880,18 @@ class Mp3 extends Handler
 		}
 
 		$MPEGrawHeader['synch']         = (Utils::BigEndian2Int(substr($Header4Bytes, 0, 2)) & 0xFFE0) >> 4;
-		$MPEGrawHeader['version']       = (ord($Header4Bytes{1}) & 0x18) >> 3; //    BB
-		$MPEGrawHeader['layer']         = (ord($Header4Bytes{1}) & 0x06) >> 1; //      CC
-		$MPEGrawHeader['protection']    = (ord($Header4Bytes{1}) & 0x01);      //        D
-		$MPEGrawHeader['bitrate']       = (ord($Header4Bytes{2}) & 0xF0) >> 4; // EEEE
-		$MPEGrawHeader['sample_rate']   = (ord($Header4Bytes{2}) & 0x0C) >> 2; //     FF
-		$MPEGrawHeader['padding']       = (ord($Header4Bytes{2}) & 0x02) >> 1; //       G
-		$MPEGrawHeader['private']       = (ord($Header4Bytes{2}) & 0x01);      //        H
-		$MPEGrawHeader['channelmode']   = (ord($Header4Bytes{3}) & 0xC0) >> 6; // II
-		$MPEGrawHeader['modeextension'] = (ord($Header4Bytes{3}) & 0x30) >> 4; //   JJ
-		$MPEGrawHeader['copyright']     = (ord($Header4Bytes{3}) & 0x08) >> 3; //     K
-		$MPEGrawHeader['original']      = (ord($Header4Bytes{3}) & 0x04) >> 2; //      L
-		$MPEGrawHeader['emphasis']      = (ord($Header4Bytes{3}) & 0x03);      //       MM
+		$MPEGrawHeader['version']       = (ord($Header4Bytes[1]) & 0x18) >> 3; //    BB
+		$MPEGrawHeader['layer']         = (ord($Header4Bytes[1]) & 0x06) >> 1; //      CC
+		$MPEGrawHeader['protection']    = (ord($Header4Bytes[1]) & 0x01);      //        D
+		$MPEGrawHeader['bitrate']       = (ord($Header4Bytes[2]) & 0xF0) >> 4; // EEEE
+		$MPEGrawHeader['sample_rate']   = (ord($Header4Bytes[2]) & 0x0C) >> 2; //     FF
+		$MPEGrawHeader['padding']       = (ord($Header4Bytes[2]) & 0x02) >> 1; //       G
+		$MPEGrawHeader['private']       = (ord($Header4Bytes[2]) & 0x01);      //        H
+		$MPEGrawHeader['channelmode']   = (ord($Header4Bytes[3]) & 0xC0) >> 6; // II
+		$MPEGrawHeader['modeextension'] = (ord($Header4Bytes[3]) & 0x30) >> 4; //   JJ
+		$MPEGrawHeader['copyright']     = (ord($Header4Bytes[3]) & 0x08) >> 3; //     K
+		$MPEGrawHeader['original']      = (ord($Header4Bytes[3]) & 0x04) >> 2; //      L
+		$MPEGrawHeader['emphasis']      = (ord($Header4Bytes[3]) & 0x03);      //       MM
 
 		return $MPEGrawHeader;
 	}

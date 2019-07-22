@@ -61,8 +61,8 @@ class ID3v2 extends Handler
 		$header = $this->fread(10);
 		if (substr($header, 0, 3) == 'ID3'  &&  strlen($header) == 10) {
 
-			$thisfile_id3v2['majorversion'] = ord($header{3});
-			$thisfile_id3v2['minorversion'] = ord($header{4});
+			$thisfile_id3v2['majorversion'] = ord($header[3]);
+			$thisfile_id3v2['minorversion'] = ord($header[4]);
 
 			// shortcut
 			$id3v2_majorversion = &$thisfile_id3v2['majorversion'];
@@ -81,7 +81,7 @@ class ID3v2 extends Handler
 
 		}
 
-		$id3_flags = ord($header{5});
+		$id3_flags = ord($header[5]);
 		switch ($id3v2_majorversion) {
 			case 2:
 				// %ab000000 in v2.2
@@ -262,7 +262,7 @@ class ID3v2 extends Handler
 					$thisfile_id3v2['padding']['length'] = strlen($framedata);
 					$thisfile_id3v2['padding']['valid']  = true;
 					for ($i = 0; $i < $thisfile_id3v2['padding']['length']; $i++) {
-						if ($framedata{$i} != "\x00") {
+						if ($framedata[$i] != "\x00") {
 							$thisfile_id3v2['padding']['valid'] = false;
 							$thisfile_id3v2['padding']['errorpos'] = $thisfile_id3v2['padding']['start'] + $i;
 							$this->warning('Invalid ID3v2 padding found at offset '.$thisfile_id3v2['padding']['errorpos'].' (the remaining '.($thisfile_id3v2['padding']['length'] - $i).' bytes are considered invalid)');
@@ -328,7 +328,7 @@ class ID3v2 extends Handler
 
 					$len = strlen($framedata);
 					for ($i = 0; $i < $len; $i++) {
-						if ($framedata{$i} != "\x00") {
+						if ($framedata[$i] != "\x00") {
 							$thisfile_id3v2['padding']['valid'] = false;
 							$thisfile_id3v2['padding']['errorpos'] = $thisfile_id3v2['padding']['start'] + $i;
 							$this->warning('Invalid ID3v2 padding found at offset '.$thisfile_id3v2['padding']['errorpos'].' (the remaining '.($thisfile_id3v2['padding']['length'] - $i).' bytes are considered invalid)');
@@ -436,11 +436,11 @@ class ID3v2 extends Handler
 			$footer = $this->fread(10);
 			if (substr($footer, 0, 3) == '3DI') {
 				$thisfile_id3v2['footer'] = true;
-				$thisfile_id3v2['majorversion_footer'] = ord($footer{3});
-				$thisfile_id3v2['minorversion_footer'] = ord($footer{4});
+				$thisfile_id3v2['majorversion_footer'] = ord($footer[3]);
+				$thisfile_id3v2['minorversion_footer'] = ord($footer[4]);
 			}
 			if ($thisfile_id3v2['majorversion_footer'] <= 4) {
-				$id3_flags = ord($footer{5});
+				$id3_flags = ord($footer[5]);
 				$thisfile_id3v2_flags['unsynch_footer']  = (bool) ($id3_flags & 0x80);
 				$thisfile_id3v2_flags['extfoot_footer']  = (bool) ($id3_flags & 0x40);
 				$thisfile_id3v2_flags['experim_footer']  = (bool) ($id3_flags & 0x20);
@@ -696,7 +696,7 @@ class ID3v2 extends Handler
 			//unset($parsedFrame['data']); do not unset, may be needed elsewhere, e.g. for replaygain
 
 
-		} elseif ($parsedFrame['frame_name']{0} == 'T') { // 4.2. T??[?] Text information frame
+		} elseif ($parsedFrame['frame_name'][0] == 'T') { // 4.2. T??[?] Text information frame
 			//   There may only be one text information frame of its kind in an tag.
 			// <Header for 'Text information frame', ID: 'T000' - 'TZZZ',
 			// excluding 'TXXX' described in 4.2.6.>
@@ -786,7 +786,7 @@ class ID3v2 extends Handler
 			unset($parsedFrame['data']);
 
 
-		} elseif ($parsedFrame['frame_name']{0} == 'W') { // 4.3. W??? URL link frames
+		} elseif ($parsedFrame['frame_name'][0] == 'W') { // 4.3. W??? URL link frames
 			//   There may only be one URL link frame of its kind in a tag,
 			//   except when stated otherwise in the frame description
 			// <Header for 'URL link frame', ID: 'W000' - 'WZZZ', excluding 'WXXX'
@@ -1067,7 +1067,7 @@ class ID3v2 extends Handler
 					$parsedFrame['lyrics'][$timestampindex]['data'] = substr($frame_remainingdata, $frame_offset, $frame_terminatorpos - $frame_offset);
 
 					$frame_remainingdata = substr($frame_remainingdata, $frame_terminatorpos + strlen($frame_textencoding_terminator));
-					if (($timestampindex == 0) && (ord($frame_remainingdata{0}) != 0)) {
+					if (($timestampindex == 0) && (ord($frame_remainingdata[0]) != 0)) {
 						// timestamp probably omitted for first data item
 					} else {
 						$parsedFrame['lyrics'][$timestampindex]['timestamp'] = Utils::BigEndian2Int(substr($frame_remainingdata, 0, 4));
@@ -3762,10 +3762,10 @@ class ID3v2 extends Handler
 	 */
 	public static function IsANumber($numberstring, $allowdecimal=false, $allownegative=false) {
 		for ($i = 0; $i < strlen($numberstring); $i++) {
-			if ((chr($numberstring{$i}) < chr('0')) || (chr($numberstring{$i}) > chr('9'))) {
-				if (($numberstring{$i} == '.') && $allowdecimal) {
+			if ((chr($numberstring[$i]) < chr('0')) || (chr($numberstring[$i]) > chr('9'))) {
+				if (($numberstring[$i] == '.') && $allowdecimal) {
 					// allowed
-				} elseif (($numberstring{$i} == '-') && $allownegative && ($i == 0)) {
+				} elseif (($numberstring[$i] == '-') && $allownegative && ($i == 0)) {
 					// allowed
 				} else {
 					return false;

@@ -49,7 +49,7 @@ class Bonk extends Handler
 				$this->fseek(0 - $BonkTagSize, SEEK_CUR);
 				$BonkTagOffset = $this->ftell();
 				$TagHeaderTest = $this->fread(5);
-				if (($TagHeaderTest{0} != "\x00") || (substr($PossibleBonkTag, 4, 4) != strtolower(substr($PossibleBonkTag, 4, 4)))) {
+				if (($TagHeaderTest[0] != "\x00") || (substr($PossibleBonkTag, 4, 4) != strtolower(substr($PossibleBonkTag, 4, 4)))) {
 					$this->error('Expecting "'.Utils::PrintHexBytes("\x00".strtoupper(substr($PossibleBonkTag, 4, 4))).'" at offset '.$BonkTagOffset.', found "'.Utils::PrintHexBytes($TagHeaderTest).'"');
 					return false;
 				}
