@@ -32,11 +32,6 @@ Taken from http://www.cygwin.com/
 
 Taken from http://unxutils.sourceforge.net/
 * head.exe
-* md5sum.exe
-* tail.exe
-
-Taken from http://ebible.org/mpj/software.htm
-* sha1sum.exe
 
 Taken from http://www.vorbis.com/download.psp
 * vorbiscomment.exe
@@ -54,3 +49,6 @@ Changelog:
 
 2003.12.29:
   * Initial release
+
+2019.07.24:
+  * Remove obsolete md5sum.exe, sha1sum.exe, tail.exe

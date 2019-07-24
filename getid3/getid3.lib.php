@@ -751,9 +751,7 @@ class getid3_lib
 	}
 
 	/**
-	 * self::md5_data() - returns md5sum for a file from startuing position to absolute end position
-	 *
-	 * @author Allan Hansen <ahØartemis*dk>
+	 * Returns checksum for a file from starting position to absolute end position.
 	 *
 	 * @param string $file
 	 * @param int    $offset
@@ -761,97 +759,30 @@ class getid3_lib
 	 * @param string $algorithm
 	 *
 	 * @return string|false
-	 * @throws Exception
 	 * @throws getid3_exception
 	 */
 	public static function hash_data($file, $offset, $end, $algorithm) {
-		static $tempdir = '';
-		$windows_call = null;
-		$unix_call = null;
-		$hash_length = null;
-		$hash_function = null;
 		if (!self::intValueSupported($end)) {
 			return false;
 		}
-		switch ($algorithm) {
-			case 'md5':
-				$hash_function = 'md5_file';
-				$unix_call     = 'md5sum';
-				$windows_call  = 'md5sum.exe';
-				$hash_length   = 32;
-				break;
-
-			case 'sha1':
-				$hash_function = 'sha1_file';
-				$unix_call     = 'sha1sum';
-				$windows_call  = 'sha1sum.exe';
-				$hash_length   = 40;
-				break;
-
-			default:
-				throw new Exception('Invalid algorithm ('.$algorithm.') in self::hash_data()');
-				break;
+		if (!in_array($algorithm, array('md5', 'sha1'))) {
+			throw new getid3_exception('Invalid algorithm ('.$algorithm.') in self::hash_data()');
 		}
+
 		$size = $end - $offset;
-		while (true) {
-			if (GETID3_OS_ISWINDOWS) {
 
-				// It seems that sha1sum.exe for Windows only works on physical files, does not accept piped data
-				// Fall back to create-temp-file method:
-				if ($algorithm == 'sha1') {
-					break;
-				}
-
-				$RequiredFiles = array('cygwin1.dll', 'head.exe', 'tail.exe', $windows_call);
-				foreach ($RequiredFiles as $required_file) {
-					if (!is_readable(GETID3_HELPERAPPSDIR.$required_file)) {
-						// helper apps not available - fall back to old method
-						break 2;
-					}
-				}
-				$commandline  = GETID3_HELPERAPPSDIR.'head.exe -c '.$end.' '.escapeshellarg(str_replace('/', DIRECTORY_SEPARATOR, $file)).' | ';
-				$commandline .= GETID3_HELPERAPPSDIR.'tail.exe -c '.$size.' | ';
-				$commandline .= GETID3_HELPERAPPSDIR.$windows_call;
-
-			} else {
-
-				$commandline  = 'head -c'.$end.' '.escapeshellarg($file).' | ';
-				$commandline .= 'tail -c'.$size.' | ';
-				$commandline .= $unix_call;
-
-			}
-			if (preg_match('#(1|ON)#i', ini_get('safe_mode'))) {
-				//throw new Exception('PHP running in Safe Mode - backtick operator not available, using slower non-system-call '.$algorithm.' algorithm');
-				break;
-			}
-			return substr(`$commandline`, 0, $hash_length);
+		$fp = fopen($file, 'rb');
+		fseek($fp, $offset);
+		$ctx = hash_init($algorithm);
+		while ($size > 0) {
+			$buffer = fread($fp, min($size, getID3::FREAD_BUFFER_SIZE));
+			hash_update($ctx, $buffer);
+			$size -= getID3::FREAD_BUFFER_SIZE;
 		}
+		$hash = hash_final($ctx);
+		fclose($fp);
 
-		if (empty($tempdir)) {
-			// yes this is ugly, feel free to suggest a better way
-			require_once(dirname(__FILE__).'/getid3.php');
-			$getid3_temp = new getID3();
-			$tempdir = $getid3_temp->tempdir;
-			unset($getid3_temp);
-		}
-		// try to create a temporary file in the system temp directory - invalid dirname should force to system temp dir
-		if (($data_filename = tempnam($tempdir, 'gI3')) === false) {
-			// can't find anywhere to create a temp file, just fail
-			return false;
-		}
-
-		// Init
-		$result = false;
-
-		// copy parts of file
-		try {
-			self::CopyFileParts($file, $data_filename, $offset, $end - $offset);
-			$result = $hash_function($data_filename);
-		} catch (Exception $e) {
-			throw new Exception('self::CopyFileParts() failed in getid_lib::hash_data(): '.$e->getMessage());
-		}
-		unlink($data_filename);
-		return $result;
+		return $hash;
 	}
 
 	/**
@@ -862,6 +793,8 @@ class getid3_lib
 	 *
 	 * @return bool
 	 * @throws Exception
+	 *
+	 * @deprecated Unused, may be removed in future versions of getID3
 	 */
 	public static function CopyFileParts($filename_source, $filename_dest, $offset, $length) {
 		if (!self::intValueSupported($offset + $length)) {

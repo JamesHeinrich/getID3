@@ -320,7 +320,7 @@ class getID3
 
 		// Needed for Windows only:
 		// Define locations of helper applications for Shorten, VorbisComment, MetaFLAC
-		//   as well as other helper functions such as head, tail, md5sum, etc
+		//   as well as other helper functions such as head, etc
 		// This path cannot contain spaces, but the below code will attempt to get the
 		//   8.3-equivalent path automatically
 		// IMPORTANT: This path must include the trailing slash
