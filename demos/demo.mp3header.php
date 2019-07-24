@@ -1080,23 +1080,6 @@ if (!function_exists('CreateDeepArray')) {
 	}
 }
 
-if (!function_exists('md5_file')) {
-	// Allan Hansen <ah@artemis.dk>
-	// md5_file() exists in PHP 4.2.0.
-	// The following works under UNIX only, but dies on windows
-	function md5_file($file) {
-		if (substr(php_uname(), 0, 7) == 'Windows') {
-			die('PHP 4.2.0 or newer required for md5_file()');
-		}
-
-		$file = str_replace('`', '\\`', $file);
-		if (preg_match("#^([0-9a-f]{32})[ \t\n\r]#i", `md5sum "$file"`, $r)) {
-			return $r[1];
-		}
-		return false;
-	}
-}
-
 if (!function_exists('md5_data')) {
 	// Allan Hansen <ah@artemis.dk>
 	// md5_data() - returns md5sum for a file from startuing position to absolute end position
