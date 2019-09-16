@@ -18,6 +18,20 @@
 Version History
 ===============
 
+1.9.18: [2019-07-24] James Heinrich :: 1.9.18-201907240906
+	* bugfix (G:198) use native hash functions instead of obsolete external binaries
+	* bugfix (G:194) PHP 7.4 compatibility: fix deprecated curly brace array access
+	* bugfix (G:191) unsupported operand types module.audio.ac3.php:763
+	* bugfix (G:189) false UTF-16 <BOM> and no termination strings
+	* bugfix (G:188) add support for DS2 v8
+	* bugfix (G:187) RIFF.WAVE.scot parsing
+	* bugfix (G:184) invalid regex pattern (ID3v1)
+	* bugfix (G:183) reduced information for GIF files with $option_extra_info=false
+	* bugfix (G:175) mp4 max buffer size
+	* bugfix (G:174) TIFF parsing improvements
+	* bugfix (G:121) trailing nulls in ID3v2 strings
+	* standardize "track" -> "track_number"
+
 1.9.17: [2019-02-07] James Heinrich :: 1.9.17-201902071234
 	* bugfix (G:178) HandleAllTags should skip "picture"
 	* bugfix (G:177) error checking for reading more than PHP memory_limit
