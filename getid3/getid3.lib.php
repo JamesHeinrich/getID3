@@ -1479,37 +1479,14 @@ class getid3_lib
 	 * @return array|false
 	 */
 	public static function GetDataImageSize($imgData, &$imageinfo=array()) {
-		static $tempdir = '';
-		if (empty($tempdir)) {
-			if (function_exists('sys_get_temp_dir')) {
-				$tempdir = sys_get_temp_dir(); // https://github.com/JamesHeinrich/getID3/issues/52
-			}
-
-			// yes this is ugly, feel free to suggest a better way
-			if (include_once(dirname(__FILE__).'/getid3.php')) {
-				if ($getid3_temp = new getID3()) {
-					if ($getid3_temp_tempdir = $getid3_temp->tempdir) {
-						$tempdir = $getid3_temp_tempdir;
-					}
-					unset($getid3_temp, $getid3_temp_tempdir);
-				}
-			}
+		$GetDataImageSize = @getimagesizefromstring($imgData, $imageinfo);
+		if ($GetDataImageSize === false || !isset($GetDataImageSize[0], $GetDataImageSize[1])) {
+			return false;
 		}
-		$GetDataImageSize = false;
-		if ($tempfilename = tempnam($tempdir, 'gI3')) {
-			if (is_writable($tempfilename) && is_file($tempfilename) && ($tmp = fopen($tempfilename, 'wb'))) {
-				fwrite($tmp, $imgData);
-				fclose($tmp);
-				$GetDataImageSize = @getimagesize($tempfilename, $imageinfo);
-				if (($GetDataImageSize === false) || !isset($GetDataImageSize[0]) || !isset($GetDataImageSize[1])) {
-					return false;
-				}
-				$GetDataImageSize['height'] = $GetDataImageSize[0];
-				$GetDataImageSize['width']  = $GetDataImageSize[1];
-			}
-			unlink($tempfilename);
-		}
-		return $GetDataImageSize;
+		return [
+			'height' => $GetDataImageSize[0],
+			'width' => $GetDataImageSize[1]
+		];
 	}
 
 	/**
