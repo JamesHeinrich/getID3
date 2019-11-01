@@ -1479,6 +1479,15 @@ class getid3_lib
 	 * @return array|false
 	 */
 	public static function GetDataImageSize($imgData, &$imageinfo=array()) {
+		if (PHP_VERSION_ID >= 50400) {
+			$GetDataImageSize = @getimagesizefromstring($imgData, $imageinfo);
+			if ($GetDataImageSize === false || !isset($GetDataImageSize[0], $GetDataImageSize[1])) {
+				return false;
+			}
+			$GetDataImageSize['height'] = $GetDataImageSize[0];
+			$GetDataImageSize['width'] = $GetDataImageSize[1];
+			return $GetDataImageSize;
+		}
 		static $tempdir = '';
 		if (empty($tempdir)) {
 			if (function_exists('sys_get_temp_dir')) {
