@@ -1682,54 +1682,54 @@ class getid3_quicktime extends getid3_handler
 							case 250:
 								$atom_structure['sensor_data']['data_type']['fusion_count']++;
 								$uuid_bytes_read = unpack('cmode/Jtimestamp/Gyaw/Gpitch/Groll/x*', $sensor_data_content);
-								$sensor_data_array['mode'] = $uuid_bytes_read['mode'];
+								$sensor_data_array['mode']      = $uuid_bytes_read['mode'];
 								$sensor_data_array['timestamp'] = $uuid_bytes_read['timestamp'];
-								$sensor_data_array['yaw'] = $uuid_bytes_read['yaw'];
-								$sensor_data_array['pitch'] = $uuid_bytes_read['pitch'];
-								$sensor_data_array['roll'] = $uuid_bytes_read['roll'];
+								$sensor_data_array['yaw']       = $uuid_bytes_read['yaw'];
+								$sensor_data_array['pitch']     = $uuid_bytes_read['pitch'];
+								$sensor_data_array['roll']      = $uuid_bytes_read['roll'];
 								array_push($atom_structure['sensor_data']['data_type']['fusion_data'], $sensor_data_array);
 								break;
 							case 1:
 								$atom_structure['sensor_data']['data_type']['accel_count']++;
 								$uuid_bytes_read = unpack('cmode/Jtimestamp/Gyaw/Gpitch/Groll/x*', $sensor_data_content);
-								$sensor_data_array['mode'] = $uuid_bytes_read['mode'];
+								$sensor_data_array['mode']      = $uuid_bytes_read['mode'];
 								$sensor_data_array['timestamp'] = $uuid_bytes_read['timestamp'];
-								$sensor_data_array['yaw'] = $uuid_bytes_read['yaw'];
-								$sensor_data_array['pitch'] = $uuid_bytes_read['pitch'];
-								$sensor_data_array['roll'] = $uuid_bytes_read['roll'];
+								$sensor_data_array['yaw']       = $uuid_bytes_read['yaw'];
+								$sensor_data_array['pitch']     = $uuid_bytes_read['pitch'];
+								$sensor_data_array['roll']      = $uuid_bytes_read['roll'];
 								array_push($atom_structure['sensor_data']['data_type']['accel_data'], $sensor_data_array);
 								break;
 							case 2:
 								$atom_structure['sensor_data']['data_type']['gyro_count']++;
 								$uuid_bytes_read = unpack('cmode/Jtimestamp/Gyaw/Gpitch/Groll/x*', $sensor_data_content);
-								$sensor_data_array['mode'] = $uuid_bytes_read['mode'];
+								$sensor_data_array['mode']      = $uuid_bytes_read['mode'];
 								$sensor_data_array['timestamp'] = $uuid_bytes_read['timestamp'];
-								$sensor_data_array['yaw'] = $uuid_bytes_read['yaw'];
-								$sensor_data_array['pitch'] = $uuid_bytes_read['pitch'];
-								$sensor_data_array['roll'] = $uuid_bytes_read['roll'];
+								$sensor_data_array['yaw']       = $uuid_bytes_read['yaw'];
+								$sensor_data_array['pitch']     = $uuid_bytes_read['pitch'];
+								$sensor_data_array['roll']      = $uuid_bytes_read['roll'];
 								array_push($atom_structure['sensor_data']['data_type']['gyro_data'], $sensor_data_array);
 								break;
 							case 3:
 								$atom_structure['sensor_data']['data_type']['magno_count']++;
 								$uuid_bytes_read = unpack('cmode/Jtimestamp/Gmagx/Gmagy/Gmagz/x*', $sensor_data_content);
-								$sensor_data_array['mode'] = $uuid_bytes_read['mode'];
+								$sensor_data_array['mode']      = $uuid_bytes_read['mode'];
 								$sensor_data_array['timestamp'] = $uuid_bytes_read['timestamp'];
-								$sensor_data_array['magx'] = $uuid_bytes_read['magx'];
-								$sensor_data_array['magy'] = $uuid_bytes_read['magy'];
-								$sensor_data_array['magz'] = $uuid_bytes_read['magz'];
+								$sensor_data_array['magx']      = $uuid_bytes_read['magx'];
+								$sensor_data_array['magy']      = $uuid_bytes_read['magy'];
+								$sensor_data_array['magz']      = $uuid_bytes_read['magz'];
 								array_push($atom_structure['sensor_data']['data_type']['magno_data'], $sensor_data_array);
 								break;
 							case 5:
 								$atom_structure['sensor_data']['data_type']['gps_count']++;
 								$uuid_bytes_read = unpack('cmode/Jtimestamp/Glat/Glon/Galt/Gspeed/nbearing/nacc/x*', $sensor_data_content);
-								$sensor_data_array['mode'] = $uuid_bytes_read['mode'];
+								$sensor_data_array['mode']      = $uuid_bytes_read['mode'];
 								$sensor_data_array['timestamp'] = $uuid_bytes_read['timestamp'];
-								$sensor_data_array['lat'] = $uuid_bytes_read['lat'];
-								$sensor_data_array['lon'] = $uuid_bytes_read['lon'];
-								$sensor_data_array['alt'] = $uuid_bytes_read['alt'];
-								$sensor_data_array['speed'] = $uuid_bytes_read['speed'];
-								$sensor_data_array['bearing'] = $uuid_bytes_read['bearing'];
-								$sensor_data_array['acc'] = $uuid_bytes_read['acc'];
+								$sensor_data_array['lat']       = $uuid_bytes_read['lat'];
+								$sensor_data_array['lon']       = $uuid_bytes_read['lon'];
+								$sensor_data_array['alt']       = $uuid_bytes_read['alt'];
+								$sensor_data_array['speed']     = $uuid_bytes_read['speed'];
+								$sensor_data_array['bearing']   = $uuid_bytes_read['bearing'];
+								$sensor_data_array['acc']       = $uuid_bytes_read['acc'];
 								//$sensor_data_array = print_r($uuid_bytes_read, true);
 								array_push($atom_structure['sensor_data']['data_type']['gps_data'], $sensor_data_array);
 								//array_push($debug_structure['debug_items'], $uuid_bytes_read['timestamp']);
@@ -1737,11 +1737,11 @@ class getid3_quicktime extends getid3_handler
 							case 6:
 								$atom_structure['sensor_data']['data_type']['rotation_count']++;
 								$uuid_bytes_read = unpack('cmode/Jtimestamp/Grotx/Groty/Grotz/x*', $sensor_data_content);
-								$sensor_data_array['mode'] = $uuid_bytes_read['mode'];
+								$sensor_data_array['mode']      = $uuid_bytes_read['mode'];
 								$sensor_data_array['timestamp'] = $uuid_bytes_read['timestamp'];
-								$sensor_data_array['rotx'] = $uuid_bytes_read['rotx'];
-								$sensor_data_array['roty'] = $uuid_bytes_read['roty'];
-								$sensor_data_array['rotz'] = $uuid_bytes_read['rotz'];
+								$sensor_data_array['rotx']      = $uuid_bytes_read['rotx'];
+								$sensor_data_array['roty']      = $uuid_bytes_read['roty'];
+								$sensor_data_array['rotz']      = $uuid_bytes_read['rotz'];
 								array_push($atom_structure['sensor_data']['data_type']['rotation_data'], $sensor_data_array);
 								break;
 							default:
