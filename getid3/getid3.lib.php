@@ -1577,7 +1577,7 @@ class getid3_lib
 								if (!is_int($key) && !ctype_digit($key)) {
 									$ThisFileInfo['comments'][$tagname][$key] = $value;
 								} else {
-									if (isset($ThisFileInfo['comments'][$tagname])) {
+									if (!isset($ThisFileInfo['comments'][$tagname])) {
 										$ThisFileInfo['comments'][$tagname] = array($value);
 									} else {
 										$ThisFileInfo['comments'][$tagname][] = $value;
