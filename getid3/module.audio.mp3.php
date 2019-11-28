@@ -719,8 +719,17 @@ class getid3_mp3 extends getid3_handler
 
 					$thisfile_mpeg_audio_lame['long_version']  = substr($headerstring, $VBRidOffset + 120, 20);
 					$thisfile_mpeg_audio_lame['short_version'] = substr($thisfile_mpeg_audio_lame['long_version'], 0, 9);
+					$thisfile_mpeg_audio_lame['numeric_version'] = str_replace('LAME', '', $thisfile_mpeg_audio_lame['short_version']);
+					if (preg_match('#^LAME([0-9\\.a-z]+)#', $thisfile_mpeg_audio_lame['long_version'], $matches)) {
+						$thisfile_mpeg_audio_lame['short_version']   = $matches[0];
+						$thisfile_mpeg_audio_lame['numeric_version'] = $matches[1];
+					}
+					foreach (explode('.', $thisfile_mpeg_audio_lame['numeric_version']) as $key => $number) {
+						$thisfile_mpeg_audio_lame['integer_version'][$key] = intval($number);
+					}
 
-					if ($thisfile_mpeg_audio_lame['short_version'] >= 'LAME3.90') {
+					//if ($thisfile_mpeg_audio_lame['short_version'] >= 'LAME3.90') {
+					if ((($thisfile_mpeg_audio_lame['integer_version'][0] * 1000) + $thisfile_mpeg_audio_lame['integer_version'][1]) >= 3090) { // cannot use string version compare, may have "LAME3.90" or "LAME3.100" -- see https://github.com/JamesHeinrich/getID3/issues/207
 
 						// extra 11 chars are not part of version string when LAMEtag present
 						unset($thisfile_mpeg_audio_lame['long_version']);
