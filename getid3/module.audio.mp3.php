@@ -719,8 +719,9 @@ class getid3_mp3 extends getid3_handler
 
 					$thisfile_mpeg_audio_lame['long_version']  = substr($headerstring, $VBRidOffset + 120, 20);
 					$thisfile_mpeg_audio_lame['short_version'] = substr($thisfile_mpeg_audio_lame['long_version'], 0, 9);
+					$lame_version_array = explode('.', substr($thisfile_mpeg_audio_lame['short_version'], 4, 5));
 
-					if ($thisfile_mpeg_audio_lame['short_version'] >= 'LAME3.90') {
+					if ((($lame_version_array[0] == 3) && ($lame_version_array[1] >= 90)) || ($lame_version_array[0] > 3)) {
 
 						// extra 11 chars are not part of version string when LAMEtag present
 						unset($thisfile_mpeg_audio_lame['long_version']);
