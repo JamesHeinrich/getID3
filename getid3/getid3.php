@@ -250,7 +250,7 @@ class getID3
 	 */
 	protected $startup_warning = '';
 
-	const VERSION           = '1.9.18-201911281825';
+	const VERSION           = '1.9.18-201911291606';
 	const FREAD_BUFFER_SIZE = 32768;
 
 	const ATTACHMENTS_NONE   = false;
@@ -1100,6 +1100,14 @@ class getID3
 							'group'     => 'audio-video',
 							'module'    => 'ts',
 							'mime_type' => 'video/MP2T',
+						),
+
+				// WTV - audio/video - Windows Recorded TV Show
+				'wtv' => array(
+							'pattern'   => '^\\xB7\\xD8\\x00\\x20\\x37\\x49\\xDA\\x11\\xA6\\x4E\\x00\\x07\\xE9\\x5E\\xAD\\x8D',
+							'group'     => 'audio-video',
+							'module'    => 'wtv',
+							'mime_type' => 'video/x-ms-wtv',
 						),
 
 
