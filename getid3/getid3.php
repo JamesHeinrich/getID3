@@ -226,7 +226,7 @@ class getID3
 	/**
 	 * Result array.
 	 *
-	 * @var array<string, mixed>
+	 * @var array
 	 */
 	public $info;
 

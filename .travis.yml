@@ -18,7 +18,7 @@ matrix:
     - php: 7.2
     - php: 7.3
       env: PHPSTAN=1
-    - php: 7.4snapshot
+    - php: 7.4
 
 before_script:
   - travis_retry composer install --prefer-source --quiet --no-interaction
