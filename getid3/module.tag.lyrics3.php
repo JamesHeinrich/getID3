@@ -240,7 +240,6 @@ class getid3_lyrics3 extends getid3_handler
 			default:
 				$this->error('Cannot process Lyrics3 version '.$version.' (only v1 and v2)');
 				return false;
-				break;
 		}
 
 

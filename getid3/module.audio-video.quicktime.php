@@ -221,6 +221,7 @@ class getid3_quicktime extends getid3_handler
 
 		$atom_parent = end($atomHierarchy); // not array_pop($atomHierarchy); see https://www.getid3.org/phpBB3/viewtopic.php?t=1717
 		array_push($atomHierarchy, $atomname);
+		$atom_structure              = array();
 		$atom_structure['hierarchy'] = implode(' ', $atomHierarchy);
 		$atom_structure['name']      = $atomname;
 		$atom_structure['size']      = $atomsize;
@@ -1749,11 +1750,11 @@ class getid3_quicktime extends getid3_handler
 								break;
 						}
 					}
-					if (count($debug_structure['debug_items']) > 0) {
-						$atom_structure['sensor_data']['data_type']['debug_list'] = implode(',', $debug_structure['debug_items']);
-					} else {
+//					if (isset($debug_structure['debug_items']) && count($debug_structure['debug_items']) > 0) {
+//						$atom_structure['sensor_data']['data_type']['debug_list'] = implode(',', $debug_structure['debug_items']);
+//					} else {
 						$atom_structure['sensor_data']['data_type']['debug_list'] = 'No debug items in list!';
-					}
+//					}
 					break;
 
 				case 'gps ':

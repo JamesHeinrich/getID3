@@ -263,25 +263,18 @@ class getID3_cached_sqlite3 extends getID3
 		switch ($name) {
 			case 'version_check':
 				return "SELECT val FROM $this->table WHERE filename = :filename AND filesize = '-1' AND filetime = '-1' AND analyzetime = '-1'";
-				break;
 			case 'delete_cache':
 				return "DELETE FROM $this->table";
-				break;
 			case 'set_version':
 				return "INSERT INTO $this->table (filename, dirname, filesize, filetime, analyzetime, val) VALUES (:filename, :dirname, -1, -1, -1, :val)";
-				break;
 			case 'get_id3_data':
 				return "SELECT val FROM $this->table WHERE filename = :filename AND filesize = :filesize AND filetime = :filetime";
-				break;
 			case 'cache_file':
 				return "INSERT INTO $this->table (filename, dirname, filesize, filetime, analyzetime, val) VALUES (:filename, :dirname, :filesize, :filetime, :atime, :val)";
-				break;
 			case 'make_table':
 				return "CREATE TABLE IF NOT EXISTS $this->table (filename VARCHAR(255) DEFAULT '', dirname VARCHAR(255) DEFAULT '', filesize INT(11) DEFAULT '0', filetime INT(11) DEFAULT '0', analyzetime INT(11) DEFAULT '0', val text, PRIMARY KEY (filename, filesize, filetime))";
-				break;
 			case 'get_cached_dir':
 				return "SELECT val FROM $this->table WHERE dirname = :dirname";
-				break;
 			default:
 				return null;
 		}

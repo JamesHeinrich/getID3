@@ -226,7 +226,7 @@ class getID3
 	/**
 	 * Result array.
 	 *
-	 * @var array
+	 * @var array<string, mixed>
 	 */
 	public $info;
 
@@ -1538,7 +1538,6 @@ class getID3
 
 			default:
 				return $this->error('bad algorithm "'.$algorithm.'" in getHashdata()');
-				break;
 		}
 
 		if (!empty($this->info['fileformat']) && !empty($this->info['dataformat']) && ($this->info['fileformat'] == 'ogg') && ($this->info['audio']['dataformat'] == 'vorbis')) {

@@ -1338,7 +1338,7 @@ class getid3_mp3 extends getid3_handler
 							$Distribution['version'][$LongMPEGversionLookup[$head4]] = isset($Distribution['version'][$LongMPEGversionLookup[$head4]]) ? ++$Distribution['version'][$LongMPEGversionLookup[$head4]] : 1;
 							$Distribution['padding'][intval($LongMPEGpaddingLookup[$head4])] = isset($Distribution['padding'][intval($LongMPEGpaddingLookup[$head4])]) ? ++$Distribution['padding'][intval($LongMPEGpaddingLookup[$head4])] : 1;
 							$Distribution['frequency'][$LongMPEGfrequencyLookup[$head4]] = isset($Distribution['frequency'][$LongMPEGfrequencyLookup[$head4]]) ? ++$Distribution['frequency'][$LongMPEGfrequencyLookup[$head4]] : 1;
-							if ($max_frames_scan > 0 && (++$frames_scanned >= $max_frames_scan)) {
+							if (++$frames_scanned >= $max_frames_scan) {
 								$pct_data_scanned = ($this->ftell() - $info['avdataoffset']) / ($info['avdataend'] - $info['avdataoffset']);
 								$this->warning('too many MPEG audio frames to scan, only scanned first '.$max_frames_scan.' frames ('.number_format($pct_data_scanned * 100, 1).'% of file) and extrapolated distribution, playtime and bitrate may be incorrect.');
 								foreach ($Distribution as $key1 => $value1) {

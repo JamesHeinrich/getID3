@@ -215,7 +215,6 @@ class getid3_la extends getid3_handler
 					$this->error('Not a LA (Lossless-Audio) file');
 				}
 				return false;
-				break;
 		}
 
 		$info['audio']['channels']    = $info['la']['channels'];

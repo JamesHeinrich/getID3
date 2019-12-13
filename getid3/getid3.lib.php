@@ -216,7 +216,6 @@ class getid3_lib
 
 			default:
 				return false;
-				break;
 		}
 		if ($floatvalue >= 0) {
 			$signbit = '0';
@@ -284,11 +283,9 @@ class getid3_lib
 					$floatvalue *= -1;
 				}
 				return $floatvalue;
-				break;
 
 			default:
 				return false;
-				break;
 		}
 		$exponentstring = substr($bitword, 1, $exponentbits);
 		$fractionstring = substr($bitword, $exponentbits + 1, $fractionbits);
@@ -737,7 +734,7 @@ class getid3_lib
 	/**
 	* @param SimpleXMLElement|array|mixed $XMLobject
 	*
-	* @return array
+	* @return mixed
 	*/
 	public static function SimpleXMLelement2array($XMLobject) {
 		if (!is_object($XMLobject) && !is_array($XMLobject)) {
