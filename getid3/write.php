@@ -205,14 +205,12 @@ class getid3_writetags
 							//$AllowedTagFormats = array('metaflac');
 							$this->errors[] = 'metaflac is not (yet) compatible with OggFLAC files';
 							return false;
-							break;
 						case 'vorbis':
 							$AllowedTagFormats = array('vorbiscomment');
 							break;
 						default:
 							$this->errors[] = 'metaflac is not (yet) compatible with Ogg files other than OggVorbis';
 							return false;
-							break;
 					}
 					break;
 
@@ -282,7 +280,6 @@ class getid3_writetags
 				default:
 					$this->errors[] = 'unknown tag format "'.$tagformat.'" in $tagformats in WriteTags()';
 					return false;
-					break;
 			}
 
 		}
@@ -408,7 +405,6 @@ class getid3_writetags
 				default:
 					$this->errors[] = 'Invalid tag format to write: "'.$tagformat.'"';
 					return false;
-					break;
 			}
 			if (!$success) {
 				return false;
@@ -486,7 +482,6 @@ class getid3_writetags
 				default:
 					$this->errors[] = 'Invalid tag format to delete: "'.$DeleteTagFormat.'"';
 					return false;
-					break;
 			}
 			if (!$success) {
 				return false;
@@ -508,10 +503,10 @@ class getid3_writetags
 			// do nothing - ignore previous data
 		} else {
 			throw new Exception('$this->overwrite_tags=false is known to be buggy in this version of getID3. Check http://github.com/JamesHeinrich/getID3 for a newer version.');
-			if (!isset($this->ThisFileInfo['tags'][$TagFormat])) {
-				return false;
-			}
-			$tag_data = array_merge_recursive($tag_data, $this->ThisFileInfo['tags'][$TagFormat]);
+//			if (!isset($this->ThisFileInfo['tags'][$TagFormat])) {
+//				return false;
+//			}
+//			$tag_data = array_merge_recursive($tag_data, $this->ThisFileInfo['tags'][$TagFormat]);
 		}
 		return true;
 	}
@@ -665,7 +660,7 @@ class getid3_writetags
 								// note: some software, notably Windows Media Player and iTunes are broken and treat files tagged with UTF-16BE (with BOM) as corrupt
 								// therefore we force data to UTF-16LE and manually prepend the BOM
 								$ID3v2_tag_data_converted = false;
-								if (!$ID3v2_tag_data_converted && ($this->tag_encoding == 'ISO-8859-1')) {
+								if (/*!$ID3v2_tag_data_converted && */($this->tag_encoding == 'ISO-8859-1')) {
 									// great, leave data as-is for minimum compatability problems
 									$tag_data_id3v2[$ID3v2_framename][$key]['encodingid'] = 0;
 									$tag_data_id3v2[$ID3v2_framename][$key]['data']       = $value;

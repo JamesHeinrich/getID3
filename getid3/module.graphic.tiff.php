@@ -36,7 +36,6 @@ class getid3_tiff extends getid3_handler
 			default:
 				$this->error('Invalid TIFF byte order identifier ('.substr($TIFFheader, 0, 2).') at offset '.$info['avdataoffset']);
 				return false;
-				break;
 		}
 
 		$info['fileformat']          = 'tiff';

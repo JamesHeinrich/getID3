@@ -221,6 +221,7 @@ class getid3_quicktime extends getid3_handler
 
 		$atom_parent = end($atomHierarchy); // not array_pop($atomHierarchy); see https://www.getid3.org/phpBB3/viewtopic.php?t=1717
 		array_push($atomHierarchy, $atomname);
+		$atom_structure              = array();
 		$atom_structure['hierarchy'] = implode(' ', $atomHierarchy);
 		$atom_structure['name']      = $atomname;
 		$atom_structure['size']      = $atomsize;
@@ -1749,11 +1750,11 @@ class getid3_quicktime extends getid3_handler
 								break;
 						}
 					}
-					if (count($debug_structure['debug_items']) > 0) {
-						$atom_structure['sensor_data']['data_type']['debug_list'] = implode(',', $debug_structure['debug_items']);
-					} else {
+//					if (isset($debug_structure['debug_items']) && count($debug_structure['debug_items']) > 0) {
+//						$atom_structure['sensor_data']['data_type']['debug_list'] = implode(',', $debug_structure['debug_items']);
+//					} else {
 						$atom_structure['sensor_data']['data_type']['debug_list'] = 'No debug items in list!';
-					}
+//					}
 					break;
 
 				case 'gps ':
@@ -1800,22 +1801,24 @@ class getid3_quicktime extends getid3_handler
 								// $GPRMC,094347.000,A,5342.0061,N,00737.9908,W,0.01,156.75,140217,,,A*7D
 								if (preg_match('#\\$GPRMC,([0-9\\.]*),([AV]),([0-9\\.]*),([NS]),([0-9\\.]*),([EW]),([0-9\\.]*),([0-9\\.]*),([0-9]*),([0-9\\.]*),([EW]?)(,[A])?(\\*[0-9A-F]{2})#', $GPS_free_data, $matches)) {
 									$GPS_this_GPRMC = array();
+									$GPS_this_GPRMC_raw = array();
 									list(
-										$GPS_this_GPRMC['raw']['gprmc'],
-										$GPS_this_GPRMC['raw']['timestamp'],
-										$GPS_this_GPRMC['raw']['status'],
-										$GPS_this_GPRMC['raw']['latitude'],
-										$GPS_this_GPRMC['raw']['latitude_direction'],
-										$GPS_this_GPRMC['raw']['longitude'],
-										$GPS_this_GPRMC['raw']['longitude_direction'],
-										$GPS_this_GPRMC['raw']['knots'],
-										$GPS_this_GPRMC['raw']['angle'],
-										$GPS_this_GPRMC['raw']['datestamp'],
-										$GPS_this_GPRMC['raw']['variation'],
-										$GPS_this_GPRMC['raw']['variation_direction'],
+										$GPS_this_GPRMC_raw['gprmc'],
+										$GPS_this_GPRMC_raw['timestamp'],
+										$GPS_this_GPRMC_raw['status'],
+										$GPS_this_GPRMC_raw['latitude'],
+										$GPS_this_GPRMC_raw['latitude_direction'],
+										$GPS_this_GPRMC_raw['longitude'],
+										$GPS_this_GPRMC_raw['longitude_direction'],
+										$GPS_this_GPRMC_raw['knots'],
+										$GPS_this_GPRMC_raw['angle'],
+										$GPS_this_GPRMC_raw['datestamp'],
+										$GPS_this_GPRMC_raw['variation'],
+										$GPS_this_GPRMC_raw['variation_direction'],
 										$dummy,
-										$GPS_this_GPRMC['raw']['checksum'],
+										$GPS_this_GPRMC_raw['checksum'],
 									) = $matches;
+									$GPS_this_GPRMC['raw'] = $GPS_this_GPRMC_raw;
 
 									$hour   = substr($GPS_this_GPRMC['raw']['timestamp'], 0, 2);
 									$minute = substr($GPS_this_GPRMC['raw']['timestamp'], 2, 2);
@@ -1823,7 +1826,7 @@ class getid3_quicktime extends getid3_handler
 									$ms     = substr($GPS_this_GPRMC['raw']['timestamp'], 6);    // may contain decimal seconds
 									$day    = substr($GPS_this_GPRMC['raw']['datestamp'], 0, 2);
 									$month  = substr($GPS_this_GPRMC['raw']['datestamp'], 2, 2);
-									$year   = substr($GPS_this_GPRMC['raw']['datestamp'], 4, 2);
+									$year   = (int) substr($GPS_this_GPRMC['raw']['datestamp'], 4, 2);
 									$year += (($year > 90) ? 1900 : 2000); // complete lack of foresight: datestamps are stored with 2-digit years, take best guess
 									$GPS_this_GPRMC['timestamp'] = $year.'-'.$month.'-'.$day.' '.$hour.':'.$minute.':'.$second.$ms;
 

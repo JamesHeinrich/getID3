@@ -49,7 +49,6 @@ class getid3_swf extends getid3_handler
 				unset($info['swf']);
 				unset($info['fileformat']);
 				return false;
-				break;
 		}
 		$info['swf']['header']['version'] = getid3_lib::LittleEndian2Int(substr($SWFfileData, 3, 1));
 		$info['swf']['header']['length']  = getid3_lib::LittleEndian2Int(substr($SWFfileData, 4, 4));

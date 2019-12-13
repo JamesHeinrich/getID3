@@ -593,23 +593,18 @@ class getid3_png extends getid3_handler
 		switch ($color_type) {
 			case 0: // Each pixel is a grayscale sample.
 				return $bit_depth;
-				break;
 
 			case 2: // Each pixel is an R,G,B triple
 				return 3 * $bit_depth;
-				break;
 
 			case 3: // Each pixel is a palette index; a PLTE chunk must appear.
 				return $bit_depth;
-				break;
 
 			case 4: // Each pixel is a grayscale sample, followed by an alpha sample.
 				return 2 * $bit_depth;
-				break;
 
 			case 6: // Each pixel is an R,G,B triple, followed by an alpha sample.
 				return 4 * $bit_depth;
-				break;
 		}
 		return false;
 	}

@@ -305,11 +305,11 @@ class Image_XMP
 								{
 									// Check whether we want this details from this attribute
 //									if (in_array($key, $GLOBALS['XMP_tag_captions']))
-									if (true)
-									{
+//									if (true)
+//									{
 										// Attribute wanted
 										$xmp_array[$key] = $xml_elem['attributes'][$key];
-									}
+//									}
 								}
 							}
 							break;
@@ -365,8 +365,8 @@ class Image_XMP
 				default:
 					// Check whether we want the details from this attribute
 //					if (in_array($xml_elem['tag'], $GLOBALS['XMP_tag_captions']))
-					if (true)
-					{
+//					if (true)
+//					{
 						switch ($xml_elem['type'])
 						{
 							case 'open':
@@ -388,7 +388,7 @@ class Image_XMP
 								// ignore
 								break;
 						}
-					}
+//					}
 					break;
 			}
 

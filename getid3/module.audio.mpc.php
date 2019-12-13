@@ -200,7 +200,6 @@ class getid3_mpc extends getid3_handler
 				default:
 					$this->error('Found unhandled key type "'.$thisPacket['key'].'" at offset '.$thisPacket['offset']);
 					return false;
-					break;
 			}
 			if (!empty($thisPacket)) {
 				$info['mpc']['packets'][] = $thisPacket;
@@ -382,7 +381,6 @@ class getid3_mpc extends getid3_handler
 				$info['error'] = 'Expecting 4, 5 or 6 in version field, found '.$thisfile_mpc_header['stream_version_major'].' instead';
 				unset($info['mpc']);
 				return false;
-				break;
 		}
 
 		if (($thisfile_mpc_header['stream_version_major'] > 4) && ($thisfile_mpc_header['block_size'] != 1)) {

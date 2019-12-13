@@ -15,10 +15,10 @@
 class getid3_lib
 {
 	/**
-	 * @param string $string
-	 * @param bool   $hex
-	 * @param bool   $spaces
-	 * @param string $htmlencoding
+	 * @param string      $string
+	 * @param bool        $hex
+	 * @param bool        $spaces
+	 * @param string|bool $htmlencoding
 	 *
 	 * @return string
 	 */
@@ -216,7 +216,6 @@ class getid3_lib
 
 			default:
 				return false;
-				break;
 		}
 		if ($floatvalue >= 0) {
 			$signbit = '0';
@@ -284,11 +283,9 @@ class getid3_lib
 					$floatvalue *= -1;
 				}
 				return $floatvalue;
-				break;
 
 			default:
 				return false;
-				break;
 		}
 		$exponentstring = substr($bitword, 1, $exponentbits);
 		$fractionstring = substr($bitword, $exponentbits + 1, $fractionbits);
@@ -500,8 +497,8 @@ class getid3_lib
 	}
 
 	/**
-	 * @param array $array1
-	 * @param array $array2
+	 * @param mixed $array1
+	 * @param mixed $array2
 	 *
 	 * @return array|false
 	 */
@@ -523,8 +520,8 @@ class getid3_lib
 	}
 
 	/**
-	 * @param array $array1
-	 * @param array $array2
+	 * @param mixed $array1
+	 * @param mixed $array2
 	 *
 	 * @return array|false
 	 */
@@ -544,8 +541,8 @@ class getid3_lib
 	}
 
 	/**
-	 * @param array $array1
-	 * @param array $array2
+	 * @param mixed $array1
+	 * @param mixed $array2
 	 *
 	 * @return array|false|null
 	 */
@@ -735,9 +732,9 @@ class getid3_lib
 	}
 
 	/**
-	* @param SimpleXMLElement|array $XMLobject
+	* @param SimpleXMLElement|array|mixed $XMLobject
 	*
-	* @return array
+	* @return mixed
 	*/
 	public static function SimpleXMLelement2array($XMLobject) {
 		if (!is_object($XMLobject) && !is_array($XMLobject)) {
@@ -1496,12 +1493,11 @@ class getid3_lib
 
 			// yes this is ugly, feel free to suggest a better way
 			if (include_once(dirname(__FILE__).'/getid3.php')) {
-				if ($getid3_temp = new getID3()) {
-					if ($getid3_temp_tempdir = $getid3_temp->tempdir) {
-						$tempdir = $getid3_temp_tempdir;
-					}
-					unset($getid3_temp, $getid3_temp_tempdir);
+				$getid3_temp = new getID3();
+				if ($getid3_temp_tempdir = $getid3_temp->tempdir) {
+					$tempdir = $getid3_temp_tempdir;
 				}
+				unset($getid3_temp, $getid3_temp_tempdir);
 			}
 		}
 		$GetDataImageSize = false;
