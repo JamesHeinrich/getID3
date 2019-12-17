@@ -18,6 +18,14 @@
 Version History
 ===============
 
+1.9.19: [2019-12-17] James Heinrich :: 1.9.19-201912131005
+	» add placeholder support for WTV (Windows Recorded TV Show)
+	* bugfix (G:210) PHP 7.4 deprecated get_magic_quotes
+	* bugfix (G:207) improved LAME version string parsing
+	* bugfix (G:206) inverted logic in CopyTagsToComments
+	* bugfix (G:203) use getimagesizefromstring if available
+	* Quicktime decode 'uuid' atom for 360fly cameras
+
 1.9.18: [2019-07-24] James Heinrich :: 1.9.18-201907240906
 	* bugfix (G:198) use native hash functions instead of obsolete external binaries
 	* bugfix (G:194) PHP 7.4 compatibility: fix deprecated curly brace array access
