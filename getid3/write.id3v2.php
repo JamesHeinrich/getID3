@@ -903,10 +903,14 @@ class getid3_write_id3v2
 					// Email to user   <text string> $00
 					// Rating          $xx
 					// Counter         $xx xx xx xx (xx ...)
+					if (!$this->IsValidEmail($source_data_array['email'])) {
+						// https://github.com/JamesHeinrich/getID3/issues/216
+						// https://en.wikipedia.org/wiki/ID3#ID3v2_rating_tag_issue
+						// ID3v2 specs say it should be an email address, but Windows instead uses string like "Windows Media Player 9 Series"
+						$this->warnings[] = 'Invalid Email in '.$frame_name.' ('.$source_data_array['email'].')';
+					}
 					if (!$this->IsWithinBitRange($source_data_array['rating'], 8, false)) {
 						$this->errors[] = 'Invalid Rating byte in '.$frame_name.' ('.$source_data_array['rating'].') (range = 0 to 255)';
-					} elseif (!$this->IsValidEmail($source_data_array['email'])) {
-						$this->errors[] = 'Invalid Email in '.$frame_name.' ('.$source_data_array['email'].')';
 					} else {
 						$framedata .= str_replace("\x00", '', $source_data_array['email'])."\x00";
 						$framedata .= chr($source_data_array['rating']);
