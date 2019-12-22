@@ -527,6 +527,7 @@ class getid3_quicktime extends getid3_handler
 														} elseif (preg_match('#^GIF#', $atom_structure['data'])) {
 															$atom_structure['image_mime'] = 'image/gif';
 														}
+														$info['quicktime']['comments']['picture'][] = array('image_mime'=>$atom_structure['image_mime'], 'data'=>$atom_structure['data'], 'description'=>'cover');
 														break;
 
 													case 'atID':
@@ -553,6 +554,7 @@ class getid3_quicktime extends getid3_handler
 													} elseif (preg_match('#^GIF#', $atom_structure['data'])) {
 														$atom_structure['image_mime'] = 'image/gif';
 													}
+													$info['quicktime']['comments']['picture'][] = array('image_mime'=>$atom_structure['image_mime'], 'data'=>$atom_structure['data'], 'description'=>'cover');
 												}
 												break;
 
