@@ -153,8 +153,8 @@ class getid3_quicktime extends getid3_handler
 					foreach (array('latitude', 'longitude', 'altitude') as $key) {
 						if ($ISO6709parsed[$key] !== false) {
 							$value = (($lat_sign == '-') ? -1 : 1) * floatval($ISO6709parsed[$key]);
-							if (!in_array($value, $info['quicktime']['comments']['gps_'.$key])) {
-								$info['quicktime']['comments']['gps_'.$key][]  = (($lat_sign == '-') ? -1 : 1) * floatval($ISO6709parsed[$key]);
+							if (!isset($info['quicktime']['comments']['gps_'.$key]) || !in_array($value, $info['quicktime']['comments']['gps_'.$key])) {
+								@$info['quicktime']['comments']['gps_'.$key][] = (($lat_sign == '-') ? -1 : 1) * floatval($ISO6709parsed[$key]);
 							}
 						}
 					}
