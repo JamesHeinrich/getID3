@@ -1526,6 +1526,17 @@ class getID3
 	}
 
 	/**
+	 * Calls getid3_lib::CopyTagsToComments() but passes in the option_tags_html setting from this instance of getID3
+	 *
+	 * @param array $ThisFileInfo
+	 *
+	 * @return bool
+	 */
+	public function CopyTagsToComments(&$ThisFileInfo) {
+	    return getid3_lib::CopyTagsToComments($ThisFileInfo, $this->option_tags_html);
+	}
+
+	/**
 	 * @param string $algorithm
 	 *
 	 * @return array|bool

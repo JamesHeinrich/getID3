@@ -37,7 +37,7 @@ while (($file = readdir($dir)) !== false) {
 
 		$ThisFileInfo = $getID3->analyze($FullFileName);
 
-		getid3_lib::CopyTagsToComments($ThisFileInfo);
+		$getID3->CopyTagsToComments($ThisFileInfo);
 
 		// output desired information in whatever format you want
 		echo '<tr>';
