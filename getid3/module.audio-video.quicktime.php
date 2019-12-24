@@ -55,23 +55,33 @@ class getid3_quicktime extends getid3_handler
 				$atomsize = getid3_lib::BigEndian2Int($this->fread(8));
 			}
 
-			$info['quicktime'][$atomname]['name']   = $atomname;
-			$info['quicktime'][$atomname]['size']   = $atomsize;
-			$info['quicktime'][$atomname]['offset'] = $offset;
-
 			if (($offset + $atomsize) > $info['avdataend']) {
+				$info['quicktime'][$atomname]['name']   = $atomname;
+				$info['quicktime'][$atomname]['size']   = $atomsize;
+				$info['quicktime'][$atomname]['offset'] = $offset;
 				$this->error('Atom at offset '.$offset.' claims to go beyond end-of-file (length: '.$atomsize.' bytes)');
 				return false;
 			}
-
 			if ($atomsize == 0) {
 				// Furthermore, for historical reasons the list of atoms is optionally
 				// terminated by a 32-bit integer set to 0. If you are writing a program
 				// to read user data atoms, you should allow for the terminating 0.
+				$info['quicktime'][$atomname]['name']   = $atomname;
+				$info['quicktime'][$atomname]['size']   = $atomsize;
+				$info['quicktime'][$atomname]['offset'] = $offset;
 				break;
 			}
+
 			$atomHierarchy = array();
-			$info['quicktime'][$atomname] = $this->QuicktimeParseAtom($atomname, $atomsize, $this->fread(min($atomsize, $atom_data_read_buffer_size)), $offset, $atomHierarchy, $this->ParseAllPossibleAtoms);
+			$parsedAtomData = $this->QuicktimeParseAtom($atomname, $atomsize, $this->fread(min($atomsize, $atom_data_read_buffer_size)), $offset, $atomHierarchy, $this->ParseAllPossibleAtoms);
+			$parsedAtomData['name']   = $atomname;
+			$parsedAtomData['size']   = $atomsize;
+			$parsedAtomData['offset'] = $offset;
+			if (in_array($atomname, array('uuid'))) {
+				@$info['quicktime'][$atomname][] = $parsedAtomData;
+			} else {
+				$info['quicktime'][$atomname] = $parsedAtomData;
+			}
 
 			$offset += $atomsize;
 			$atomcounter++;
@@ -1641,122 +1651,130 @@ class getid3_quicktime extends getid3_handler
 					}
 					break;
 
-				case 'uuid': // Atom holding 360fly spatial data??
-					/* code in this block by Paul Lewis 2019-Oct-31 */
-					/*	Sensor Timestamps need to be calculated using the recordings base time at ['quicktime']['moov']['subatoms'][0]['creation_time_unix']. */
-					$atom_structure['title'] = '360Fly Sensor Data';
-
+				case 'uuid': // user-defined atom often seen containing XML data, also used for potentially many other purposes, only a few specifically handled by getID3 (e.g. 360fly spatial data)
 					//Get the UUID ID in first 16 bytes
 					$uuid_bytes_read = unpack('H8time_low/H4time_mid/H4time_hi/H4clock_seq_hi/H12clock_seq_low', substr($atom_data, 0, 16));
 					$atom_structure['uuid_field_id'] = print_r(implode('-', $uuid_bytes_read), true);
 
-					//Get the UUID HEADER data
-					$uuid_bytes_read = unpack('Sheader_size/Sheader_version/Stimescale/Shardware_version/x/x/x/x/x/x/x/x/x/x/x/x/x/x/x/x/', substr($atom_data, 16, 32));
-					$atom_structure['uuid_header'] = json_encode($uuid_bytes_read, true);
+					if (substr($atom_data, 16, 5) == '<?xml') {
 
-					$start_byte = 48;
-					$atom_SENSOR_data = substr($atom_data, $start_byte);
-					$atom_structure['sensor_data']['data_type'] = array(
-							'fusion_count'   => 0,       // ID 250
-							'fusion_data'    => array(),
-							'accel_count'    => 0,       // ID 1
-							'accel_data'     => array(),
-							'gyro_count'     => 0,       // ID 2
-							'gyro_data'      => array(),
-							'magno_count'    => 0,       // ID 3
-							'magno_data'     => array(),
-							'gps_count'      => 0,       // ID 5
-							'gps_data'       => array(),
-							'rotation_count' => 0,       // ID 6
-							'rotation_data'  => array(),
-							'unknown_count'  => 0,       // ID ??
-							'unknown_data'   => array(),
-							'debug_list'     => '',      // Used to debug variables stored as comma delimited strings
-					);
-					$debug_structure['debug_items'] = array();
-					// Can start loop here to decode all sensor data in 32 Byte chunks:
-					foreach (str_split($atom_SENSOR_data, 32) as $sensor_key => $sensor_data) {
-						// This gets me a data_type code to work out what data is in the next 31 bytes.
-						$sensor_data_type = substr($sensor_data, 0, 1);
-						$sensor_data_content = substr($sensor_data, 1);
-						$uuid_bytes_read = unpack('C*', $sensor_data_type);
-						$sensor_data_array = array();
-						switch ($uuid_bytes_read[1]) {
-							case 250:
-								$atom_structure['sensor_data']['data_type']['fusion_count']++;
-								$uuid_bytes_read = unpack('cmode/Jtimestamp/Gyaw/Gpitch/Groll/x*', $sensor_data_content);
-								$sensor_data_array['mode']      = $uuid_bytes_read['mode'];
-								$sensor_data_array['timestamp'] = $uuid_bytes_read['timestamp'];
-								$sensor_data_array['yaw']       = $uuid_bytes_read['yaw'];
-								$sensor_data_array['pitch']     = $uuid_bytes_read['pitch'];
-								$sensor_data_array['roll']      = $uuid_bytes_read['roll'];
-								array_push($atom_structure['sensor_data']['data_type']['fusion_data'], $sensor_data_array);
-								break;
-							case 1:
-								$atom_structure['sensor_data']['data_type']['accel_count']++;
-								$uuid_bytes_read = unpack('cmode/Jtimestamp/Gyaw/Gpitch/Groll/x*', $sensor_data_content);
-								$sensor_data_array['mode']      = $uuid_bytes_read['mode'];
-								$sensor_data_array['timestamp'] = $uuid_bytes_read['timestamp'];
-								$sensor_data_array['yaw']       = $uuid_bytes_read['yaw'];
-								$sensor_data_array['pitch']     = $uuid_bytes_read['pitch'];
-								$sensor_data_array['roll']      = $uuid_bytes_read['roll'];
-								array_push($atom_structure['sensor_data']['data_type']['accel_data'], $sensor_data_array);
-								break;
-							case 2:
-								$atom_structure['sensor_data']['data_type']['gyro_count']++;
-								$uuid_bytes_read = unpack('cmode/Jtimestamp/Gyaw/Gpitch/Groll/x*', $sensor_data_content);
-								$sensor_data_array['mode']      = $uuid_bytes_read['mode'];
-								$sensor_data_array['timestamp'] = $uuid_bytes_read['timestamp'];
-								$sensor_data_array['yaw']       = $uuid_bytes_read['yaw'];
-								$sensor_data_array['pitch']     = $uuid_bytes_read['pitch'];
-								$sensor_data_array['roll']      = $uuid_bytes_read['roll'];
-								array_push($atom_structure['sensor_data']['data_type']['gyro_data'], $sensor_data_array);
-								break;
-							case 3:
-								$atom_structure['sensor_data']['data_type']['magno_count']++;
-								$uuid_bytes_read = unpack('cmode/Jtimestamp/Gmagx/Gmagy/Gmagz/x*', $sensor_data_content);
-								$sensor_data_array['mode']      = $uuid_bytes_read['mode'];
-								$sensor_data_array['timestamp'] = $uuid_bytes_read['timestamp'];
-								$sensor_data_array['magx']      = $uuid_bytes_read['magx'];
-								$sensor_data_array['magy']      = $uuid_bytes_read['magy'];
-								$sensor_data_array['magz']      = $uuid_bytes_read['magz'];
-								array_push($atom_structure['sensor_data']['data_type']['magno_data'], $sensor_data_array);
-								break;
-							case 5:
-								$atom_structure['sensor_data']['data_type']['gps_count']++;
-								$uuid_bytes_read = unpack('cmode/Jtimestamp/Glat/Glon/Galt/Gspeed/nbearing/nacc/x*', $sensor_data_content);
-								$sensor_data_array['mode']      = $uuid_bytes_read['mode'];
-								$sensor_data_array['timestamp'] = $uuid_bytes_read['timestamp'];
-								$sensor_data_array['lat']       = $uuid_bytes_read['lat'];
-								$sensor_data_array['lon']       = $uuid_bytes_read['lon'];
-								$sensor_data_array['alt']       = $uuid_bytes_read['alt'];
-								$sensor_data_array['speed']     = $uuid_bytes_read['speed'];
-								$sensor_data_array['bearing']   = $uuid_bytes_read['bearing'];
-								$sensor_data_array['acc']       = $uuid_bytes_read['acc'];
-								//$sensor_data_array = print_r($uuid_bytes_read, true);
-								array_push($atom_structure['sensor_data']['data_type']['gps_data'], $sensor_data_array);
-								//array_push($debug_structure['debug_items'], $uuid_bytes_read['timestamp']);
-								break;
-							case 6:
-								$atom_structure['sensor_data']['data_type']['rotation_count']++;
-								$uuid_bytes_read = unpack('cmode/Jtimestamp/Grotx/Groty/Grotz/x*', $sensor_data_content);
-								$sensor_data_array['mode']      = $uuid_bytes_read['mode'];
-								$sensor_data_array['timestamp'] = $uuid_bytes_read['timestamp'];
-								$sensor_data_array['rotx']      = $uuid_bytes_read['rotx'];
-								$sensor_data_array['roty']      = $uuid_bytes_read['roty'];
-								$sensor_data_array['rotz']      = $uuid_bytes_read['rotz'];
-								array_push($atom_structure['sensor_data']['data_type']['rotation_data'], $sensor_data_array);
-								break;
-							default:
-								$atom_structure['sensor_data']['data_type']['unknown_count']++;
-								break;
+						$atom_structure['xml'] = substr($atom_data, 16, strlen($atom_data) - 16 - 8); // 16 bytes for UUID, 8 bytes header(?)
+
+					} elseif (substr($atom_data, 16, 8) == "\x00\x00\x00\x20\x00\x00\x00\x02") { // [2019-Dec-24 James Heinrich]: I'm not sure if this is an appropriate check for 360fly data, it works for the single sample file I have (headersize=0, headerversion=8192, timescale=0, hardwareversion=512)
+
+						/* 360fly code in this block by Paul Lewis 2019-Oct-31 */
+						/*	Sensor Timestamps need to be calculated using the recordings base time at ['quicktime']['moov']['subatoms'][0]['creation_time_unix']. */
+						$atom_structure['title'] = '360Fly Sensor Data';
+
+						//Get the UUID HEADER data
+						$uuid_bytes_read = unpack('vheader_size/vheader_version/vtimescale/vhardware_version/x/x/x/x/x/x/x/x/x/x/x/x/x/x/x/x/', substr($atom_data, 16, 32));
+						$atom_structure['uuid_header'] = $uuid_bytes_read;
+
+						$start_byte = 48;
+						$atom_SENSOR_data = substr($atom_data, $start_byte);
+						$atom_structure['sensor_data']['data_type'] = array(
+								'fusion_count'   => 0,       // ID 250
+								'fusion_data'    => array(),
+								'accel_count'    => 0,       // ID 1
+								'accel_data'     => array(),
+								'gyro_count'     => 0,       // ID 2
+								'gyro_data'      => array(),
+								'magno_count'    => 0,       // ID 3
+								'magno_data'     => array(),
+								'gps_count'      => 0,       // ID 5
+								'gps_data'       => array(),
+								'rotation_count' => 0,       // ID 6
+								'rotation_data'  => array(),
+								'unknown_count'  => 0,       // ID ??
+								'unknown_data'   => array(),
+								'debug_list'     => '',      // Used to debug variables stored as comma delimited strings
+						);
+						$debug_structure['debug_items'] = array();
+						// Can start loop here to decode all sensor data in 32 Byte chunks:
+						foreach (str_split($atom_SENSOR_data, 32) as $sensor_key => $sensor_data) {
+							// This gets me a data_type code to work out what data is in the next 31 bytes.
+							$sensor_data_type = substr($sensor_data, 0, 1);
+							$sensor_data_content = substr($sensor_data, 1);
+							$uuid_bytes_read = unpack('C*', $sensor_data_type);
+							$sensor_data_array = array();
+							switch ($uuid_bytes_read[1]) {
+								case 250:
+									$atom_structure['sensor_data']['data_type']['fusion_count']++;
+									$uuid_bytes_read = unpack('cmode/Jtimestamp/Gyaw/Gpitch/Groll/x*', $sensor_data_content);
+									$sensor_data_array['mode']      = $uuid_bytes_read['mode'];
+									$sensor_data_array['timestamp'] = $uuid_bytes_read['timestamp'];
+									$sensor_data_array['yaw']       = $uuid_bytes_read['yaw'];
+									$sensor_data_array['pitch']     = $uuid_bytes_read['pitch'];
+									$sensor_data_array['roll']      = $uuid_bytes_read['roll'];
+									array_push($atom_structure['sensor_data']['data_type']['fusion_data'], $sensor_data_array);
+									break;
+								case 1:
+									$atom_structure['sensor_data']['data_type']['accel_count']++;
+									$uuid_bytes_read = unpack('cmode/Jtimestamp/Gyaw/Gpitch/Groll/x*', $sensor_data_content);
+									$sensor_data_array['mode']      = $uuid_bytes_read['mode'];
+									$sensor_data_array['timestamp'] = $uuid_bytes_read['timestamp'];
+									$sensor_data_array['yaw']       = $uuid_bytes_read['yaw'];
+									$sensor_data_array['pitch']     = $uuid_bytes_read['pitch'];
+									$sensor_data_array['roll']      = $uuid_bytes_read['roll'];
+									array_push($atom_structure['sensor_data']['data_type']['accel_data'], $sensor_data_array);
+									break;
+								case 2:
+									$atom_structure['sensor_data']['data_type']['gyro_count']++;
+									$uuid_bytes_read = unpack('cmode/Jtimestamp/Gyaw/Gpitch/Groll/x*', $sensor_data_content);
+									$sensor_data_array['mode']      = $uuid_bytes_read['mode'];
+									$sensor_data_array['timestamp'] = $uuid_bytes_read['timestamp'];
+									$sensor_data_array['yaw']       = $uuid_bytes_read['yaw'];
+									$sensor_data_array['pitch']     = $uuid_bytes_read['pitch'];
+									$sensor_data_array['roll']      = $uuid_bytes_read['roll'];
+									array_push($atom_structure['sensor_data']['data_type']['gyro_data'], $sensor_data_array);
+									break;
+								case 3:
+									$atom_structure['sensor_data']['data_type']['magno_count']++;
+									$uuid_bytes_read = unpack('cmode/Jtimestamp/Gmagx/Gmagy/Gmagz/x*', $sensor_data_content);
+									$sensor_data_array['mode']      = $uuid_bytes_read['mode'];
+									$sensor_data_array['timestamp'] = $uuid_bytes_read['timestamp'];
+									$sensor_data_array['magx']      = $uuid_bytes_read['magx'];
+									$sensor_data_array['magy']      = $uuid_bytes_read['magy'];
+									$sensor_data_array['magz']      = $uuid_bytes_read['magz'];
+									array_push($atom_structure['sensor_data']['data_type']['magno_data'], $sensor_data_array);
+									break;
+								case 5:
+									$atom_structure['sensor_data']['data_type']['gps_count']++;
+									$uuid_bytes_read = unpack('cmode/Jtimestamp/Glat/Glon/Galt/Gspeed/nbearing/nacc/x*', $sensor_data_content);
+									$sensor_data_array['mode']      = $uuid_bytes_read['mode'];
+									$sensor_data_array['timestamp'] = $uuid_bytes_read['timestamp'];
+									$sensor_data_array['lat']       = $uuid_bytes_read['lat'];
+									$sensor_data_array['lon']       = $uuid_bytes_read['lon'];
+									$sensor_data_array['alt']       = $uuid_bytes_read['alt'];
+									$sensor_data_array['speed']     = $uuid_bytes_read['speed'];
+									$sensor_data_array['bearing']   = $uuid_bytes_read['bearing'];
+									$sensor_data_array['acc']       = $uuid_bytes_read['acc'];
+									array_push($atom_structure['sensor_data']['data_type']['gps_data'], $sensor_data_array);
+									//array_push($debug_structure['debug_items'], $uuid_bytes_read['timestamp']);
+									break;
+								case 6:
+									$atom_structure['sensor_data']['data_type']['rotation_count']++;
+									$uuid_bytes_read = unpack('cmode/Jtimestamp/Grotx/Groty/Grotz/x*', $sensor_data_content);
+									$sensor_data_array['mode']      = $uuid_bytes_read['mode'];
+									$sensor_data_array['timestamp'] = $uuid_bytes_read['timestamp'];
+									$sensor_data_array['rotx']      = $uuid_bytes_read['rotx'];
+									$sensor_data_array['roty']      = $uuid_bytes_read['roty'];
+									$sensor_data_array['rotz']      = $uuid_bytes_read['rotz'];
+									array_push($atom_structure['sensor_data']['data_type']['rotation_data'], $sensor_data_array);
+									break;
+								default:
+									$atom_structure['sensor_data']['data_type']['unknown_count']++;
+									break;
+							}
 						}
+						//if (isset($debug_structure['debug_items']) && count($debug_structure['debug_items']) > 0) {
+						//	$atom_structure['sensor_data']['data_type']['debug_list'] = implode(',', $debug_structure['debug_items']);
+						//} else {
+							$atom_structure['sensor_data']['data_type']['debug_list'] = 'No debug items in list!';
+						//}
+					} else {
+						$this->warning('Unhandled "uuid" atom at offset '.$atom_structure['offset'].' ('.strlen($atom_data).' bytes)');
 					}
-//					if (isset($debug_structure['debug_items']) && count($debug_structure['debug_items']) > 0) {
-//						$atom_structure['sensor_data']['data_type']['debug_list'] = implode(',', $debug_structure['debug_items']);
-//					} else {
-						$atom_structure['sensor_data']['data_type']['debug_list'] = 'No debug items in list!';
-//					}
 					break;
 
 				case 'gps ':
