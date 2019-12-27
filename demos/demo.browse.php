@@ -20,11 +20,13 @@ define('GETID3_DEMO_BROWSE_ALLOW_MD5_LINK',    false); // if enabled, shows "ena
 
 /////////////////////////////////////////////////////////////////
 // die if magic_quotes_runtime or magic_quotes_gpc are set
-if (function_exists('get_magic_quotes_runtime') && get_magic_quotes_runtime()) {
-	die('magic_quotes_runtime is enabled, getID3 will not run.');
-}
-if (function_exists('get_magic_quotes_gpc') && get_magic_quotes_gpc()) {
-	die('magic_quotes_gpc is enabled, getID3 will not run.');
+if (version_compare(PHP_VERSION, '7.4.0', '<')) { // get_magic_quotes_runtime / get_magic_quotes_gpc functions give deprecation warnings in PHP v7.4
+	if (function_exists('get_magic_quotes_runtime') && get_magic_quotes_runtime()) {
+		die('magic_quotes_runtime is enabled, getID3 will not run.');
+	}
+	if (function_exists('get_magic_quotes_gpc') && get_magic_quotes_gpc()) {
+		die('magic_quotes_gpc is enabled, getID3 will not run.');
+	}
 }
 /////////////////////////////////////////////////////////////////
 
