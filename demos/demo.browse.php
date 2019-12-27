@@ -33,7 +33,7 @@ if (version_compare(PHP_VERSION, '7.4.0', '<')) { // get_magic_quotes_runtime / 
 require_once('../getid3/getid3.php');
 
 $PageEncoding       = 'UTF-8';
-$FileSystemEncoding = ((GETID3_OS_ISWINDOWS && version_compare(PHP_VERSION, '7.1.0', '<')) ? 'ISO-8859-1' : 'UTF-8');
+$FileSystemEncoding = ((GETID3_OS_ISWINDOWS && version_compare(PHP_VERSION, '7.1.0', '<')) ? 'Windows-1252' : 'UTF-8');
 $writescriptfilename = 'demo.write.php';
 
 // Needed for windows only. Leave commented-out to auto-detect, only define here if auto-detection does not work properly
