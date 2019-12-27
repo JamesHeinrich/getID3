@@ -1529,10 +1529,11 @@ class getid3_lib
 
 	/**
 	 * @param array $ThisFileInfo
+	 * @param bool  $option_tags_html default true (just as in the main getID3 class)
 	 *
 	 * @return bool
 	 */
-	public static function CopyTagsToComments(&$ThisFileInfo) {
+	public static function CopyTagsToComments(&$ThisFileInfo, $option_tags_html=true) {
 
 		// Copy all entries from ['tags'] into common ['comments']
 		if (!empty($ThisFileInfo['tags'])) {
@@ -1597,19 +1598,21 @@ class getid3_lib
 				}
 			}
 
-			// Copy to ['comments_html']
-			if (!empty($ThisFileInfo['comments'])) {
-				foreach ($ThisFileInfo['comments'] as $field => $values) {
-					if ($field == 'picture') {
-						// pictures can take up a lot of space, and we don't need multiple copies of them
-						// let there be a single copy in [comments][picture], and not elsewhere
-						continue;
-					}
-					foreach ($values as $index => $value) {
-						if (is_array($value)) {
-							$ThisFileInfo['comments_html'][$field][$index] = $value;
-						} else {
-							$ThisFileInfo['comments_html'][$field][$index] = str_replace('&#0;', '', self::MultiByteCharString2HTML($value, $ThisFileInfo['encoding']));
+			if ($option_tags_html) {
+				// Copy to ['comments_html']
+				if (!empty($ThisFileInfo['comments'])) {
+					foreach ($ThisFileInfo['comments'] as $field => $values) {
+						if ($field == 'picture') {
+							// pictures can take up a lot of space, and we don't need multiple copies of them
+							// let there be a single copy in [comments][picture], and not elsewhere
+							continue;
+						}
+						foreach ($values as $index => $value) {
+							if (is_array($value)) {
+								$ThisFileInfo['comments_html'][$field][$index] = $value;
+							} else {
+								$ThisFileInfo['comments_html'][$field][$index] = str_replace('&#0;', '', self::MultiByteCharString2HTML($value, $ThisFileInfo['encoding']));
+							}
 						}
 					}
 				}

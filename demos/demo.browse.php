@@ -101,7 +101,7 @@ if (isset($_REQUEST['filename'])) {
 	}
 
 
-	getid3_lib::CopyTagsToComments($ThisFileInfo);
+	$getID3->CopyTagsToComments($ThisFileInfo);
 
 	$listdirectory = dirname($_REQUEST['filename']);
 	$listdirectory = realpath($listdirectory); // get rid of /../../ references
@@ -181,7 +181,7 @@ if (isset($_REQUEST['filename'])) {
 				$getID3->setOption(array('option_md5_data' => (isset($_REQUEST['ShowMD5']) && GETID3_DEMO_BROWSE_ALLOW_MD5_LINK)));
 				$fileinformation = $getID3->analyze($currentfilename);
 
-				getid3_lib::CopyTagsToComments($fileinformation);
+				$getID3->CopyTagsToComments($fileinformation);
 
 				$TotalScannedFilesize += (isset($fileinformation['filesize']) ? $fileinformation['filesize'] : 0);
 

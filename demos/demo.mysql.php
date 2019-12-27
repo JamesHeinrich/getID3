@@ -290,7 +290,7 @@ function SynchronizeAllTags($filename, $synchronizefrom='all', $synchronizeto='A
 	set_time_limit(30);
 
 	$ThisFileInfo = $getID3->analyze($filename);
-	getid3_lib::CopyTagsToComments($ThisFileInfo);
+	$getID3->CopyTagsToComments($ThisFileInfo);
 
 	if ($synchronizefrom == 'all') {
 		$SourceArray = (!empty($ThisFileInfo['comments']) ? $ThisFileInfo['comments'] : array());
@@ -458,7 +458,7 @@ if (!empty($_REQUEST['scan']) || !empty($_REQUEST['newscan']) || !empty($_REQUES
 		echo '<br>'.date('H:i:s').' ['.number_format(++$rowcounter).' / '.number_format($totaltoprocess).'] '.str_replace('\\', '/', $filename);
 
 		$ThisFileInfo = $getID3->analyze($filename);
-		getid3_lib::CopyTagsToComments($ThisFileInfo);
+		$getID3->CopyTagsToComments($ThisFileInfo);
 
 		if (file_exists($filename)) {
 			$ThisFileInfo['file_modified_time'] = filemtime($filename);
@@ -1774,7 +1774,7 @@ if (!empty($_REQUEST['scan']) || !empty($_REQUEST['newscan']) || !empty($_REQUES
 		while ($row = mysql_fetch_array($result)) {
 			set_time_limit(30);
 			$ThisFileInfo = $getID3->analyze($filename);
-			getid3_lib::CopyTagsToComments($ThisFileInfo);
+			$getID3->CopyTagsToComments($ThisFileInfo);
 
 			if (!empty($ThisFileInfo['tags'])) {
 
