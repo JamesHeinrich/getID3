@@ -1603,12 +1603,10 @@ class getid3_lib
 				'track'       => 'track_number',
 			);
 			foreach ($StandardizeFieldNames as $badkey => $goodkey) {
-			    foreach($comment_arrays as $comments) {
-					if (array_key_exists($badkey, $ThisFileInfo[$comments]) && !array_key_exists($goodkey, $ThisFileInfo[$comments])) {
-						$ThisFileInfo[$comments][$goodkey] = $ThisFileInfo[$comments][$badkey];
-						unset($ThisFileInfo[$comments][$badkey]);
-					}
-			    }
+				if (array_key_exists($badkey, $ThisFileInfo['comments']) && !array_key_exists($goodkey, $ThisFileInfo['comments'])) {
+					$ThisFileInfo['comments'][$goodkey] = $ThisFileInfo['comments'][$badkey];
+					unset($ThisFileInfo['comments'][$badkey]);
+				}
 			}
 
 			if ($option_tags_html) {
