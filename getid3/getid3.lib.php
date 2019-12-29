@@ -1535,28 +1535,28 @@ class getid3_lib
 	 */
 	public static function CopyTagsToComments(&$ThisFileInfo, $option_tags_html=true) {
 
-	    $comment_arrays = array('comments');
-	    if($option_tags_html) {
-	        $comment_arrays[] = 'comments_html';
-	    }
+		$comment_arrays = array('comments');
+		if ($option_tags_html) {
+			$comment_arrays[] = 'comments_html';
+		}
 		// Copy all entries from ['tags'] into common ['comments']
 		if (!empty($ThisFileInfo['tags'])) {
 			foreach ($ThisFileInfo['tags'] as $tagtype => $tagarray) {
 				foreach ($tagarray as $tagname => $tagdata) {
 					foreach ($tagdata as $key => $value) {
-					    foreach($comment_arrays as $comments) {
-					        if ($comments != 'comments' && $key == 'picture') {
-					            // pictures can take up a lot of space, and we don't need multiple copies of them
-					            // let there be a single copy in [comments][picture], and not elsewhere
-					            continue;
-					        }
-					        if (!empty($value)) {
-							    if (empty($ThisFileInfo[$comments][$tagname])) {
-	
+						foreach($comment_arrays as $comments) {
+							if (($comments != 'comments') && ($key == 'picture')) {
+								// pictures can take up a lot of space, and we don't need multiple copies of them
+								// let there be a single copy in [comments][picture], and not elsewhere
+								continue;
+							}
+							if (!empty($value)) {
+								if (empty($ThisFileInfo[$comments][$tagname])) {
+
 									// fall through and append value
-	
+
 								} elseif ($tagtype == 'id3v1') {
-	
+
 									$newvaluelength = strlen(trim($value));
 									foreach ($ThisFileInfo[$comments][$tagname] as $existingkey => $existingvalue) {
 										$oldvaluelength = strlen(trim($existingvalue));
@@ -1565,34 +1565,33 @@ class getid3_lib
 											break 2;
 										}
 									}
-	
+
 								} elseif (!is_array($value)) {
-	
+
 									$newvaluelength = strlen(trim($value));
 									foreach ($ThisFileInfo[$comments][$tagname] as $existingkey => $existingvalue) {
 										$oldvaluelength = strlen(trim($existingvalue));
 										if ((strlen($existingvalue) > 10) && ($newvaluelength > $oldvaluelength) && (substr(trim($value), 0, strlen($existingvalue)) == $existingvalue)) {
-										    $ThisFileInfo[$comments][$tagname][$existingkey] = trim($value);
-											//break 2;
+											$ThisFileInfo[$comments][$tagname][$existingkey] = trim($value);
 											break;
 										}
 									}
-	
+
 								}
 								if (is_array($value) || empty($ThisFileInfo[$comments][$tagname]) || !in_array(trim($value), $ThisFileInfo[$comments][$tagname])) {
 									$value = (is_string($value) ? trim($value) : $value);
 									if (!is_int($key) && !ctype_digit($key)) {
-									    $ThisFileInfo[$comments][$tagname][$key] = $value;
+										$ThisFileInfo[$comments][$tagname][$key] = $value;
 									} else {
-									    if (!isset($ThisFileInfo[$comments][$tagname])) {
-									        $ThisFileInfo[$comments][$tagname] = array($value);
+										if (!isset($ThisFileInfo[$comments][$tagname])) {
+											$ThisFileInfo[$comments][$tagname] = array($value);
 										} else {
-										    $ThisFileInfo[$comments][$tagname][] = $value;
+											$ThisFileInfo[$comments][$tagname][] = $value;
 										}
 									}
 								}
 							}
-					    }
+						}
 					}
 				}
 			}
@@ -1621,7 +1620,7 @@ class getid3_lib
 						foreach ($values as $index => $value) {
 							if (is_array($value)) {
 								$ThisFileInfo['comments_html'][$field][$index] = $value;
-							} elseif(empty($ThisFileInfo['comments_html'][$field][$index])) {
+							} elseif (empty($ThisFileInfo['comments_html'][$field][$index])) {
 								$ThisFileInfo['comments_html'][$field][$index] = str_replace('&#0;', '', self::MultiByteCharString2HTML($value, $ThisFileInfo['encoding']));
 							}
 						}
