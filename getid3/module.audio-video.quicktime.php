@@ -2020,6 +2020,12 @@ class getid3_quicktime extends getid3_handler
 				}
 				return $atom_structure;
 			}
+			if (strlen($subatomdata) < $subatomsize-8) {
+			    // we don't have enough data to decode the subatom.
+			    // this may be because we are refusing to parse large subatoms, or it may be because this atom had its size set too large
+			    // so we passed in the start of a following atom incorrectly?
+			    return $atom_structure;
+			}
 			$atom_structure[$subatomcounter++] = $this->QuicktimeParseAtom($subatomname, $subatomsize, $subatomdata, $baseoffset + $subatomoffset, $atomHierarchy, $ParseAllPossibleAtoms);
 			$subatomoffset += $subatomsize;
 		}
