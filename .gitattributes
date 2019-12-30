@@ -28,7 +28,6 @@
 .travis.yml export-ignore
 build/ export-ignore
 composer.json export-ignore
-demos/ export-ignore
 Doxyfile export-ignore
 phpstan.neon export-ignore
 phpunit.xml.dist export-ignore
