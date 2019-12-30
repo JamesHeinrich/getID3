@@ -1176,6 +1176,8 @@ class getid3_quicktime extends getid3_handler
 					if (empty($info['comments']['language']) || (!in_array($atom_structure['language'], $info['comments']['language']))) {
 						$info['comments']['language'][] = $atom_structure['language'];
 					}
+					$info['quicktime']['timestamps_unix']['create'][$atom_structure['hierarchy']] = $atom_structure['creation_time_unix'];
+					$info['quicktime']['timestamps_unix']['modify'][$atom_structure['hierarchy']] = $atom_structure['modify_time_unix'];
 					break;
 
 
@@ -1186,6 +1188,7 @@ class getid3_quicktime extends getid3_handler
 					$atom_structure['atom_index']             = getid3_lib::BigEndian2Int(substr($atom_data, 10, 2)); // usually: 0x01
 
 					$atom_structure['modification_date_unix'] = getid3_lib::DateMac2Unix($atom_structure['modification_date']);
+					$info['quicktime']['timestamps_unix']['modify'][$atom_structure['hierarchy']] = $atom_structure['modification_date_unix'];
 					break;
 
 
@@ -1283,6 +1286,8 @@ class getid3_quicktime extends getid3_handler
 					}
 					$atom_structure['creation_time_unix']        = getid3_lib::DateMac2Unix($atom_structure['creation_time']);
 					$atom_structure['modify_time_unix']          = getid3_lib::DateMac2Unix($atom_structure['modify_time']);
+					$info['quicktime']['timestamps_unix']['create'][$atom_structure['hierarchy']] = $atom_structure['creation_time_unix'];
+					$info['quicktime']['timestamps_unix']['modify'][$atom_structure['hierarchy']] = $atom_structure['modify_time_unix'];
 					$info['quicktime']['time_scale']    = ((isset($info['quicktime']['time_scale']) && ($info['quicktime']['time_scale'] < 1000)) ? max($info['quicktime']['time_scale'], $atom_structure['time_scale']) : $atom_structure['time_scale']);
 					$info['quicktime']['display_scale'] = $atom_structure['matrix_a'];
 					$info['playtime_seconds']           = $atom_structure['duration'] / $atom_structure['time_scale'];
@@ -1321,6 +1326,8 @@ class getid3_quicktime extends getid3_handler
 					$atom_structure['flags']['in_poster']  = (bool) ($atom_structure['flags_raw'] & 0x0008);
 					$atom_structure['creation_time_unix']  = getid3_lib::DateMac2Unix($atom_structure['creation_time']);
 					$atom_structure['modify_time_unix']    = getid3_lib::DateMac2Unix($atom_structure['modify_time']);
+					$info['quicktime']['timestamps_unix']['create'][$atom_structure['hierarchy']] = $atom_structure['creation_time_unix'];
+					$info['quicktime']['timestamps_unix']['modify'][$atom_structure['hierarchy']] = $atom_structure['modify_time_unix'];
 
 					// https://www.getid3.org/phpBB3/viewtopic.php?t=1908
 					// attempt to compute rotation from matrix values
