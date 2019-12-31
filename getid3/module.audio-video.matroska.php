@@ -329,7 +329,7 @@ class getid3_matroska extends getid3_handler
 								break;*/
 						}
 
-						$info['video']['streams'][] = $track_info;
+						$info['video']['streams'][$trackarray['TrackUID']] = $track_info;
 						break;
 
 					case 2: // Audio
@@ -478,7 +478,7 @@ class getid3_matroska extends getid3_handler
 								break;
 						}
 
-						$info['audio']['streams'][] = $track_info;
+						$info['audio']['streams'][$trackarray['TrackUID']] = $track_info;
 						break;
 				}
 			}
@@ -507,6 +507,30 @@ class getid3_matroska extends getid3_handler
 			$info['mime_type'] = ($info['matroska']['doctype'] == 'webm' ? 'audio/webm' : 'audio/x-matroska');
 		} elseif (isset($info['mime_type'])) {
 			unset($info['mime_type']);
+		}
+
+		// use _STATISTICS_TAGS if available to set audio/video bitrates
+		if (!empty($info['matroska']['tags'])) {
+			$_STATISTICS_byTrackUID = array();
+			foreach ($info['matroska']['tags'] as $key1 => $value1) {
+				if (!empty($value1['Targets']['TagTrackUID'][0]) && !empty($value1['SimpleTag'])) {
+					foreach ($value1['SimpleTag'] as $key2 => $value2) {
+						if (!empty($value2['TagName']) && isset($value2['TagString'])) {
+							$_STATISTICS_byTrackUID[$value1['Targets']['TagTrackUID'][0]][$value2['TagName']] = $value2['TagString'];
+						}
+					}
+				}
+			}
+			foreach (array('audio','video') as $avtype) {
+				if (!empty($info[$avtype]['streams'])) {
+					foreach ($info[$avtype]['streams'] as $trackUID => $trackdata) {
+						if (!isset($trackdata['bitrate']) && !empty($_STATISTICS_byTrackUID[$trackUID]['BPS'])) {
+							$info[$avtype]['streams'][$trackUID]['bitrate'] = (int) $_STATISTICS_byTrackUID[$trackUID]['BPS'];
+							@$info[$avtype]['bitrate'] += $info[$avtype]['streams'][$trackUID]['bitrate'];
+						}
+					}
+				}
+			}
 		}
 
 		return true;
@@ -614,8 +638,10 @@ class getid3_matroska extends getid3_handler
 											while ($this->getEBMLelement($subelement, $track_entry['end'], array(EBML_ID_VIDEO, EBML_ID_AUDIO, EBML_ID_CONTENTENCODINGS, EBML_ID_CODECPRIVATE))) {
 												switch ($subelement['id']) {
 
-													case EBML_ID_TRACKNUMBER:
 													case EBML_ID_TRACKUID:
+														$track_entry[$subelement['id_name']] = getid3_lib::PrintHexBytes($subelement['data'], true, false);
+														break;
+													case EBML_ID_TRACKNUMBER:
 													case EBML_ID_TRACKTYPE:
 													case EBML_ID_MINCACHE:
 													case EBML_ID_MAXCACHE:
@@ -963,7 +989,7 @@ class getid3_matroska extends getid3_handler
 																case EBML_ID_TAGEDITIONUID:
 																case EBML_ID_TAGCHAPTERUID:
 																case EBML_ID_TAGATTACHMENTUID:
-																	$targets_entry[$sub_sub_subelement['id_name']][] = getid3_lib::BigEndian2Int($sub_sub_subelement['data']);
+																	$targets_entry[$sub_sub_subelement['id_name']][] = getid3_lib::PrintHexBytes($sub_sub_subelement['data'], true, false);
 																	break;
 
 																default:
