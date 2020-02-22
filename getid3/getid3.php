@@ -972,7 +972,15 @@ class getID3
 							'fail_id3'  => 'ERROR',
 							'fail_ape'  => 'ERROR',
 						),
-
+				
+				// TAK  - audio       - Tom's lossless Audio Kompressor
+				'tak'  => array(
+							'pattern'   => '^tBaK',
+							'group'     => 'audio',
+							'module'    => 'tak',
+							'mime_type' => 'application/octet-stream',
+						), 
+				
 				// TTA  - audio       - TTA Lossless Audio Compressor (http://tta.corecodec.org)
 				'tta'  => array(
 							'pattern'   => '^TTA',  // could also be '^TTA(\\x01|\\x02|\\x03|2|1)'
