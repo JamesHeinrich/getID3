@@ -250,7 +250,7 @@ class getID3
 	 */
 	protected $startup_warning = '';
 
-	const VERSION           = '1.9.19-201912311335';
+	const VERSION           = '1.9.19-202002221838';
 	const FREAD_BUFFER_SIZE = 32768;
 
 	const ATTACHMENTS_NONE   = false;
@@ -972,15 +972,15 @@ class getID3
 							'fail_id3'  => 'ERROR',
 							'fail_ape'  => 'ERROR',
 						),
-				
+
 				// TAK  - audio       - Tom's lossless Audio Kompressor
 				'tak'  => array(
 							'pattern'   => '^tBaK',
 							'group'     => 'audio',
 							'module'    => 'tak',
 							'mime_type' => 'application/octet-stream',
-						), 
-				
+						),
+
 				// TTA  - audio       - TTA Lossless Audio Compressor (http://tta.corecodec.org)
 				'tta'  => array(
 							'pattern'   => '^TTA',  // could also be '^TTA(\\x01|\\x02|\\x03|2|1)'

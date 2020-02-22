@@ -68,7 +68,7 @@ class getid3_tak extends getid3_handler
 		$objlength = getid3_lib::LittleEndian2Int(substr($TAKMetaData, 1, 3));
 		while ($objtype != 0) {
 			switch ($objtype) {
-			case 4 : 
+			case 4 :
 				// ENCODERINFO Metadata Block
 				$offset += 4;
 				$this->fseek($offset);
@@ -80,7 +80,7 @@ class getid3_tak extends getid3_handler
 				$thisfile_takaudio['version'] = 'TAK V '.$major.'.'.$minor.'.'.$revision;
 				$thisfile_takaudio['profile'] = self::TAKProfileLookup(getid3_lib::BigEndian2Int(substr($TAKMetaData, 3, 1)));
 				$offset += $objlength;
-				break;			
+				break;
 			case 6 :
 				// MD5 Checksum Metadata Block
 				$offset += 4;
@@ -124,7 +124,7 @@ class getid3_tak extends getid3_handler
 		}
 		// Finished all Metadata Blocks. So update $info['avdataoffset'] because next block is the first Audio data block
 		$info['avdataoffset'] = $offset;
-	
+
 		$info['audio']['channels'] = $thisfile_takaudio['channels'];
 		if ($thisfile_takaudio['sample_rate'] == 0) {
 			$this->error('Corrupt TAK file: samplerate == zero');
@@ -147,22 +147,26 @@ class getid3_tak extends getid3_handler
 		$thisfile_takaudio['bitrate'] = (($thisfile_takaudio['samples'] * $thisfile_takaudio['channels'] * $thisfile_takaudio['bits_per_sample']) / $thisfile_takaudio['playtime']) * $thisfile_takaudio['compression_ratio'];
 		$info['audio']['bitrate'] = $thisfile_takaudio['bitrate'];
 
-		if ($thisfile_takaudio_raw['MD5Data'] === str_repeat("\x00", 16)) {
-				//$this->warning('MD5Data is null');
+		if (empty($thisfile_takaudio_raw['MD5Data'])) {
+			//$this->warning('MD5Data is not set');
+		} elseif ($thisfile_takaudio_raw['MD5Data'] === str_repeat("\x00", 16)) {
+			//$this->warning('MD5Data is null');
 		} else {
 			$info['md5_data_source'] = '';
 			$md5 = $thisfile_takaudio_raw['MD5Data'];
 			for ($i = 0; $i < strlen($md5); $i++) {
-				$info['md5_data_source'] .= str_pad(dechex(ord($md5{$i})), 2, '00', STR_PAD_LEFT);
+				$info['md5_data_source'] .= str_pad(dechex(ord($md5[$i])), 2, '00', STR_PAD_LEFT);
 			}
 			if (!preg_match('/^[0-9a-f]{32}$/', $info['md5_data_source'])) {
 				unset($info['md5_data_source']);
 			}
 		}
 
-		$info['audio']['bits_per_sample'] = $thisfile_takaudio['bits_per_sample'];
-		$info['audio']['encoder']         = $thisfile_takaudio['version'];
-		$info['audio']['encoder_options'] = $thisfile_takaudio['profile'];
+		foreach (array('bits_per_sample', 'version', 'profile') as $key) {
+			if (!empty($thisfile_takaudio[$key])) {
+				$info['audio'][$key] = $thisfile_takaudio[$key];
+			}
+		}
 
 		return true;
 	}
