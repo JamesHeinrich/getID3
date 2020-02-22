@@ -2092,6 +2092,30 @@ array() {
         ['tags']=>array()               //
     }                                   //
 
+['tak_audio']=>array() {                    // TAK - Tom's lossless Audio Kompressor format
+        ['raw']=>array() {                      //
+            ['magic']=>string()                 //
+            ['STREAMINFO']=>string()            //
+            ['MD5Data']=>string()               //
+            ['header_data']=>string()           // Original wave header data to enable perfect reconstruction
+            ['footer_data']=>string()           // --||--
+        }                                       //
+        ['channels']=>integer()                 //
+        ['bits_per_sample']=>integer()          //
+        ['sample_rate']=>integer()              //
+        ['samples']=>integer()                  //
+        ['framesize']=>string()                 //
+        ['codectype']=>string()                 //
+        ['version']=>string()                   //
+        ['profile']=>string()                   //
+        ['lastframe_pos']=>integer()            //
+        ['last_frame_size']=>integer()          //
+        ['playtime']=>integer()                 //
+        ['compressed_size']=>integer()          //
+        ['uncompressed_size']=>integer()        //
+        ['compression_ratio']=>integer()        //
+    }                                           //
+
 
     ['voc']=>array() {                            // VOC - SoundBlaster VOC audio format
         ['blocks']=>array() {                     //
