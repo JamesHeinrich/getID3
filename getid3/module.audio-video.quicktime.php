@@ -2907,7 +2907,7 @@ class getid3_quicktime extends getid3_handler
 				$gooddata = explode(';', $data);
 			}
 			foreach ($gooddata as $data) {
-				if (is_array($data) || (!empty($info['quicktime']['comments'][$comment_key]) && in_array($data, $info['quicktime']['comments'][$comment_key]))) {
+				if (!empty($info['quicktime']['comments'][$comment_key]) && in_array($data, $info['quicktime']['comments'][$comment_key], true)) {
 					// avoid duplicate copies of identical data
 					continue;
 				}
