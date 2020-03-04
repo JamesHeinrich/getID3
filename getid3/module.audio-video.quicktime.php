@@ -1990,14 +1990,14 @@ class getid3_quicktime extends getid3_handler
 				case 'thma': // subatom to "frea" -- "ThumbnailImage"
 					// https://www.sno.phy.queensu.ca/~phil/exiftool/TagNames/Kodak.html#frea
 					if (strlen($atom_data) > 0) {
-						$info['quicktime']['comments']['picture'][] = array('data'=>$atom_data, 'image_mime'=>'image/jpeg');
+						$info['quicktime']['comments']['picture'][] = array('data'=>$atom_data, 'image_mime'=>'image/jpeg', 'description'=>'ThumbnailImage');
 					}
 					break;
 				case 'scra': // subatom to "frea" -- "PreviewImage"
 					// https://www.sno.phy.queensu.ca/~phil/exiftool/TagNames/Kodak.html#frea
 					// but the only sample file I've seen has no useful data here
 					if (strlen($atom_data) > 0) {
-						$info['quicktime']['comments']['picture'][] = array('data'=>$atom_data, 'image_mime'=>'image/jpeg');
+						$info['quicktime']['comments']['picture'][] = array('data'=>$atom_data, 'image_mime'=>'image/jpeg', 'description'=>'PreviewImage');
 					}
 					break;
 
@@ -2887,19 +2887,8 @@ class getid3_quicktime extends getid3_handler
 		}
 		if ($comment_key) {
 			if ($comment_key == 'picture') {
-				if (!is_array($data)) {
-					$image_mime = '';
-					if (preg_match('#^\x89\x50\x4E\x47\x0D\x0A\x1A\x0A#', $data)) {
-						$image_mime = 'image/png';
-					} elseif (preg_match('#^\xFF\xD8\xFF#', $data)) {
-						$image_mime = 'image/jpeg';
-					} elseif (preg_match('#^GIF#', $data)) {
-						$image_mime = 'image/gif';
-					} elseif (preg_match('#^BM#', $data)) {
-						$image_mime = 'image/bmp';
-					}
-					$data = array('data'=>$data, 'image_mime'=>$image_mime);
-				}
+				// already copied directly into [comments][picture] elsewhere, do not re-copy here
+				return true;
 			}
 			$gooddata = array($data);
 			if ($comment_key == 'genre') {
