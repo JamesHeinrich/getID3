@@ -14,6 +14,9 @@
 //                                                            ///
 /////////////////////////////////////////////////////////////////
 
+if ( ! defined( 'ABSPATH' ) ) {
+	exit;
+}
 
 class getid3_ac3 extends getid3_handler
 {

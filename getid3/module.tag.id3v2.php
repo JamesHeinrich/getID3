@@ -14,6 +14,10 @@
 //                                                            ///
 /////////////////////////////////////////////////////////////////
 
+if ( ! defined( 'ABSPATH' ) ) {
+	exit;
+}
+
 getid3_lib::IncludeDependency(GETID3_INCLUDEPATH.'module.tag.id3v1.php', __FILE__, true);
 
 class getid3_id3v2 extends getid3_handler

@@ -14,6 +14,9 @@
 //                                                            ///
 /////////////////////////////////////////////////////////////////
 
+if ( ! defined( 'ABSPATH' ) ) {
+	exit;
+}
 
 define('EBML_ID_CHAPTERS',                  0x0043A770); // [10][43][A7][70] -- A system to define basic menus and partition data. For more detailed information, look at the Chapters Explanation.
 define('EBML_ID_SEEKHEAD',                  0x014D9B74); // [11][4D][9B][74] -- Contains the position of other level 1 elements.

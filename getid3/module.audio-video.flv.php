@@ -53,6 +53,10 @@
 //                                                            ///
 /////////////////////////////////////////////////////////////////
 
+if ( ! defined( 'ABSPATH' ) ) {
+	exit;
+}
+
 define('GETID3_FLV_TAG_AUDIO',          8);
 define('GETID3_FLV_TAG_VIDEO',          9);
 define('GETID3_FLV_TAG_META',          18);

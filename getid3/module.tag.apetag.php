@@ -14,6 +14,10 @@
 //                                                            ///
 /////////////////////////////////////////////////////////////////
 
+if ( ! defined( 'ABSPATH' ) ) {
+	exit;
+}
+
 class getid3_apetag extends getid3_handler
 {
 	/**

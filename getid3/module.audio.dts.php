@@ -14,6 +14,9 @@
 //                                                             //
 /////////////////////////////////////////////////////////////////
 
+if ( ! defined( 'ABSPATH' ) ) {
+	exit;
+}
 
 /**
 * @tutorial http://wiki.multimedia.cx/index.php?title=DTS

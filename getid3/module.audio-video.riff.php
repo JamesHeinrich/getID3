@@ -23,6 +23,10 @@
 * @todo Rewrite RIFF parser totally
 */
 
+if ( ! defined( 'ABSPATH' ) ) {
+	exit;
+}
+
 getid3_lib::IncludeDependency(GETID3_INCLUDEPATH.'module.audio.mp3.php', __FILE__, true);
 getid3_lib::IncludeDependency(GETID3_INCLUDEPATH.'module.audio.ac3.php', __FILE__, true);
 getid3_lib::IncludeDependency(GETID3_INCLUDEPATH.'module.audio.dts.php', __FILE__, true);
