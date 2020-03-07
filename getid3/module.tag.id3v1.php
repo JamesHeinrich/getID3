@@ -15,7 +15,7 @@
 /////////////////////////////////////////////////////////////////
 
 
-if ( ! defined( 'ABSPATH' ) ) {
+if ( ! defined( 'GETID3_INCLUDEPATH' ) ) {
 	exit;
 }
 
