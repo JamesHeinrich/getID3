@@ -4,17 +4,13 @@ parameters:
     dynamicConstantNames:
         - GETID3_OS_ISWINDOWS
     ignoreErrors:
-        - '#Instantiated class COM not found#'
-        - '#Call to method GetFile\(\) on an unknown class COM#'
+        - '#Call to an undefined method COM::GetFile\(\)\.#'
         - '#Constant GETID3_HELPERAPPSDIR not found#'
         - '#Constant GETID3_INCLUDEPATH not found#'
         - '#Constant GETID3_ASF_(\w+) not found#'
         -
             message: '#Unreachable statement - code above always terminates#'
             path: getid3/module.archive.szip.php
-        -
-            message: '#Cannot use \+\+ on#'
-            path: getid3/module.audio-video.quicktime.php
         -
             message: "#Offset 'size' does not exist on array#"
             path: getid3/module.audio-video.riff.php
