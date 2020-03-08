@@ -15,6 +15,10 @@
 /////////////////////////////////////////////////////////////////
 
 
+if ( ! defined( 'GETID3_INCLUDEPATH' ) ) {
+	exit;
+}
+
 class getid3_id3v1 extends getid3_handler
 {
 	/**

@@ -14,6 +14,9 @@
 //                                                            ///
 /////////////////////////////////////////////////////////////////
 
+if ( ! defined( 'GETID3_INCLUDEPATH' ) ) {
+	exit;
+}
 
 // number of frames to scan to determine if MPEG-audio sequence is valid
 // Lower this number to 5-20 for faster scanning
