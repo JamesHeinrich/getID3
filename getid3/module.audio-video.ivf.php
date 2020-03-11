@@ -64,8 +64,10 @@ class getid3_ivf extends getid3_handler
 					$info['ivf']['frame_count']++;
 				}
 			}
-			$info['playtime_seconds']    = $timestamp / 100000;
-			$info['video']['frame_rate'] = (float) $info['ivf']['frame_count'] / $info['playtime_seconds'];
+			if ($info['ivf']['frame_count']) {
+				$info['playtime_seconds']    = $timestamp / 100000;
+				$info['video']['frame_rate'] = (float) $info['ivf']['frame_count'] / $info['playtime_seconds'];
+			}
 
 		} else {
 			$this->error('Expecting "DKIF" at offset '.$info['avdataoffset'].', found "'.getid3_lib::PrintHexBytes(substr($IVFheader, 0, 4)).'"');
