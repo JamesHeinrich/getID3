@@ -250,7 +250,7 @@ class getID3
 	 */
 	protected $startup_warning = '';
 
-	const VERSION           = '1.9.19-202003041359';
+	const VERSION           = '1.9.19-202003111804';
 	const FREAD_BUFFER_SIZE = 32768;
 
 	const ATTACHMENTS_NONE   = false;
@@ -1039,6 +1039,14 @@ class getID3
 							'group'     => 'audio-video',
 							'module'    => 'flv',
 							'mime_type' => 'video/x-flv',
+						),
+
+				// IVF - audio/video - IVF
+				'ivf' => array(
+							'pattern'   => '^DKIF',
+							'group'     => 'audio-video',
+							'module'    => 'ivf',
+							'mime_type' => 'video/x-ivf',
 						),
 
 				// MKAV - audio/video - Mastroka
