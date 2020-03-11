@@ -18,6 +18,11 @@
  * @link https://www.w3.org/Graphics/GIF/spec-gif89a.txt
  * @link http://www.matthewflickinger.com/lab/whatsinagif/bits_and_bytes.asp
  */
+
+if (!defined('GETID3_INCLUDEPATH')) { // prevent path-exposing attacks that access modules directly on public webservers
+	exit;
+}
+
 class getid3_gif extends getid3_handler
 {
 	/**

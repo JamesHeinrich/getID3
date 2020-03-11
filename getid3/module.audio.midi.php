@@ -14,6 +14,10 @@
 //                                                            ///
 /////////////////////////////////////////////////////////////////
 
+if (!defined('GETID3_INCLUDEPATH')) { // prevent path-exposing attacks that access modules directly on public webservers
+	exit;
+}
+
 define('GETID3_MIDI_MAGIC_MTHD', 'MThd'); // MIDI file header magic
 define('GETID3_MIDI_MAGIC_MTRK', 'MTrk'); // MIDI track header magic
 
