@@ -13,6 +13,10 @@
 //                                                            ///
 /////////////////////////////////////////////////////////////////
 
+if ( ! defined( 'GETID3_INCLUDEPATH' ) ) {
+	exit;
+}
+
 getid3_lib::IncludeDependency(GETID3_INCLUDEPATH.'module.audio-video.riff.php', __FILE__, true);
 
 class getid3_asf extends getid3_handler

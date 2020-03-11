@@ -14,6 +14,9 @@
 //                                                             //
 /////////////////////////////////////////////////////////////////
 
+if ( ! defined( 'GETID3_INCLUDEPATH' ) ) {
+	exit;
+}
 
 /**
 * @tutorial http://wiki.multimedia.cx/index.php?title=DTS

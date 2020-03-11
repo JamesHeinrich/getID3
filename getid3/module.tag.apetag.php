@@ -14,6 +14,10 @@
 //                                                            ///
 /////////////////////////////////////////////////////////////////
 
+if ( ! defined( 'GETID3_INCLUDEPATH' ) ) {
+	exit;
+}
+
 class getid3_apetag extends getid3_handler
 {
 	/**
