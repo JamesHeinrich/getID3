@@ -99,6 +99,13 @@ class getID3
 	 */
 	public $encoding_id3v1  = 'ISO-8859-1';
 
+	/**
+	 * ID3v1 should always be 'ISO-8859-1', but some tags may be written in other encodings such as 'Windows-1251' or 'KOI8-R'. If true attempt to detect these encodings, but may return incorrect values for some tags actually in ISO-8859-1 encoding
+	 *
+	 * @var bool
+	 */
+	public $encoding_id3v1_autodetect  = false;
+
 	/*
 	 * Optional tag checks - disable for speed.
 	 */
@@ -250,7 +257,7 @@ class getID3
 	 */
 	protected $startup_warning = '';
 
-	const VERSION           = '1.9.19-202003111825';
+	const VERSION           = '1.9.19-202003142234';
 	const FREAD_BUFFER_SIZE = 32768;
 
 	const ATTACHMENTS_NONE   = false;
