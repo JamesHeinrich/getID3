@@ -1233,12 +1233,22 @@ class getID3
 							'iconv_req' => false,
 						),
 
+				// HPK  - data        - HPK compressed data
+				'hpk'  => array(
+							'pattern'   => '^BPUL',
+							'group'     => 'archive',
+							'module'    => 'hpk',
+							'mime_type' => 'application/octet-stream',
+							'fail_id3'  => 'ERROR',
+							'fail_ape'  => 'ERROR',
+						),
+
 				// RAR  - data        - RAR compressed data
 				'rar'  => array(
 							'pattern'   => '^Rar\\!',
 							'group'     => 'archive',
 							'module'    => 'rar',
-							'mime_type' => 'application/octet-stream',
+							'mime_type' => 'application/vnd.rar',
 							'fail_id3'  => 'ERROR',
 							'fail_ape'  => 'ERROR',
 						),
