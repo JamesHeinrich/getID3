@@ -1541,6 +1541,13 @@ class getid3_lib
 		}
 		// Copy all entries from ['tags'] into common ['comments']
 		if (!empty($ThisFileInfo['tags'])) {
+			if (isset($ThisFileInfo['tags']['id3v1'])) {
+				// bubble ID3v1 to the end, if present to aid in detecting bad ID3v1 encodings
+				$ID3v1 = $ThisFileInfo['tags']['id3v1'];
+				unset($ThisFileInfo['tags']['id3v1']);
+				$ThisFileInfo['tags']['id3v1'] = $ID3v1;
+				unset($ID3v1);
+			}
 			foreach ($ThisFileInfo['tags'] as $tagtype => $tagarray) {
 				foreach ($tagarray as $tagname => $tagdata) {
 					foreach ($tagdata as $key => $value) {
@@ -1562,6 +1569,13 @@ class getid3_lib
 										$oldvaluelength = strlen(trim($existingvalue));
 										if (($newvaluelength <= $oldvaluelength) && (substr($existingvalue, 0, $newvaluelength) == trim($value))) {
 											// new value is identical but shorter-than (or equal-length to) one already in comments - skip
+											break 2;
+										}
+									}
+									if (function_exists('mb_convert_encoding')) {
+										if (trim($value) == trim(substr(mb_convert_encoding($existingvalue, $ThisFileInfo['id3v1']['encoding'], $ThisFileInfo['encoding']), 0, 30))) {
+											// value stored in ID3v1 appears to be probably the multibyte value transliterated (badly) into ISO-8859-1 in ID3v1.
+											// As an example, Foobar2000 will do this if you tag a file with Chinese or Arabic or Cyrillic or something that doesn't fit into ISO-8859-1 the ID3v1 will consist of mostly "?" characters, one per multibyte unrepresentable character
 											break 2;
 										}
 									}
