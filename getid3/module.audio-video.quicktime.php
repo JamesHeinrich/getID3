@@ -771,6 +771,15 @@ class getid3_quicktime extends getid3_handler
 						$atom_structure['sample_description_table'][$i]['data']             =                           substr($atom_data, $stsdEntriesDataOffset, ($atom_structure['sample_description_table'][$i]['size'] - 4 - 4 - 6 - 2));
 						$stsdEntriesDataOffset += ($atom_structure['sample_description_table'][$i]['size'] - 4 - 4 - 6 - 2);
 
+						if (substr($atom_structure['sample_description_table'][$i]['data'],  1, 54) == 'application/octet-stream;type=com.parrot.videometadata') {
+							// special handling for apparently-malformed (TextMetaDataSampleEntry?) data for some version of Parrot drones
+							$atom_structure['sample_description_table'][$i]['parrot_frame_metadata']['mime_type']        =       substr($atom_structure['sample_description_table'][$i]['data'],  1, 55);
+							$atom_structure['sample_description_table'][$i]['parrot_frame_metadata']['metadata_version'] = (int) substr($atom_structure['sample_description_table'][$i]['data'], 55,  1);
+							unset($atom_structure['sample_description_table'][$i]['data']);
+$this->warning('incomplete/incorrect handling of "stsd" with Parrot metadata in this version of getID3() ['.$this->getid3->version().']');
+							continue;
+						}
+
 						$atom_structure['sample_description_table'][$i]['encoder_version']  = getid3_lib::BigEndian2Int(substr($atom_structure['sample_description_table'][$i]['data'],  0, 2));
 						$atom_structure['sample_description_table'][$i]['encoder_revision'] = getid3_lib::BigEndian2Int(substr($atom_structure['sample_description_table'][$i]['data'],  2, 2));
 						$atom_structure['sample_description_table'][$i]['encoder_vendor']   =                           substr($atom_structure['sample_description_table'][$i]['data'],  4, 4);
@@ -2004,6 +2013,11 @@ class getid3_quicktime extends getid3_handler
 					}
 					break;
 
+				case 'cdsc': // timed metadata reference
+					// A QuickTime movie can contain none, one, or several timed metadata tracks. Timed metadata tracks can refer to multiple tracks.
+					// Metadata tracks are linked to the tracks they describe using a track-reference of type 'cdsc'. The metadata track holds the 'cdsc' track reference.
+					$atom_structure['track_number'] = getid3_lib::BigEndian2Int($atom_data);
+					break;
 
 				default:
 					$this->warning('Unknown QuickTime atom type: "'.preg_replace('#[^a-zA-Z0-9 _\\-]#', '?', $atomname).'" ('.trim(getid3_lib::PrintHexBytes($atomname)).'), '.$atomsize.' bytes at offset '.$baseoffset);
