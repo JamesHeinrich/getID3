@@ -83,7 +83,7 @@ class getid3_lpac extends getid3_handler
 		}
 
 		$getid3_temp = new getID3();
-		$getid3_temp->openfile($this->getid3->filename);
+		$getid3_temp->openfile($this->getid3->filename, $this->getid3->info['filesize'], $this->getid3->fp);
 		$getid3_temp->info = $info;
 		$getid3_riff = new getid3_riff($getid3_temp);
 		$getid3_riff->Analyze();

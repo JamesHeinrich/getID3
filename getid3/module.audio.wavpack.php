@@ -224,7 +224,7 @@ class getid3_wavpack extends getid3_handler
 							$original_wav_filesize = getid3_lib::LittleEndian2Int(substr($metablock['data'], 4, 4));
 
 							$getid3_temp = new getID3();
-							$getid3_temp->openfile($this->getid3->filename);
+							$getid3_temp->openfile($this->getid3->filename, $this->getid3->info['filesize'], $this->getid3->fp);
 							$getid3_riff = new getid3_riff($getid3_temp);
 							$getid3_riff->ParseRIFFdata($metablock['data']);
 							$metablock['riff']            = $getid3_temp->info['riff'];
@@ -246,7 +246,7 @@ class getid3_wavpack extends getid3_handler
 
 							$startoffset = $metablock['offset'] + ($metablock['large_block'] ? 4 : 2);
 							$getid3_temp = new getID3();
-							$getid3_temp->openfile($this->getid3->filename);
+							$getid3_temp->openfile($this->getid3->filename, $this->getid3->info['filesize'], $this->getid3->fp);
 							$getid3_temp->info['avdataend']  = $info['avdataend'];
 							//$getid3_temp->info['fileformat'] = 'riff';
 							$getid3_riff = new getid3_riff($getid3_temp);

@@ -1481,7 +1481,7 @@ $this->warning('incomplete/incorrect handling of "stsd" with Parrot metadata in 
 						$info['avdataend']    = $atom_structure['offset'] + $atom_structure['size']; // $info['quicktime'][$atomname]['offset'] + $info['quicktime'][$atomname]['size'];
 
 						$getid3_temp = new getID3();
-						$getid3_temp->openfile($this->getid3->filename);
+						$getid3_temp->openfile($this->getid3->filename, $this->getid3->info['filesize'], $this->getid3->fp);
 						$getid3_temp->info['avdataoffset'] = $info['avdataoffset'];
 						$getid3_temp->info['avdataend']    = $info['avdataend'];
 						$getid3_mp3 = new getid3_mp3($getid3_temp);

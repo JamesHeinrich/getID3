@@ -365,7 +365,7 @@ class getid3_matroska extends getid3_handler
 								// create temp instance
 								$getid3_temp = new getID3();
 								if ($track_info['dataformat'] != 'flac') {
-									$getid3_temp->openfile($this->getid3->filename);
+									$getid3_temp->openfile($this->getid3->filename, $this->getid3->info['filesize'], $this->getid3->fp);
 								}
 								$getid3_temp->info['avdataoffset'] = $info['matroska']['track_data_offsets'][$trackarray['TrackNumber']]['offset'];
 								if ($track_info['dataformat'][0] == 'm' || $track_info['dataformat'] == 'flac') {
