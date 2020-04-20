@@ -5,18 +5,18 @@
 //            or https://www.getid3.org                        //
 //            or http://getid3.sourceforge.net                 //
 //                                                             //
-// /demo/demo.mysqli.php - part of getID3()                     //
+// /demo/demo.mysqli.php - part of getID3()                    //
 // Sample script for recursively scanning directories and      //
 // storing the results in a database                           //
 //  see readme.txt for more details                            //
-//  updated to mysqli by sarang                                ///
+//  updated to mysqli by sarang                               ///
 /////////////////////////////////////////////////////////////////
 
-// die('Due to a security issue, this demo has been disabled. It can be enabled by removing line 16 in demos/demo.mysqli.php');
+die('Due to a security issue, this demo has been disabled. It can be enabled by removing line '.__LINE__.' in demos/'.basename(__FILE__));
 
 
 // OPTIONS:
-$getid3_demo_mysqli_encoding = 'ISO-8859-1';
+$getid3_demo_mysqli_encoding = 'UTF-8';
 $getid3_demo_mysqli_md5_data = false;        // All data hashes are by far the slowest part of scanning
 $getid3_demo_mysqli_md5_file = false;
 
@@ -29,13 +29,17 @@ define('GETID3_DB_TABLE', 'files');
 // CREATE DATABASE `getid3`;
 
 ob_start();
-if ($con = mysqli_connect(GETID3_DB_HOST, GETID3_DB_USER, GETID3_DB_PASS)){} else {
+if ($con = mysqli_connect(GETID3_DB_HOST, GETID3_DB_USER, GETID3_DB_PASS)){
+	// great
+} else {
 	$errormessage = ob_get_contents();
 	ob_end_clean();
 	die('Could not connect to MySQL host: <blockquote style="background-color: #FF9933; padding: 10px;">'.mysqli_error($con).'</blockquote>');
 }
 
-if (mysqli_select_db($con,GETID3_DB_DB)){} else {
+if (mysqli_select_db($con,GETID3_DB_DB)){
+	// great
+} else {
 	$errormessage = ob_get_contents();
 	ob_end_clean();
 	die('Could not select database: <blockquote style="background-color: #FF9933; padding: 10px;">'.mysqli_error($con).'</blockquote>');
@@ -545,7 +549,7 @@ if (!empty($_REQUEST['scan']) || !empty($_REQUEST['newscan']) || !empty($_REQUES
 				$SQLquery .= ', `title` = "'.           mysqli_real_escape_string($con, $this_track_title).'"';
 				$SQLquery .= ', `remix` = "'.           mysqli_real_escape_string($con, $this_track_remix).'"';
 				$SQLquery .= ', `track` = "'.           mysqli_real_escape_string($con, $this_track_track).'"';
-				$SQLquery .= 'WHERE (`filename` = "'. mysqli_real_escape_string($con, isset($ThisFileInfo['filenamepath']) ? $ThisFileInfo['filenamepath'] : '').'")';
+				$SQLquery .= ' WHERE (`filename` = "'. mysqli_real_escape_string($con, isset($ThisFileInfo['filenamepath']) ? $ThisFileInfo['filenamepath'] : '').'")';
 
 			} elseif (!empty($_REQUEST['scan']) || !empty($_REQUEST['newscan'])) {
 
