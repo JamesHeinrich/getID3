@@ -257,7 +257,7 @@ class getID3
 	 */
 	protected $startup_warning = '';
 
-	const VERSION           = '1.9.19-202004201144';
+	const VERSION           = '1.9.19-202005161210';
 	const FREAD_BUFFER_SIZE = 32768;
 
 	const ATTACHMENTS_NONE   = false;
@@ -2095,6 +2095,61 @@ abstract class getid3_handler
 			}
 		}
 		return fseek($this->getid3->fp, $bytes, $whence);
+	}
+
+	/**
+	 * @return string|false
+	 *
+	 * @throws getid3_exception
+	 */
+	protected function fgets() {
+		// must be able to handle CR/LF/CRLF but not read more than one lineend
+		$buffer   = ''; // final string we will return
+		$prevchar = ''; // save previously-read character for end-of-line checking
+		if ($this->data_string_flag) {
+			while (true) {
+				$thischar = substr($this->data_string, $this->data_string_position++, 1);
+				if (($prevchar == "\r") && ($thischar != "\n")) {
+					// read one byte too many, back up
+					$this->data_string_position--;
+					break;
+				}
+				$buffer .= $thischar;
+				if ($thischar == "\n") {
+					break;
+				}
+				if ($this->data_string_position >= $this->data_string_length) {
+					// EOF
+					break;
+				}
+				$prevchar = $thischar;
+			}
+
+		} else {
+
+			// Ideally we would just use PHP's fgets() function, however...
+			// it does not behave consistently with regards to mixed line endings, may be system-dependent
+			// and breaks entirely when given a file with mixed \r vs \n vs \r\n line endings (e.g. some PDFs)
+			//return fgets($this->getid3->fp);
+			while (true) {
+				$thischar = fgetc($this->getid3->fp);
+				if (($prevchar == "\r") && ($thischar != "\n")) {
+					// read one byte too many, back up
+					fseek($this->getid3->fp, -1, SEEK_CUR);
+					break;
+				}
+				$buffer .= $thischar;
+				if ($thischar == "\n") {
+					break;
+				}
+				if (feof($this->getid3->fp)) {
+					break;
+				}
+				$prevchar = $thischar;
+			}
+
+		}
+		return $buffer;
 	}
 
 	/**
