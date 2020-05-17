@@ -29,7 +29,7 @@ class getid3_pdf extends getid3_handler
 		$info = &$this->getid3->info;
 
 		$this->fseek(0);
-		if (preg_match('#^%PDF-([0-9\\.]+)$#', trim($this->fgets()), $matches)) {
+		if (preg_match('#^%PDF-([0-9\\.]+)$#', rtrim($this->fgets()), $matches)) {
 			$info['pdf']['header']['version'] = floatval($matches[1]);
 			$info['fileformat'] = 'pdf';
 
@@ -42,15 +42,18 @@ class getid3_pdf extends getid3_handler
 			$this->fseek(-40, SEEK_END);
 			if (preg_match('#[\r\n]startxref[ \r\n]+([0-9]+)[ \r\n]+#', $this->fread(40), $matches)) {
 				$info['pdf']['trailer']['startxref'] = intval($matches[1]);
-				$this->fseek($info['pdf']['trailer']['startxref']);
-				if (trim($this->fgets()) == 'xref') {
-					list($firstObjectNumber, $info['pdf']['xref']['count']) = explode(' ', trim($this->fgets()));
-					$info['pdf']['xref']['count'] = (int) $info['pdf']['xref']['count'];
-					for ($i = 0; $i < $info['pdf']['xref']['count']; $i++) {
-						list($offset, $generation, $entry) = explode(' ', trim($this->fgets()));
-						$info['pdf']['xref']['offset'][($firstObjectNumber + $i)]     = (int) $offset;
-						$info['pdf']['xref']['generation'][($firstObjectNumber + $i)] = (int) $generation;
-						$info['pdf']['xref']['entry'][($firstObjectNumber + $i)]      = $entry;
+				$this->parseXREF($info['pdf']['trailer']['startxref']);
+				if (!empty($info['pdf']['xref']['offset'])) {
+					while (!$this->feof() && (max(array_keys($info['pdf']['xref']['offset'])) > $info['pdf']['xref']['count'])) {
+						// suspect that there may be another XREF entry somewhere in the file, brute-force scan for it
+						$this->fseek(max($info['pdf']['xref']['offset']));
+						while (!$this->feof()) {
+							$XREFoffset = $this->ftell();
+							if (rtrim($this->fgets()) == 'xref') {
+								$this->parseXREF($XREFoffset);
+								break;
+							}
+						}
 					}
 					foreach ($info['pdf']['xref']['offset'] as $objectNumber => $offset) {
 						if ($info['pdf']['xref']['entry'][$objectNumber] == 'f') {
@@ -58,17 +61,21 @@ class getid3_pdf extends getid3_handler
 							continue;
 						}
 						$this->fseek($offset);
-						$line = trim($this->fgets());
-						if (preg_match('#^'.$objectNumber.' ([0-9]+) obj$#', $line)) {
+						$line = rtrim($this->fgets());
+						if (preg_match('#^'.$objectNumber.' ([0-9]+) obj#', $line, $matches)) {
+							if (strlen($line) > strlen($matches[0])) {
+								// object header line not actually on its own line, rewind file pointer to start reading data
+								$this->fseek($offset + strlen($matches[0]));
+							}
 							$objectData  = '';
 							while (true) {
 								$line = $this->fgets();
-								if (trim($line) == 'endobj') {
+								if (rtrim($line) == 'endobj') {
 									break;
 								}
 								$objectData .= $line;
 							}
-							if (strpos($objectData, '/Type /Pages') !== false) {
+							if (preg_match('#^<<[\r\n\s]*(/Type|/Pages|/Count [0-9]+|/Kids *\\[[0-9A-Z ]+\\]|[\r\n\s])+[\r\n\s]*>>#', $objectData, $matches)) {
 								if (preg_match('#/Count ([0-9]+)#', $objectData, $matches)) {
 									$info['pdf']['pages'] = (int) $matches[1];
 									break; // for now this is the only data we're looking for in the PDF not need to loop through every object in the file (and a large PDF may contain MANY objects). And it MAY be possible that there are other objects elsewhere in the file that define additional (or removed?) pages
@@ -96,6 +103,38 @@ class getid3_pdf extends getid3_handler
 		$this->error('Did not find "%PDF" at the beginning of the PDF');
 		return false;
 
+	}
+
+	/**
+	 * @return bool
+	 */
+	private function parseXREF($XREFoffset) {
+		$info = &$this->getid3->info;
+
+		$this->fseek($XREFoffset);
+		if (rtrim($this->fgets()) == 'xref') {
+
+			$info['pdf']['xref']['xref_offsets'][$XREFoffset] = $XREFoffset;
+			list($firstObjectNumber, $XREFcount) = explode(' ', rtrim($this->fgets()));
+			$XREFcount = (int) $XREFcount;
+			$info['pdf']['xref']['count'] = $XREFcount + (!empty($info['pdf']['xref']['count']) ? $info['pdf']['xref']['count'] : 0);
+			for ($i = 0; $i < $XREFcount; $i++) {
+				$line = rtrim($this->fgets());
+				if (preg_match('#^([0-9]+) ([0-9]+) ([nf])$#', $line, $matches)) {
+					$info['pdf']['xref']['offset'][($firstObjectNumber + $i)]     = (int) $matches[1];
+					$info['pdf']['xref']['generation'][($firstObjectNumber + $i)] = (int) $matches[2];
+					$info['pdf']['xref']['entry'][($firstObjectNumber + $i)]      =       $matches[3];
+				} else {
+					$this->error('failed to parse XREF entry #'.$i.' in XREF table at offset '.$XREFoffset);
+					return false;
+				}
+			}
+			sort($info['pdf']['xref']['xref_offsets']);
+			return true;
+
+		}
+		$this->warning('failed to find expected XREF structure at offset '.$XREFoffset);
+		return false;
 	}
 
 }
