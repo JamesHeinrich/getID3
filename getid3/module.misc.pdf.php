@@ -46,12 +46,19 @@ class getid3_pdf extends getid3_handler
 				if (!empty($info['pdf']['xref']['offset'])) {
 					while (!$this->feof() && (max(array_keys($info['pdf']['xref']['offset'])) > $info['pdf']['xref']['count'])) {
 						// suspect that there may be another XREF entry somewhere in the file, brute-force scan for it
+						/*
+						// starting at last known entry of main XREF table
 						$this->fseek(max($info['pdf']['xref']['offset']));
+						*/
+						// starting at the beginning of the file
+						$this->fseek(0);
 						while (!$this->feof()) {
 							$XREFoffset = $this->ftell();
 							if (rtrim($this->fgets()) == 'xref') {
-								$this->parseXREF($XREFoffset);
-								break;
+								if (empty($info['pdf']['xref']['xref_offsets']) || !in_array($XREFoffset, $info['pdf']['xref']['xref_offsets'])) {
+									$this->parseXREF($XREFoffset);
+									break;
+								}
 							}
 						}
 					}
@@ -75,7 +82,7 @@ class getid3_pdf extends getid3_handler
 								}
 								$objectData .= $line;
 							}
-							if (preg_match('#^<<[\r\n\s]*(/Type|/Pages|/Count [0-9]+|/Kids *\\[[0-9A-Z ]+\\]|[\r\n\s])+[\r\n\s]*>>#', $objectData, $matches)) {
+							if (preg_match('#^<<[\r\n\s]*(/Type|/Pages|/Parent [0-9]+ [0-9]+ [A-Z]|/Count [0-9]+|/Kids *\\[[0-9A-Z ]+\\]|[\r\n\s])+[\r\n\s]*>>#', $objectData, $matches)) {
 								if (preg_match('#/Count ([0-9]+)#', $objectData, $matches)) {
 									$info['pdf']['pages'] = (int) $matches[1];
 									break; // for now this is the only data we're looking for in the PDF not need to loop through every object in the file (and a large PDF may contain MANY objects). And it MAY be possible that there are other objects elsewhere in the file that define additional (or removed?) pages
