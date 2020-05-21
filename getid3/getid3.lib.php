@@ -681,10 +681,10 @@ class getid3_lib
 	 */
 	public static function array_max($arraydata, $returnkey=false) {
 		$maxvalue = false;
-		$maxkey = false;
+		$maxkey   = false;
 		foreach ($arraydata as $key => $value) {
 			if (!is_array($value)) {
-				if ($value > $maxvalue) {
+				if (($maxvalue === false) || ($value > $maxvalue)) {
 					$maxvalue = $value;
 					$maxkey = $key;
 				}
@@ -701,10 +701,10 @@ class getid3_lib
 	 */
 	public static function array_min($arraydata, $returnkey=false) {
 		$minvalue = false;
-		$minkey = false;
+		$minkey   = false;
 		foreach ($arraydata as $key => $value) {
 			if (!is_array($value)) {
-				if ($value > $minvalue) {
+				if (($minvalue === false) || ($value < $minvalue)) {
 					$minvalue = $value;
 					$minkey = $key;
 				}
