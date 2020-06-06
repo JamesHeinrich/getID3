@@ -257,7 +257,7 @@ class getID3
 	 */
 	protected $startup_warning = '';
 
-	const VERSION           = '1.9.19-202005202246';
+	const VERSION           = '1.9.19-202006061653';
 	const FREAD_BUFFER_SIZE = 32768;
 
 	const ATTACHMENTS_NONE   = false;
@@ -851,6 +851,14 @@ class getID3
 							'group'     => 'audio',
 							'module'    => 'dss',
 							'mime_type' => 'application/octet-stream',
+						),
+
+				// DSDIFF - audio     - Direct Stream Digital Interchange File Format
+				'dsdiff' => array(
+							'pattern'   => '^FRM8',
+							'group'     => 'audio',
+							'module'    => 'dsdiff',
+							'mime_type' => 'audio/dsd',
 						),
 
 				// DTS  - audio       - Dolby Theatre System
@@ -1457,6 +1465,7 @@ class getID3
 				'flac'      => array('vorbiscomment' , 'UTF-8'),
 				'divxtag'   => array('divx'          , 'ISO-8859-1'),
 				'iptc'      => array('iptc'          , 'ISO-8859-1'),
+				'dsdiff'    => array('dsdiff'        , 'ISO-8859-1'),
 			);
 		}
 
