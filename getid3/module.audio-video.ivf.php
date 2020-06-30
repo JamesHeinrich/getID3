@@ -56,6 +56,7 @@ class getid3_ivf extends getid3_handler
 			$info['video']['codec']           =         $info['ivf']['header']['fourcc'];
 
 			$info['ivf']['frame_count'] = 0;
+			$timestamp                  = 0;
 			while (!$this->feof()) {
 				if ($frameheader = $this->fread(12)) {
 					$framesize = getid3_lib::LittleEndian2Int(substr($frameheader, 0, 4)); // size of frame in bytes (not including the 12-byte header)
