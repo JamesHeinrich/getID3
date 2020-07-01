@@ -52,7 +52,6 @@ class Swf extends Handler
 				unset($info['swf']);
 				unset($info['fileformat']);
 				return false;
-				break;
 		}
 		$info['swf']['header']['version'] = Utils::LittleEndian2Int(substr($SWFfileData, 3, 1));
 		$info['swf']['header']['length']  = Utils::LittleEndian2Int(substr($SWFfileData, 4, 4));

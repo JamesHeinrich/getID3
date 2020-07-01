@@ -31,7 +31,7 @@ $ThisFileInfo = $getID3->analyze($filename);
  metadata is all available in one location for all tag formats
  metainformation is always available under [tags] even if this is not called
 */
-GetID3\Utils::CopyTagsToComments($ThisFileInfo);
+$getID3->CopyTagsToComments($ThisFileInfo);
 
 /*
  Output desired information in whatever format you want

@@ -95,6 +95,26 @@ class Zip extends Handler
 						}
 					}
 
+					// check for EPUB files
+					if (!empty($info['zip']['entries'][0]['filename']) &&
+						($info['zip']['entries'][0]['filename'] == 'mimetype') &&
+						($info['zip']['entries'][0]['compression_method'] == 'store') &&
+						($info['zip']['entries'][0]['uncompressed_size'] == 20) &&
+						isset($info['zip']['entries'][0]['data_offset'])) {
+							// http://idpf.org/epub/30/spec/epub30-ocf.html
+							// "3.3 OCF ZIP Container Media Type Identification
+							//  OCF ZIP Containers must include a mimetype file as the first file in the Container, and the contents of this file must be the MIME type string application/epub+zip.
+							//  The contents of the mimetype file must not contain any leading padding or whitespace, must not begin with the Unicode signature (or Byte Order Mark),
+							//  and the case of the MIME type string must be exactly as presented above. The mimetype file additionally must be neither compressed nor encrypted,
+							//  and there must not be an extra field in its ZIP header."
+							$this->fseek($info['zip']['entries'][0]['data_offset']);
+							if ($this->fread(20) == 'application/epub+zip') {
+								$info['fileformat'] = 'zip.epub';
+								$info['mime_type'] = 'application/epub+zip';
+							}
+					}
+
+					// check for Office Open XML files (e.g. .docx, .xlsx)
 					if (!empty($info['zip']['files']['[Content_Types].xml']) &&
 					    !empty($info['zip']['files']['_rels']['.rels'])      &&
 					    !empty($info['zip']['files']['docProps']['app.xml']) &&

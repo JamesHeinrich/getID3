@@ -461,10 +461,10 @@ class ID3v2 extends Handler
 			unset($key, $value, $genres, $genre);
 		}
 
-		if (isset($thisfile_id3v2['comments']['track'])) {
-			foreach ($thisfile_id3v2['comments']['track'] as $key => $value) {
+		if (isset($thisfile_id3v2['comments']['track_number'])) {
+			foreach ($thisfile_id3v2['comments']['track_number'] as $key => $value) {
 				if (strstr($value, '/')) {
-					list($thisfile_id3v2['comments']['tracknum'][$key], $thisfile_id3v2['comments']['totaltracks'][$key]) = explode('/', $thisfile_id3v2['comments']['track'][$key]);
+					list($thisfile_id3v2['comments']['track_number'][$key], $thisfile_id3v2['comments']['totaltracks'][$key]) = explode('/', $thisfile_id3v2['comments']['track_number'][$key]);
 				}
 			}
 		}
@@ -522,14 +522,21 @@ class ID3v2 extends Handler
 		if (($this->getid3->info['id3v2']['majorversion'] == 3) && !preg_match('#[\x00]#', $genrestring)) {
 			// note: MusicBrainz Picard incorrectly stores plaintext genres separated by "/" when writing in ID3v2.3 mode, hack-fix here:
 			// replace / with NULL, then replace back the two ID3v1 genres that legitimately have "/" as part of the single genre name
-			if (preg_match('#/#', $genrestring)) {
+			if (strpos($genrestring, '/') !== false) {
+				$LegitimateSlashedGenreList = array(  // https://github.com/JamesHeinrich/getID3/issues/223
+					'Pop/Funk',    // ID3v1 genre #62 - https://en.wikipedia.org/wiki/ID3#standard
+					'Cut-up/DJ',   // Discogs - https://www.discogs.com/style/cut-up/dj
+					'RnB/Swing',   // Discogs - https://www.discogs.com/style/rnb/swing
+					'Funk / Soul', // Discogs (note spaces) - https://www.discogs.com/genre/funk+%2F+soul
+				);
 				$genrestring = str_replace('/', "\x00", $genrestring);
-				$genrestring = str_replace('Pop'."\x00".'Funk', 'Pop/Funk', $genrestring);
-				$genrestring = str_replace('Rock'."\x00".'Rock', 'Folk/Rock', $genrestring);
+				foreach ($LegitimateSlashedGenreList as $SlashedGenre) {
+					$genrestring = str_ireplace(str_replace('/', "\x00", $SlashedGenre), $SlashedGenre, $genrestring);
+				}
 			}
 
 			// some other taggers separate multiple genres with semicolon, e.g. "Heavy Metal;Thrash Metal;Metal"
-			if (preg_match('#;#', $genrestring)) {
+			if (strpos($genrestring, ';') !== false) {
 				$genrestring = str_replace(';', "\x00", $genrestring);
 			}
 		}
@@ -674,15 +681,12 @@ class ID3v2 extends Handler
 			if (ord(substr($parsedFrame['data'], $frame_terminatorpos + strlen($frame_textencoding_terminator), 1)) === 0) {
 				$frame_terminatorpos++; // strpos() fooled because 2nd byte of Unicode chars are often 0x00
 			}
-			$frame_description = substr($parsedFrame['data'], $frame_offset, $frame_terminatorpos - $frame_offset);
-			if (in_array($frame_description, array("\x00", "\x00\x00", "\xFF\xFE", "\xFE\xFF"))) {
-				// if description only contains a BOM or terminator then make it blank
-				$frame_description = '';
-			}
+			$parsedFrame['description'] = substr($parsedFrame['data'], $frame_offset, $frame_terminatorpos - $frame_offset);
+			$parsedFrame['description'] = $this->MakeUTF16emptyStringEmpty($parsedFrame['description']);
 			$parsedFrame['encodingid']  = $frame_textencoding;
 			$parsedFrame['encoding']    = $this->TextEncodingNameLookup($frame_textencoding);
 
-			$parsedFrame['description'] = trim(Utils::iconv_fallback($parsedFrame['encoding'], $info['id3v2']['encoding'], $frame_description));
+			$parsedFrame['description'] = trim(Utils::iconv_fallback($parsedFrame['encoding'], $info['id3v2']['encoding'], $parsedFrame['description']));
 			$parsedFrame['data'] = substr($parsedFrame['data'], $frame_terminatorpos + strlen($frame_textencoding_terminator));
 			$parsedFrame['data'] = $this->RemoveStringTerminator($parsedFrame['data'], $frame_textencoding_terminator);
 			if (!empty($parsedFrame['framenameshort']) && !empty($parsedFrame['data'])) {
@@ -714,7 +718,6 @@ class ID3v2 extends Handler
 
 			$parsedFrame['encodingid'] = $frame_textencoding;
 			$parsedFrame['encoding']   = $this->TextEncodingNameLookup($frame_textencoding);
-
 			if (!empty($parsedFrame['framenameshort']) && !empty($parsedFrame['data'])) {
 				// ID3v2.3 specs say that TPE1 (and others) can contain multiple artist values separated with /
 				// This of course breaks when an artist name contains slash character, e.g. "AC/DC"
@@ -774,11 +777,8 @@ class ID3v2 extends Handler
 			$parsedFrame['encoding']    = $this->TextEncodingNameLookup($frame_textencoding);
 			$parsedFrame['description'] = substr($parsedFrame['data'], $frame_offset, $frame_terminatorpos - $frame_offset);           // according to the frame text encoding
 			$parsedFrame['url']         = substr($parsedFrame['data'], $frame_terminatorpos + strlen($frame_textencoding_terminator)); // always ISO-8859-1
-			if (in_array($parsedFrame['description'], array("\x00", "\x00\x00", "\xFF\xFE", "\xFE\xFF"))) {
-				// if description only contains a BOM or terminator then make it blank
-				$parsedFrame['description'] = '';
-			}
 			$parsedFrame['description'] = $this->RemoveStringTerminator($parsedFrame['description'], $frame_textencoding_terminator);
+			$parsedFrame['description'] = $this->MakeUTF16emptyStringEmpty($parsedFrame['description']);
 
 			if (!empty($parsedFrame['framenameshort']) && $parsedFrame['url']) {
 				$info['id3v2']['comments'][$parsedFrame['framenameshort']][] = Utils::iconv_fallback('ISO-8859-1', $info['id3v2']['encoding'], $parsedFrame['url']);
@@ -999,11 +999,8 @@ class ID3v2 extends Handler
 			if (ord(substr($parsedFrame['data'], $frame_terminatorpos + strlen($frame_textencoding_terminator), 1)) === 0) {
 				$frame_terminatorpos++; // strpos() fooled because 2nd byte of Unicode chars are often 0x00
 			}
-			$frame_description = substr($parsedFrame['data'], $frame_offset, $frame_terminatorpos - $frame_offset);
-			if (in_array($frame_description, array("\x00", "\x00\x00", "\xFF\xFE", "\xFE\xFF"))) {
-				// if description only contains a BOM or terminator then make it blank
-				$frame_description = '';
-			}
+			$parsedFrame['description'] = substr($parsedFrame['data'], $frame_offset, $frame_terminatorpos - $frame_offset);
+			$parsedFrame['description'] = $this->MakeUTF16emptyStringEmpty($parsedFrame['description']);
 			$parsedFrame['data'] = substr($parsedFrame['data'], $frame_terminatorpos + strlen($frame_textencoding_terminator));
 			$parsedFrame['data'] = $this->RemoveStringTerminator($parsedFrame['data'], $frame_textencoding_terminator);
 
@@ -1012,7 +1009,6 @@ class ID3v2 extends Handler
 
 			$parsedFrame['language']     = $frame_language;
 			$parsedFrame['languagename'] = $this->LanguageLookup($frame_language, false);
-			$parsedFrame['description']  = $frame_description;
 			if (!empty($parsedFrame['framenameshort']) && !empty($parsedFrame['data'])) {
 				$info['id3v2']['comments'][$parsedFrame['framenameshort']][] = Utils::iconv_fallback($parsedFrame['encoding'], $info['id3v2']['encoding'], $parsedFrame['data']);
 			}
@@ -1108,11 +1104,8 @@ class ID3v2 extends Handler
 				if (ord(substr($parsedFrame['data'], $frame_terminatorpos + strlen($frame_textencoding_terminator), 1)) === 0) {
 					$frame_terminatorpos++; // strpos() fooled because 2nd byte of Unicode chars are often 0x00
 				}
-				$frame_description = substr($parsedFrame['data'], $frame_offset, $frame_terminatorpos - $frame_offset);
-				if (in_array($frame_description, array("\x00", "\x00\x00", "\xFF\xFE", "\xFE\xFF"))) {
-					// if description only contains a BOM or terminator then make it blank
-					$frame_description = '';
-				}
+				$parsedFrame['description'] = substr($parsedFrame['data'], $frame_offset, $frame_terminatorpos - $frame_offset);
+				$parsedFrame['description'] = $this->MakeUTF16emptyStringEmpty($parsedFrame['description']);
 				$frame_text = (string) substr($parsedFrame['data'], $frame_terminatorpos + strlen($frame_textencoding_terminator));
 				$frame_text = $this->RemoveStringTerminator($frame_text, $frame_textencoding_terminator);
 
@@ -1121,7 +1114,6 @@ class ID3v2 extends Handler
 
 				$parsedFrame['language']     = $frame_language;
 				$parsedFrame['languagename'] = $this->LanguageLookup($frame_language, false);
-				$parsedFrame['description']  = $frame_description;
 				$parsedFrame['data']         = $frame_text;
 				if (!empty($parsedFrame['framenameshort']) && !empty($parsedFrame['data'])) {
 					$commentkey = ($parsedFrame['description'] ? $parsedFrame['description'] : (!empty($info['id3v2']['comments'][$parsedFrame['framenameshort']]) ? count($info['id3v2']['comments'][$parsedFrame['framenameshort']]) : 0));
@@ -1414,26 +1406,22 @@ class ID3v2 extends Handler
 				if (ord(substr($parsedFrame['data'], $frame_terminatorpos + strlen($frame_textencoding_terminator), 1)) === 0) {
 					$frame_terminatorpos++; // strpos() fooled because 2nd byte of Unicode chars are often 0x00
 				}
-				$frame_description = substr($parsedFrame['data'], $frame_offset, $frame_terminatorpos - $frame_offset);
-				if (in_array($frame_description, array("\x00", "\x00\x00", "\xFF\xFE", "\xFE\xFF"))) {
-					// if description only contains a BOM or terminator then make it blank
-					$frame_description = '';
-				}
-				$parsedFrame['encodingid']       = $frame_textencoding;
-				$parsedFrame['encoding']         = $this->TextEncodingNameLookup($frame_textencoding);
+				$parsedFrame['description']   = substr($parsedFrame['data'], $frame_offset, $frame_terminatorpos - $frame_offset);
+				$parsedFrame['description']   = $this->MakeUTF16emptyStringEmpty($parsedFrame['description']);
+				$parsedFrame['encodingid']    = $frame_textencoding;
+				$parsedFrame['encoding']      = $this->TextEncodingNameLookup($frame_textencoding);
 
 				if ($id3v2_majorversion == 2) {
-					$parsedFrame['imagetype']    = isset($frame_imagetype) ? $frame_imagetype : null;
+					$parsedFrame['imagetype'] = isset($frame_imagetype) ? $frame_imagetype : null;
 				} else {
-					$parsedFrame['mime']         = isset($frame_mimetype) ? $frame_mimetype : null;
+					$parsedFrame['mime']      = isset($frame_mimetype) ? $frame_mimetype : null;
 				}
-				$parsedFrame['picturetypeid']    = $frame_picturetype;
-				$parsedFrame['picturetype']      = $this->APICPictureTypeLookup($frame_picturetype);
-				$parsedFrame['description']      = $frame_description;
-				$parsedFrame['data']             = substr($parsedFrame['data'], $frame_terminatorpos + strlen($frame_textencoding_terminator));
-				$parsedFrame['datalength']       = strlen($parsedFrame['data']);
+				$parsedFrame['picturetypeid'] = $frame_picturetype;
+				$parsedFrame['picturetype']   = $this->APICPictureTypeLookup($frame_picturetype);
+				$parsedFrame['data']          = substr($parsedFrame['data'], $frame_terminatorpos + strlen($frame_textencoding_terminator));
+				$parsedFrame['datalength']    = strlen($parsedFrame['data']);
 
-				$parsedFrame['image_mime'] = '';
+				$parsedFrame['image_mime']    = '';
 				$imageinfo = array();
 				if ($imagechunkcheck = Utils::GetDataImageSize($parsedFrame['data'], $imageinfo)) {
 					if (($imagechunkcheck[2] >= 1) && ($imagechunkcheck[2] <= 3)) {
@@ -1541,11 +1529,8 @@ class ID3v2 extends Handler
 			if (ord(substr($parsedFrame['data'], $frame_terminatorpos + strlen($frame_textencoding_terminator), 1)) === 0) {
 				$frame_terminatorpos++; // strpos() fooled because 2nd byte of Unicode chars are often 0x00
 			}
-			$frame_description = substr($parsedFrame['data'], $frame_offset, $frame_terminatorpos - $frame_offset);
-			if (in_array($frame_description, array("\x00", "\x00\x00", "\xFF\xFE", "\xFE\xFF"))) {
-				// if description only contains a BOM or terminator then make it blank
-				$frame_description = '';
-			}
+			$parsedFrame['description'] = substr($parsedFrame['data'], $frame_offset, $frame_terminatorpos - $frame_offset);
+			$parsedFrame['description'] = $this->MakeUTF16emptyStringEmpty($parsedFrame['description']);
 			$frame_offset = $frame_terminatorpos + strlen($frame_textencoding_terminator);
 
 			$parsedFrame['objectdata']  = (string) substr($parsedFrame['data'], $frame_offset);
@@ -1554,7 +1539,6 @@ class ID3v2 extends Handler
 
 			$parsedFrame['mime']        = $frame_mimetype;
 			$parsedFrame['filename']    = $frame_filename;
-			$parsedFrame['description'] = $frame_description;
 			unset($parsedFrame['data']);
 
 
@@ -1624,16 +1608,12 @@ class ID3v2 extends Handler
 			$frame_offset = $frame_terminatorpos + strlen("\x00");
 
 			$frame_terminatorpos = strpos($parsedFrame['data'], "\x00", $frame_offset);
-			$frame_description = substr($parsedFrame['data'], $frame_offset, $frame_terminatorpos - $frame_offset);
-			if (in_array($frame_description, array("\x00", "\x00\x00", "\xFF\xFE", "\xFE\xFF"))) {
-				// if description only contains a BOM or terminator then make it blank
-				$frame_description = '';
-			}
+			$parsedFrame['description'] = substr($parsedFrame['data'], $frame_offset, $frame_terminatorpos - $frame_offset);
+			$parsedFrame['description'] = $this->MakeUTF16emptyStringEmpty($parsedFrame['description']);
 			$frame_offset = $frame_terminatorpos + strlen("\x00");
 
 			$parsedFrame['ownerid']     = $frame_ownerid;
 			$parsedFrame['data']        = (string) substr($parsedFrame['data'], $frame_offset);
-			$parsedFrame['description'] = $frame_description;
 			unset($parsedFrame['data']);
 
 
@@ -1827,11 +1807,8 @@ class ID3v2 extends Handler
 			if (ord(substr($parsedFrame['data'], $frame_terminatorpos + strlen($frame_textencoding_terminator), 1)) === 0) {
 				$frame_terminatorpos++; // strpos() fooled because 2nd byte of Unicode chars are often 0x00
 			}
-			$frame_description = substr($parsedFrame['data'], $frame_offset, $frame_terminatorpos - $frame_offset);
-			if (in_array($frame_description, array("\x00", "\x00\x00", "\xFF\xFE", "\xFE\xFF"))) {
-				// if description only contains a BOM or terminator then make it blank
-				$frame_description = '';
-			}
+			$parsedFrame['description'] = substr($parsedFrame['data'], $frame_offset, $frame_terminatorpos - $frame_offset);
+			$parsedFrame['description'] = $this->MakeUTF16emptyStringEmpty($parsedFrame['description']);
 			$frame_offset = $frame_terminatorpos + strlen($frame_textencoding_terminator);
 
 			$frame_terminatorpos = strpos($parsedFrame['data'], "\x00", $frame_offset);
@@ -1848,7 +1825,6 @@ class ID3v2 extends Handler
 			$parsedFrame['receivedasid']      = $frame_receivedasid;
 			$parsedFrame['receivedas']        = $this->COMRReceivedAsLookup($frame_receivedasid);
 			$parsedFrame['sellername']        = $frame_sellername;
-			$parsedFrame['description']       = $frame_description;
 			$parsedFrame['mime']              = $frame_mimetype;
 			$parsedFrame['logo']              = $frame_sellerlogo;
 			unset($parsedFrame['data']);
@@ -3734,6 +3710,19 @@ class ID3v2 extends Handler
 	}
 
 	/**
+	 * @param string $string
+	 *
+	 * @return string
+	 */
+	public static function MakeUTF16emptyStringEmpty($string) {
+		if (in_array($string, array("\x00", "\x00\x00", "\xFF\xFE", "\xFE\xFF"))) {
+			// if string only contains a BOM or terminator then make it actually an empty string
+			$string = '';
+		}
+		return $string;
+	}
+
+	/**
 	 * @param string $framename
 	 * @param int    $id3v2majorversion
 	 *
@@ -3743,12 +3732,10 @@ class ID3v2 extends Handler
 		switch ($id3v2majorversion) {
 			case 2:
 				return preg_match('#[A-Z][A-Z0-9]{2}#', $framename);
-				break;
 
 			case 3:
 			case 4:
 				return preg_match('#[A-Z][A-Z0-9]{3}#', $framename);
-				break;
 		}
 		return false;
 	}

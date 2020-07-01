@@ -219,7 +219,6 @@ class La extends Handler
 					$this->error('Not a LA (Lossless-Audio) file');
 				}
 				return false;
-				break;
 		}
 
 		$info['audio']['channels']    = $info['la']['channels'];

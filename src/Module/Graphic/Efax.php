@@ -49,8 +49,6 @@ class Efax extends Handler
 
 		$this->error('eFax parsing not enabled in this version of getID3() ['.$this->getid3->version().']');
 		return false;
-
-		return true;
 	}
 
 }

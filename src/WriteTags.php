@@ -190,14 +190,12 @@ class WriteTags
 							//$AllowedTagFormats = array('metaflac');
 							$this->errors[] = 'metaflac is not (yet) compatible with OggFLAC files';
 							return false;
-							break;
 						case 'vorbis':
 							$AllowedTagFormats = array('vorbiscomment');
 							break;
 						default:
 							$this->errors[] = 'metaflac is not (yet) compatible with Ogg files other than OggVorbis';
 							return false;
-							break;
 					}
 					break;
 
@@ -264,7 +262,6 @@ class WriteTags
 				default:
 					$this->errors[] = 'unknown tag format "'.$tagformat.'" in $tagformats in WriteTags()';
 					return false;
-					break;
 			}
 
 		}
@@ -293,9 +290,9 @@ class WriteTags
 			}
 		}
 
-		// Convert "TRACK" to "TRACKNUMBER" (if needed) for compatability with all formats
-		if (isset($this->tag_data['TRACK']) && !isset($this->tag_data['TRACKNUMBER'])) {
-			$this->tag_data['TRACKNUMBER'] = $this->tag_data['TRACK'];
+		// Convert "TRACK" to "TRACK_NUMBER" (if needed) for compatability with all formats
+		if (isset($this->tag_data['TRACK']) && !isset($this->tag_data['TRACK_NUMBER'])) {
+			$this->tag_data['TRACK_NUMBER'] = $this->tag_data['TRACK'];
 			unset($this->tag_data['TRACK']);
 		}
 
@@ -390,7 +387,6 @@ class WriteTags
 				default:
 					$this->errors[] = 'Invalid tag format to write: "'.$tagformat.'"';
 					return false;
-					break;
 			}
 			if (!$success) {
 				return false;
@@ -468,7 +464,6 @@ class WriteTags
 				default:
 					$this->errors[] = 'Invalid tag format to delete: "'.$DeleteTagFormat.'"';
 					return false;
-					break;
 			}
 			if (!$success) {
 				return false;
@@ -490,10 +485,10 @@ class WriteTags
 			// do nothing - ignore previous data
 		} else {
 			throw new Exception('$this->overwrite_tags=false is known to be buggy in this version of getID3. Check http://github.com/JamesHeinrich/getID3 for a newer version.');
-			if (!isset($this->ThisFileInfo['tags'][$TagFormat])) {
-				return false;
-			}
-			$tag_data = array_merge_recursive($tag_data, $this->ThisFileInfo['tags'][$TagFormat]);
+//			if (!isset($this->ThisFileInfo['tags'][$TagFormat])) {
+//				return false;
+//			}
+//			$tag_data = array_merge_recursive($tag_data, $this->ThisFileInfo['tags'][$TagFormat]);
 		}
 		return true;
 	}
@@ -541,14 +536,14 @@ class WriteTags
 				}
 			}
 		}
-		$tag_data_id3v1['title']   =        Utils::iconv_fallback($this->tag_encoding, 'ISO-8859-1', implode(' ', (isset($this->tag_data['TITLE']      ) ? $this->tag_data['TITLE']       : array())));
-		$tag_data_id3v1['artist']  =        Utils::iconv_fallback($this->tag_encoding, 'ISO-8859-1', implode(' ', (isset($this->tag_data['ARTIST']     ) ? $this->tag_data['ARTIST']      : array())));
-		$tag_data_id3v1['album']   =        Utils::iconv_fallback($this->tag_encoding, 'ISO-8859-1', implode(' ', (isset($this->tag_data['ALBUM']      ) ? $this->tag_data['ALBUM']       : array())));
-		$tag_data_id3v1['year']    =        Utils::iconv_fallback($this->tag_encoding, 'ISO-8859-1', implode(' ', (isset($this->tag_data['YEAR']       ) ? $this->tag_data['YEAR']        : array())));
-		$tag_data_id3v1['comment'] =        Utils::iconv_fallback($this->tag_encoding, 'ISO-8859-1', implode(' ', (isset($this->tag_data['COMMENT']    ) ? $this->tag_data['COMMENT']     : array())));
-		$tag_data_id3v1['track']   = intval(Utils::iconv_fallback($this->tag_encoding, 'ISO-8859-1', implode(' ', (isset($this->tag_data['TRACKNUMBER']) ? $this->tag_data['TRACKNUMBER'] : array()))));
-		if ($tag_data_id3v1['track'] <= 0) {
-			$tag_data_id3v1['track'] = '';
+		$tag_data_id3v1['title']        =        Utils::iconv_fallback($this->tag_encoding, 'ISO-8859-1', implode(' ', (isset($this->tag_data['TITLE']       ) ? $this->tag_data['TITLE']        : array())));
+		$tag_data_id3v1['artist']       =        Utils::iconv_fallback($this->tag_encoding, 'ISO-8859-1', implode(' ', (isset($this->tag_data['ARTIST']      ) ? $this->tag_data['ARTIST']       : array())));
+		$tag_data_id3v1['album']        =        Utils::iconv_fallback($this->tag_encoding, 'ISO-8859-1', implode(' ', (isset($this->tag_data['ALBUM']       ) ? $this->tag_data['ALBUM']        : array())));
+		$tag_data_id3v1['year']         =        Utils::iconv_fallback($this->tag_encoding, 'ISO-8859-1', implode(' ', (isset($this->tag_data['YEAR']        ) ? $this->tag_data['YEAR']         : array())));
+		$tag_data_id3v1['comment']      =        Utils::iconv_fallback($this->tag_encoding, 'ISO-8859-1', implode(' ', (isset($this->tag_data['COMMENT']     ) ? $this->tag_data['COMMENT']      : array())));
+		$tag_data_id3v1['track_number'] = intval(Utils::iconv_fallback($this->tag_encoding, 'ISO-8859-1', implode(' ', (isset($this->tag_data['TRACK_NUMBER']) ? $this->tag_data['TRACK_NUMBER'] : array()))));
+		if ($tag_data_id3v1['track_number'] <= 0) {
+			$tag_data_id3v1['track_number'] = '';
 		}
 
 		$this->MergeExistingTagData('id3v1', $tag_data_id3v1);
@@ -647,7 +642,7 @@ class WriteTags
 								// note: some software, notably Windows Media Player and iTunes are broken and treat files tagged with UTF-16BE (with BOM) as corrupt
 								// therefore we force data to UTF-16LE and manually prepend the BOM
 								$ID3v2_tag_data_converted = false;
-								if (!$ID3v2_tag_data_converted && ($this->tag_encoding == 'ISO-8859-1')) {
+								if (/*!$ID3v2_tag_data_converted && */($this->tag_encoding == 'ISO-8859-1')) {
 									// great, leave data as-is for minimum compatability problems
 									$tag_data_id3v2[$ID3v2_framename][$key]['encodingid'] = 0;
 									$tag_data_id3v2[$ID3v2_framename][$key]['data']       = $value;

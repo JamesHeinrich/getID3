@@ -160,9 +160,10 @@ class Mysql extends GetID3
 	/**
 	 * analyze file
 	 *
-	 * @param string $filename
-	 * @param int    $filesize
-	 * @param string $original_filename
+	 * @param string   $filename
+	 * @param int      $filesize
+	 * @param string   $original_filename
+	 * @param resource $fp
 	 *
 	 * @return mixed
 	 */
@@ -190,7 +191,7 @@ class Mysql extends GetID3
 		}
 
 		// Miss
-		$analysis = parent::analyze($filename, $filesize, $original_filename);
+		$analysis = parent::analyze($filename, $filesize, $original_filename, $fp);
 
 		// Save result
 		if (file_exists($filename)) {

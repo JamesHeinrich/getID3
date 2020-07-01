@@ -394,7 +394,7 @@ $PackedElementaryStream['additional_header_bytes'] = $additional_header_bytes;
 					$info['mpeg']['packed_elementary_streams'][$PackedElementaryStream['stream_type']][$PackedElementaryStream['stream_id']][] = $PackedElementaryStream;
 */
 					$getid3_temp = new GetID3();
-					$getid3_temp->openfile($this->getid3->filename);
+					$getid3_temp->openfile($this->getid3->filename, $this->getid3->info['filesize'], $this->getid3->fp);
 					$getid3_temp->info = $info;
 					$getid3_mp3 = new Mp3($getid3_temp);
 					for ($i = 0; $i <= 7; $i++) {
@@ -522,7 +522,7 @@ echo 'average_File_bitrate = '.number_format(array_sum($vbr_bitrates) / count($v
 	 * @param int    $bits_to_read
 	 * @param bool $return_singlebit_as_boolean
 	 *
-	 * @return bool|float|int
+	 * @return bool|int
 	 */
 	private function readBitsFromStream(&$bitstream, &$bitstreamoffset, $bits_to_read, $return_singlebit_as_boolean=true) {
 		$return = bindec(substr($bitstream, $bitstreamoffset, $bits_to_read));

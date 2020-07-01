@@ -116,8 +116,8 @@ class Mysqli extends GetID3
 
 		// Connect to database
 		$this->mysqli = new \mysqli($host, $username, $password);
-		if (!$this->mysqli) {
-			throw new Exception('mysqli_connect() failed - check permissions and spelling.');
+		if ($this->mysqli->connect_error) {
+			throw new Exception('Connect Error (' . $this->mysqli->connect_errno . ') ' . $this->mysqli->connect_error);
 		}
 
 		// Select database
@@ -194,9 +194,10 @@ class Mysqli extends GetID3
 	/**
 	 * analyze file
 	 *
-	 * @param string $filename
-	 * @param int    $filesize
-	 * @param string $original_filename
+	 * @param string   $filename
+	 * @param int      $filesize
+	 * @param string   $original_filename
+	 * @param resource $fp
 	 *
 	 * @return mixed
 	 */
@@ -222,7 +223,7 @@ class Mysqli extends GetID3
 		}
 
 		// Miss
-		$analysis = parent::analyze($filename, $filesize, $original_filename);
+		$analysis = parent::analyze($filename, $filesize, $original_filename, $fp);
 
 		// Save result
 		if (file_exists($filename)) {

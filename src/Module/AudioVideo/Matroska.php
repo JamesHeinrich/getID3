@@ -336,7 +336,7 @@ class Matroska extends Handler
 								break;*/
 						}
 
-						$info['video']['streams'][] = $track_info;
+						$info['video']['streams'][$trackarray['TrackUID']] = $track_info;
 						break;
 
 					case 2: // Audio
@@ -349,7 +349,7 @@ class Matroska extends Handler
 						switch ($trackarray['CodecID']) {
 							case 'A_PCM/INT/LIT':
 							case 'A_PCM/INT/BIG':
-								$track_info['bitrate'] = $trackarray['SamplingFrequency'] * $trackarray['Channels'] * $trackarray['BitDepth'];
+								$track_info['bitrate'] = $track_info['sample_rate'] * $track_info['channels'] * $trackarray['BitDepth'];
 								break;
 
 							case 'A_AC3':
@@ -368,7 +368,7 @@ class Matroska extends Handler
 								// create temp instance
 								$getid3_temp = new GetID3();
 								if ($track_info['dataformat'] != 'flac') {
-									$getid3_temp->openfile($this->getid3->filename);
+									$getid3_temp->openfile($this->getid3->filename, $this->getid3->info['filesize'], $this->getid3->fp);
 								}
 								$getid3_temp->info['avdataoffset'] = $info['matroska']['track_data_offsets'][$trackarray['TrackNumber']]['offset'];
 								if ($track_info['dataformat'][0] == 'm' || $track_info['dataformat'] == 'flac') {
@@ -480,7 +480,7 @@ class Matroska extends Handler
 								break;
 						}
 
-						$info['audio']['streams'][] = $track_info;
+						$info['audio']['streams'][$trackarray['TrackUID']] = $track_info;
 						break;
 				}
 			}
@@ -509,6 +509,30 @@ class Matroska extends Handler
 			$info['mime_type'] = ($info['matroska']['doctype'] == 'webm' ? 'audio/webm' : 'audio/x-matroska');
 		} elseif (isset($info['mime_type'])) {
 			unset($info['mime_type']);
+		}
+
+		// use _STATISTICS_TAGS if available to set audio/video bitrates
+		if (!empty($info['matroska']['tags'])) {
+			$_STATISTICS_byTrackUID = array();
+			foreach ($info['matroska']['tags'] as $key1 => $value1) {
+				if (!empty($value1['Targets']['TagTrackUID'][0]) && !empty($value1['SimpleTag'])) {
+					foreach ($value1['SimpleTag'] as $key2 => $value2) {
+						if (!empty($value2['TagName']) && isset($value2['TagString'])) {
+							$_STATISTICS_byTrackUID[$value1['Targets']['TagTrackUID'][0]][$value2['TagName']] = $value2['TagString'];
+						}
+					}
+				}
+			}
+			foreach (array('audio','video') as $avtype) {
+				if (!empty($info[$avtype]['streams'])) {
+					foreach ($info[$avtype]['streams'] as $trackUID => $trackdata) {
+						if (!isset($trackdata['bitrate']) && !empty($_STATISTICS_byTrackUID[$trackUID]['BPS'])) {
+							$info[$avtype]['streams'][$trackUID]['bitrate'] = (int) $_STATISTICS_byTrackUID[$trackUID]['BPS'];
+							@$info[$avtype]['bitrate'] += $info[$avtype]['streams'][$trackUID]['bitrate'];
+						}
+					}
+				}
+			}
 		}
 
 		return true;
@@ -618,8 +642,10 @@ class Matroska extends Handler
 											while ($this->getEBMLelement($subelement, $track_entry['end'], [self::ID_VIDEO, self::ID_AUDIO, self::ID_CONTENTENCODINGS, self::ID_CODECPRIVATE])) {
 												switch ($subelement['id']) {
 
-													case self::ID_TRACKNUMBER:
 													case self::ID_TRACKUID:
+														$track_entry[$subelement['id_name']] = Utils::PrintHexBytes($subelement['data'], true, false);
+														break;
+													case self::ID_TRACKNUMBER:
 													case self::ID_TRACKTYPE:
 													case self::ID_MINCACHE:
 													case self::ID_MAXCACHE:
@@ -967,7 +993,7 @@ class Matroska extends Handler
 																case self::ID_TAGEDITIONUID:
 																case self::ID_TAGCHAPTERUID:
 																case self::ID_TAGATTACHMENTUID:
-																	$targets_entry[$sub_sub_subelement['id_name']][] = Utils::BigEndian2Int($sub_sub_subelement['data']);
+																	$targets_entry[$sub_sub_subelement['id_name']][] = Utils::PrintHexBytes($sub_sub_subelement['data'], true, false);
 																	break;
 
 																default:

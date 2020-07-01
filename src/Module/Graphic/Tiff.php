@@ -39,7 +39,6 @@ class Tiff extends Handler
 			default:
 				$this->error('Invalid TIFF byte order identifier ('.substr($TIFFheader, 0, 2).') at offset '.$info['avdataoffset']);
 				return false;
-				break;
 		}
 
 		$info['fileformat']          = 'tiff';

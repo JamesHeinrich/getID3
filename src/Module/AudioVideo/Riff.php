@@ -206,7 +206,7 @@ class Riff extends Handler
 					unset($thisfile_riff_audio[$streamindex]['raw']);
 					$thisfile_audio['streams'][$streamindex] = $thisfile_riff_audio[$streamindex];
 
-					$thisfile_audio = Utils::array_merge_noclobber($thisfile_audio, $thisfile_riff_audio[$streamindex]);
+					$thisfile_audio = (array) Utils::array_merge_noclobber($thisfile_audio, $thisfile_riff_audio[$streamindex]);
 					if (substr($thisfile_audio['codec'], 0, strlen('unknown: 0x')) == 'unknown: 0x') {
 						$this->warning('Audio codec = '.$thisfile_audio['codec']);
 					}
@@ -946,7 +946,7 @@ class Riff extends Handler
 
 					$thisfile_riff_CDDA_fmt_0['start_offset_seconds'] = (float) $thisfile_riff_CDDA_fmt_0['start_offset_frame'] / 75;
 					$thisfile_riff_CDDA_fmt_0['playtime_seconds']     = (float) $thisfile_riff_CDDA_fmt_0['playtime_frames'] / 75;
-					$info['comments']['track']                = $thisfile_riff_CDDA_fmt_0['track_num'];
+					$info['comments']['track_number']         = $thisfile_riff_CDDA_fmt_0['track_num'];
 					$info['playtime_seconds']                 = $thisfile_riff_CDDA_fmt_0['playtime_seconds'];
 
 					// hardcoded data for CD-audio

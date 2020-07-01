@@ -782,8 +782,8 @@ if (!function_exists('ID3v1matchesID3v2')) {
 		if (trim($id3v1['genre']) != trim($id3v2['genre'])) {
 			return false;
 		}
-		if (isset($id3v1['track'])) {
-			if (!isset($id3v1['track']) || (trim($id3v1['track']) != trim($id3v2['track']))) {
+		if (isset($id3v1['track_number'])) {
+			if (!isset($id3v1['track_number']) || (trim($id3v1['track_number']) != trim($id3v2['track_number']))) {
 				return false;
 			}
 			if (trim($id3v1['comment']) != trim(substr($id3v2['comment'], 0, 28))) {
@@ -1077,23 +1077,6 @@ if (!function_exists('CreateDeepArray')) {
 			$ReturnedArray["$ArrayPath"] = $Value;
 		}
 		return $ReturnedArray;
-	}
-}
-
-if (!function_exists('md5_file')) {
-	// Allan Hansen <ah@artemis.dk>
-	// md5_file() exists in PHP 4.2.0.
-	// The following works under UNIX only, but dies on windows
-	function md5_file($file) {
-		if (substr(php_uname(), 0, 7) == 'Windows') {
-			die('PHP 4.2.0 or newer required for md5_file()');
-		}
-
-		$file = str_replace('`', '\\`', $file);
-		if (preg_match("#^([0-9a-f]{32})[ \t\n\r]#i", `md5sum "$file"`, $r)) {
-			return $r[1];
-		}
-		return false;
 	}
 }
 

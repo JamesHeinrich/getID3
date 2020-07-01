@@ -37,7 +37,7 @@ class Lyrics3 extends Handler
 
 		$this->fseek((0 - 128 - 9 - 6), SEEK_END);          // end - ID3v1 - "LYRICSEND" - [Lyrics3size]
 		$lyrics3_id3v1 = $this->fread(128 + 9 + 6);
-		$lyrics3lsz    = substr($lyrics3_id3v1,  0,   6); // Lyrics3size
+		$lyrics3lsz    = (int) substr($lyrics3_id3v1, 0, 6); // Lyrics3size
 		$lyrics3end    = substr($lyrics3_id3v1,  6,   9); // LYRICSEND or LYRICS200
 		$id3v1tag      = substr($lyrics3_id3v1, 15, 128); // ID3v1
 
@@ -111,7 +111,7 @@ class Lyrics3 extends Handler
 				if (isset($info['lyrics3']['tag_offset_start'])) {
 					$GETID3_ERRORARRAY = &$info['warning'];
 					$getid3_temp = new GetID3();
-					$getid3_temp->openfile($this->getid3->filename);
+					$getid3_temp->openfile($this->getid3->filename, $this->getid3->info['filesize'], $this->getid3->fp);
 					$getid3_apetag = new ApeTag($getid3_temp);
 					$getid3_apetag->overrideendoffset = $info['lyrics3']['tag_offset_start'];
 					$getid3_apetag->Analyze();
@@ -244,7 +244,6 @@ class Lyrics3 extends Handler
 			default:
 				$this->error('Cannot process Lyrics3 version '.$version.' (only v1 and v2)');
 				return false;
-				break;
 		}
 
 

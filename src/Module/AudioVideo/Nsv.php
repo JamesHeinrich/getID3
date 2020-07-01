@@ -54,7 +54,6 @@ class Nsv extends Handler
 			default:
 				$this->error('Expecting "NSVs" or "NSVf" at offset '.$info['avdataoffset'].', found "' . Utils::PrintHexBytes($NSVheader) . '"');
 				return false;
-				break;
 		}
 
 		if (!isset($info['nsv']['NSVf'])) {
