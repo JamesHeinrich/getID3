@@ -123,6 +123,7 @@ class getid3_pdf extends getid3_handler
 
 			$info['pdf']['xref']['xref_offsets'][$XREFoffset] = $XREFoffset;
 			list($firstObjectNumber, $XREFcount) = explode(' ', rtrim($this->fgets()));
+			$firstObjectNumber = (int) $firstObjectNumber;
 			$XREFcount = (int) $XREFcount;
 			$info['pdf']['xref']['count'] = $XREFcount + (!empty($info['pdf']['xref']['count']) ? $info['pdf']['xref']['count'] : 0);
 			for ($i = 0; $i < $XREFcount; $i++) {
