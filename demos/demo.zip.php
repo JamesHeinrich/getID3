@@ -11,6 +11,8 @@
 //                                                            ///
 /////////////////////////////////////////////////////////////////
 
+die('For security reasons, this demo has been disabled. It can be enabled by removing line '.__LINE__.' in demos/'.basename(__FILE__));
+
 
 function UnzipFileContents($filename, &$errors) {
 	$errors = array();
