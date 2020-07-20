@@ -42,7 +42,6 @@ class getid3_torrent extends getid3_handler
 	 */
 	public function Analyze() {
 		$info = &$this->getid3->info;
-
 		$filesize = $info['avdataend'] - $info['avdataoffset'];
 		if ($filesize > $this->max_torrent_filesize) {  //
 			$this->error('File larger ('.number_format($filesize).' bytes) than $max_torrent_filesize ('.number_format($this->max_torrent_filesize).' bytes), increase getid3_torrent->max_torrent_filesize if needed');
@@ -83,6 +82,18 @@ class getid3_torrent extends getid3_handler
 			} else {
 				$this->warning('found '.$num_pieces_size.' pieces based on file/chunk size; found '.$num_pieces_hash.' pieces in hash table');
 			}
+		}
+		if (!empty($info['torrent']['info']['name']) && !empty($info['torrent']['info']['length']) && !isset($info['torrent']['info']['files'])) {
+			// single-file torrent
+			$info['torrent']['files'] = array($info['torrent']['info']['name'] => $info['torrent']['info']['length']);
+		} elseif (!empty($info['torrent']['info']['files'])) {
+			// multi-file torrent
+			$info['torrent']['files'] = array();
+			foreach ($info['torrent']['info']['files'] as $key => $filedetails) {
+				$info['torrent']['files'][implode('/', $filedetails['path'])] = $filedetails['length'];
+			}
+		} else {
+			$this->warning('no files found');
 		}
 
 		return true;
