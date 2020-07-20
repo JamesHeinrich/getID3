@@ -257,7 +257,7 @@ class getID3
 	 */
 	protected $startup_warning = '';
 
-	const VERSION           = '1.9.20-202006061653';
+	const VERSION           = '1.9.20-202007201428';
 	const FREAD_BUFFER_SIZE = 32768;
 
 	const ATTACHMENTS_NONE   = false;
@@ -1347,6 +1347,16 @@ class getID3
 							'group'     => 'misc',
 							'module'    => 'msoffice',
 							'mime_type' => 'application/octet-stream',
+							'fail_id3'  => 'ERROR',
+							'fail_ape'  => 'ERROR',
+						),
+
+				// TORRENT             - .torrent
+				'torrent' => array(
+							'pattern'   => '^(d8\\:announce|d7\\:comment)',
+							'group'     => 'misc',
+							'module'    => 'torrent',
+							'mime_type' => 'application/x-bittorrent',
 							'fail_id3'  => 'ERROR',
 							'fail_ape'  => 'ERROR',
 						),
