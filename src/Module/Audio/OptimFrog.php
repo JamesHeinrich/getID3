@@ -80,7 +80,7 @@ class OptimFrog extends Handler
 		$RIFFdata = substr($RIFFdata, 0, 36).substr($RIFFdata, 44).substr($RIFFdata, 36, 8);
 
 		$getid3_temp = new GetID3();
-		$getid3_temp->openfile($this->getid3->filename);
+		$getid3_temp->openfile($this->getid3->filename, $this->getid3->info['filesize'], $this->getid3->fp);
 		$getid3_temp->info['avdataoffset'] = $info['avdataoffset'];
 		$getid3_temp->info['avdataend']    = $info['avdataend'];
 		$getid3_riff = new Riff($getid3_temp);
@@ -311,7 +311,7 @@ class OptimFrog extends Handler
 		$RIFFdata = substr($RIFFdata, 0, 36).substr($RIFFdata, 44).substr($RIFFdata, 36, 8);
 
 		$getid3_temp = new GetID3();
-		$getid3_temp->openfile($this->getid3->filename);
+		$getid3_temp->openfile($this->getid3->filename, $this->getid3->info['filesize'], $this->getid3->fp);
 		$getid3_temp->info['avdataoffset'] = $info['avdataoffset'];
 		$getid3_temp->info['avdataend']    = $info['avdataend'];
 		$getid3_riff = new Riff($getid3_temp);

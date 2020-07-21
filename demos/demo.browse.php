@@ -24,7 +24,7 @@ define('GETID3_DEMO_BROWSE_ALLOW_DELETE_LINK', false); // if enabled, shows "del
 define('GETID3_DEMO_BROWSE_ALLOW_MD5_LINK',    false); // if enabled, shows "enable" link for MD5 hashes for file/data/source
 
 $PageEncoding = 'UTF-8';
-
+$FileSystemEncoding = ((GetID3\Utils::isWindows() && version_compare(PHP_VERSION, '7.1.0', '<')) ? 'Windows-1252' : 'UTF-8');
 $writescriptfilename = 'demo.write.php';
 
 // Needed for windows only. Leave commented-out to auto-detect, only define here if auto-detection does not work properly
@@ -75,7 +75,7 @@ if (isset($_REQUEST['deletefile']) && GETID3_DEMO_BROWSE_ALLOW_DELETE_LINK) {
 if (isset($_REQUEST['filename'])) {
 
 	if (!file_exists($_REQUEST['filename']) || !is_file($_REQUEST['filename'])) {
-		die(GetID3\Utils::iconv_fallback('ISO-8859-1', $PageEncoding, $_REQUEST['filename'].' does not exist'));
+		die(GetID3\Utils::iconv_fallback($FileSystemEncoding, $PageEncoding, $_REQUEST['filename'].' does not exist'));
 	}
 	$starttime = microtime(true);
 
@@ -92,7 +92,7 @@ if (isset($_REQUEST['filename'])) {
 	}
 
 
-	GetID3\Utils::CopyTagsToComments($ThisFileInfo);
+	$getID3->CopyTagsToComments($ThisFileInfo);
 
 	$listdirectory = dirname($_REQUEST['filename']);
 	$listdirectory = realpath($listdirectory); // get rid of /../../ references
@@ -106,7 +106,7 @@ if (isset($_REQUEST['filename'])) {
 	if (preg_match('#^(ht|f)tp://#', $_REQUEST['filename'])) {
 		echo '<i>Cannot browse remote filesystems</i><br>';
 	} else {
-		echo 'Browse: <a href="'.htmlentities($_SERVER['PHP_SELF'].'?listdirectory='.urlencode($listdirectory), ENT_QUOTES | ENT_SUBSTITUTE, $PageEncoding).'">' . GetID3\Utils::iconv_fallback('ISO-8859-1', $PageEncoding, $listdirectory) . '</a><br>';
+		echo 'Browse: <a href="'.htmlentities($_SERVER['PHP_SELF'].'?listdirectory='.urlencode($listdirectory), ENT_QUOTES | ENT_SUBSTITUTE, $PageEncoding).'">' . GetID3\Utils::iconv_fallback($FileSystemEncoding, $PageEncoding, $listdirectory) . '</a><br>';
 	}
 
 	GetID3\Utils::ksort_recursive($ThisFileInfo);
@@ -172,7 +172,7 @@ if (isset($_REQUEST['filename'])) {
 				$getID3->setOption(array('option_md5_data' => (isset($_REQUEST['ShowMD5']) && GETID3_DEMO_BROWSE_ALLOW_MD5_LINK)));
 				$fileinformation = $getID3->analyze($currentfilename);
 
-				GetID3\Utils::CopyTagsToComments($fileinformation);
+				$getID3->CopyTagsToComments($fileinformation);
 
 				$TotalScannedFilesize += (isset($fileinformation['filesize']) ? $fileinformation['filesize'] : 0);
 
@@ -196,6 +196,11 @@ if (isset($_REQUEST['filename'])) {
 				if (isset($fileinformation['bitrate']) && ($fileinformation['bitrate'] > 0)) {
 					$TotalScannedBitrateFiles++;
 				}
+
+			} else {
+
+				echo '<div style="color: red;">Unknown filesystem entry: "'.htmlentities($currentfilename, ENT_QUOTES | ENT_SUBSTITUTE, $PageEncoding).'"</div>';
+
 			}
 		}
 		$endtime = microtime(true);
@@ -207,7 +212,7 @@ if (isset($_REQUEST['filename'])) {
 		$columnsintable = 14;
 		echo '<table class="table" cellspacing="0" cellpadding="3">';
 
-		echo '<tr bgcolor="#'.$getID3checkColor_Head.'"><th colspan="'.$columnsintable.'">Files in ' . GetID3\Utils::iconv_fallback('ISO-8859-1', $PageEncoding, $currentfulldir) . '</th></tr>';
+		echo '<tr bgcolor="#'.$getID3checkColor_Head.'"><th colspan="'.$columnsintable.'">Files in ' . GetID3\Utils::iconv_fallback($FileSystemEncoding, $PageEncoding, $currentfulldir) . '</th></tr>';
 		$rowcounter = 0;
 		foreach ($DirectoryContents as $dirname => $val) {
 			if (isset($DirectoryContents[$dirname]['dir']) && is_array($DirectoryContents[$dirname]['dir'])) {
@@ -227,8 +232,7 @@ if (isset($_REQUEST['filename'])) {
 						echo '"> <input type="submit" value="Go">';
 						echo '</form></td>';
 					} else {
-						//$escaped_filename = htmlentities($filename, ENT_SUBSTITUTE, $PageEncoding); // do filesystems always return filenames in ISO-8859-1?
-						$escaped_filename = htmlentities($filename, ENT_SUBSTITUTE, 'ISO-8859-1'); // do filesystems always return filenames in ISO-8859-1?
+						$escaped_filename = htmlentities($filename, ENT_SUBSTITUTE, $FileSystemEncoding); // do filesystems always return filenames in ISO-8859-1?
 						$escaped_filename = ($escaped_filename ? $escaped_filename : rawurlencode($filename));
 						echo '<td colspan="'.$columnsintable.'"><a href="'.htmlentities($_SERVER['PHP_SELF'].'?listdirectory='.urlencode($dirname.$filename), ENT_QUOTES | ENT_SUBSTITUTE, $PageEncoding).'"><b>'.$escaped_filename.'</b></a></td>';
 					}
@@ -261,8 +265,7 @@ if (isset($_REQUEST['filename'])) {
 				uksort($DirectoryContents[$dirname]['known'], 'MoreNaturalSort');
 				foreach ($DirectoryContents[$dirname]['known'] as $filename => $fileinfo) {
 					echo '<tr bgcolor="#'.(($rowcounter++ % 2) ? $getID3checkColor_FileDark : $getID3checkColor_FileLight).'">';
-					//$escaped_filename = htmlentities($filename, ENT_SUBSTITUTE, $PageEncoding); // do filesystems always return filenames in ISO-8859-1?
-					$escaped_filename = htmlentities($filename, ENT_SUBSTITUTE, 'ISO-8859-1'); // do filesystems always return filenames in ISO-8859-1?
+					$escaped_filename = htmlentities($filename, ENT_SUBSTITUTE, $FileSystemEncoding); // do filesystems always return filenames in ISO-8859-1?
 					$escaped_filename = ($escaped_filename ? $escaped_filename : rawurlencode($filename));
 					echo '<td><a href="'.htmlentities($_SERVER['PHP_SELF'].'?filename='.urlencode($dirname.$filename), ENT_QUOTES | ENT_SUBSTITUTE, $PageEncoding).'" title="View detailed analysis">'.$escaped_filename.'</a></td>';
 					echo '<td align="right">&nbsp;'.number_format($fileinfo['filesize']).'</td>';
@@ -449,7 +452,9 @@ function string_var_dump($variable) {
 	return $dumpedvariable;
 }
 
-function table_var_dump($variable, $wrap_in_td=false, $encoding='ISO-8859-1') {
+function table_var_dump($variable, $wrap_in_td=false, $encoding='') {
+	global $FileSystemEncoding;
+	$encoding = ($encoding ? $encoding : $FileSystemEncoding);
 	$returnstring = '';
 	switch (gettype($variable)) {
 		case 'array':

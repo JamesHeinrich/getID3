@@ -32,6 +32,13 @@ class GetID3
 	 */
 	public $encoding_id3v1  = 'ISO-8859-1';
 
+	/**
+	 * ID3v1 should always be 'ISO-8859-1', but some tags may be written in other encodings such as 'Windows-1251' or 'KOI8-R'. If true attempt to detect these encodings, but may return incorrect values for some tags actually in ISO-8859-1 encoding
+	 *
+	 * @var bool
+	 */
+	public $encoding_id3v1_autodetect  = false;
+
 	/*
 	 * Optional tag checks - disable for speed.
 	 */
@@ -178,7 +185,7 @@ class GetID3
 	 */
 	protected $startup_warning = '';
 
-	const VERSION           = '1.9.17-201905121748';
+	const VERSION           = '1.9.20-202006061653';
 	const FREAD_BUFFER_SIZE = 32768;
 
 	const ATTACHMENTS_NONE   = false;
@@ -194,14 +201,16 @@ class GetID3
 		}
 
 		// Check memory
-		$this->memory_limit = ini_get('memory_limit');
-		if (preg_match('#([0-9]+) ?M#i', $this->memory_limit, $matches)) {
+		$memoryLimit = ini_get('memory_limit');
+		if (preg_match('#([0-9]+) ?M#i', $memoryLimit, $matches)) {
 			// could be stored as "16M" rather than 16777216 for example
-			$this->memory_limit = $matches[1] * 1048576;
-		} elseif (preg_match('#([0-9]+) ?G#i', $this->memory_limit, $matches)) { // The 'G' modifier is available since PHP 5.1.0
+			$memoryLimit = $matches[1] * 1048576;
+		} elseif (preg_match('#([0-9]+) ?G#i', $memoryLimit, $matches)) { // The 'G' modifier is available since PHP 5.1.0
 			// could be stored as "2G" rather than 2147483648 for example
-			$this->memory_limit = $matches[1] * 1073741824;
+			$memoryLimit = $matches[1] * 1073741824;
 		}
+		$this->memory_limit = $memoryLimit;
+
 		if ($this->memory_limit <= 0) {
 			// memory limits probably disabled
 		} elseif ($this->memory_limit <= 4194304) {
@@ -210,7 +219,7 @@ class GetID3
 			$this->startup_warning .= 'PHP has less than 12MB available memory and might run out if all modules are loaded. Increase memory_limit in php.ini'."\n";
 		}
 
-		if (($mbstring_func_overload = ini_get('mbstring.func_overload')) && ($mbstring_func_overload & 0x02)) {
+		if (($mbstring_func_overload = (int) ini_get('mbstring.func_overload')) && ($mbstring_func_overload & 0x02)) {
 			// http://php.net/manual/en/mbstring.overload.php
 			// "mbstring.func_overload in php.ini is a positive value that represents a combination of bitmasks specifying the categories of functions to be overloaded. It should be set to 1 to overload the mail() function. 2 for string functions, 4 for regular expression functions"
 			// getID3 cannot run when string functions are overloaded. It doesn't matter if mail() or ereg* functions are overloaded since getID3 does not use those.
@@ -260,8 +269,9 @@ class GetID3
 	}
 
 	/**
-	 * @param string $filename
-	 * @param int    $filesize
+	 * @param string   $filename
+	 * @param int      $filesize
+	 * @param resource $fp
 	 *
 	 * @return bool
 	 *
@@ -371,9 +381,10 @@ class GetID3
 	/**
 	 * analyze file
 	 *
-	 * @param string $filename
-	 * @param int    $filesize
-	 * @param string $original_filename
+	 * @param string   $filename
+	 * @param int      $filesize
+	 * @param string   $original_filename
+	 * @param resource $fp
 	 *
 	 * @return array
 	 */
@@ -674,9 +685,16 @@ class GetID3
 
 				// DSS  - audio       - Digital Speech Standard
 				'dss'  => array(
-							'pattern'   => '^[\\x02-\\x06]ds[s2]',
+							'pattern'   => '^[\\x02-\\x08]ds[s2]',
 							'module'    => 'Audio\\Dss',
 							'mime_type' => 'application/octet-stream',
+						),
+
+				// DSDIFF - audio     - Direct Stream Digital Interchange File Format
+				'dsdiff' => array(
+							'pattern'   => '^FRM8',
+							'module'    => 'Audio\\Dsdiff',
+							'mime_type' => 'audio/dsd',
 						),
 
 				// DTS  - audio       - Dolby Theatre System
@@ -791,6 +809,13 @@ class GetID3
 							'fail_ape'  => 'ERROR',
 						),
 
+				// TAK  - audio       - Tom's lossless Audio Kompressor
+				'tak'  => array(
+							'pattern'   => '^tBaK',
+							'module'    => 'Audio\\Tak',
+							'mime_type' => 'application/octet-stream',
+						),
+
 				// TTA  - audio       - TTA Lossless Audio Compressor (http://tta.corecodec.org)
 				'tta'  => array(
 							'pattern'   => '^TTA',  // could also be '^TTA(\\x01|\\x02|\\x03|2|1)'
@@ -842,6 +867,13 @@ class GetID3
 							'pattern'   => '^FLV[\\x01]',
 							'module'    => 'AudioVideo\\Flv',
 							'mime_type' => 'video/x-flv',
+						),
+
+				// IVF - audio/video - IVF
+				'ivf' => array(
+							'pattern'   => '^DKIF',
+							'module'    => 'AudioVideo\\Ivf',
+							'mime_type' => 'video/x-ivf',
 						),
 
 				// MKAV - audio/video - Mastroka
@@ -908,6 +940,13 @@ class GetID3
 							'pattern'   => '^(\\x47.{187}){10,}', // packets are 188 bytes long and start with 0x47 "G".  Check for at least 10 packets matching this pattern
 							'module'    => 'AudioVideo\\Ts',
 							'mime_type' => 'video/MP2T',
+						),
+
+				// WTV - audio/video - Windows Recorded TV Show
+				'wtv' => array(
+							'pattern'   => '^\\xB7\\xD8\\x00\\x20\\x37\\x49\\xDA\\x11\\xA6\\x4E\\x00\\x07\\xE9\\x5E\\xAD\\x8D',
+							'module'    => 'AudioVideo\\Wtv',
+							'mime_type' => 'video/x-ms-wtv',
 						),
 
 
@@ -1002,11 +1041,20 @@ class GetID3
 							'iconv_req' => false,
 						),
 
+				// HPK  - data        - HPK compressed data
+				'hpk'  => array(
+							'pattern'   => '^BPUL',
+							'module'    => 'Archive\\Hpk',
+							'mime_type' => 'application/octet-stream',
+							'fail_id3'  => 'ERROR',
+							'fail_ape'  => 'ERROR',
+						),
+
 				// RAR  - data        - RAR compressed data
 				'rar'  => array(
 							'pattern'   => '^Rar\\!',
 							'module'    => 'Archive\\Rar',
-							'mime_type' => 'application/octet-stream',
+							'mime_type' => 'application/vnd.rar',
 							'fail_id3'  => 'ERROR',
 							'fail_ape'  => 'ERROR',
 						),
@@ -1196,6 +1244,7 @@ class GetID3
 				'flac'      => array('vorbiscomment' , 'UTF-8'),
 				'divxtag'   => array('divx'          , 'ISO-8859-1'),
 				'iptc'      => array('iptc'          , 'ISO-8859-1'),
+				'dsdiff'    => array('dsdiff'        , 'ISO-8859-1'),
 			);
 		}
 
@@ -1298,6 +1347,17 @@ class GetID3
 	}
 
 	/**
+	 * Calls Utils::CopyTagsToComments() but passes in the option_tags_html setting from this instance of getID3
+	 *
+	 * @param array $ThisFileInfo
+	 *
+	 * @return bool
+	 */
+	public function CopyTagsToComments(&$ThisFileInfo) {
+	    return Utils::CopyTagsToComments($ThisFileInfo, $this->option_tags_html);
+	}
+
+	/**
 	 * @param string $algorithm
 	 *
 	 * @return array|bool
@@ -1310,7 +1370,6 @@ class GetID3
 
 			default:
 				return $this->error('bad algorithm "'.$algorithm.'" in getHashdata()');
-				break;
 		}
 
 		if (!empty($this->info['fileformat']) && !empty($this->info['dataformat']) && ($this->info['fileformat'] == 'ogg') && ($this->info['audio']['dataformat'] == 'vorbis')) {

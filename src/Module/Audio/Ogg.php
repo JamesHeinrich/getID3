@@ -617,7 +617,6 @@ class Ogg extends Handler
 
 			default:
 				return false;
-				break;
 		}
 
 		$VendorSize = Utils::LittleEndian2Int(substr($commentdata, $commentdataoffset, 4));

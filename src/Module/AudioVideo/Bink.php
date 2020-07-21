@@ -33,20 +33,14 @@ class Bink extends Handler
 		switch ($fileTypeID) {
 			case 'BIK':
 				return $this->ParseBink();
-				break;
 
 			case 'SMK':
 				return $this->ParseSmacker();
-				break;
 
 			default:
 				$this->error('Expecting "BIK" or "SMK" at offset '.$info['avdataoffset'].', found "'.Utils::PrintHexBytes($fileTypeID).'"');
 				return false;
-				break;
 		}
-
-		return true;
-
 	}
 
 	/**

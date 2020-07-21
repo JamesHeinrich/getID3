@@ -488,7 +488,7 @@ class Ac3 extends Handler
 	/**
 	 * @param int $length
 	 *
-	 * @return float|int
+	 * @return int
 	 */
 	private function readHeaderBSI($length) {
 		$data = substr($this->AC3header['bsi'], $this->BSIoffset, $length);
@@ -761,11 +761,13 @@ class Ac3 extends Handler
 				18 => array(2560, 2786, 3840)   // 640 kbps
 			);
 		}
+		$paddingBytes = 0;
 		if (($fscod == 1) && $padding) {
 			// frame lengths are padded by 1 word (16 bits) at 44100
-			$frameSizeLookup[$frmsizecod] += 2;
+			// (fscode==1) means 44100Hz (see sampleRateCodeLookup)
+			$paddingBytes = 2;
 		}
-		return (isset($frameSizeLookup[$framesizeid][$fscod]) ? $frameSizeLookup[$framesizeid][$fscod] : false);
+		return (isset($frameSizeLookup[$framesizeid][$fscod]) ? $frameSizeLookup[$framesizeid][$fscod] + $paddingBytes : false);
 	}
 
 	/**

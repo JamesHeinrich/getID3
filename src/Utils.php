@@ -172,10 +172,10 @@ class Utils
 	}
 
 	/**
-	 * @param string $string
-	 * @param bool   $hex
-	 * @param bool   $spaces
-	 * @param string $htmlencoding
+	 * @param string      $string
+	 * @param bool        $hex
+	 * @param bool        $spaces
+	 * @param string|bool $htmlencoding
 	 *
 	 * @return string
 	 */
@@ -373,7 +373,6 @@ class Utils
 
 			default:
 				return false;
-				break;
 		}
 		if ($floatvalue >= 0) {
 			$signbit = '0';
@@ -441,11 +440,9 @@ class Utils
 					$floatvalue *= -1;
 				}
 				return $floatvalue;
-				break;
 
 			default:
 				return false;
-				break;
 		}
 		$exponentstring = substr($bitword, 1, $exponentbits);
 		$fractionstring = substr($bitword, $exponentbits + 1, $fractionbits);
@@ -657,8 +654,8 @@ class Utils
 	}
 
 	/**
-	 * @param array $array1
-	 * @param array $array2
+	 * @param mixed $array1
+	 * @param mixed $array2
 	 *
 	 * @return array|false
 	 */
@@ -680,8 +677,8 @@ class Utils
 	}
 
 	/**
-	 * @param array $array1
-	 * @param array $array2
+	 * @param mixed $array1
+	 * @param mixed $array2
 	 *
 	 * @return array|false
 	 */
@@ -701,8 +698,8 @@ class Utils
 	}
 
 	/**
-	 * @param array $array1
-	 * @param array $array2
+	 * @param mixed $array1
+	 * @param mixed $array2
 	 *
 	 * @return array|false|null
 	 */
@@ -841,10 +838,10 @@ class Utils
 	 */
 	public static function array_max($arraydata, $returnkey=false) {
 		$maxvalue = false;
-		$maxkey = false;
+		$maxkey   = false;
 		foreach ($arraydata as $key => $value) {
 			if (!is_array($value)) {
-				if ($value > $maxvalue) {
+				if (($maxvalue === false) || ($value > $maxvalue)) {
 					$maxvalue = $value;
 					$maxkey = $key;
 				}
@@ -861,10 +858,10 @@ class Utils
 	 */
 	public static function array_min($arraydata, $returnkey=false) {
 		$minvalue = false;
-		$minkey = false;
+		$minkey   = false;
 		foreach ($arraydata as $key => $value) {
 			if (!is_array($value)) {
-				if ($value > $minvalue) {
+				if (($minvalue === false) || ($value < $minvalue)) {
 					$minvalue = $value;
 					$minkey = $key;
 				}
@@ -892,9 +889,9 @@ class Utils
 	}
 
 	/**
-	* @param \SimpleXMLElement|array $XMLobject
+	* @param \SimpleXMLElement|array|mixed $XMLobject
 	*
-	* @return array
+	* @return mixed
 	*/
 	public static function SimpleXMLelement2array($XMLobject) {
 		if (!is_object($XMLobject) && !is_array($XMLobject)) {
@@ -908,9 +905,7 @@ class Utils
 	}
 
 	/**
-	 * self::md5_data() - returns md5sum for a file from startuing position to absolute end position
-	 *
-	 * @author Allan Hansen <ahØartemis*dk>
+	 * Returns checksum for a file from starting position to absolute end position.
 	 *
 	 * @param string $file
 	 * @param int    $offset
@@ -918,83 +913,30 @@ class Utils
 	 * @param string $algorithm
 	 *
 	 * @return string|false
-	 * @throws \Exception
 	 * @throws Exception
 	 */
 	public static function hash_data($file, $offset, $end, $algorithm) {
-		$windows_call = null;
-		$unix_call = null;
-		$hash_length = null;
-		$hash_function = null;
 		if (!self::intValueSupported($end)) {
 			return false;
 		}
-		switch ($algorithm) {
-			case 'md5':
-				$hash_function = 'md5_file';
-				$unix_call     = 'md5sum';
-				$windows_call  = 'md5sum.exe';
-				$hash_length   = 32;
-				break;
-
-			case 'sha1':
-				$hash_function = 'sha1_file';
-				$unix_call     = 'sha1sum';
-				$windows_call  = 'sha1sum.exe';
-				$hash_length   = 40;
-				break;
-
-			default:
-				throw new Exception('Invalid algorithm ('.$algorithm.') in self::hash_data()');
-				break;
+		if (!in_array($algorithm, array('md5', 'sha1'))) {
+			throw new Exception('Invalid algorithm ('.$algorithm.') in self::hash_data()');
 		}
+
 		$size = $end - $offset;
-		while (true) {
-			if (static::isWindows()) {
 
-				// It seems that sha1sum.exe for Windows only works on physical files, does not accept piped data
-				// Fall back to create-temp-file method:
-				if ($algorithm == 'sha1') {
-					break;
-				}
-
-				$RequiredFiles = array('cygwin1.dll', 'head.exe', 'tail.exe', $windows_call);
-				foreach ($RequiredFiles as $required_file) {
-					if (!is_readable(static::getHelperAppDirectory() . $required_file)) {
-						// helper apps not available - fall back to old method
-						break 2;
-					}
-				}
-				$commandline  = static::getHelperAppDirectory() . 'head.exe -c ' . $end . ' ' . escapeshellarg(str_replace('/', \DIRECTORY_SEPARATOR, $file)) . ' | ';
-				$commandline .= static::getHelperAppDirectory() . 'tail.exe -c ' . $size . ' | ';
-				$commandline .= static::getHelperAppDirectory() . $windows_call;
-			} else {
-				$commandline  = 'head -c' . $end . ' ' . escapeshellarg($file) . ' | ';
-				$commandline .= 'tail -c' . $size . ' | ';
-				$commandline .= $unix_call;
-
-			}
-			return substr(`$commandline`, 0, $hash_length);
+		$fp = fopen($file, 'rb');
+		fseek($fp, $offset);
+		$ctx = hash_init($algorithm);
+		while ($size > 0) {
+			$buffer = fread($fp, min($size, GetID3::FREAD_BUFFER_SIZE));
+			hash_update($ctx, $buffer);
+			$size -= GetID3::FREAD_BUFFER_SIZE;
 		}
+		$hash = hash_final($ctx);
+		fclose($fp);
 
-		// try to create a temporary file in the system temp directory - invalid dirname should force to system temp dir
-		if (($data_filename = tempnam(static::getTempDirectory(), 'gI3')) === false) {
-			// can't find anywhere to create a temp file, just fail
-			return false;
-		}
-
-		// Init
-		$result = false;
-
-		// copy parts of file
-		try {
-			self::CopyFileParts($file, $data_filename, $offset, $end - $offset);
-			$result = $hash_function($data_filename);
-		} catch (\Exception $e) {
-			throw new Exception('self::CopyFileParts() failed in getid_lib::hash_data(): '.$e->getMessage());
-		}
-		unlink($data_filename);
-		return $result;
+		return $hash;
 	}
 
 	/**
@@ -1005,6 +947,8 @@ class Utils
 	 *
 	 * @return bool
 	 * @throws Exception
+	 *
+	 * @deprecated Unused, may be removed in future versions of getID3
 	 */
 	public static function CopyFileParts($filename_source, $filename_dest, $offset, $length) {
 		if (!self::intValueSupported($offset + $length)) {
@@ -1424,6 +1368,16 @@ class Utils
 
 		// mb_convert_encoding() available
 		if (function_exists('mb_convert_encoding')) {
+			if ((strtoupper($in_charset) == 'UTF-16') && (substr($string, 0, 2) != "\xFE\xFF") && (substr($string, 0, 2) != "\xFF\xFE")) {
+				// if BOM missing, mb_convert_encoding will mishandle the conversion, assume UTF-16BE and prepend appropriate BOM
+				$string = "\xFF\xFE".$string;
+			}
+			if ((strtoupper($in_charset) == 'UTF-16') && (strtoupper($out_charset) == 'UTF-8')) {
+				if (($string == "\xFF\xFE") || ($string == "\xFE\xFF")) {
+					// if string consists of only BOM, mb_convert_encoding will return the BOM unmodified
+					return '';
+				}
+			}
 			if ($converted_string = @mb_convert_encoding($string, $out_charset, $in_charset)) {
 				switch ($out_charset) {
 					case 'ISO-8859-1':
@@ -1433,9 +1387,9 @@ class Utils
 				return $converted_string;
 			}
 			return $string;
-		}
+
 		// iconv() available
-		else if (function_exists('iconv')) {
+		} elseif (function_exists('iconv')) {
 			if ($converted_string = @iconv($in_charset, $out_charset.'//TRANSLIT', $string)) {
 				switch ($out_charset) {
 					case 'ISO-8859-1':
@@ -1679,20 +1633,12 @@ class Utils
 	 * @return array|false
 	 */
 	public static function GetDataImageSize($imgData, &$imageinfo=array()) {
-		$GetDataImageSize = false;
-		if ($tempfilename = tempnam(static::getTempDirectory(), 'gI3')) {
-			if (is_writable($tempfilename) && is_file($tempfilename) && ($tmp = fopen($tempfilename, 'wb'))) {
-				fwrite($tmp, $imgData);
-				fclose($tmp);
-				$GetDataImageSize = @getimagesize($tempfilename, $imageinfo);
-				if (($GetDataImageSize === false) || !isset($GetDataImageSize[0]) || !isset($GetDataImageSize[1])) {
-					return false;
-				}
-				$GetDataImageSize['height'] = $GetDataImageSize[0];
-				$GetDataImageSize['width']  = $GetDataImageSize[1];
-			}
-			unlink($tempfilename);
+		$GetDataImageSize = @getimagesizefromstring($imgData, $imageinfo);
+		if ($GetDataImageSize === false || !isset($GetDataImageSize[0], $GetDataImageSize[1])) {
+			return false;
 		}
+		$GetDataImageSize['height'] = $GetDataImageSize[0];
+		$GetDataImageSize['width'] = $GetDataImageSize[1];
 		return $GetDataImageSize;
 	}
 
@@ -1708,13 +1654,20 @@ class Utils
 
 	/**
 	 * @param array $ThisFileInfo
+	 * @param bool  $option_tags_html default true (just as in the main getID3 class)
 	 *
 	 * @return bool
 	 */
-	public static function CopyTagsToComments(&$ThisFileInfo) {
-
+	public static function CopyTagsToComments(&$ThisFileInfo, $option_tags_html=true) {
 		// Copy all entries from ['tags'] into common ['comments']
 		if (!empty($ThisFileInfo['tags'])) {
+			if (isset($ThisFileInfo['tags']['id3v1'])) {
+				// bubble ID3v1 to the end, if present to aid in detecting bad ID3v1 encodings
+				$ID3v1 = $ThisFileInfo['tags']['id3v1'];
+				unset($ThisFileInfo['tags']['id3v1']);
+				$ThisFileInfo['tags']['id3v1'] = $ID3v1;
+				unset($ID3v1);
+			}
 			foreach ($ThisFileInfo['tags'] as $tagtype => $tagarray) {
 				foreach ($tagarray as $tagname => $tagdata) {
 					foreach ($tagdata as $key => $value) {
@@ -1733,6 +1686,13 @@ class Utils
 										break 2;
 									}
 								}
+								if (function_exists('mb_convert_encoding')) {
+									if (trim($value) == trim(substr(mb_convert_encoding($existingvalue, $ThisFileInfo['id3v1']['encoding'], $ThisFileInfo['encoding']), 0, 30))) {
+										// value stored in ID3v1 appears to be probably the multibyte value transliterated (badly) into ISO-8859-1 in ID3v1.
+										// As an example, Foobar2000 will do this if you tag a file with Chinese or Arabic or Cyrillic or something that doesn't fit into ISO-8859-1 the ID3v1 will consist of mostly "?" characters, one per multibyte unrepresentable character
+										break 2;
+									}
+								}
 
 							} elseif (!is_array($value)) {
 
@@ -1741,7 +1701,6 @@ class Utils
 									$oldvaluelength = strlen(trim($existingvalue));
 									if ((strlen($existingvalue) > 10) && ($newvaluelength > $oldvaluelength) && (substr(trim($value), 0, strlen($existingvalue)) == $existingvalue)) {
 										$ThisFileInfo['comments'][$tagname][$existingkey] = trim($value);
-										//break 2;
 										break;
 									}
 								}
@@ -1752,7 +1711,7 @@ class Utils
 								if (!is_int($key) && !ctype_digit($key)) {
 									$ThisFileInfo['comments'][$tagname][$key] = $value;
 								} else {
-									if (isset($ThisFileInfo['comments'][$tagname])) {
+									if (!isset($ThisFileInfo['comments'][$tagname])) {
 										$ThisFileInfo['comments'][$tagname] = array($value);
 									} else {
 										$ThisFileInfo['comments'][$tagname][] = $value;
@@ -1776,19 +1735,21 @@ class Utils
 				}
 			}
 
-			// Copy to ['comments_html']
-			if (!empty($ThisFileInfo['comments'])) {
-				foreach ($ThisFileInfo['comments'] as $field => $values) {
-					if ($field == 'picture') {
-						// pictures can take up a lot of space, and we don't need multiple copies of them
-						// let there be a single copy in [comments][picture], and not elsewhere
-						continue;
-					}
-					foreach ($values as $index => $value) {
-						if (is_array($value)) {
-							$ThisFileInfo['comments_html'][$field][$index] = $value;
-						} else {
-							$ThisFileInfo['comments_html'][$field][$index] = str_replace('&#0;', '', self::MultiByteCharString2HTML($value, $ThisFileInfo['encoding']));
+			if ($option_tags_html) {
+				// Copy ['comments'] to ['comments_html']
+				if (!empty($ThisFileInfo['comments'])) {
+					foreach ($ThisFileInfo['comments'] as $field => $values) {
+						if ($field == 'picture') {
+							// pictures can take up a lot of space, and we don't need multiple copies of them
+							// let there be a single copy in [comments][picture], and not elsewhere
+							continue;
+						}
+						foreach ($values as $index => $value) {
+							if (is_array($value)) {
+								$ThisFileInfo['comments_html'][$field][$index] = $value;
+							} else {
+								$ThisFileInfo['comments_html'][$field][$index] = str_replace('&#0;', '', self::MultiByteCharString2HTML($value, $ThisFileInfo['encoding']));
+							}
 						}
 					}
 				}
