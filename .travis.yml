@@ -19,6 +19,11 @@ matrix:
     - php: 7.3
       env: PHPSTAN=1
     - php: 7.4
+    - php: nightly
+
+  allow_failures:
+    # Allow failures for unstable builds.
+    - php: "nightly"
 
 before_script:
   - travis_retry composer install --prefer-source --quiet --no-interaction
