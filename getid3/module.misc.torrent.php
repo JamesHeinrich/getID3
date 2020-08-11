@@ -121,7 +121,7 @@ class getid3_torrent extends getid3_handler
 //echo '<li>int: '.$value.'</li>';
 				return (int) $value;
 			}
-			$this->error('unexpected('.__LINE__.') input "'.$char.'" at offset '.($offset - 1));
+			$this->error('unexpected('.__LINE__.') input "'.$value.'" at offset '.($offset - 1));
 			return false;
 
 		} elseif ($type == 'd') {
@@ -132,6 +132,7 @@ class getid3_torrent extends getid3_handler
 			//   d5:apple3:red6:banana6:yellow5:lemon6:yellow6:violet4:bluee
 			$values = array();
 //echo 'DICTIONARY @ '.$offset.'<ul>';
+			$info_dictionary_start = null; // dummy declaration to prevent "Variable might not be defined" warnings
 			while (true) {
 				if ($TORRENT[$offset] === 'e') {
 					break;
