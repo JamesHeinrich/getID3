@@ -121,7 +121,7 @@ class getid3_torrent extends getid3_handler
 //echo '<li>int: '.$value.'</li>';
 				return (int) $value;
 			}
-			$this->error('unexpected('.__LINE__.') input "'.$char.'" at offset '.($offset - 1));
+			$this->error('unexpected('.__LINE__.') input "'.$value.'" at offset '.($offset - 1));
 			return false;
 
 		} elseif ($type == 'd') {
@@ -138,15 +138,13 @@ class getid3_torrent extends getid3_handler
 				}
 				$thisentry = array();
 				$key = $this->NextEntity($TORRENT, $offset);
-				if ($key == 'info') {
-					$info_dictionary_start = $offset;
-				}
 				if ($key === false) {
 					$this->error('unexpected('.__LINE__.') input at offset '.$offset);
 					return false;
 				}
 				$value = $this->NextEntity($TORRENT, $offset);
 				if ($key == 'info') {
+					$info_dictionary_start = $offset;
 					$info_dictionary_end = $offset;
 					$this->infohash = sha1(substr($TORRENT, $info_dictionary_start, $info_dictionary_end - $info_dictionary_start));
 				}
