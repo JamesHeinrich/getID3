@@ -729,7 +729,7 @@ class getid3_lib
 			}
 			$XMLobject = simplexml_load_string($XMLstring, 'SimpleXMLElement', LIBXML_NOENT);
 			$return = self::SimpleXMLelement2array($XMLobject);
-			if (PHP_VERSION_ID < 80000) {
+			if (PHP_VERSION_ID < 80000 && isset($loader)) {
 				libxml_disable_entity_loader($loader);
 			}
 			return $return;
