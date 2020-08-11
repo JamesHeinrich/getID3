@@ -289,7 +289,7 @@ if (isset($ExistingTableFields['comments_all']) && ($ExistingTableFields['commen
 }
 
 
-function SynchronizeAllTags($filename, $synchronizefrom='all', $synchronizeto='A12', &$errors) {
+function SynchronizeAllTags($filename, $synchronizefrom='all', $synchronizeto='A12', &$errors = array()) {
 	global $getID3;
 
 	set_time_limit(30);
