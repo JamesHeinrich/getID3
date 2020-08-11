@@ -100,6 +100,7 @@ Reads & parses (to varying degrees):
   * OptimFROG
   * RKAU
   * Shorten
+  * Tom's lossless Audio Kompressor (TAK)
   * TTA
   * VOC
   * WAV (RIFF)
@@ -605,3 +606,4 @@ Reference material:
 * http://trac.musepack.net/trac/wiki/SV8Specification
 * http://wyday.com/cuesharp/specification.php
 * http://www.sno.phy.queensu.ca/~phil/exiftool/TagNames/Nikon.html
+* http://wiki.hydrogenaud.io/index.php?title=TAK
