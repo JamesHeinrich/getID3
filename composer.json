@@ -9,7 +9,7 @@
         "php": ">=5.3.0"
     },
     "require-dev": {
-        "jakub-onderka/php-parallel-lint": "^0.9 || ^1.0"
+        "php-parallel-lint/php-parallel-lint": "^1.0"
     },
     "suggest": {
         "ext-com_dotnet": "COM extension is required when loading files larger than 2GB on Windows.",
@@ -29,7 +29,7 @@
         "ext-zlib": "Zlib extension is required for archive modules and compressed metadata."
     },
     "scripts": {
-        "lint": "parallel-lint --exclude vendor .",
+        "lint": "parallel-lint --exclude vendor --exclude .git .",
         "test": [
             "composer lint"
         ]
