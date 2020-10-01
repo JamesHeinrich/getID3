@@ -5,7 +5,7 @@ namespace JamesHeinrich\GetID3\Tests;
 use JamesHeinrich\GetID3\GetID3;
 use JamesHeinrich\GetID3\WriteTags;
 
-class Mp3Test extends \PHPUnit_Framework_TestCase
+class Mp3Test extends \PHPUnit\Framework\TestCase
 {
 
     public function testRead()
