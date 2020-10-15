@@ -9,6 +9,7 @@
 // Sample script for splicing two or more MP3s together into   //
 // one file. Does not attempt to fix VBR header frames.        //
 // Can also be used to extract portion from single file.       //
+// Note: all joined MP3s need to be the same sample rate.      //
 //  see readme.txt for more details                            //
 //                                                            ///
 /////////////////////////////////////////////////////////////////
