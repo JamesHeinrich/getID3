@@ -460,9 +460,31 @@ class getid3_riff extends getid3_handler
 					}
 				}
 
-				if (isset($thisfile_riff_WAVE['wamd'][0]['data'])) {
+				if (isset($thisfile_riff_WAVE['guan'][0]['data'])) {
 					// shortcut
-					//$thisfile_riff_WAVE_wamd_0 = &$thisfile_riff_WAVE['wamd'][0];
+					$thisfile_riff_WAVE_guan_0 = &$thisfile_riff_WAVE['guan'][0];
+					if (!empty($thisfile_riff_WAVE_guan_0['data']) && (substr($thisfile_riff_WAVE_guan_0['data'], 0, 14) == 'GUANO|Version:')) {
+						$thisfile_riff['guano'] = array();
+						foreach (explode("\n", $thisfile_riff_WAVE_guan_0['data']) as $line) {
+							if ($line) {
+								@list($key, $value) = explode(':', $line, 2);
+								$thisfile_riff['guano'] = array_merge_recursive($thisfile_riff['guano'], getid3_lib::CreateDeepArray($key, '|', $value));
+							}
+						}
+						foreach ($thisfile_riff['guano'] as $key => $value) {
+							switch ($key) {
+								case 'Loc Position':
+									if (preg_match('#^([\\+\\-]?[0-9]+\\.[0-9]+) ([\\+\\-]?[0-9]+\\.[0-9]+)$#', $value, $matches)) {
+										list($dummy, $latitude, $longitude) = $matches;
+										$thisfile_riff['comments']['gps_latitude'][0]  = floatval($latitude);
+										$thisfile_riff['comments']['gps_longitude'][0] = floatval($longitude);
+									}
+									break;
+							}
+						}
+					} else {
+						$this->warning('RIFF.guan data not in expected format');
+					}
 				}
 
 				if (!isset($thisfile_audio['bitrate']) && isset($thisfile_riff_audio[$streamindex]['bitrate'])) {
