@@ -468,9 +468,20 @@ class getid3_riff extends getid3_handler
 						foreach (explode("\n", $thisfile_riff_WAVE_guan_0['data']) as $line) {
 							if ($line) {
 								@list($key, $value) = explode(':', $line, 2);
+								if (substr($value, 0, 3) == '[{"') {
+									if ($decoded = @json_decode($value, true)) {
+										if (!empty($decoded) && (count($decoded) == 1)) {
+											$value = $decoded[0];
+										} else {
+											$value = $decoded;
+										}
+									}
+								}
 								$thisfile_riff['guano'] = array_merge_recursive($thisfile_riff['guano'], getid3_lib::CreateDeepArray($key, '|', $value));
 							}
 						}
+
+						// https://www.wildlifeacoustics.com/SCHEMA/GUANO.html
 						foreach ($thisfile_riff['guano'] as $key => $value) {
 							switch ($key) {
 								case 'Loc Position':
@@ -479,9 +490,28 @@ class getid3_riff extends getid3_handler
 										$thisfile_riff['comments']['gps_latitude'][0]  = floatval($latitude);
 										$thisfile_riff['comments']['gps_longitude'][0] = floatval($longitude);
 									}
+									$thisfile_riff['guano'][$key] = floatval($latitude).' '.floatval($longitude);
+									break;
+								case 'Loc Elevation': // Elevation/altitude above mean sea level in meters
+									$thisfile_riff['comments']['gps_altitude'][0] = floatval($value);
+									$thisfile_riff['guano'][$key] = (float) $value;
+									break;
+								case 'Filter HP':        // High-pass filter frequency in kHz
+								case 'Filter LP':        // Low-pass filter frequency in kHz
+								case 'Humidity':         // Relative humidity as a percentage
+								case 'Length':           // Recording length in seconds
+								case 'Loc Accuracy':     // Estimated Position Error in meters
+								case 'Temperature Ext':  // External temperature in degrees Celsius outside the recorder's housing
+								case 'Temperature Int':  // Internal temperature in degrees Celsius inside the recorder's housing
+									$thisfile_riff['guano'][$key] = (float) $value;
+									break;
+								case 'Samplerate':       // Recording sample rate, Hz
+								case 'TE':               // Time-expansion factor. If not specified, then 1 (no time-expansion a.k.a. direct-recording) is assumed.
+									$thisfile_riff['guano'][$key] = (int) $value;
 									break;
 							}
 						}
+
 					} else {
 						$this->warning('RIFF.guan data not in expected format');
 					}
