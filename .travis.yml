@@ -19,6 +19,7 @@ matrix:
     - php: 7.3
       env: PHPSTAN=1
     - php: 7.4
+    - php: 8.0
     - php: nightly
 
   allow_failures:
