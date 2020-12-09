@@ -2444,7 +2444,7 @@ class getid3_id3v2 extends getid3_handler
 			TMM	Manats
 			TND	Dinars
 			TOP	Pa'anga
-			TRL	Liras
+			TRY	Liras
 			TTD	Dollars
 			TVD	Tuvalu Dollars
 			TWD	New Dollars
@@ -2644,7 +2644,7 @@ class getid3_id3v2 extends getid3_handler
 			TMM	Turkmenistan
 			TND	Tunisia
 			TOP	Tonga
-			TRL	Turkey
+			TRY	Turkey
 			TTD	Trinidad and Tobago
 			TVD	Tuvalu
 			TWD	Taiwan
