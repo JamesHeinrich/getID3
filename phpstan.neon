@@ -8,20 +8,14 @@ parameters:
         - '#Constant GETID3_HELPERAPPSDIR not found#'
         - '#Constant GETID3_ASF_(\w+) not found#'
         -
+            message: '#Function mysql_\w+ not found\.#'
+            path: getid3/extension.cache.mysql.php
+        -
             message: '#Function rar_\w+ not found\.#'
             path: getid3/module.archive.rar.php
         -
             message: '#Unreachable statement - code above always terminates#'
             path: getid3/module.archive.szip.php
-        -
-            message: "#Offset 'size' does not exist on array#"
-            path: getid3/module.audio-video.riff.php
-        -
-            message: "#Cannot unset offset 'offset' on array#"
-            path: getid3/module.audio-video.riff.php
-        -
-            message: "#Cannot unset offset 'size' on array#"
-            path: getid3/module.audio-video.riff.php
         -
             message: '#Unreachable statement - code above always terminates#'
             path: getid3/module.audio.aa.php

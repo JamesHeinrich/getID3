@@ -489,8 +489,8 @@ class getid3_riff extends getid3_handler
 										list($dummy, $latitude, $longitude) = $matches;
 										$thisfile_riff['comments']['gps_latitude'][0]  = floatval($latitude);
 										$thisfile_riff['comments']['gps_longitude'][0] = floatval($longitude);
+										$thisfile_riff['guano'][$key] = floatval($latitude).' '.floatval($longitude);
 									}
-									$thisfile_riff['guano'][$key] = floatval($latitude).' '.floatval($longitude);
 									break;
 								case 'Loc Elevation': // Elevation/altitude above mean sea level in meters
 									$thisfile_riff['comments']['gps_altitude'][0] = floatval($value);
