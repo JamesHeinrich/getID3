@@ -1,8 +1,5 @@
 {
     "name": "james-heinrich/getid3",
-    "description": "PHP script that extracts useful information from popular multimedia file formats",
-    "homepage": "https://www.getid3.org/",
-    "keywords": ["php","tags","codecs"],
     "type": "library",
     "description": "Extract and write useful information to/from popular multimedia file formats",
     "keywords": ["id3", "tags", "codecs", "audio", "video", "metadata"],
