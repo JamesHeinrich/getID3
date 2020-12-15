@@ -26,7 +26,6 @@
 /.github/ export-ignore
 .gitignore export-ignore
 .phpcs.xml export-ignore
-.travis.yml export-ignore
 build/ export-ignore
 composer.json export-ignore
 Doxyfile export-ignore
