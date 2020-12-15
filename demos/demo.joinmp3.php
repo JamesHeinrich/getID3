@@ -14,9 +14,12 @@ require __DIR__ . "/../vendor/autoload.php";
 // Sample script for splicing two or more MP3s together into   //
 // one file. Does not attempt to fix VBR header frames.        //
 // Can also be used to extract portion from single file.       //
+// Note: all joined MP3s need to be the same sample rate.      //
 //  see readme.txt for more details                            //
 //                                                            ///
 /////////////////////////////////////////////////////////////////
+
+die('For security reasons, this demo has been disabled. It can be enabled by removing line '.__LINE__.' in demos/'.basename(__FILE__));
 
 
 // sample usage:

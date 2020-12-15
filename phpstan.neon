@@ -1,3 +1,18 @@
 parameters:
     excludes_analyse:
     polluteScopeWithLoopInitialAssignments: true
+    ignoreErrors:
+        - '#Call to an undefined method COM::GetFile\(\)\.#'
+        - '#Constant GETID3_ASF_(\w+) not found#'
+        -
+            message: '#Function mysql_\w+ not found\.#'
+            path: src/Cache/Mysql.php
+        -
+            message: '#Function rar_\w+ not found\.#'
+            path: src/Module/Archive/Rar.php
+        -
+            message: '#Unreachable statement - code above always terminates#'
+            path: src/Module/Archive/Szip.php
+        -
+            message: '#Unreachable statement - code above always terminates#'
+            path: src/Module/Audio/Aa.php

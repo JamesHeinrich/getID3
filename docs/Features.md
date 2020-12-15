@@ -35,6 +35,7 @@ Reads & parses (to varying degrees):
   * OptimFROG
   * RKAU
   * Shorten
+  * Tom's lossless Audio Kompressor (TAK)
   * TTA
   * VOC
   * WAV (RIFF)

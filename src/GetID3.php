@@ -185,7 +185,7 @@ class GetID3
 	 */
 	protected $startup_warning = '';
 
-	const VERSION           = '1.9.20-202006061653';
+	const VERSION           = '1.9.20-202012091120';
 	const FREAD_BUFFER_SIZE = 32768;
 
 	const ATTACHMENTS_NONE   = false;
@@ -1130,6 +1130,15 @@ class GetID3
 							'pattern'   => '^\\xD0\\xCF\\x11\\xE0\\xA1\\xB1\\x1A\\xE1', // D0CF11E == DOCFILE == Microsoft Office Document
 							'module'    => 'Misc\\MsOffice',
 							'mime_type' => 'application/octet-stream',
+							'fail_id3'  => 'ERROR',
+							'fail_ape'  => 'ERROR',
+						),
+
+				// TORRENT             - .torrent
+				'torrent' => array(
+							'pattern'   => '^(d8\\:announce|d7\\:comment)',
+							'module'    => 'Misc\\Torrent',
+							'mime_type' => 'application/x-bittorrent',
 							'fail_id3'  => 'ERROR',
 							'fail_ape'  => 'ERROR',
 						),

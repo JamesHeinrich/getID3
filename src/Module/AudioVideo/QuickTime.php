@@ -560,15 +560,28 @@ class QuickTime extends Handler
 											default:
 												$atom_structure['data'] = substr($boxdata, 8);
 												if ($atomname == 'covr') {
-													// not a foolproof check, but better than nothing
-													if (preg_match('#^\\xFF\\xD8\\xFF#', $atom_structure['data'])) {
-														$atom_structure['image_mime'] = 'image/jpeg';
-													} elseif (preg_match('#^\\x89\\x50\\x4E\\x47\\x0D\\x0A\\x1A\\x0A#', $atom_structure['data'])) {
-														$atom_structure['image_mime'] = 'image/png';
-													} elseif (preg_match('#^GIF#', $atom_structure['data'])) {
-														$atom_structure['image_mime'] = 'image/gif';
+													if (!empty($atom_structure['data'])) {
+														$atom_structure['image_mime'] = 'image/unknown'; // provide default MIME type to ensure array keys exist
+														if (function_exists('getimagesizefromstring') && ($getimagesize = getimagesizefromstring($atom_structure['data'])) && !empty($getimagesize['mime'])) {
+															$atom_structure['image_mime'] = $getimagesize['mime'];
+														} else {
+															// if getimagesizefromstring is not available, or fails for some reason, fall back to simple detection of common image formats
+															$ImageFormatSignatures = array(
+																'image/jpeg' => "\xFF\xD8\xFF",
+																'image/png'  => "\x89\x50\x4E\x47\x0D\x0A\x1A\x0A",
+																'image/gif'  => 'GIF',
+															);
+															foreach ($ImageFormatSignatures as $mime => $image_format_signature) {
+																if (substr($atom_structure['data'], 0, strlen($image_format_signature)) == $image_format_signature) {
+																	$atom_structure['image_mime'] = $mime;
+																	break;
+																}
+															}
+														}
+														$info['quicktime']['comments']['picture'][] = array('image_mime'=>$atom_structure['image_mime'], 'data'=>$atom_structure['data'], 'description'=>'cover');
+													} else {
+														$this->warning('Unknown empty "covr" image at offset '.$baseoffset);
 													}
-													$info['quicktime']['comments']['picture'][] = array('image_mime'=>$atom_structure['image_mime'], 'data'=>$atom_structure['data'], 'description'=>'cover');
 												}
 												break;
 
@@ -908,13 +921,13 @@ $this->warning('incomplete/incorrect handling of "stsd" with Parrot metadata in 
 										$atom_structure['sample_description_table'][$i]['video_pixel_color_depth'] =   Utils::BigEndian2Int(substr($atom_structure['sample_description_table'][$i]['data'], 66,  2));
 										$atom_structure['sample_description_table'][$i]['video_color_table_id']    =   Utils::BigEndian2Int(substr($atom_structure['sample_description_table'][$i]['data'], 68,  2));
 
-										$atom_structure['sample_description_table'][$i]['video_pixel_color_type']  = (($atom_structure['sample_description_table'][$i]['video_pixel_color_depth'] > 32) ? 'grayscale' : 'color');
+										$atom_structure['sample_description_table'][$i]['video_pixel_color_type']  = (((int) $atom_structure['sample_description_table'][$i]['video_pixel_color_depth'] > 32) ? 'grayscale' : 'color');
 										$atom_structure['sample_description_table'][$i]['video_pixel_color_name']  = $this->QuicktimeColorNameLookup($atom_structure['sample_description_table'][$i]['video_pixel_color_depth']);
 
 										if ($atom_structure['sample_description_table'][$i]['video_pixel_color_name'] != 'invalid') {
 											$info['quicktime']['video']['codec_fourcc']        = $atom_structure['sample_description_table'][$i]['data_format'];
 											$info['quicktime']['video']['codec_fourcc_lookup'] = $this->QuicktimeVideoCodecLookup($atom_structure['sample_description_table'][$i]['data_format']);
-											$info['quicktime']['video']['codec']               = (($atom_structure['sample_description_table'][$i]['video_encoder_name_len'] > 0) ? $atom_structure['sample_description_table'][$i]['video_encoder_name'] : $atom_structure['sample_description_table'][$i]['data_format']);
+											$info['quicktime']['video']['codec']               = (((int) $atom_structure['sample_description_table'][$i]['video_encoder_name_len'] > 0) ? $atom_structure['sample_description_table'][$i]['video_encoder_name'] : $atom_structure['sample_description_table'][$i]['data_format']);
 											$info['quicktime']['video']['color_depth']         = $atom_structure['sample_description_table'][$i]['video_pixel_color_depth'];
 											$info['quicktime']['video']['color_depth_name']    = $atom_structure['sample_description_table'][$i]['video_pixel_color_name'];
 
