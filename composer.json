@@ -1,5 +1,8 @@
 {
     "name": "james-heinrich/getid3",
+    "description": "PHP script that extracts useful information from popular multimedia file formats",
+    "homepage": "https://www.getid3.org/",
+    "keywords": ["php","tags","codecs"],
     "type": "library",
     "description": "Extract and write useful information to/from popular multimedia file formats",
     "keywords": ["id3", "tags", "codecs", "audio", "video", "metadata"],
@@ -38,10 +41,10 @@
     },
     "require-dev": {
         "phpunit/phpunit": "^4.8|^5.0",
-        "jakub-onderka/php-parallel-lint": "^0.9 || ^1.0"
+        "php-parallel-lint/php-parallel-lint": "^1.0"
     },
     "scripts": {
-        "lint": "parallel-lint --exclude vendor .",
+        "lint": "parallel-lint --exclude vendor --exclude .git .",
         "test": [
             "composer lint"
         ]

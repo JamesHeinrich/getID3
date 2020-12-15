@@ -58,6 +58,7 @@ class Ivf extends Handler
 			$info['video']['codec']           =         $info['ivf']['header']['fourcc'];
 
 			$info['ivf']['frame_count'] = 0;
+			$timestamp                  = 0;
 			while (!$this->feof()) {
 				if ($frameheader = $this->fread(12)) {
 					$framesize = Utils::LittleEndian2Int(substr($frameheader, 0, 4)); // size of frame in bytes (not including the 12-byte header)

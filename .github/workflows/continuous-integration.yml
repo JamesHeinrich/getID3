@@ -1,0 +1,53 @@
+name: "CI"
+
+on: ['push', 'pull_request']
+
+jobs:
+  lint:
+    name: "Lint"
+    runs-on: "ubuntu-latest"
+    continue-on-error: ${{ matrix.experimental }}
+    strategy:
+      fail-fast: false
+      matrix:
+        php-version:
+          - "5.4"
+          - "5.5"
+          - "5.6"
+          - "7.0"
+          - "7.1"
+          - "7.2"
+          - "7.3"
+          - "7.4"
+          - "8.0"
+        experimental:
+          - false
+        include:
+          - php-version: "8.1"
+            experimental: true
+            composer-options: "--ignore-platform-reqs"
+    steps:
+      - uses: "actions/checkout@v2"
+      - uses: "shivammathur/setup-php@v2"
+        with:
+          php-version: "${{ matrix.php-version }}"
+          coverage: "none"
+      - uses: "ramsey/composer-install@v1"
+        with:
+          composer-options: "${{ matrix.composer-options }}"
+      - name: "Run the linter"
+        run: "composer lint -- --colors"
+
+  static-analysis:
+    name: "Static Analysis"
+    runs-on: "ubuntu-latest"
+    steps:
+      - uses: "actions/checkout@v2"
+      - uses: "shivammathur/setup-php@v2"
+        with:
+          php-version: "7.4"
+          tools: "phpstan:0.12.62"
+          coverage: "none"
+      - uses: "ramsey/composer-install@v1"
+      - name: "Run PHPStan"
+        run: "phpstan analyse -c phpstan.neon -l 4 src tests"

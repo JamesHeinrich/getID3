@@ -72,6 +72,7 @@ getid3_iso                          Module\Misc\Iso
 getid3_msoffice                     Module\Misc\MsOffice
 getid3_par2                         Module\Misc\Par2
 getid3_pdf                          Module\Misc\Pdf
+getid3_torrent                      Module\Misc\Torrent
 getid3_apetag                       Module\Tag\ApeTag
 getid3_id3v1                        Module\Tag\ID3v1
 getid3_id3v2                        Module\Tag\ID3v2

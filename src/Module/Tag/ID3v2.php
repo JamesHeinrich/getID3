@@ -2443,7 +2443,8 @@ class ID3v2 extends Handler
 			TMM	Manats
 			TND	Dinars
 			TOP	Pa'anga
-			TRL	Liras
+			TRL	Liras (old)
+			TRY	Liras
 			TTD	Dollars
 			TVD	Tuvalu Dollars
 			TWD	New Dollars
@@ -2644,6 +2645,7 @@ class ID3v2 extends Handler
 			TND	Tunisia
 			TOP	Tonga
 			TRL	Turkey
+			TRY	Turkey
 			TTD	Trinidad and Tobago
 			TVD	Tuvalu
 			TWD	Taiwan

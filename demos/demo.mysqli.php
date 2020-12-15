@@ -21,8 +21,9 @@ die('Due to a security issue, this demo has been disabled. It can be enabled by 
 
 
 // OPTIONS:
-$getid3_demo_mysqli_encoding = 'UTF-8';
-$getid3_demo_mysqli_md5_data = false;        // All data hashes are by far the slowest part of scanning
+$getid3_demo_mysqli_encoding_getid3 = 'UTF-8';
+$getid3_demo_mysqli_encoding_mysqli = 'utf8';  // https://dev.mysql.com/doc/refman/8.0/en/charset-charsets.html
+$getid3_demo_mysqli_md5_data = false;          // All data hashes are by far the slowest part of scanning, recommended to leave disabled
 $getid3_demo_mysqli_md5_file = false;
 
 define('GETID3_DB_HOST',  'localhost');
@@ -42,7 +43,7 @@ if ($con = mysqli_connect(GETID3_DB_HOST, GETID3_DB_USER, GETID3_DB_PASS)){
 	die('Could not connect to MySQL host: <blockquote style="background-color: #FF9933; padding: 10px;">'.mysqli_error($con).'</blockquote>');
 }
 
-if (mysqli_select_db($con,GETID3_DB_DB)){
+if (mysqli_select_db($con, GETID3_DB_DB)){
 	// great
 } else {
 	$errormessage = ob_get_contents();
@@ -51,11 +52,15 @@ if (mysqli_select_db($con,GETID3_DB_DB)){
 }
 ob_end_clean();
 
+if (!mysqli_set_charset($con, $getid3_demo_mysqli_encoding_mysqli)) {
+	die('Could not mysqli_set_charset('.htmlentities($getid3_demo_mysqli_encoding_mysqli).')');
+}
+
 // Initialize getID3 engine
 $getID3 = new GetID3\GetID3;
 $getID3->setOption(array(
 	'option_md5_data' => $getid3_demo_mysqli_md5_data,
-	'encoding'        => $getid3_demo_mysqli_encoding,
+	'encoding'        => $getid3_demo_mysqli_encoding_getid3,
 ));
 
 
@@ -113,7 +118,8 @@ function RenameFileFromTo($from, $to, &$results) {
 		ob_start();
 		if (rename($from, $to)) {
 			ob_end_clean();
-			$SQLquery  = 'DELETE FROM `'.mysqli_real_escape_string($con, GETID3_DB_TABLE).'`';
+			$SQLquery  = 'DELETE';
+			$SQLquery .= ' FROM `'.mysqli_real_escape_string($con, GETID3_DB_TABLE).'`';
 			$SQLquery .= ' WHERE (`filename` = "'.mysqli_real_escape_string($con, $from).'")';
 			mysqli_query_safe($con, $SQLquery);
 			$results = '<span style="color: #008000;">Successfully renamed';
@@ -166,7 +172,7 @@ function mysqli_query_safe($con, $SQLquery) {
 	$result = mysqli_query($con, $SQLquery);
 	$TimeSpentQuerying += (microtime(true) - $starttime);
 	if (mysqli_error($con)) {
-		die('<div style="color: red; padding: 10px; margin: 10px; border: 3px red ridge;"><div style="font-weight: bold;">SQL error:</div><div style="color: blue; padding: 10px;">'.htmlentities(mysqli_error($con)).'</div><hr size="1"><pre>'.htmlentities($SQLquery).'</pre></div>');
+		die('<div style="color: red; padding: 10px; margin: 10px; border: 3px red ridge;"><div style="font-weight: bold;">SQL error:</div><div style="color: blue; padding: 10px;">'.htmlentities(mysqli_error($con)).'</div><hr size="1"><div style="font-family: monospace;">'.htmlentities($SQLquery, ENT_SUBSTITUTE).'</div></div>');
 	}
 	return $result;
 }
@@ -214,38 +220,38 @@ if (!empty($_REQUEST['scan'])) {
 }
 if (!mysqli_table_exists($con, GETID3_DB_TABLE)) {
 	$SQLquery  = "CREATE TABLE `".mysqli_real_escape_string($con, GETID3_DB_TABLE)."` (";
-	$SQLquery .= " `ID` int(11) unsigned NOT NULL auto_increment,";
-	$SQLquery .= " `filename` text NOT NULL,";
-	$SQLquery .= " `last_modified` int(11) NOT NULL default '0',";
-	$SQLquery .= " `md5_file` varchar(32) NOT NULL default '',";
-	$SQLquery .= " `md5_data` varchar(32) NOT NULL default '',";
-	$SQLquery .= " `md5_data_source` varchar(32) NOT NULL default '',";
-	$SQLquery .= " `filesize` int(10) unsigned NOT NULL default '0',";
-	$SQLquery .= " `fileformat` varchar(255) NOT NULL default '',";
-	$SQLquery .= " `audio_dataformat` varchar(255) NOT NULL default '',";
-	$SQLquery .= " `video_dataformat` varchar(255) NOT NULL default '',";
-	$SQLquery .= " `audio_bitrate` float NOT NULL default '0',";
-	$SQLquery .= " `video_bitrate` float NOT NULL default '0',";
-	$SQLquery .= " `playtime_seconds` varchar(255) NOT NULL default '',";
-	$SQLquery .= " `tags` varchar(255) NOT NULL default '',";
-	$SQLquery .= " `artist` varchar(255) NOT NULL default '',";
-	$SQLquery .= " `title` varchar(255) NOT NULL default '',";
-	$SQLquery .= " `remix` varchar(255) NOT NULL default '',";
-	$SQLquery .= " `album` varchar(255) NOT NULL default '',";
-	$SQLquery .= " `genre` varchar(255) NOT NULL default '',";
-	$SQLquery .= " `comment` text NOT NULL,";
-	$SQLquery .= " `track` varchar(7) NOT NULL default '',";
-	$SQLquery .= " `comments_all` longtext NOT NULL,";
-	$SQLquery .= " `comments_id3v2` longtext NOT NULL,";
-	$SQLquery .= " `comments_ape` longtext NOT NULL,";
-	$SQLquery .= " `comments_lyrics3` longtext NOT NULL,";
-	$SQLquery .= " `comments_id3v1` text NOT NULL,";
-	$SQLquery .= " `warning` longtext NOT NULL,";
-	$SQLquery .= " `error` longtext NOT NULL,";
-	$SQLquery .= " `track_volume` float NOT NULL default '0',";
-	$SQLquery .= " `encoder_options` varchar(255) NOT NULL default '',";
-	$SQLquery .= " `vbr_method` varchar(255) NOT NULL default '',";
-	$SQLquery .= " PRIMARY KEY (`ID`)";
+	$SQLquery .= "`ID` int(11) unsigned NOT NULL auto_increment";
+	$SQLquery .= ", `filename` text NOT NULL";
+	$SQLquery .= ", `last_modified` int(11) NOT NULL default '0'";
+	$SQLquery .= ", `md5_file` varchar(32) NOT NULL default ''";
+	$SQLquery .= ", `md5_data` varchar(32) NOT NULL default ''";
+	$SQLquery .= ", `md5_data_source` varchar(32) NOT NULL default ''";
+	$SQLquery .= ", `filesize` int(10) unsigned NOT NULL default '0'";
+	$SQLquery .= ", `fileformat` varchar(255) NOT NULL default ''";
+	$SQLquery .= ", `audio_dataformat` varchar(255) NOT NULL default ''";
+	$SQLquery .= ", `video_dataformat` varchar(255) NOT NULL default ''";
+	$SQLquery .= ", `audio_bitrate` float NOT NULL default '0'";
+	$SQLquery .= ", `video_bitrate` float NOT NULL default '0'";
+	$SQLquery .= ", `playtime_seconds` varchar(255) NOT NULL default ''";
+	$SQLquery .= ", `tags` varchar(255) NOT NULL default ''";
+	$SQLquery .= ", `artist` varchar(255) NOT NULL default ''";
+	$SQLquery .= ", `title` varchar(255) NOT NULL default ''";
+	$SQLquery .= ", `remix` varchar(255) NOT NULL default ''";
+	$SQLquery .= ", `album` varchar(255) NOT NULL default ''";
+	$SQLquery .= ", `genre` varchar(255) NOT NULL default ''";
+	$SQLquery .= ", `comment` text NOT NULL";
+	$SQLquery .= ", `track` varchar(7) NOT NULL default ''";
+	$SQLquery .= ", `comments_all` longblob NOT NULL";
+	$SQLquery .= ", `comments_id3v2` longblob NOT NULL";
+	$SQLquery .= ", `comments_ape` longblob NOT NULL";
+	$SQLquery .= ", `comments_lyrics3` longblob NOT NULL";
+	$SQLquery .= ", `comments_id3v1` blob NOT NULL";
+	$SQLquery .= ", `warning` longtext NOT NULL";
+	$SQLquery .= ", `error` longtext NOT NULL";
+	$SQLquery .= ", `track_volume` float NOT NULL default '0'";
+	$SQLquery .= ", `encoder_options` varchar(255) NOT NULL default ''";
+	$SQLquery .= ", `vbr_method` varchar(255) NOT NULL default ''";
+	$SQLquery .= ", PRIMARY KEY (`ID`)";
 	$SQLquery .= ")";
 	mysqli_query_safe($con, $SQLquery);
 }
@@ -278,19 +284,20 @@ if (!isset($ExistingTableFields['remix'])) { // Added in 1.7.3b1
 	mysqli_query_safe($con, 'ALTER TABLE `'.mysqli_real_escape_string($con, GETID3_DB_TABLE).'` ADD `parody` VARCHAR(255) default "" NOT NULL AFTER `alternate_name`');
 	mysqli_query_safe($con, 'OPTIMIZE TABLE `'.mysqli_real_escape_string($con, GETID3_DB_TABLE).'`');
 }
-if (isset($ExistingTableFields['comments_all']) && ($ExistingTableFields['comments_all']['Type'] != 'longtext')) { // Changed in 1.9.0
+if (isset($ExistingTableFields['comments_all']) && ($ExistingTableFields['comments_all']['Type'] != 'longblob')) { // Changed to "longtext" in 1.9.0, changed to "longblob" in 1.9.20-202010140821
 	echo '<b>changing comments fields from text to longtext</b><br>';
 	// no need to change id3v1
-	mysqli_query_safe($con, 'ALTER TABLE `'.mysqli_real_escape_string($con, GETID3_DB_TABLE).'` CHANGE `comments_all`     `comments_all`     LONGTEXT NOT NULL');
-	mysqli_query_safe($con, 'ALTER TABLE `'.mysqli_real_escape_string($con, GETID3_DB_TABLE).'` CHANGE `comments_id3v2`   `comments_id3v2`   LONGTEXT NOT NULL');
-	mysqli_query_safe($con, 'ALTER TABLE `'.mysqli_real_escape_string($con, GETID3_DB_TABLE).'` CHANGE `comments_ape`     `comments_ape`     LONGTEXT NOT NULL');
-	mysqli_query_safe($con, 'ALTER TABLE `'.mysqli_real_escape_string($con, GETID3_DB_TABLE).'` CHANGE `comments_lyrics3` `comments_lyrics3` LONGTEXT NOT NULL');
+	mysqli_query_safe($con, 'ALTER TABLE `'.mysqli_real_escape_string($con, GETID3_DB_TABLE).'` CHANGE `comments_all`     `comments_all`     LONGBLOB NOT NULL');
+	mysqli_query_safe($con, 'ALTER TABLE `'.mysqli_real_escape_string($con, GETID3_DB_TABLE).'` CHANGE `comments_id3v2`   `comments_id3v2`   LONGBLOB NOT NULL');
+	mysqli_query_safe($con, 'ALTER TABLE `'.mysqli_real_escape_string($con, GETID3_DB_TABLE).'` CHANGE `comments_ape`     `comments_ape`     LONGBLOB NOT NULL');
+	mysqli_query_safe($con, 'ALTER TABLE `'.mysqli_real_escape_string($con, GETID3_DB_TABLE).'` CHANGE `comments_lyrics3` `comments_lyrics3` LONGBLOB NOT NULL');
+	mysqli_query_safe($con, 'ALTER TABLE `'.mysqli_real_escape_string($con, GETID3_DB_TABLE).'` CHANGE `comments_id3v1`   `comments_id3v1`       BLOB NOT NULL');
 	mysqli_query_safe($con, 'ALTER TABLE `'.mysqli_real_escape_string($con, GETID3_DB_TABLE).'` CHANGE `warning`          `warning`          LONGTEXT NOT NULL');
 	mysqli_query_safe($con, 'ALTER TABLE `'.mysqli_real_escape_string($con, GETID3_DB_TABLE).'` CHANGE `error`            `error`            LONGTEXT NOT NULL');
 }
 
 
-function SynchronizeAllTags($filename, $synchronizefrom='all', $synchronizeto='A12', &$errors) {
+function SynchronizeAllTags($filename, $synchronizefrom='all', $synchronizeto='A12', &$errors = array()) {
 	global $getID3;
 
 	set_time_limit(30);
@@ -306,7 +313,8 @@ function SynchronizeAllTags($filename, $synchronizefrom='all', $synchronizeto='A
 		die('ERROR: $ThisFileInfo[tags]['.$synchronizefrom.'] does not exist');
 	}
 
-	$SQLquery  = 'DELETE FROM `'.mysqli_real_escape_string($con, GETID3_DB_TABLE).'`';
+	$SQLquery  = 'DELETE';
+	$SQLquery .= ' FROM `'.mysqli_real_escape_string($con, GETID3_DB_TABLE).'`';
 	$SQLquery .= ' WHERE (`filename` = "'.mysqli_real_escape_string($con, $filename).'")';
 	mysqli_query_safe($con, $SQLquery);
 
@@ -344,7 +352,8 @@ $IgnoreNoTagFormats = array('', 'png', 'jpg', 'gif', 'bmp', 'swf', 'pdf', 'zip',
 
 if (!empty($_REQUEST['scan']) || !empty($_REQUEST['newscan']) || !empty($_REQUEST['rescanerrors'])) {
 
-	$SQLquery  = 'DELETE from `'.mysqli_real_escape_string($con, GETID3_DB_TABLE).'`';
+	$SQLquery  = 'DELETE';
+	$SQLquery .= ' FROM `'.mysqli_real_escape_string($con, GETID3_DB_TABLE).'`';
 	$SQLquery .= ' WHERE (`fileformat` = "")';
 	mysqli_query_safe($con, $SQLquery);
 
@@ -366,7 +375,8 @@ if (!empty($_REQUEST['scan']) || !empty($_REQUEST['newscan']) || !empty($_REQUES
 
 			if (!file_exists($row['filename'])) {
 				echo '<b>File missing: '.$row['filename'].'</b><br>';
-				$SQLquery = 'DELETE FROM `'.mysqli_real_escape_string($con, GETID3_DB_TABLE).'`';
+				$SQLquery  = 'DELETE';
+				$SQLquery .= ' FROM `'.mysqli_real_escape_string($con, GETID3_DB_TABLE).'`';
 				$SQLquery .= ' WHERE (`filename` = "'.mysqli_real_escape_string($con, $row['filename']).'")';
 				mysqli_query_safe($con, $SQLquery);
 			} else {
@@ -390,7 +400,8 @@ if (!empty($_REQUEST['scan']) || !empty($_REQUEST['newscan']) || !empty($_REQUES
 		$DupesDeleted = 0;
 		while ($row = mysqli_fetch_array($result)) {
 			set_time_limit(30);
-			$SQLquery  = 'DELETE FROM `'.mysqli_real_escape_string($con, GETID3_DB_TABLE).'`';
+			$SQLquery  = 'DELETE';
+			$SQLquery .= ' FROM `'.mysqli_real_escape_string($con, GETID3_DB_TABLE).'`';
 			$SQLquery .= ' WHERE `filename` LIKE "'.mysqli_real_escape_string($con, $row['filename']).'"';
 			mysqli_query_safe($con, $SQLquery);
 			$DupesDeleted++;
@@ -553,40 +564,38 @@ if (!empty($_REQUEST['scan']) || !empty($_REQUEST['newscan']) || !empty($_REQUES
 
 			} elseif (!empty($_REQUEST['scan']) || !empty($_REQUEST['newscan'])) {
 
-				//$SQLquery  = 'INSERT INTO `'.mysqli_real_escape_string($con, GETID3_DB_TABLE).'` (`filename`, `last_modified`, `md5_file`, `md5_data`, `md5_data_source`, `filesize`, `fileformat`, `audio_dataformat`, `video_dataformat`, `audio_bitrate`, `video_bitrate`, `playtime_seconds`, `artist`, `title`, `remix`, `album`, `genre`, `comment`, `track`, `comments_all`, `comments_id3v2`, `comments_ape`, `comments_lyrics3`, `comments_id3v1`, `warning`, `error`, `encoder_options`, `vbr_method`, `track_volume`) VALUES (';
-				$SQLquery  = 'INSERT INTO `'.mysqli_real_escape_string($con, GETID3_DB_TABLE).'` (`filename`, `last_modified`, `md5_file`, `md5_data`, `md5_data_source`, `filesize`, `fileformat`, `audio_dataformat`, `video_dataformat`, `audio_bitrate`, `video_bitrate`, `playtime_seconds`, `tags`, `artist`, `title`, `remix`, `album`, `genre`, `comment`, `track`, `comments_all`, `comments_id3v2`, `comments_ape`, `comments_lyrics3`, `comments_id3v1`, `warning`, `error`, `encoder_options`, `vbr_method`, `track_volume`) VALUES (';
-				$SQLquery .= '"'.mysqli_real_escape_string($con, !empty($ThisFileInfo['filenamepath']                  ) ?                          $ThisFileInfo['filenamepath']                    : '').'", ';
-				$SQLquery .= '"'.mysqli_real_escape_string($con, !empty($ThisFileInfo['file_modified_time']            ) ?                          $ThisFileInfo['file_modified_time']              : '').'", ';
-				$SQLquery .= '"'.mysqli_real_escape_string($con, !empty($ThisFileInfo['md5_file']                      ) ?                          $ThisFileInfo['md5_file']                        : '').'", ';
-				$SQLquery .= '"'.mysqli_real_escape_string($con, !empty($ThisFileInfo['md5_data']                      ) ?                          $ThisFileInfo['md5_data']                        : '').'", ';
-				$SQLquery .= '"'.mysqli_real_escape_string($con, !empty($ThisFileInfo['md5_data_source']               ) ?                          $ThisFileInfo['md5_data_source']                 : '').'", ';
-				$SQLquery .= '"'.mysqli_real_escape_string($con, !empty($ThisFileInfo['filesize']                      ) ?                          $ThisFileInfo['filesize']                        :  0).'", ';
-				$SQLquery .= '"'.mysqli_real_escape_string($con, !empty($ThisFileInfo['fileformat']                    ) ?                          $ThisFileInfo['fileformat']                      : '').'", ';
-				$SQLquery .= '"'.mysqli_real_escape_string($con, !empty($ThisFileInfo['audio']['dataformat']           ) ?                          $ThisFileInfo['audio']['dataformat']             : '').'", ';
-				$SQLquery .= '"'.mysqli_real_escape_string($con, !empty($ThisFileInfo['video']['dataformat']           ) ?                          $ThisFileInfo['video']['dataformat']             : '').'", ';
-				$SQLquery .= '"'.mysqli_real_escape_string($con, !empty($ThisFileInfo['audio']['bitrate']              ) ?                 floatval($ThisFileInfo['audio']['bitrate'])               :  0).'", ';
-				$SQLquery .= '"'.mysqli_real_escape_string($con, !empty($ThisFileInfo['video']['bitrate']              ) ?                 floatval($ThisFileInfo['video']['bitrate'])               :  0).'", ';
-				$SQLquery .= '"'.mysqli_real_escape_string($con, !empty($ThisFileInfo['playtime_seconds']              ) ?                 floatval($ThisFileInfo['playtime_seconds'])               :  0).'", ';
-				//$SQLquery .= '"'.mysqli_real_escape_string($con, !empty($ThisFileInfo['tags']                          ) ?            implode("\t", $ThisFileInfo['tags'])                           : '').'", ';
-				$SQLquery .= '"'.mysqli_real_escape_string($con, !empty($ThisFileInfo['tags']                          ) ? implode("\t", array_keys($ThisFileInfo['tags']))                          : '').'", ';
-				$SQLquery .= '"'.mysqli_real_escape_string($con, !empty($ThisFileInfo['comments']['artist']            ) ?            implode("\t", $ThisFileInfo['comments']['artist'])             : '').'", ';
-				$SQLquery .= '"'.mysqli_real_escape_string($con, $this_track_title).'", ';
-				$SQLquery .= '"'.mysqli_real_escape_string($con, $this_track_remix).'", ';
-				$SQLquery .= '"'.mysqli_real_escape_string($con, !empty($ThisFileInfo['comments']['album']             ) ?            implode("\t", $ThisFileInfo['comments']['album'])              : '').'", ';
-				$SQLquery .= '"'.mysqli_real_escape_string($con, !empty($ThisFileInfo['comments']['genre']             ) ?            implode("\t", $ThisFileInfo['comments']['genre'])              : '').'", ';
-				$SQLquery .= '"'.mysqli_real_escape_string($con, !empty($ThisFileInfo['comments']['comment']           ) ?            implode("\t", $ThisFileInfo['comments']['comment'])            : '').'", ';
-				$SQLquery .= '"'.mysqli_real_escape_string($con, $this_track_track).'", ';
-				$SQLquery .= '"'.mysqli_real_escape_string($con, !empty($ThisFileInfo['comments']                      ) ?                serialize($ThisFileInfo['comments'])                       : '').'", ';
-				$SQLquery .= '"'.mysqli_real_escape_string($con, !empty($ThisFileInfo['tags']['id3v2']                 ) ?                serialize($ThisFileInfo['tags']['id3v2'])                  : '').'", ';
-				$SQLquery .= '"'.mysqli_real_escape_string($con, !empty($ThisFileInfo['tags']['ape']                   ) ?                serialize($ThisFileInfo['tags']['ape'])                    : '').'", ';
-				$SQLquery .= '"'.mysqli_real_escape_string($con, !empty($ThisFileInfo['tags']['lyrics3']               ) ?                serialize($ThisFileInfo['tags']['lyrics3'])                : '').'", ';
-				$SQLquery .= '"'.mysqli_real_escape_string($con, !empty($ThisFileInfo['tags']['id3v1']                 ) ?                serialize($ThisFileInfo['tags']['id3v1'])                  : '').'", ';
-				$SQLquery .= '"'.mysqli_real_escape_string($con, !empty($ThisFileInfo['warning']                       ) ?            implode("\t", $ThisFileInfo['warning'])                        : '').'", ';
-				$SQLquery .= '"'.mysqli_real_escape_string($con, !empty($ThisFileInfo['error']                         ) ?            implode("\t", $ThisFileInfo['error'])                          : '').'", ';
-				$SQLquery .= '"'.mysqli_real_escape_string($con, trim((!empty($ThisFileInfo['audio']['encoder']) ? $ThisFileInfo['audio']['encoder'] : '').' '.(!empty($ThisFileInfo['audio']['encoder_options']) ? $ThisFileInfo['audio']['encoder_options'] : ''))).'", ';
-				$SQLquery .= '"'.mysqli_real_escape_string($con, !empty($ThisFileInfo['mpeg']['audio']['LAME']) ? 'LAME' : (!empty($ThisFileInfo['mpeg']['audio']['VBR_method']) ? $ThisFileInfo['mpeg']['audio']['VBR_method'] : '')).'", ';
-				$SQLquery .= '"'.mysqli_real_escape_string($con, !empty($ThisFileInfo['replay_gain']['track']['volume']) ?                 floatval($ThisFileInfo['replay_gain']['track']['volume']) :  0).'")';
-
+				$SQLquery  = 'INSERT INTO `'.mysqli_real_escape_string($con, GETID3_DB_TABLE).'` (`filename`, `last_modified`, `md5_file`, `md5_data`, `md5_data_source`, `filesize`, `fileformat`, `audio_dataformat`, `video_dataformat`, `audio_bitrate`, `video_bitrate`, `playtime_seconds`, `tags`, `artist`, `title`, `remix`, `album`, `genre`, `comment`, `track`, `comments_all`, `comments_id3v2`, `comments_ape`, `comments_lyrics3`, `comments_id3v1`, `warning`, `error`, `track_volume`, `encoder_options`, `vbr_method`) VALUES (';
+				$SQLquery .=   '"'.mysqli_real_escape_string($con, !empty($ThisFileInfo['filenamepath']                  ) ?                          $ThisFileInfo['filenamepath']                    : '').'"'; // filename
+				$SQLquery .= ', "'.mysqli_real_escape_string($con, !empty($ThisFileInfo['file_modified_time']            ) ?                          $ThisFileInfo['file_modified_time']              : '').'"'; // last_modified
+				$SQLquery .= ', "'.mysqli_real_escape_string($con, !empty($ThisFileInfo['md5_file']                      ) ?                          $ThisFileInfo['md5_file']                        : '').'"'; // md5_file
+				$SQLquery .= ', "'.mysqli_real_escape_string($con, !empty($ThisFileInfo['md5_data']                      ) ?                          $ThisFileInfo['md5_data']                        : '').'"'; // md5_data
+				$SQLquery .= ', "'.mysqli_real_escape_string($con, !empty($ThisFileInfo['md5_data_source']               ) ?                          $ThisFileInfo['md5_data_source']                 : '').'"'; // md5_data_source
+				$SQLquery .= ', "'.mysqli_real_escape_string($con, !empty($ThisFileInfo['filesize']                      ) ?                          $ThisFileInfo['filesize']                        :  0).'"'; // filesize
+				$SQLquery .= ', "'.mysqli_real_escape_string($con, !empty($ThisFileInfo['fileformat']                    ) ?                          $ThisFileInfo['fileformat']                      : '').'"'; // fileformat
+				$SQLquery .= ', "'.mysqli_real_escape_string($con, !empty($ThisFileInfo['audio']['dataformat']           ) ?                          $ThisFileInfo['audio']['dataformat']             : '').'"'; // audio_dataformat
+				$SQLquery .= ', "'.mysqli_real_escape_string($con, !empty($ThisFileInfo['video']['dataformat']           ) ?                          $ThisFileInfo['video']['dataformat']             : '').'"'; // video_dataformat
+				$SQLquery .= ', "'.mysqli_real_escape_string($con, !empty($ThisFileInfo['audio']['bitrate']              ) ?                 floatval($ThisFileInfo['audio']['bitrate'])               :  0).'"'; // audio_bitrate
+				$SQLquery .= ', "'.mysqli_real_escape_string($con, !empty($ThisFileInfo['video']['bitrate']              ) ?                 floatval($ThisFileInfo['video']['bitrate'])               :  0).'"'; // video_bitrate
+				$SQLquery .= ', "'.mysqli_real_escape_string($con, !empty($ThisFileInfo['playtime_seconds']              ) ?                 floatval($ThisFileInfo['playtime_seconds'])               :  0).'"'; // playtime_seconds
+				$SQLquery .= ', "'.mysqli_real_escape_string($con, !empty($ThisFileInfo['tags']                          ) ? implode("\t", array_keys($ThisFileInfo['tags']))                          : '').'"'; // tags
+				$SQLquery .= ', "'.mysqli_real_escape_string($con, !empty($ThisFileInfo['comments']['artist']            ) ?            implode("\t", $ThisFileInfo['comments']['artist'])             : '').'"'; // artist
+				$SQLquery .= ', "'.mysqli_real_escape_string($con,                                                                                    $this_track_title                                    ).'"'; // title
+				$SQLquery .= ', "'.mysqli_real_escape_string($con,                                                                                    $this_track_remix                                    ).'"'; // remix
+				$SQLquery .= ', "'.mysqli_real_escape_string($con, !empty($ThisFileInfo['comments']['album']             ) ?            implode("\t", $ThisFileInfo['comments']['album'])              : '').'"'; // album
+				$SQLquery .= ', "'.mysqli_real_escape_string($con, !empty($ThisFileInfo['comments']['genre']             ) ?            implode("\t", $ThisFileInfo['comments']['genre'])              : '').'"'; // genre
+				$SQLquery .= ', "'.mysqli_real_escape_string($con, !empty($ThisFileInfo['comments']['comment']           ) ?            implode("\t", $ThisFileInfo['comments']['comment'])            : '').'"'; // comment
+				$SQLquery .= ', "'.mysqli_real_escape_string($con,                                                                                    $this_track_track                                    ).'"'; // track
+				$SQLquery .= ', "'.mysqli_real_escape_string($con, !empty($ThisFileInfo['comments']                      ) ?                serialize($ThisFileInfo['comments'])                       : '').'"'; // comments_all
+				$SQLquery .= ', "'.mysqli_real_escape_string($con, !empty($ThisFileInfo['tags']['id3v2']                 ) ?                serialize($ThisFileInfo['tags']['id3v2'])                  : '').'"'; // comments_id3v2
+				$SQLquery .= ', "'.mysqli_real_escape_string($con, !empty($ThisFileInfo['tags']['ape']                   ) ?                serialize($ThisFileInfo['tags']['ape'])                    : '').'"'; // comments_ape
+				$SQLquery .= ', "'.mysqli_real_escape_string($con, !empty($ThisFileInfo['tags']['lyrics3']               ) ?                serialize($ThisFileInfo['tags']['lyrics3'])                : '').'"'; // comments_lyrics3
+				$SQLquery .= ', "'.mysqli_real_escape_string($con, !empty($ThisFileInfo['tags']['id3v1']                 ) ?                serialize($ThisFileInfo['tags']['id3v1'])                  : '').'"'; // comments_id3v1
+				$SQLquery .= ', "'.mysqli_real_escape_string($con, !empty($ThisFileInfo['warning']                       ) ?            implode("\t", $ThisFileInfo['warning'])                        : '').'"'; // warning
+				$SQLquery .= ', "'.mysqli_real_escape_string($con, !empty($ThisFileInfo['error']                         ) ?            implode("\t", $ThisFileInfo['error'])                          : '').'"'; // error
+				$SQLquery .= ', "'.mysqli_real_escape_string($con, !empty($ThisFileInfo['replay_gain']['track']['volume']) ?                 floatval($ThisFileInfo['replay_gain']['track']['volume']) :  0).'"'; // track_volume
+				$SQLquery .= ', "'.mysqli_real_escape_string($con, trim((!empty($ThisFileInfo['audio']['encoder']) ? $ThisFileInfo['audio']['encoder'] : '').' '.(!empty($ThisFileInfo['audio']['encoder_options']) ? $ThisFileInfo['audio']['encoder_options'] : ''))).'"'; // encoder_options
+				$SQLquery .= ', "'.mysqli_real_escape_string($con, !empty($ThisFileInfo['mpeg']['audio']['LAME']) ? 'LAME' : (!empty($ThisFileInfo['mpeg']['audio']['VBR_method']) ? $ThisFileInfo['mpeg']['audio']['VBR_method'] : '')).'"'; // vbr_method
+				$SQLquery .= ')';
 			}
 			flush();
 			mysqli_query_safe($con, $SQLquery);
@@ -628,7 +637,8 @@ if (!empty($_REQUEST['scan']) || !empty($_REQUEST['newscan']) || !empty($_REQUES
 		} else {
 
 			$MissingTrackVolumeFilesDeleted++;
-			$SQLquery  = 'DELETE FROM `'.mysqli_real_escape_string($con, GETID3_DB_TABLE).'`';
+			$SQLquery  = 'DELETE';
+			$SQLquery .= ' FROM `'.mysqli_real_escape_string($con, GETID3_DB_TABLE).'`';
 			$SQLquery .= ' WHERE (`filename` = "'.mysqli_real_escape_string($con, $row['filename']).'")';
 			mysqli_query_safe($con, $SQLquery);
 
@@ -651,7 +661,8 @@ if (!empty($_REQUEST['scan']) || !empty($_REQUEST['newscan']) || !empty($_REQUES
 			break;
 		}
 		echo '<br>'.htmlentities($row['filename']).' (<font color="#FF9999">duplicate</font>)';
-		$SQLquery  = 'DELETE FROM `'.mysqli_real_escape_string($con, GETID3_DB_TABLE).'`';
+		$SQLquery  = 'DELETE';
+		$SQLquery .= ' FROM `'.mysqli_real_escape_string($con, GETID3_DB_TABLE).'`';
 		$SQLquery .= ' WHERE `filename` LIKE "'.mysqli_real_escape_string($con, $row['filename']).'"';
 		mysqli_query_safe($con, $SQLquery);
 		$DupesDeleted++;
@@ -688,7 +699,8 @@ if (!empty($_REQUEST['scan']) || !empty($_REQUEST['newscan']) || !empty($_REQUES
 			$totalremoved++;
 			echo '<br>'.htmlentities($row['filename']).' (<font color="#FF9999">'.$reason.'</font>)';
 			flush();
-			$SQLquery  = 'DELETE FROM `'.mysqli_real_escape_string($con, GETID3_DB_TABLE).'`';
+			$SQLquery  = 'DELETE';
+			$SQLquery .= ' FROM `'.mysqli_real_escape_string($con, GETID3_DB_TABLE).'`';
 			$SQLquery .= ' WHERE (`filename` = "'.mysqli_real_escape_string($con, $row['filename']).'")';
 			mysqli_query_safe($con, $SQLquery);
 
@@ -1702,26 +1714,26 @@ if (!empty($_REQUEST['scan']) || !empty($_REQUEST['newscan']) || !empty($_REQUES
 			}
 
 			echo '<tr>';
-			echo '<TD NOWRAP VALIGN="TOP">';
+			echo '<td nowrap valign="top">';
 			foreach ($filenames as $file) {
 				echo '<a href="'.htmlentities('demo.browse.php?deletefile='.urlencode($file).'&noalert=1').'" onClick="return confirm(\'Are you sure you want to delete '.addslashes($file).'? \n(this action cannot be un-done)\');" title="'.htmlentities('Permanently delete '."\n".$file, ENT_QUOTES).'" target="deletedupewindow">delete</a><br>';
 			}
 			echo '</td>';
-			echo '<TD NOWRAP VALIGN="TOP">';
+			echo '<td nowrap valign="top">';
 			foreach ($filenames as $file) {
 				echo '<a href="'.htmlentities($_SERVER['PHP_SELF'].'?m3ufilename='.urlencode($file)).'">play</a><br>';
 			}
 			echo '</td>';
-			echo '<TD VALIGN="MIDDLE" ALIGN="CENTER" ><a href="'.htmlentities($_SERVER['PHP_SELF'].'?artisttitledupes=1&m3uartist='.urlencode($artists[0]).'&m3utitle='.urlencode($titles[0])).'">play all</a></td>';
-			echo '<TD VALIGN="TOP" NOWRAP>'.implode('<br>', $artists).'</td>';
-			echo '<TD VALIGN="TOP" NOWRAP>'.implode('<br>', $titles).'</td>';
-			echo '<TD VALIGN="TOP" NOWRAP>'.implode('<br>', $remixes).'</td>';
-			echo '<TD VALIGN="TOP" NOWRAP ALIGN="RIGHT">'.implode('<br>', $bitrates).'</td>';
-			echo '<TD VALIGN="TOP" NOWRAP ALIGN="RIGHT">'.implode('<br>', $playtimes).'</td>';
+			echo '<td valign="middle" align="center" ><a href="'.htmlentities($_SERVER['PHP_SELF'].'?artisttitledupes=1&m3uartist='.urlencode($artists[0]).'&m3utitle='.urlencode($titles[0])).'">play all</a></td>';
+			echo '<td valign="top" nowrap>'.implode('<br>', $artists).'</td>';
+			echo '<td valign="top" nowrap>'.implode('<br>', $titles).'</td>';
+			echo '<td valign="top" nowrap>'.implode('<br>', $remixes).'</td>';
+			echo '<td valign="top" nowrap align="right">'.implode('<br>', $bitrates).'</td>';
+			echo '<td valign="top" nowrap align="right">'.implode('<br>', $playtimes).'</td>';
 
-			echo '<TD VALIGN="TOP" NOWRAP ALIGN="LEFT"><table border="0" cellspacing="0" cellpadding="0">';
+			echo '<td valign="top" nowrap align="left"><table border="0" cellspacing="0" cellpadding="0">';
 			foreach ($filenames as $file) {
-				echo '<tr><TD NOWRAP ALIGN="RIGHT"><a href="'.htmlentities('demo.browse.php?filename='.rawurlencode($file)).'"><span style="color: #339966;">'.dirname($file).'/</span>'.basename($file).'</a></td></tr>';
+				echo '<tr><td nowrap align="right"><a href="'.htmlentities('demo.browse.php?filename='.rawurlencode($file)).'"><span style="color: #339966;">'.dirname($file).'/</span>'.basename($file).'</a></td></tr>';
 			}
 			echo '</table></td>';
 

@@ -51,7 +51,7 @@ class Dsdiff extends Handler
 		$info['dsdiff'] = array();
 		while (!$this->feof() && ($ChunkHeader = $this->fread(12))) {
 			if (strlen($ChunkHeader) < 12) {
-				$this->error('Expecting chunk header at offset '.$thisChunk['offset'].', found insufficient data in file, aborting parsing');
+				$this->error('Expecting chunk header at offset '.(isset($thisChunk['offset']) ? $thisChunk['offset'] : 'N/A').', found insufficient data in file, aborting parsing');
 				break;
 			}
 			$thisChunk = array();
@@ -294,7 +294,7 @@ class Dsdiff extends Handler
 	}
 
 	/**
-	 * @param int $cmtType
+	 * @param int $markType
 	 *
 	 * @return string
 	 */

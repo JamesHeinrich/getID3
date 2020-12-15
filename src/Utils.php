@@ -877,12 +877,18 @@ class Utils
 	 */
 	public static function XML2array($XMLstring) {
 		if (function_exists('simplexml_load_string') && function_exists('libxml_disable_entity_loader')) {
-			// http://websec.io/2012/08/27/Preventing-XEE-in-PHP.html
-			// https://core.trac.wordpress.org/changeset/29378
-			$loader = libxml_disable_entity_loader(true);
+			if (PHP_VERSION_ID < 80000) {
+				// http://websec.io/2012/08/27/Preventing-XEE-in-PHP.html
+				// https://core.trac.wordpress.org/changeset/29378
+				// This function has been deprecated in PHP 8.0 because in libxml 2.9.0, external entity loading is
+				// disabled by default, so this function is no longer needed to protect against XXE attacks.
+				$loader = libxml_disable_entity_loader(true);
+			}
 			$XMLobject = simplexml_load_string($XMLstring, 'SimpleXMLElement', LIBXML_NOENT);
 			$return = self::SimpleXMLelement2array($XMLobject);
-			libxml_disable_entity_loader($loader);
+			if (PHP_VERSION_ID < 80000 && isset($loader)) {
+				libxml_disable_entity_loader($loader);
+			}
 			return $return;
 		}
 		return false;
@@ -1685,12 +1691,13 @@ class Utils
 										// new value is identical but shorter-than (or equal-length to) one already in comments - skip
 										break 2;
 									}
-								}
-								if (function_exists('mb_convert_encoding')) {
-									if (trim($value) == trim(substr(mb_convert_encoding($existingvalue, $ThisFileInfo['id3v1']['encoding'], $ThisFileInfo['encoding']), 0, 30))) {
-										// value stored in ID3v1 appears to be probably the multibyte value transliterated (badly) into ISO-8859-1 in ID3v1.
-										// As an example, Foobar2000 will do this if you tag a file with Chinese or Arabic or Cyrillic or something that doesn't fit into ISO-8859-1 the ID3v1 will consist of mostly "?" characters, one per multibyte unrepresentable character
-										break 2;
+
+									if (function_exists('mb_convert_encoding')) {
+										if (trim($value) == trim(substr(mb_convert_encoding($existingvalue, $ThisFileInfo['id3v1']['encoding'], $ThisFileInfo['encoding']), 0, 30))) {
+											// value stored in ID3v1 appears to be probably the multibyte value transliterated (badly) into ISO-8859-1 in ID3v1.
+											// As an example, Foobar2000 will do this if you tag a file with Chinese or Arabic or Cyrillic or something that doesn't fit into ISO-8859-1 the ID3v1 will consist of mostly "?" characters, one per multibyte unrepresentable character
+											break 2;
+										}
 									}
 								}
 
