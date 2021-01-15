@@ -1495,7 +1495,7 @@ class getID3
 						if (is_string($value)) {
 							$value = trim($value, " \r\n\t"); // do not trim nulls from $value!! Unicode characters will get mangled if trailing nulls are removed!
 						}
-						if ($value) {
+						if (isset($value) && $value !== "") {
 							if (!is_numeric($key)) {
 								$this->info['tags'][trim($tag_name)][trim($tag_key)][$key] = $value;
 							} else {
