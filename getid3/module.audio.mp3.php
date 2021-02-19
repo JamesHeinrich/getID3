@@ -903,17 +903,24 @@ class getid3_mp3 extends getid3_handler
 
 						// LAME CBR
 						if ($thisfile_mpeg_audio_lame_raw['vbr_method'] == 1) {
-
 							$thisfile_mpeg_audio['bitrate_mode'] = 'cbr';
-							$thisfile_mpeg_audio['bitrate'] = self::ClosestStandardMP3Bitrate($thisfile_mpeg_audio['bitrate']);
-							$info['audio']['bitrate'] = $thisfile_mpeg_audio['bitrate'];
-							//if (empty($thisfile_mpeg_audio['bitrate']) || (!empty($thisfile_mpeg_audio_lame['bitrate_min']) && ($thisfile_mpeg_audio_lame['bitrate_min'] != 255))) {
-							//	$thisfile_mpeg_audio['bitrate'] = $thisfile_mpeg_audio_lame['bitrate_min'];
-							//}
-
 						}
 
 					}
+
+				} else {
+
+					// not LAME (such as Lavf/libavformat)
+					if (substr($headerstring, $VBRidOffset, strlen('Info')) == 'Info') {
+						$thisfile_mpeg_audio['bitrate_mode'] = 'cbr';
+					}
+
+				}
+
+				if ($thisfile_mpeg_audio['bitrate_mode'] == 'cbr') {
+					// restart decode after VBR info frame, the audio data in the info frame may not match the actual audio frames
+					$offset += $thisfile_mpeg_audio['framelength'];
+					return $this->decodeMPEGaudioHeader($offset, $info, $recursivesearch, $ScanAsCBR, $FastMPEGheaderScan);
 				}
 
 			} else {
