@@ -488,7 +488,7 @@ class getid3_mp3 extends getid3_handler
 		if ($MPEGaudioHeaderValidCache[$head4_key]) {
 			$thisfile_mpeg_audio['raw'] = $MPEGheaderRawArray;
 		} else {
-			$this->error('Invalid MPEG audio header ('.getid3_lib::PrintHexBytes($head4).') at offset '.$offset);
+			$this->warning('Invalid MPEG audio header ('.getid3_lib::PrintHexBytes($head4).') at offset '.$offset);
 			return false;
 		}
 
@@ -1433,6 +1433,8 @@ class getid3_mp3 extends getid3_handler
 		$header = $this->fread($sync_seek_buffer_size);
 		$sync_seek_buffer_size = strlen($header);
 		$SynchSeekOffset = 0;
+		$SyncSeekAttempts = 0;
+		$SyncSeekAttemptsMax = 1000;
 		while ($SynchSeekOffset < $sync_seek_buffer_size) {
 			if ((($avdataoffset + $SynchSeekOffset)  < $info['avdataend']) && !feof($this->getid3->fp)) {
 
@@ -1471,7 +1473,24 @@ class getid3_mp3 extends getid3_handler
 				return false;
 			}
 
-			if (($header[$SynchSeekOffset] == "\xFF") && ($header[($SynchSeekOffset + 1)] > "\xE0")) { // synch detected
+			if (($header[$SynchSeekOffset] == "\xFF") && ($header[($SynchSeekOffset + 1)] > "\xE0")) { // possible synch detected
+				if (++$SyncSeekAttempts >= $SyncSeekAttemptsMax) {
+					// https://github.com/JamesHeinrich/getID3/issues/286
+					// corrupt files claiming to be MP3, with a large number of 0xFF bytes near the beginning, can cause this loop to take a very long time
+					// should have escape condition to avoid spending too much time scanning a corrupt file
+					// if a synch's not found within the first 128k bytes, then give up
+					$this->error('Could not find valid MPEG audio synch after scanning '.$SyncSeekAttempts.' candidate offsets');
+					if (isset($info['audio']['bitrate'])) {
+						unset($info['audio']['bitrate']);
+					}
+					if (isset($info['mpeg']['audio'])) {
+						unset($info['mpeg']['audio']);
+					}
+					if (empty($info['mpeg'])) {
+						unset($info['mpeg']);
+					}
+					return false;
+				}
 				$FirstFrameAVDataOffset = null;
 				if (!isset($FirstFrameThisfileInfo) && !isset($info['mpeg']['audio'])) {
 					$FirstFrameThisfileInfo = $info;
