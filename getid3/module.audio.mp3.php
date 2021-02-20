@@ -672,35 +672,6 @@ class getid3_mp3 extends getid3_handler
 				if ($thisfile_mpeg_audio['xing_flags']['bytes']) {
 					$thisfile_mpeg_audio['VBR_bytes']  = getid3_lib::BigEndian2Int(substr($headerstring, $VBRidOffset + 12, 4));
 				}
-
-				//if (($thisfile_mpeg_audio['bitrate'] == 'free') && !empty($thisfile_mpeg_audio['VBR_frames']) && !empty($thisfile_mpeg_audio['VBR_bytes'])) {
-				//if (!empty($thisfile_mpeg_audio['VBR_frames']) && !empty($thisfile_mpeg_audio['VBR_bytes'])) {
-				if (!empty($thisfile_mpeg_audio['VBR_frames'])) {
-					$used_filesize  = 0;
-					if (!empty($thisfile_mpeg_audio['VBR_bytes'])) {
-						$used_filesize = $thisfile_mpeg_audio['VBR_bytes'];
-					} elseif (!empty($info['filesize'])) {
-						$used_filesize  = $info['filesize'];
-						$used_filesize -= (isset($info['id3v2']['headerlength']) ? intval($info['id3v2']['headerlength']) : 0);
-						$used_filesize -= (isset($info['id3v1']) ? 128 : 0);
-						$used_filesize -= (isset($info['tag_offset_end']) ? $info['tag_offset_end'] - $info['tag_offset_start'] : 0);
-						$this->warning('MP3.Xing header missing VBR_bytes, assuming MPEG audio portion of file is '.number_format($used_filesize).' bytes');
-					}
-
-					$framelengthfloat = $used_filesize / $thisfile_mpeg_audio['VBR_frames'];
-
-					if ($thisfile_mpeg_audio['layer'] == '1') {
-						// BitRate = (((FrameLengthInBytes / 4) - Padding) * SampleRate) / 12
-						//$info['audio']['bitrate'] = ((($framelengthfloat / 4) - intval($thisfile_mpeg_audio['padding'])) * $thisfile_mpeg_audio['sample_rate']) / 12;
-						$info['audio']['bitrate'] = ($framelengthfloat / 4) * $thisfile_mpeg_audio['sample_rate'] * (2 / $info['audio']['channels']) / 12;
-					} else {
-						// Bitrate = ((FrameLengthInBytes - Padding) * SampleRate) / 144
-						//$info['audio']['bitrate'] = (($framelengthfloat - intval($thisfile_mpeg_audio['padding'])) * $thisfile_mpeg_audio['sample_rate']) / 144;
-						$info['audio']['bitrate'] = $framelengthfloat * $thisfile_mpeg_audio['sample_rate'] * (2 / $info['audio']['channels']) / 144;
-					}
-					$thisfile_mpeg_audio['framelength'] = floor($framelengthfloat);
-				}
-
 				if ($thisfile_mpeg_audio['xing_flags']['toc']) {
 					$LAMEtocData = substr($headerstring, $VBRidOffset + 16, 100);
 					for ($i = 0; $i < 100; $i++) {
@@ -1003,6 +974,7 @@ class getid3_mp3 extends getid3_handler
 					if ($thisfile_mpeg_audio['VBR_bitrate'] > 0) {
 						$info['audio']['bitrate']       = $thisfile_mpeg_audio['VBR_bitrate'];
 						$thisfile_mpeg_audio['bitrate'] = $thisfile_mpeg_audio['VBR_bitrate']; // to avoid confusion
+						$thisfile_mpeg_audio['framelength'] = floor($thisfile_mpeg_audio['VBR_bytes'] / $thisfile_mpeg_audio['VBR_frames']);
 					}
 					break;
 			}
