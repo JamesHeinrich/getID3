@@ -169,7 +169,7 @@ class getid3_quicktime extends getid3_handler
 			}
 		}
 
-		if (!isset($info['bitrate']) && isset($info['playtime_seconds'])) {
+		if (!isset($info['bitrate']) && isset($info['playtime_seconds']) && $info['playtime_seconds'] > 0) {
 			$info['bitrate'] = (($info['avdataend'] - $info['avdataoffset']) * 8) / $info['playtime_seconds'];
 		}
 		if (isset($info['bitrate']) && !isset($info['audio']['bitrate']) && !isset($info['quicktime']['video'])) {
