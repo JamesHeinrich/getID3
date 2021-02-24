@@ -34,7 +34,7 @@ class getid3_mp3 extends getid3_handler
 	 * Lower this number to 5-20 for faster scanning
 	 * Increase this number to 50+ for most accurate detection of valid VBR/CBR mpeg-audio streams
 	 *
-	 * @var bool
+	 * @var int
 	 */
 	public $getid3_mp3_valid_check_frames = 50;
 
