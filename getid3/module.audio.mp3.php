@@ -298,7 +298,7 @@ class getid3_mp3 extends getid3_handler
 		} elseif (!empty($info['audio']['bitrate'])) {
 
 			if ($info['audio']['bitrate_mode'] == 'cbr') {
-				$encoder_options = strtoupper($info['audio']['bitrate_mode']).ceil($info['audio']['bitrate'] / 1000);
+				$encoder_options = strtoupper($info['audio']['bitrate_mode']).round($info['audio']['bitrate'] / 1000);
 			} else {
 				$encoder_options = strtoupper($info['audio']['bitrate_mode']);
 			}
