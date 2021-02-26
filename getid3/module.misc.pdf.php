@@ -75,7 +75,7 @@ class getid3_pdf extends getid3_handler
 								$this->fseek($offset + strlen($matches[0]));
 							}
 							$objectData  = '';
-							while (true) {
+							while (!$this->feof()) {
 								$line = $this->fgets();
 								if (rtrim($line) == 'endobj') {
 									break;
