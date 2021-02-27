@@ -17,10 +17,6 @@ if (!defined('GETID3_OS_ISWINDOWS')) {
 if (!defined('GETID3_INCLUDEPATH')) {
 	define('GETID3_INCLUDEPATH', dirname(__FILE__).DIRECTORY_SEPARATOR);
 }
-// Workaround Bug #39923 (https://bugs.php.net/bug.php?id=39923)
-if (!defined('IMG_JPG') && defined('IMAGETYPE_JPEG')) {
-	define('IMG_JPG', IMAGETYPE_JPEG);
-}
 if (!defined('ENT_SUBSTITUTE')) { // PHP5.3 adds ENT_IGNORE, PHP5.4 adds ENT_SUBSTITUTE
 	define('ENT_SUBSTITUTE', (defined('ENT_IGNORE') ? ENT_IGNORE : 8));
 }
