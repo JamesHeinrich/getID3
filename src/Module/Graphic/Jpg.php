@@ -63,7 +63,7 @@ class Jpg extends Handler
 
 		$returnOK = false;
 		switch ($type) {
-			case IMG_JPG:
+			case IMAGETYPE_JPEG:
 				$info['video']['resolution_x'] = $width;
 				$info['video']['resolution_y'] = $height;
 

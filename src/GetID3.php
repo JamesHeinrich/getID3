@@ -185,7 +185,7 @@ class GetID3
 	 */
 	protected $startup_warning = '';
 
-	const VERSION           = '1.9.20-202012091120';
+	const VERSION           = '2.0.x-202102260858';
 	const FREAD_BUFFER_SIZE = 32768;
 
 	const ATTACHMENTS_NONE   = false;
@@ -1273,7 +1273,7 @@ class GetID3
 						if (is_string($value)) {
 							$value = trim($value, " \r\n\t"); // do not trim nulls from $value!! Unicode characters will get mangled if trailing nulls are removed!
 						}
-						if ($value) {
+						if (isset($value) && $value !== "") {
 							if (!is_numeric($key)) {
 								$this->info['tags'][trim($tag_name)][trim($tag_key)][$key] = $value;
 							} else {

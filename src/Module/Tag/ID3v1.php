@@ -31,9 +31,16 @@ class ID3v1 extends Handler
 			return false;
 		}
 
-		$this->fseek(-256, SEEK_END);
-		$preid3v1 = $this->fread(128);
-		$id3v1tag = $this->fread(128);
+		if($info['filesize'] < 256) {
+			$this->fseek(-128, SEEK_END);
+			$preid3v1 = '';
+			$id3v1tag = $this->fread(128);
+		} else {
+			$this->fseek(-256, SEEK_END);
+			$preid3v1 = $this->fread(128);
+			$id3v1tag = $this->fread(128);
+		}
+
 
 		if (substr($id3v1tag, 0, 3) == 'TAG') {
 

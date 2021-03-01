@@ -125,6 +125,10 @@ class Tiff extends Handler
 		}
 
 		foreach ($info['tiff']['ifd'] as $IFDid => $IFDarray) {
+			if(!isset($IFDarray['fields'])) {
+				continue;
+			}
+
 			foreach ($IFDarray['fields'] as $key => $fieldarray) {
 				switch ($fieldarray['raw']['tag']) {
 					case 256: // ImageWidth

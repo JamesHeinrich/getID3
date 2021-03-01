@@ -77,7 +77,7 @@ class Pdf extends Handler
 								$this->fseek($offset + strlen($matches[0]));
 							}
 							$objectData  = '';
-							while (true) {
+							while (!$this->feof()) {
 								$line = $this->fgets();
 								if (rtrim($line) == 'endobj') {
 									break;
