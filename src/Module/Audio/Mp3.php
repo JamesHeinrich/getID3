@@ -22,19 +22,21 @@ use JamesHeinrich\GetID3\Utils;
 class Mp3 extends Handler
 {
 	/**
-	 * Number of frames to scan to determine if MPEG-audio sequence is valid.
-	 * Lower this number to 5-20 for faster scanning.
-	 * Increase this number to 50+ for most accurate detection of valid VBR/CBR mpeg-audio streams.
-	 */
-	const VALID_CHECK_FRAMES = 35;
-
-	/**
 	 * Forces getID3() to scan the file byte-by-byte and log all the valid audio frame headers - extremely slow,
 	 * unrecommended, but may provide data from otherwise-unusable files.
 	 *
 	 * @var bool
 	 */
 	public $allow_bruteforce = false;
+
+	/**
+	 * Number of frames to scan to determine if MPEG-audio sequence is valid.
+	 * Lower this number to 5-20 for faster scanning.
+	 * Increase this number to 50+ for most accurate detection of valid VBR/CBR mpeg-audio streams.
+	 *
+	 * @var int
+	 */
+	public $getid3_mp3_valid_check_frames = 50;
 
 	/**
 	 * @return bool
@@ -296,7 +298,7 @@ class Mp3 extends Handler
 		} elseif (!empty($info['audio']['bitrate'])) {
 
 			if ($info['audio']['bitrate_mode'] == 'cbr') {
-				$encoder_options = strtoupper($info['audio']['bitrate_mode']).ceil($info['audio']['bitrate'] / 1000);
+				$encoder_options = strtoupper($info['audio']['bitrate_mode']).round($info['audio']['bitrate'] / 1000);
 			} else {
 				$encoder_options = strtoupper($info['audio']['bitrate_mode']);
 			}
@@ -489,7 +491,7 @@ class Mp3 extends Handler
 		if ($MPEGaudioHeaderValidCache[$head4_key]) {
 			$thisfile_mpeg_audio['raw'] = $MPEGheaderRawArray;
 		} else {
-			$this->error('Invalid MPEG audio header ('.Utils::PrintHexBytes($head4).') at offset '.$offset);
+			$this->warning('Invalid MPEG audio header ('.Utils::PrintHexBytes($head4).') at offset '.$offset);
 			return false;
 		}
 
@@ -1010,6 +1012,22 @@ class Mp3 extends Handler
 			if (!$this->RecursiveFrameScanning($offset, $nextframetestoffset, $ScanAsCBR)) {
 				return false;
 			}
+			if (!empty($this->getid3->info['mp3_validity_check_bitrates']) && !empty($thisfile_mpeg_audio['bitrate_mode']) && ($thisfile_mpeg_audio['bitrate_mode'] == 'vbr') && !empty($thisfile_mpeg_audio['VBR_bitrate'])) {
+				// https://github.com/JamesHeinrich/getID3/issues/287
+				if (count(array_keys($this->getid3->info['mp3_validity_check_bitrates'])) == 1) {
+					list($cbr_bitrate_in_short_scan) = array_keys($this->getid3->info['mp3_validity_check_bitrates']);
+					$deviation_cbr_from_header_bitrate = abs($thisfile_mpeg_audio['VBR_bitrate'] - $cbr_bitrate_in_short_scan) / $cbr_bitrate_in_short_scan;
+					if ($deviation_cbr_from_header_bitrate < 0.01) {
+						// VBR header bitrate may differ slightly from true bitrate of frames, perhaps accounting for overhead of VBR header frame itself?
+						// If measured CBR bitrate is within 1% of specified bitrate in VBR header then assume that file is truly CBR
+						$thisfile_mpeg_audio['bitrate_mode'] = 'cbr';
+						//$this->warning('VBR header ignored, assuming CBR '.round($cbr_bitrate_in_short_scan / 1000).'kbps based on scan of '.$this->getid3_mp3_valid_check_frames.' frames');
+					}
+				}
+			}
+			if (isset($this->getid3->info['mp3_validity_check_bitrates'])) {
+				unset($this->getid3->info['mp3_validity_check_bitrates']);
+			}
 
 		}
 
@@ -1131,8 +1149,9 @@ class Mp3 extends Handler
 		$firstframetestarray = array('error' => array(), 'warning'=> array(), 'avdataend' => $info['avdataend'], 'avdataoffset' => $info['avdataoffset']);
 		$this->decodeMPEGaudioHeader($offset, $firstframetestarray, false);
 
-		for ($i = 0; $i < self::VALID_CHECK_FRAMES; $i++) {
-			// check next self::VALID_CHECK_FRAMES frames for validity, to make sure we haven't run across a false synch
+		$info['mp3_validity_check_bitrates'] = array();
+		for ($i = 0; $i < $this->getid3_mp3_valid_check_frames; $i++) {
+			// check next (default: 50) frames for validity, to make sure we haven't run across a false synch
 			if (($nextframetestoffset + 4) >= $info['avdataend']) {
 				// end of file
 				return true;
@@ -1140,6 +1159,7 @@ class Mp3 extends Handler
 
 			$nextframetestarray = array('error' => array(), 'warning' => array(), 'avdataend' => $info['avdataend'], 'avdataoffset'=>$info['avdataoffset']);
 			if ($this->decodeMPEGaudioHeader($nextframetestoffset, $nextframetestarray, false)) {
+				Utils::safe_inc($info['mp3_validity_check_bitrates'][$nextframetestarray['mpeg']['audio']['bitrate']]);
 				if ($ScanAsCBR) {
 					// force CBR mode, used for trying to pick out invalid audio streams with valid(?) VBR headers, or VBR streams with no VBR header
 					if (!isset($nextframetestarray['mpeg']['audio']['bitrate']) || !isset($firstframetestarray['mpeg']['audio']['bitrate']) || ($nextframetestarray['mpeg']['audio']['bitrate'] != $firstframetestarray['mpeg']['audio']['bitrate'])) {
@@ -1434,6 +1454,8 @@ class Mp3 extends Handler
 		$header = $this->fread($sync_seek_buffer_size);
 		$sync_seek_buffer_size = strlen($header);
 		$SynchSeekOffset = 0;
+		$SyncSeekAttempts = 0;
+		$SyncSeekAttemptsMax = 1000;
 		while ($SynchSeekOffset < $sync_seek_buffer_size) {
 			if ((($avdataoffset + $SynchSeekOffset)  < $info['avdataend']) && !feof($this->getid3->fp)) {
 
@@ -1472,7 +1494,24 @@ class Mp3 extends Handler
 				return false;
 			}
 
-			if (($header[$SynchSeekOffset] == "\xFF") && ($header[($SynchSeekOffset + 1)] > "\xE0")) { // synch detected
+			if (($header[$SynchSeekOffset] == "\xFF") && ($header[($SynchSeekOffset + 1)] > "\xE0")) { // possible synch detected
+				if (++$SyncSeekAttempts >= $SyncSeekAttemptsMax) {
+					// https://github.com/JamesHeinrich/getID3/issues/286
+					// corrupt files claiming to be MP3, with a large number of 0xFF bytes near the beginning, can cause this loop to take a very long time
+					// should have escape condition to avoid spending too much time scanning a corrupt file
+					// if a synch's not found within the first 128k bytes, then give up
+					$this->error('Could not find valid MPEG audio synch after scanning '.$SyncSeekAttempts.' candidate offsets');
+					if (isset($info['audio']['bitrate'])) {
+						unset($info['audio']['bitrate']);
+					}
+					if (isset($info['mpeg']['audio'])) {
+						unset($info['mpeg']['audio']);
+					}
+					if (empty($info['mpeg'])) {
+						unset($info['mpeg']);
+					}
+					return false;
+				}
 				$FirstFrameAVDataOffset = null;
 				if (!isset($FirstFrameThisfileInfo) && !isset($info['mpeg']['audio'])) {
 					$FirstFrameThisfileInfo = $info;
@@ -1512,9 +1551,9 @@ class Mp3 extends Handler
 							if ($this->decodeMPEGaudioHeader($GarbageOffsetEnd, $dummy, true, true)) {
 								$info = $dummy;
 								$info['avdataoffset'] = $GarbageOffsetEnd;
-								$this->warning('apparently-valid VBR header not used because could not find ' . self::VALID_CHECK_FRAMES . ' consecutive MPEG-audio frames immediately after VBR header (garbage data for '.($GarbageOffsetEnd - $GarbageOffsetStart).' bytes between '.$GarbageOffsetStart.' and '.$GarbageOffsetEnd.'), but did find valid CBR stream starting at '.$GarbageOffsetEnd);
+								$this->warning('apparently-valid VBR header not used because could not find '.$this->getid3_mp3_valid_check_frames.' consecutive MPEG-audio frames immediately after VBR header (garbage data for '.($GarbageOffsetEnd - $GarbageOffsetStart).' bytes between '.$GarbageOffsetStart.' and '.$GarbageOffsetEnd.'), but did find valid CBR stream starting at '.$GarbageOffsetEnd);
 							} else {
-								$this->warning('using data from VBR header even though could not find ' . self::VALID_CHECK_FRAMES . ' consecutive MPEG-audio frames immediately after VBR header (garbage data for '.($GarbageOffsetEnd - $GarbageOffsetStart).' bytes between '.$GarbageOffsetStart.' and '.$GarbageOffsetEnd.')');
+								$this->warning('using data from VBR header even though could not find '.$this->getid3_mp3_valid_check_frames.' consecutive MPEG-audio frames immediately after VBR header (garbage data for '.($GarbageOffsetEnd - $GarbageOffsetStart).' bytes between '.$GarbageOffsetStart.' and '.$GarbageOffsetEnd.')');
 							}
 						}
 					}

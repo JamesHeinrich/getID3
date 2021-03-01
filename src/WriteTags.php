@@ -651,6 +651,7 @@ class WriteTags
 								if (!$ID3v2_tag_data_converted && ($this->tag_encoding == 'UTF-8')) {
 									do {
 										// if UTF-8 string does not include any characters above chr(127) then it is identical to ISO-8859-1
+										$value = (string) $value; // prevent warnings/errors if $value is a non-string (e.g. integer,float)
 										for ($i = 0; $i < strlen($value); $i++) {
 											if (ord($value[$i]) > 127) {
 												break 2;

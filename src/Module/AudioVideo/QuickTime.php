@@ -170,7 +170,7 @@ class QuickTime extends Handler
 			}
 		}
 
-		if (!isset($info['bitrate']) && isset($info['playtime_seconds'])) {
+		if (!isset($info['bitrate']) && !empty($info['playtime_seconds'])) {
 			$info['bitrate'] = (($info['avdataend'] - $info['avdataoffset']) * 8) / $info['playtime_seconds'];
 		}
 		if (isset($info['bitrate']) && !isset($info['audio']['bitrate']) && !isset($info['quicktime']['video'])) {
