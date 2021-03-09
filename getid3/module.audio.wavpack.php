@@ -167,7 +167,7 @@ class getid3_wavpack extends getid3_handler
 				$metablock['id'] = ord($metablockheader[0]);
 				$metablock['function_id'] = ($metablock['id'] & 0x3F);
 				$metablock['function_name'] = $this->WavPackMetablockNameLookup($metablock['function_id']);
-				getid3_lib::safe_inc($found_blocks[$metablock['function_name']]);
+				$found_blocks[$metablock['function_name']] = (isset($found_blocks[$metablock['function_name']]) ? $found_blocks[$metablock['function_name']] : 0) + 1; // cannot use getid3_lib::safe_inc without warnings(?)
 
 				// The 0x20 bit in the id of the meta subblocks (which is defined as
 				// ID_OPTIONAL_DATA) is a permanent part of the id. The idea is that
