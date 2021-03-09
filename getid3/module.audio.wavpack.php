@@ -20,6 +20,14 @@ if (!defined('GETID3_INCLUDEPATH')) { // prevent path-exposing attacks that acce
 class getid3_wavpack extends getid3_handler
 {
 	/**
+	 * Avoid scanning all frames (break after finding ID_RIFF_HEADER and ID_CONFIG_BLOCK,
+	 * significantly faster for very large files but other data may be missed
+	 *
+	 * @var bool
+	 */
+	public $quick_parsing = false;
+
+	/**
 	 * @return bool
 	 */
 	public function Analyze() {
@@ -27,6 +35,7 @@ class getid3_wavpack extends getid3_handler
 
 		$this->fseek($info['avdataoffset']);
 
+		$found_blocks = array();
 		while (true) {
 
 			$wavpackheader = $this->fread(32);
@@ -158,6 +167,7 @@ class getid3_wavpack extends getid3_handler
 				$metablock['id'] = ord($metablockheader[0]);
 				$metablock['function_id'] = ($metablock['id'] & 0x3F);
 				$metablock['function_name'] = $this->WavPackMetablockNameLookup($metablock['function_id']);
+				getid3_lib::safe_inc($found_blocks[$metablock['function_name']]);
 
 				// The 0x20 bit in the id of the meta subblocks (which is defined as
 				// ID_OPTIONAL_DATA) is a permanent part of the id. The idea is that
@@ -237,6 +247,10 @@ class getid3_wavpack extends getid3_handler
 
 							// Safe RIFF header in case there's a RIFF footer later
 							$metablockRIFFheader = $metablock['data'];
+							if ($this->quick_parsing && !empty($found_blocks['RIFF header']) && !empty($found_blocks['Config Block'])) {
+								$this->warning('WavPack quick-parsing enabled (faster at parsing large fules, but may miss some data)');
+								break 2;
+							}
 							break;
 
 
@@ -317,6 +331,10 @@ class getid3_wavpack extends getid3_handler
 							} elseif (isset($info['audio']['encoder_options'])) {
 								unset($info['audio']['encoder_options']);
 							}
+							if ($this->quick_parsing && !empty($found_blocks['RIFF header']) && !empty($found_blocks['Config Block'])) {
+								$this->warning('WavPack quick-parsing enabled (faster at parsing large fules, but may miss some data)');
+								break 2;
+							}
 							break;
 
 
@@ -369,7 +387,6 @@ class getid3_wavpack extends getid3_handler
 			$info['audio']['dataformat']  = 'wvc';
 
 		}
-
 		return true;
 	}
 
