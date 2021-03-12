@@ -30,7 +30,7 @@ class getid3_bmp extends getid3_handler
 	/**
 	 * return image data
 	 *
-	 * @var int
+	 * @var bool
 	 */
 	public $ExtractData    = false;
 
