@@ -53,8 +53,10 @@ class getid3_iso extends getid3_handler
 		$this->ParsePathTable();
 
 		$info['iso']['files'] = array();
-		foreach ($info['iso']['path_table']['directories'] as $directorynum => $directorydata) {
-			$info['iso']['directories'][$directorynum] = $this->ParseDirectoryRecord($directorydata);
+		if (!empty($info['iso']['path_table']['directories'])) {
+			foreach ($info['iso']['path_table']['directories'] as $directorynum => $directorydata) {
+				$info['iso']['directories'][$directorynum] = $this->ParseDirectoryRecord($directorydata);
+			}
 		}
 
 		return true;
