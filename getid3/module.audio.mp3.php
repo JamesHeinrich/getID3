@@ -36,7 +36,7 @@ class getid3_mp3 extends getid3_handler
 	 *
 	 * @var int
 	 */
-	public $getid3_mp3_valid_check_frames = 50;
+	public $mp3_valid_check_frames = 50;
 
 	/**
 	 * @return bool
@@ -1021,7 +1021,7 @@ class getid3_mp3 extends getid3_handler
 						// VBR header bitrate may differ slightly from true bitrate of frames, perhaps accounting for overhead of VBR header frame itself?
 						// If measured CBR bitrate is within 1% of specified bitrate in VBR header then assume that file is truly CBR
 						$thisfile_mpeg_audio['bitrate_mode'] = 'cbr';
-						//$this->warning('VBR header ignored, assuming CBR '.round($cbr_bitrate_in_short_scan / 1000).'kbps based on scan of '.$this->getid3_mp3_valid_check_frames.' frames');
+						//$this->warning('VBR header ignored, assuming CBR '.round($cbr_bitrate_in_short_scan / 1000).'kbps based on scan of '.$this->mp3_valid_check_frames.' frames');
 					}
 				}
 			}
@@ -1150,7 +1150,7 @@ class getid3_mp3 extends getid3_handler
 		$this->decodeMPEGaudioHeader($offset, $firstframetestarray, false);
 
 		$info['mp3_validity_check_bitrates'] = array();
-		for ($i = 0; $i < $this->getid3_mp3_valid_check_frames; $i++) {
+		for ($i = 0; $i < $this->mp3_valid_check_frames; $i++) {
 			// check next (default: 50) frames for validity, to make sure we haven't run across a false synch
 			if (($nextframetestoffset + 4) >= $info['avdataend']) {
 				// end of file
@@ -1551,9 +1551,9 @@ class getid3_mp3 extends getid3_handler
 							if ($this->decodeMPEGaudioHeader($GarbageOffsetEnd, $dummy, true, true)) {
 								$info = $dummy;
 								$info['avdataoffset'] = $GarbageOffsetEnd;
-								$this->warning('apparently-valid VBR header not used because could not find '.$this->getid3_mp3_valid_check_frames.' consecutive MPEG-audio frames immediately after VBR header (garbage data for '.($GarbageOffsetEnd - $GarbageOffsetStart).' bytes between '.$GarbageOffsetStart.' and '.$GarbageOffsetEnd.'), but did find valid CBR stream starting at '.$GarbageOffsetEnd);
+								$this->warning('apparently-valid VBR header not used because could not find '.$this->mp3_valid_check_frames.' consecutive MPEG-audio frames immediately after VBR header (garbage data for '.($GarbageOffsetEnd - $GarbageOffsetStart).' bytes between '.$GarbageOffsetStart.' and '.$GarbageOffsetEnd.'), but did find valid CBR stream starting at '.$GarbageOffsetEnd);
 							} else {
-								$this->warning('using data from VBR header even though could not find '.$this->getid3_mp3_valid_check_frames.' consecutive MPEG-audio frames immediately after VBR header (garbage data for '.($GarbageOffsetEnd - $GarbageOffsetStart).' bytes between '.$GarbageOffsetStart.' and '.$GarbageOffsetEnd.')');
+								$this->warning('using data from VBR header even though could not find '.$this->mp3_valid_check_frames.' consecutive MPEG-audio frames immediately after VBR header (garbage data for '.($GarbageOffsetEnd - $GarbageOffsetStart).' bytes between '.$GarbageOffsetStart.' and '.$GarbageOffsetEnd.')');
 							}
 						}
 					}

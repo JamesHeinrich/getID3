@@ -20,7 +20,12 @@ if (!defined('GETID3_INCLUDEPATH')) { // prevent path-exposing attacks that acce
 
 class getid3_pdf extends getid3_handler
 {
-	public $returnXREF = false; // return full details of PDF Cross-Reference Table (XREF)
+	/** misc.pdf
+	 * return full details of PDF Cross-Reference Table (XREF)
+	 *
+	 * @var bool
+	 */
+	public $returnXREF = false;
 
 	/**
 	 * @return bool

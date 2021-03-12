@@ -20,7 +20,18 @@ if (!defined('GETID3_INCLUDEPATH')) { // prevent path-exposing attacks that acce
 
 class getid3_bmp extends getid3_handler
 {
+	/**
+	 * return BMP palette
+	 *
+	 * @var bool
+	 */
 	public $ExtractPalette = false;
+
+	/**
+	 * return image data
+	 *
+	 * @var int
+	 */
 	public $ExtractData    = false;
 
 	/**

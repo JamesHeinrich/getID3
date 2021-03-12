@@ -27,12 +27,11 @@ class getid3_gzip extends getid3_handler
 {
 	/**
 	 * Optional file list - disable for speed.
-	 *
 	 * Decode gzipped files, if possible, and parse recursively (.tar.gz for example).
 	 *
 	 * @var bool
 	 */
-	public $option_gzip_parse_contents = false;
+	public $parse_contents = false;
 
 	/**
 	 * @return bool
@@ -200,7 +199,7 @@ class getid3_gzip extends getid3_handler
 
 			$info['gzip']['files'] = getid3_lib::array_merge_clobber($info['gzip']['files'], getid3_lib::CreateDeepArray($thisInfo['filename'], '/', $thisInfo['filesize']));
 
-			if ($this->option_gzip_parse_contents) {
+			if ($this->parse_contents) {
 				// Try to inflate GZip
 				$csize = 0;
 				$inflated = '';

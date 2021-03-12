@@ -24,7 +24,18 @@ getid3_lib::IncludeDependency(GETID3_INCLUDEPATH.'module.tag.id3v2.php', __FILE_
 class getid3_quicktime extends getid3_handler
 {
 
+	/** audio-video.quicktime
+	 * return all parsed data from all atoms if true, otherwise just returned parsed metadata
+	 *
+	 * @var bool
+	 */
 	public $ReturnAtomData        = true;
+
+	/** audio-video.quicktime
+	 * return all parsed data from all atoms if true, otherwise just returned parsed metadata
+	 *
+	 * @var bool
+	 */
 	public $ParseAllPossibleAtoms = false;
 
 	/**

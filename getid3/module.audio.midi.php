@@ -24,6 +24,8 @@ define('GETID3_MIDI_MAGIC_MTRK', 'MTrk'); // MIDI track header magic
 class getid3_midi extends getid3_handler
 {
 	/**
+	 * if false only parse most basic information, much faster for some files but may be inaccurate
+	 *
 	 * @var bool
 	 */
 	public $scanwholefile = true;
