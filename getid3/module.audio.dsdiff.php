@@ -209,7 +209,7 @@ class getid3_dsdiff extends getid3_handler
 
 					getid3_lib::IncludeDependency(GETID3_INCLUDEPATH.'module.tag.id3v2.php', __FILE__, true);
 					$getid3_temp = new getID3();
-					$getid3_temp->openfile($this->getid3->filename, null, $this->getid3->fp);
+					$getid3_temp->openfile($this->getid3->filename, $this->getid3->info['filesize'], $this->getid3->fp);
 					$getid3_id3v2 = new getid3_id3v2($getid3_temp);
 					$getid3_id3v2->StartingOffset = $this->ftell();
 					if ($thisChunk['valid'] = $getid3_id3v2->Analyze()) {
