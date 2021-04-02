@@ -1737,6 +1737,8 @@ class getid3_riff extends getid3_handler
 											$ac3_data .= substr($testData, 8 + $i + 1, 1);
 											$ac3_data .= substr($testData, 8 + $i + 0, 1);
 										}
+										$getid3_ac3->getid3->info['avdataoffset'] = 0;
+										$getid3_ac3->getid3->info['avdataend']    = strlen($ac3_data);
 										$getid3_ac3->AnalyzeString($ac3_data);
 									}
 
