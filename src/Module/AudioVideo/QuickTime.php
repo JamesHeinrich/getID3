@@ -25,7 +25,18 @@ use JamesHeinrich\GetID3\Utils;
 class QuickTime extends Handler
 {
 
+	/** audio-video.quicktime
+	 * return all parsed data from all atoms if true, otherwise just returned parsed metadata
+	 *
+	 * @var bool
+	 */
 	public $ReturnAtomData        = true;
+
+	/** audio-video.quicktime
+	 * return all parsed data from all atoms if true, otherwise just returned parsed metadata
+	 *
+	 * @var bool
+	 */
 	public $ParseAllPossibleAtoms = false;
 
 	/**

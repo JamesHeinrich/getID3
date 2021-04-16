@@ -285,7 +285,7 @@ class Asf extends Handler
 					$thisfile_asf_headerextensionobject['reserved_2']          = Utils::LittleEndian2Int(substr($ASFHeaderData, $offset, 2));
 					$offset += 2;
 					if ($thisfile_asf_headerextensionobject['reserved_2'] != 6) {
-						$this->warning('header_extension_object.reserved_2 ('.Utils::PrintHexBytes($thisfile_asf_headerextensionobject['reserved_2']).') does not match expected value of "6"');
+						$this->warning('header_extension_object.reserved_2 ('.$thisfile_asf_headerextensionobject['reserved_2'].') does not match expected value of "6"');
 						//return false;
 						break;
 					}
@@ -537,7 +537,7 @@ class Asf extends Handler
 					$thisfile_asf_markerobject['reserved_2'] = Utils::LittleEndian2Int(substr($ASFHeaderData, $offset, 2));
 					$offset += 2;
 					if ($thisfile_asf_markerobject['reserved_2'] != 0) {
-						$this->warning('marker_object.reserved_2 ('.Utils::PrintHexBytes($thisfile_asf_markerobject['reserved_2']).') does not match expected value of "0"');
+						$this->warning('marker_object.reserved_2 ('.$thisfile_asf_markerobject['reserved_2'].') does not match expected value of "0"');
 						break;
 					}
 					$thisfile_asf_markerobject['name_length'] = Utils::LittleEndian2Int(substr($ASFHeaderData, $offset, 2));
@@ -1193,7 +1193,7 @@ class Asf extends Handler
 					$thisfile_asf_dataobject['reserved']           = Utils::LittleEndian2Int(substr($DataObjectData, $offset, 2));
 					$offset += 2;
 					if ($thisfile_asf_dataobject['reserved'] != 0x0101) {
-						$this->warning('data_object.reserved ('.Utils::PrintHexBytes($thisfile_asf_dataobject['reserved']).') does not match expected value of "0x0101"');
+						$this->warning('data_object.reserved (0x'.sprintf('%04X', $thisfile_asf_dataobject['reserved']).') does not match expected value of "0x0101"');
 						//return false;
 						break;
 					}

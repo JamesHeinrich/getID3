@@ -20,6 +20,11 @@ use JamesHeinrich\GetID3\Utils;
 
 class Swf extends Handler
 {
+	/**
+	 * return all parsed tags if true, otherwise do not return tags not parsed by getID3
+	 *
+	 * @var bool
+	 */
 	public $ReturnAllTagData = false;
 
 	/**

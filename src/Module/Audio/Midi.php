@@ -31,6 +31,8 @@ class Midi extends Handler
 	const MAGIC_MTRK = 'MTrk';
 
 	/**
+	 * if false only parse most basic information, much faster for some files but may be inaccurate
+	 *
 	 * @var bool
 	 */
 	public $scanwholefile = true;

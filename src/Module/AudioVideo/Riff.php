@@ -1132,7 +1132,7 @@ class Riff extends Handler
 /*
 				if (isset($thisfile_riff[$RIFFsubtype]['ID3 '])) {
 					$getid3_temp = new GetID3();
-					$getid3_temp->openfile($this->getid3->filename, null, $this->getid3->fp);
+					$getid3_temp->openfile($this->getid3->filename, $this->getid3->info['filesize'], $this->getid3->fp);
 					$getid3_id3v2 = new ID3v2($getid3_temp);
 					$getid3_id3v2->StartingOffset = $thisfile_riff[$RIFFsubtype]['ID3 '][0]['offset'] + 8;
 					if ($thisfile_riff[$RIFFsubtype]['ID3 '][0]['valid'] = $getid3_id3v2->Analyze()) {
@@ -1233,7 +1233,7 @@ class Riff extends Handler
 
 				if (!empty($thisfile_riff['CDXA']['data'][0]['size'])) {
 					$getid3_temp = new GetID3();
-					$getid3_temp->openfile($this->getid3->filename, null, $this->getid3->fp);
+					$getid3_temp->openfile($this->getid3->filename, $this->getid3->info['filesize'], $this->getid3->fp);
 					$getid3_mpeg = new Mpeg($getid3_temp);
 					$getid3_mpeg->Analyze();
 					if (empty($getid3_temp->info['error'])) {
@@ -1317,7 +1317,7 @@ class Riff extends Handler
 
 				if (isset($thisfile_riff[$RIFFsubtype]['id3 '])) {
 					$getid3_temp = new GetID3();
-					$getid3_temp->openfile($this->getid3->filename, null, $this->getid3->fp);
+					$getid3_temp->openfile($this->getid3->filename, $this->getid3->info['filesize'], $this->getid3->fp);
 					$getid3_id3v2 = new ID3v2($getid3_temp);
 					$getid3_id3v2->StartingOffset = $thisfile_riff[$RIFFsubtype]['id3 '][0]['offset'] + 8;
 					if ($thisfile_riff[$RIFFsubtype]['id3 '][0]['valid'] = $getid3_id3v2->Analyze()) {
@@ -1616,7 +1616,7 @@ class Riff extends Handler
 										// MP3
 										if (Mp3::MPEGaudioHeaderBytesValid($FirstFourBytes)) {
 											$getid3_temp = new GetID3();
-											$getid3_temp->openfile($this->getid3->filename, null, $this->getid3->fp);
+											$getid3_temp->openfile($this->getid3->filename, $this->getid3->info['filesize'], $this->getid3->fp);
 											$getid3_temp->info['avdataoffset'] = $this->ftell() - 4;
 											$getid3_temp->info['avdataend']    = $this->ftell() + $AudioChunkSize;
 											$getid3_mp3 = new Mp3($getid3_temp, __CLASS__);
@@ -1638,7 +1638,7 @@ class Riff extends Handler
 
 										// AC3
 										$getid3_temp = new GetID3();
-										$getid3_temp->openfile($this->getid3->filename, null, $this->getid3->fp);
+										$getid3_temp->openfile($this->getid3->filename, $this->getid3->info['filesize'], $this->getid3->fp);
 										$getid3_temp->info['avdataoffset'] = $this->ftell() - 4;
 										$getid3_temp->info['avdataend']    = $this->ftell() + $AudioChunkSize;
 										$getid3_ac3 = new Ac3($getid3_temp);
@@ -1699,7 +1699,7 @@ class Riff extends Handler
 									// Probably is MP3 data
 									if (Mp3::MPEGaudioHeaderBytesValid(substr($testData, 0, 4))) {
 										$getid3_temp = new GetID3();
-										$getid3_temp->openfile($this->getid3->filename, null, $this->getid3->fp);
+										$getid3_temp->openfile($this->getid3->filename, $this->getid3->info['filesize'], $this->getid3->fp);
 										$getid3_temp->info['avdataoffset'] = $info['avdataoffset'];
 										$getid3_temp->info['avdataend']    = $info['avdataend'];
 										$getid3_mp3 = new Mp3($getid3_temp, __CLASS__);
@@ -1716,7 +1716,7 @@ class Riff extends Handler
 									// This is probably AC-3 data
 									$getid3_temp = new GetID3();
 									if ($isRegularAC3) {
-										$getid3_temp->openfile($this->getid3->filename, null, $this->getid3->fp);
+										$getid3_temp->openfile($this->getid3->filename, $this->getid3->info['filesize'], $this->getid3->fp);
 										$getid3_temp->info['avdataoffset'] = $info['avdataoffset'];
 										$getid3_temp->info['avdataend']    = $info['avdataend'];
 									}
@@ -1732,6 +1732,8 @@ class Riff extends Handler
 											$ac3_data .= substr($testData, 8 + $i + 1, 1);
 											$ac3_data .= substr($testData, 8 + $i + 0, 1);
 										}
+										$getid3_ac3->getid3->info['avdataoffset'] = 0;
+										$getid3_ac3->getid3->info['avdataend']    = strlen($ac3_data);
 										$getid3_ac3->AnalyzeString($ac3_data);
 									}
 
@@ -1750,7 +1752,7 @@ class Riff extends Handler
 
 									// This is probably DTS data
 									$getid3_temp = new GetID3();
-									$getid3_temp->openfile($this->getid3->filename, null, $this->getid3->fp);
+									$getid3_temp->openfile($this->getid3->filename, $this->getid3->info['filesize'], $this->getid3->fp);
 									$getid3_temp->info['avdataoffset'] = $info['avdataoffset'];
 									$getid3_dts = new Dts($getid3_temp);
 									$getid3_dts->Analyze();

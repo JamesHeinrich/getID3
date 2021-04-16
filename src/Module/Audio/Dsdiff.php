@@ -211,7 +211,7 @@ class Dsdiff extends Handler
 					$endOfID3v2 = $this->ftell() + $datasize; // we will need to reset the filepointer after parsing ID3v2
 
 					$getid3_temp = new GetID3();
-					$getid3_temp->openfile($this->getid3->filename, null, $this->getid3->fp);
+					$getid3_temp->openfile($this->getid3->filename, $this->getid3->info['filesize'], $this->getid3->fp);
 					$getid3_id3v2 = new ID3v2($getid3_temp);
 					$getid3_id3v2->StartingOffset = $this->ftell();
 					if ($thisChunk['valid'] = $getid3_id3v2->Analyze()) {
