@@ -20,7 +20,18 @@ use JamesHeinrich\GetID3\Utils;
 
 class Bmp extends Handler
 {
+	/**
+	 * return BMP palette
+	 *
+	 * @var bool
+	 */
 	public $ExtractPalette = false;
+
+	/**
+	 * return image data
+	 *
+	 * @var bool
+	 */
 	public $ExtractData    = false;
 
 	/**

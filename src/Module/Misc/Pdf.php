@@ -21,6 +21,8 @@ class Pdf extends Handler
 {
 	/**
 	 * Return full details of PDF Cross-Reference Table (XREF).
+	 *
+	 * @var bool
 	 */
 	public $returnXREF = false;
 

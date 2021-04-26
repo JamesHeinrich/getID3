@@ -877,18 +877,14 @@ class Utils
 	 */
 	public static function XML2array($XMLstring) {
 		if (function_exists('simplexml_load_string') && function_exists('libxml_disable_entity_loader')) {
-			if (PHP_VERSION_ID < 80000) {
-				// http://websec.io/2012/08/27/Preventing-XEE-in-PHP.html
-				// https://core.trac.wordpress.org/changeset/29378
-				// This function has been deprecated in PHP 8.0 because in libxml 2.9.0, external entity loading is
-				// disabled by default, so this function is no longer needed to protect against XXE attacks.
-				$loader = libxml_disable_entity_loader(true);
-			}
+			// http://websec.io/2012/08/27/Preventing-XEE-in-PHP.html
+			// https://core.trac.wordpress.org/changeset/29378
+			// This function has been deprecated in PHP 8.0 because in libxml 2.9.0, external entity loading is
+			// disabled by default, but is still needed when LIBXML_NOENT is used.
+			$loader = @libxml_disable_entity_loader(true);
 			$XMLobject = simplexml_load_string($XMLstring, 'SimpleXMLElement', LIBXML_NOENT);
 			$return = self::SimpleXMLelement2array($XMLobject);
-			if (PHP_VERSION_ID < 80000 && isset($loader)) {
-				libxml_disable_entity_loader($loader);
-			}
+			@libxml_disable_entity_loader($loader);
 			return $return;
 		}
 		return false;
@@ -1731,14 +1727,16 @@ class Utils
 			}
 
 			// attempt to standardize spelling of returned keys
-			$StandardizeFieldNames = array(
-				'tracknumber' => 'track_number',
-				'track'       => 'track_number',
-			);
-			foreach ($StandardizeFieldNames as $badkey => $goodkey) {
-				if (array_key_exists($badkey, $ThisFileInfo['comments']) && !array_key_exists($goodkey, $ThisFileInfo['comments'])) {
-					$ThisFileInfo['comments'][$goodkey] = $ThisFileInfo['comments'][$badkey];
-					unset($ThisFileInfo['comments'][$badkey]);
+			if (!empty($ThisFileInfo['comments'])) {
+				$StandardizeFieldNames = array(
+					'tracknumber' => 'track_number',
+					'track'       => 'track_number',
+				);
+				foreach ($StandardizeFieldNames as $badkey => $goodkey) {
+					if (array_key_exists($badkey, $ThisFileInfo['comments']) && !array_key_exists($goodkey, $ThisFileInfo['comments'])) {
+						$ThisFileInfo['comments'][$goodkey] = $ThisFileInfo['comments'][$badkey];
+						unset($ThisFileInfo['comments'][$badkey]);
+					}
 				}
 			}
 

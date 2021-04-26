@@ -21,9 +21,11 @@ use JamesHeinrich\GetID3\Utils;
 class Rar extends Handler
 {
 	/**
+	 * if true use PHP RarArchive extension, if false (non-extension parsing not yet written in getID3)
+	 *
 	 * @var bool
 	 */
-	public $option_use_rar_extension = false;
+	public $use_php_rar_extension = true;
 
 	/**
 	 * @return bool
@@ -33,7 +35,7 @@ class Rar extends Handler
 
 		$info['fileformat'] = 'rar';
 
-		if ($this->option_use_rar_extension === true) {
+		if ($this->use_php_rar_extension === true) {
 			if (function_exists('rar_open')) {
 				if ($rp = rar_open($info['filenamepath'])) {
 					$info['rar']['files'] = array();
@@ -50,7 +52,7 @@ class Rar extends Handler
 				$this->error('RAR support does not appear to be available in this PHP installation');
 			}
 		} else {
-			$this->error('PHP-RAR processing has been disabled (set ' . get_class($this) . '->option_use_rar_extension=true to enable)');
+			$this->error('PHP-RAR processing has been disabled (set ' . get_class($this) . '->use_php_rar_extension=true to enable)');
 		}
 		return false;
 
