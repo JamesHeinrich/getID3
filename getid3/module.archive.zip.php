@@ -121,11 +121,11 @@ class getid3_zip extends getid3_handler
 					    !empty($info['zip']['files']['docProps']['core.xml'])) {
 							// http://technet.microsoft.com/en-us/library/cc179224.aspx
 							$info['fileformat'] = 'zip.msoffice';
-							if (!empty($ThisFileInfo['zip']['files']['ppt'])) {
+							if (!empty($info['zip']['files']['ppt'])) {
 								$info['mime_type'] = 'application/vnd.openxmlformats-officedocument.presentationml.presentation';
-							} elseif (!empty($ThisFileInfo['zip']['files']['xl'])) {
+							} elseif (!empty($info['zip']['files']['xl'])) {
 								$info['mime_type'] = 'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet';
-							} elseif (!empty($ThisFileInfo['zip']['files']['word'])) {
+							} elseif (!empty($info['zip']['files']['word'])) {
 								$info['mime_type'] = 'application/vnd.openxmlformats-officedocument.wordprocessingml.document';
 							}
 					}
