@@ -977,7 +977,7 @@ class ID3v2 extends Handler
 
 
 		} elseif ((($id3v2_majorversion >= 3) && ($parsedFrame['frame_name'] == 'USLT')) || // 4.8   USLT Unsynchronised lyric/text transcription
-				(($id3v2_majorversion == 2) && ($parsedFrame['frame_name'] == 'ULT'))) {     // 4.9   ULT  Unsynchronised lyric/text transcription
+				(($id3v2_majorversion == 2) && ($parsedFrame['frame_name'] == 'ULT'))) {    // 4.9   ULT  Unsynchronised lyric/text transcription
 			//   There may be more than one 'Unsynchronised lyrics/text transcription' frame
 			//   in each tag, but only one with the same language and content descriptor.
 			// <Header for 'Unsynchronised lyrics/text transcription', ID: 'USLT'>
@@ -993,24 +993,28 @@ class ID3v2 extends Handler
 				$this->warning('Invalid text encoding byte ('.$frame_textencoding.') in frame "'.$parsedFrame['frame_name'].'" - defaulting to ISO-8859-1 encoding');
 				$frame_textencoding_terminator = "\x00";
 			}
-			$frame_language = substr($parsedFrame['data'], $frame_offset, 3);
-			$frame_offset += 3;
-			$frame_terminatorpos = strpos($parsedFrame['data'], $frame_textencoding_terminator, $frame_offset);
-			if (ord(substr($parsedFrame['data'], $frame_terminatorpos + strlen($frame_textencoding_terminator), 1)) === 0) {
-				$frame_terminatorpos++; // strpos() fooled because 2nd byte of Unicode chars are often 0x00
-			}
-			$parsedFrame['description'] = substr($parsedFrame['data'], $frame_offset, $frame_terminatorpos - $frame_offset);
-			$parsedFrame['description'] = $this->MakeUTF16emptyStringEmpty($parsedFrame['description']);
-			$parsedFrame['data'] = substr($parsedFrame['data'], $frame_terminatorpos + strlen($frame_textencoding_terminator));
-			$parsedFrame['data'] = $this->RemoveStringTerminator($parsedFrame['data'], $frame_textencoding_terminator);
+			if (strlen($parsedFrame['data']) >= (4 + strlen($frame_textencoding_terminator))) {  // shouldn't be an issue but badly-written files have been spotted in the wild with not only no contents but also missing the required language field, see https://github.com/JamesHeinrich/getID3/issues/315
+				$frame_language = substr($parsedFrame['data'], $frame_offset, 3);
+				$frame_offset += 3;
+				$frame_terminatorpos = strpos($parsedFrame['data'], $frame_textencoding_terminator, $frame_offset);
+				if (ord(substr($parsedFrame['data'], $frame_terminatorpos + strlen($frame_textencoding_terminator), 1)) === 0) {
+					$frame_terminatorpos++; // strpos() fooled because 2nd byte of Unicode chars are often 0x00
+				}
+				$parsedFrame['description'] = substr($parsedFrame['data'], $frame_offset, $frame_terminatorpos - $frame_offset);
+				$parsedFrame['description'] = $this->MakeUTF16emptyStringEmpty($parsedFrame['description']);
+				$parsedFrame['data'] = substr($parsedFrame['data'], $frame_terminatorpos + strlen($frame_textencoding_terminator));
+				$parsedFrame['data'] = $this->RemoveStringTerminator($parsedFrame['data'], $frame_textencoding_terminator);
 
-			$parsedFrame['encodingid']   = $frame_textencoding;
-			$parsedFrame['encoding']     = $this->TextEncodingNameLookup($frame_textencoding);
+				$parsedFrame['encodingid']   = $frame_textencoding;
+				$parsedFrame['encoding']     = $this->TextEncodingNameLookup($frame_textencoding);
 
-			$parsedFrame['language']     = $frame_language;
-			$parsedFrame['languagename'] = $this->LanguageLookup($frame_language, false);
-			if (!empty($parsedFrame['framenameshort']) && !empty($parsedFrame['data'])) {
-				$info['id3v2']['comments'][$parsedFrame['framenameshort']][] = Utils::iconv_fallback($parsedFrame['encoding'], $info['id3v2']['encoding'], $parsedFrame['data']);
+				$parsedFrame['language']     = $frame_language;
+				$parsedFrame['languagename'] = $this->LanguageLookup($frame_language, false);
+				if (!empty($parsedFrame['framenameshort']) && !empty($parsedFrame['data'])) {
+					$info['id3v2']['comments'][$parsedFrame['framenameshort']][] = Utils::iconv_fallback($parsedFrame['encoding'], $info['id3v2']['encoding'], $parsedFrame['data']);
+				}
+			} else {
+				$this->warning('Invalid data in frame "'.$parsedFrame['frame_name'].'" at offset '.$parsedFrame['dataoffset']);
 			}
 			unset($parsedFrame['data']);
 
