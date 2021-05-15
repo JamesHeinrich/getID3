@@ -94,6 +94,7 @@ class getid3_cue extends getid3_handler
 	{
 		//-1 means still global, all others are track specific
 		$track_on = -1;
+		$currentFile = null;
 
 		for ($i=0; $i < count($file); $i++)
 		{

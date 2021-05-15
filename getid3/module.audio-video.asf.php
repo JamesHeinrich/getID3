@@ -93,6 +93,7 @@ class getid3_asf extends getid3_handler
 		$offset = 0;
 		$thisfile_asf_streambitratepropertiesobject = array();
 		$thisfile_asf_codeclistobject = array();
+		$StreamPropertiesObjectData = array();
 
 		for ($HeaderObjectsCounter = 0; $HeaderObjectsCounter < $thisfile_asf_headerobject['headerobjects']; $HeaderObjectsCounter++) {
 			$NextObjectGUID = substr($ASFHeaderData, $offset, 16);

@@ -188,6 +188,7 @@ class getid3_optimfrog extends getid3_handler
 				case 'COMP':
 					// unlike other block types, there CAN be multiple COMP blocks
 
+					$COMPdata           = array();
 					$COMPdata['offset'] = $BlockOffset;
 					$COMPdata['size']   = $BlockSize;
 

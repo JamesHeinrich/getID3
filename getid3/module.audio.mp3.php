@@ -58,6 +58,7 @@ class getid3_mp3 extends getid3_handler
 			$info['audio']['bitrate_mode'] = strtolower($info['mpeg']['audio']['bitrate_mode']);
 		}
 
+		$CurrentDataLAMEversionString = null;
 		if (((isset($info['id3v2']['headerlength']) && ($info['avdataoffset'] > $info['id3v2']['headerlength'])) || (!isset($info['id3v2']) && ($info['avdataoffset'] > 0) && ($info['avdataoffset'] != $initialOffset)))) {
 
 			$synchoffsetwarning = 'Unknown data before synch ';
@@ -1294,6 +1295,7 @@ class getid3_mp3 extends getid3_handler
 		$LongMPEGbitrateLookup        = array();
 		$LongMPEGpaddingLookup        = array();
 		$LongMPEGfrequencyLookup      = array();
+		$Distribution                 = array();
 		$Distribution['bitrate']      = array();
 		$Distribution['frequency']    = array();
 		$Distribution['layer']        = array();
@@ -1456,6 +1458,7 @@ class getid3_mp3 extends getid3_handler
 		$SynchSeekOffset = 0;
 		$SyncSeekAttempts = 0;
 		$SyncSeekAttemptsMax = 1000;
+		$FirstFrameThisfileInfo = null;
 		while ($SynchSeekOffset < $sync_seek_buffer_size) {
 			if ((($avdataoffset + $SynchSeekOffset)  < $info['avdataend']) && !feof($this->getid3->fp)) {
 
@@ -1598,6 +1601,7 @@ class getid3_mp3 extends getid3_handler
 						$pct_data_scanned = 0;
 						for ($current_segment = 0; $current_segment < $max_scan_segments; $current_segment++) {
 							$frames_scanned_this_segment = 0;
+							$scan_start_offset = array();
 							if ($this->ftell() >= $info['avdataend']) {
 								break;
 							}
@@ -1927,6 +1931,7 @@ class getid3_mp3 extends getid3_handler
 			return false;
 		}
 
+		$MPEGrawHeader = array();
 		$MPEGrawHeader['synch']         = (getid3_lib::BigEndian2Int(substr($Header4Bytes, 0, 2)) & 0xFFE0) >> 4;
 		$MPEGrawHeader['version']       = (ord($Header4Bytes[1]) & 0x18) >> 3; //    BB
 		$MPEGrawHeader['layer']         = (ord($Header4Bytes[1]) & 0x06) >> 1; //      CC

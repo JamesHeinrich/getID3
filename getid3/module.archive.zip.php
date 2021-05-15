@@ -231,6 +231,7 @@ class getid3_zip extends getid3_handler
 	 * @return array|false
 	 */
 	public function ZIPparseLocalFileHeader() {
+		$LocalFileHeader = array();
 		$LocalFileHeader['offset'] = $this->ftell();
 
 		$ZIPlocalFileHeader = $this->fread(30);
@@ -329,6 +330,7 @@ class getid3_zip extends getid3_handler
 	 * @return array|false
 	 */
 	public function ZIPparseCentralDirectory() {
+		$CentralDirectory = array();
 		$CentralDirectory['offset'] = $this->ftell();
 
 		$ZIPcentralDirectory = $this->fread(46);
@@ -388,6 +390,7 @@ class getid3_zip extends getid3_handler
 	 * @return array|false
 	 */
 	public function ZIPparseEndOfCentralDirectory() {
+		$EndOfCentralDirectory = array();
 		$EndOfCentralDirectory['offset'] = $this->ftell();
 
 		$ZIPendOfCentralDirectory = $this->fread(22);
