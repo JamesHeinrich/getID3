@@ -58,7 +58,7 @@ class getid3_gzip extends getid3_handler
 		$num_members = 0;
 		while (true) {
 			$is_wrong_members = false;
-			$num_members = intval(count($arr_members));
+			$num_members = count($arr_members);
 			for ($i = 0; $i < $num_members; $i++) {
 				if (strlen($arr_members[$i]) == 0) {
 					continue;
@@ -83,13 +83,13 @@ class getid3_gzip extends getid3_handler
 
 		$fpointer = 0;
 		$idx = 0;
-		for ($i = 0; $i < $num_members; $i++) {
-			if (strlen($arr_members[$i]) == 0) {
+		foreach ($arr_members as $member) {
+			if (strlen($member) == 0) {
 				continue;
 			}
 			$thisInfo = &$info['gzip']['member_header'][++$idx];
 
-			$buff = "\x1F\x8B\x08".$arr_members[$i];
+			$buff = "\x1F\x8B\x08". $member;
 
 			$attr = unpack($unpack_header, substr($buff, 0, $start_length));
 			$thisInfo['filemtime']      = getid3_lib::LittleEndian2Int($attr['mtime']);

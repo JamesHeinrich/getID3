@@ -434,8 +434,8 @@ class getid3_lib
 		}
 		$bytes[] = $number;
 		$binstring = '';
-		for ($i = 0; $i < count($bytes); $i++) {
-			$binstring = (($i == count($bytes) - 1) ? decbin($bytes[$i]) : str_pad(decbin($bytes[$i]), 8, '0', STR_PAD_LEFT)).$binstring;
+		foreach ($bytes as $i => $byte) {
+			$binstring = (($i == count($bytes) - 1) ? decbin($byte) : str_pad(decbin($byte), 8, '0', STR_PAD_LEFT)).$binstring;
 		}
 		return $binstring;
 	}
