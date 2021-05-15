@@ -46,6 +46,7 @@ class getid3_dsdiff extends getid3_handler
 		$info['audio']['bits_per_sample'] = 1;
 
 		$info['dsdiff'] = array();
+		$thisChunk = null;
 		while (!$this->feof() && ($ChunkHeader = $this->fread(12))) {
 			if (strlen($ChunkHeader) < 12) {
 				$this->error('Expecting chunk header at offset '.(isset($thisChunk['offset']) ? $thisChunk['offset'] : 'N/A').', found insufficient data in file, aborting parsing');

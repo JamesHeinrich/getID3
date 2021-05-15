@@ -345,7 +345,7 @@ class getid3_id3v2 extends getid3_handler
 				}
 				if (($frame_size <= strlen($framedata)) && ($this->IsValidID3v2FrameName($frame_name, $id3v2_majorversion))) {
 
-					unset($parsedFrame);
+					$parsedFrame                    = array();
 					$parsedFrame['frame_name']      = $frame_name;
 					$parsedFrame['frame_flags_raw'] = $frame_flags;
 					$parsedFrame['data']            = substr($framedata, 0, $frame_size);
@@ -1374,6 +1374,8 @@ class getid3_id3v2 extends getid3_handler
 				$frame_textencoding_terminator = "\x00";
 			}
 
+			$frame_imagetype = null;
+			$frame_mimetype = null;
 			if ($id3v2_majorversion == 2 && strlen($parsedFrame['data']) > $frame_offset) {
 				$frame_imagetype = substr($parsedFrame['data'], $frame_offset, 3);
 				if (strtolower($frame_imagetype) == 'ima') {

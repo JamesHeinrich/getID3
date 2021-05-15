@@ -2371,6 +2371,8 @@ abstract class getid3_handler
 	 * @throws getid3_exception
 	 */
 	public function saveAttachment($name, $offset, $length, $image_mime=null) {
+		$fp_dest = null;
+		$dest = null;
 		try {
 
 			// do not extract at all

@@ -348,6 +348,7 @@ class getid3_mpc extends getid3_handler
 		$info['avdataoffset'] += $thisfile_mpc_header['size'];
 
 		// Most of this code adapted from Jurgen Faul's MPEGplus source code - thanks Jurgen! :)
+		$HeaderDWORD = array();
 		$HeaderDWORD[0] = getid3_lib::LittleEndian2Int(substr($MPCheaderData, 0, 4));
 		$HeaderDWORD[1] = getid3_lib::LittleEndian2Int(substr($MPCheaderData, 4, 4));
 

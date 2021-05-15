@@ -57,6 +57,7 @@ class getid3_png extends getid3_handler
 		}
 
 		while ((($this->ftell() - (strlen($PNGfiledata) - $offset)) < $info['filesize'])) {
+			$chunk = array();
 			$chunk['data_length'] = getid3_lib::BigEndian2Int(substr($PNGfiledata, $offset, 4));
 			if ($chunk['data_length'] === false) {
 				$this->error('Failed to read data_length at offset '.$offset);

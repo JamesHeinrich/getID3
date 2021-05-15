@@ -509,6 +509,7 @@ class getid3_bmp extends getid3_handler
 					switch ($thisfile_bmp_header_raw['bits_per_pixel']) {
 						case 4:
 							$pixelcounter = 0;
+							$paletteindexes = array();
 							while ($pixeldataoffset < strlen($BMPpixelData)) {
 								$firstbyte  = getid3_lib::LittleEndian2Int(substr($BMPpixelData, $pixeldataoffset++, 1));
 								$secondbyte = getid3_lib::LittleEndian2Int(substr($BMPpixelData, $pixeldataoffset++, 1));
@@ -544,7 +545,6 @@ class getid3_bmp extends getid3_handler
 											// of color indexes that follow. Subsequent bytes contain color indexes in their
 											// high- and low-order 4 bits, one color index for each pixel. In absolute mode,
 											// each run must be aligned on a word boundary.
-											unset($paletteindexes);
 											$paletteindexes = array();
 											for ($i = 0; $i < ceil($secondbyte / 2); $i++) {
 												$paletteindexbyte = getid3_lib::LittleEndian2Int(substr($BMPpixelData, $pixeldataoffset++, 1));
