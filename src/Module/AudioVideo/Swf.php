@@ -120,7 +120,7 @@ class Swf extends Handler
 				$CurrentOffset += 4;
 			}
 
-			unset($TagData);
+			$TagData           = array();
 			$TagData['offset'] = $CurrentOffset;
 			$TagData['size']   = $TagLength;
 			$TagData['id']     = $TagID;

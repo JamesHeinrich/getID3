@@ -752,11 +752,13 @@ class QuickTime extends Handler
 					$atom_structure['flags']['play_on_open'] = (bool) $atom_structure['play_on_open_flag'];
 					$atom_structure['flags']['slide_show']   = (bool) $atom_structure['slide_show_flag'];
 
-					$ptv_lookup[0] = 'normal';
-					$ptv_lookup[1] = 'double';
-					$ptv_lookup[2] = 'half';
-					$ptv_lookup[3] = 'full';
-					$ptv_lookup[4] = 'current';
+					$ptv_lookup = array(
+						0 => 'normal',
+						1 => 'double',
+						2 => 'half',
+						3 => 'full',
+						4 => 'current'
+					);
 					if (isset($ptv_lookup[$atom_structure['display_size_raw']])) {
 						$atom_structure['display_size'] = $ptv_lookup[$atom_structure['display_size_raw']];
 					} else {
@@ -1745,6 +1747,7 @@ $this->warning('incomplete/incorrect handling of "stsd" with Parrot metadata in 
 									'unknown_data'   => array(),
 									'debug_list'     => '',      // Used to debug variables stored as comma delimited strings
 							);
+							$debug_structure = array();
 							$debug_structure['debug_items'] = array();
 							// Can start loop here to decode all sensor data in 32 Byte chunks:
 							foreach (str_split($atom_SENSOR_data, 32) as $sensor_key => $sensor_data) {

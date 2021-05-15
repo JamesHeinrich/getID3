@@ -57,6 +57,7 @@ class Png extends Handler
 		}
 
 		while ((($this->ftell() - (strlen($PNGfiledata) - $offset)) < $info['filesize'])) {
+			$chunk = array();
 			$chunk['data_length'] = Utils::BigEndian2Int(substr($PNGfiledata, $offset, 4));
 			if ($chunk['data_length'] === false) {
 				$this->error('Failed to read data_length at offset '.$offset);

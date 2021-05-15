@@ -283,6 +283,7 @@ class Real
 				fclose($fp_source);
 				return false;
 			}
+			$oldChunkInfo = array();
 			foreach ($OldThisFileInfo['real']['chunks'] as $chunknumber => $chunkarray) {
 				$oldChunkInfo[$chunkarray['name']] = $chunkarray;
 			}

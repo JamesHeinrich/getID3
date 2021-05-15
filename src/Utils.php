@@ -584,6 +584,7 @@ class Utils
 	 * @return string
 	 */
 	public static function Dec2Bin($number) {
+		$bytes = array();
 		while ($number >= 256) {
 			$bytes[] = (($number / 256) - (floor($number / 256))) * 256;
 			$number = floor($number / 256);
@@ -822,6 +823,7 @@ class Utils
 		// or
 		//   $foo['path']['to']['my'] = 'file.txt';
 		$ArrayPath = ltrim($ArrayPath, $Separator);
+		$ReturnedArray = array();
 		if (($pos = strpos($ArrayPath, $Separator)) !== false) {
 			$ReturnedArray[substr($ArrayPath, 0, $pos)] = self::CreateDeepArray(substr($ArrayPath, $pos + 1), $Separator, $Value);
 		} else {
@@ -1834,6 +1836,7 @@ class Utils
 	 * @return float|bool
 	 */
 	public static function getFileSizeSyscall($path) {
+		$commandline = null;
 		$filesize = false;
 
 		if (static::isWindows()) {

@@ -252,6 +252,7 @@ class Iso extends Handler
 
 		$offset = 0;
 		$pathcounter = 1;
+		$FullPathArray = array();
 		while ($offset < $PathTableSize) {
 			// shortcut
 			$info['iso']['path_table']['directories'][$pathcounter] = array();

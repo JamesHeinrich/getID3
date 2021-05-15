@@ -163,6 +163,7 @@ class Flv extends Handler
 						$info['flv']['video']['videoCodec'] = $LastHeaderByte & 0x07;
 
 						$FLVvideoHeader = $this->fread(11);
+						$PictureSizeEnc = array();
 
 						if ($info['flv']['video']['videoCodec'] === self::VIDEO_H264) {
 							// this code block contributed by: moysevichØgmail*com

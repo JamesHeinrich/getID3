@@ -401,6 +401,7 @@ class Flac extends Handler
 	public function parsePICTURE() {
 		$info = &$this->getid3->info;
 
+		$picture = array();
 		$picture['typeid']         = Utils::BigEndian2Int($this->fread(4));
 		$picture['picturetype']    = self::pictureTypeLookup($picture['typeid']);
 		$picture['image_mime']     = $this->fread(Utils::BigEndian2Int($this->fread(4)));

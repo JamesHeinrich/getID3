@@ -56,6 +56,7 @@ class Riff extends Handler
 		$thisfile_riff_video       = &$thisfile_riff['video'];
 		$thisfile_riff_WAVE        = array();
 
+		$Original                 = array();
 		$Original['avdataoffset'] = $info['avdataoffset'];
 		$Original['avdataend']    = $info['avdataend'];
 
@@ -316,6 +317,7 @@ class Riff extends Handler
 					$thisfile_riff_WAVE_bext_0['coding_history'] =         explode("\r\n", trim(substr($thisfile_riff_WAVE_bext_0['data'], 601)));
 					if (preg_match('#^([0-9]{4}).([0-9]{2}).([0-9]{2})$#', $thisfile_riff_WAVE_bext_0['origin_date'], $matches_bext_date)) {
 						if (preg_match('#^([0-9]{2}).([0-9]{2}).([0-9]{2})$#', $thisfile_riff_WAVE_bext_0['origin_time'], $matches_bext_time)) {
+							$bext_timestamp = array();
 							list($dummy, $bext_timestamp['year'], $bext_timestamp['month'],  $bext_timestamp['day'])    = $matches_bext_date;
 							list($dummy, $bext_timestamp['hour'], $bext_timestamp['minute'], $bext_timestamp['second']) = $matches_bext_time;
 							$thisfile_riff_WAVE_bext_0['origin_date_unix'] = gmmktime($bext_timestamp['hour'], $bext_timestamp['minute'], $bext_timestamp['second'], $bext_timestamp['month'], $bext_timestamp['day'], $bext_timestamp['year']);
@@ -797,6 +799,7 @@ class Riff extends Handler
 				}
 				if (isset($thisfile_riff['AVI ']['hdrl']['strl']['strh'][0]['data'])) {
 					if (is_array($thisfile_riff['AVI ']['hdrl']['strl']['strh'])) {
+						$thisfile_riff_raw_strf_strhfccType_streamindex = null;
 						for ($i = 0; $i < count($thisfile_riff['AVI ']['hdrl']['strl']['strh']); $i++) {
 							if (isset($thisfile_riff['AVI ']['hdrl']['strl']['strh'][$i]['data'])) {
 								$strhData = $thisfile_riff['AVI ']['hdrl']['strl']['strh'][$i]['data'];
@@ -1572,6 +1575,8 @@ class Riff extends Handler
 
 		$RIFFchunk = false;
 		$FoundAllChunksWeNeed = false;
+		$LISTchunkParent = null;
+		$LISTchunkMaxOffset = null;
 		$AC3syncwordBytes = pack('n', Ac3::syncword); // 0x0B77 -> "\x0B\x77"
 
 		try {
@@ -2139,6 +2144,7 @@ class Riff extends Handler
 	 */
 	public static function ParseBITMAPINFOHEADER($BITMAPINFOHEADER, $littleEndian=true) {
 
+		$parsed                    = array();
 		$parsed['biSize']          = substr($BITMAPINFOHEADER,  0, 4); // number of bytes required by the BITMAPINFOHEADER structure
 		$parsed['biWidth']         = substr($BITMAPINFOHEADER,  4, 4); // width of the bitmap in pixels
 		$parsed['biHeight']        = substr($BITMAPINFOHEADER,  8, 4); // height of the bitmap in pixels. If biHeight is positive, the bitmap is a 'bottom-up' DIB and its origin is the lower left corner. If biHeight is negative, the bitmap is a 'top-down' DIB and its origin is the upper left corner
