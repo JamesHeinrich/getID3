@@ -399,7 +399,7 @@ class Utils
 	/**
 	 * ANSI/IEEE Standard 754-1985, Standard for Binary Floating Point Arithmetic
 	 *
-	 * @link http://www.psc.edu/general/software/packages/ieee/ieee.html
+	 * @link https://web.archive.org/web/20120325162206/http://www.psc.edu/general/software/packages/ieee/ieee.php
 	 * @link http://www.scri.fsu.edu/~jac/MAD3401/Backgrnd/ieee.html
 	 *
 	 * @param string $byteword
@@ -451,12 +451,12 @@ class Utils
 
 		if (($exponent == (pow(2, $exponentbits) - 1)) && ($fraction != 0)) {
 			// Not a Number
-			$floatvalue = false;
+			$floatvalue = NAN;
 		} elseif (($exponent == (pow(2, $exponentbits) - 1)) && ($fraction == 0)) {
 			if ($signbit == '1') {
-				$floatvalue = '-infinity';
+				$floatvalue = -INF;
 			} else {
-				$floatvalue = '+infinity';
+				$floatvalue = INF;
 			}
 		} elseif (($exponent == 0) && ($fraction == 0)) {
 			if ($signbit == '1') {
