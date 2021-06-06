@@ -53,7 +53,7 @@ if ($open_basedir) {
 		if (substr($basedir, -1, 1) != DIRECTORY_SEPARATOR) {
 			$basedir .= DIRECTORY_SEPARATOR;
 		}
-		if (preg_match('#^'.preg_quote($basedir).'#', $temp_dir)) {
+		if (strpos($temp_dir, $basedir) === 0) {
 			$found_valid_tempdir = true;
 			break;
 		}
