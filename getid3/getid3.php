@@ -387,7 +387,7 @@ class getID3
 	 */
 	protected $startup_warning = '';
 
-	const VERSION           = '1.9.20-202106221748';
+	const VERSION           = '1.9.20-202106281245';
 	const FREAD_BUFFER_SIZE = 32768;
 
 	const ATTACHMENTS_NONE   = false;
@@ -2243,26 +2243,24 @@ abstract class getid3_handler
 					$this->data_string_position = $this->data_string_length + $bytes;
 					break;
 			}
-			return 0;
-		} else {
-			$pos = $bytes;
-			if ($whence == SEEK_CUR) {
-				$pos = $this->ftell() + $bytes;
-			} elseif ($whence == SEEK_END) {
-				$pos = $this->getid3->info['filesize'] + $bytes;
-			}
-			if (!getid3_lib::intValueSupported($pos)) {
-				throw new getid3_exception('cannot fseek('.$pos.') because beyond PHP filesystem limit', 10);
-			}
+			return 0; // fseek returns 0 on success
 		}
 
-		$result = fseek($this->getid3->fp, $bytes, $whence);
+		$pos = $bytes;
+		if ($whence == SEEK_CUR) {
+			$pos = $this->ftell() + $bytes;
+		} elseif ($whence == SEEK_END) {
+			$pos = $this->getid3->info['filesize'] + $bytes;
+		}
+		if (!getid3_lib::intValueSupported($pos)) {
+			throw new getid3_exception('cannot fseek('.$pos.') because beyond PHP filesystem limit', 10);
+		}
 
-		// fseek returns 0 on success
-		if ($result !== 0) {
+		// https://github.com/JamesHeinrich/getID3/issues/327
+		$result = fseek($this->getid3->fp, $bytes, $whence);
+		if ($result !== 0) { // fseek returns 0 on success
 			throw new getid3_exception('cannot fseek('.$pos.'). resource/stream does not appear to support seeking', 10);
 		}
-
 		return $result;
 	}
 
