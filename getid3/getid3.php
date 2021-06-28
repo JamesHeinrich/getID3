@@ -2255,7 +2255,15 @@ abstract class getid3_handler
 				throw new getid3_exception('cannot fseek('.$pos.') because beyond PHP filesystem limit', 10);
 			}
 		}
-		return fseek($this->getid3->fp, $bytes, $whence);
+
+		$result = fseek($this->getid3->fp, $bytes, $whence);
+
+		// fseek returns 0 on success
+		if ($result !== 0) {
+			throw new getid3_exception('cannot fseek('.$pos.'). resource/stream does not appear to support seeking', 10);
+		}
+
+		return $result;
 	}
 
 	/**
