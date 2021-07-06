@@ -2606,8 +2606,9 @@ $this->warning('incomplete/incorrect handling of "stsd" with Parrot metadata in 
 		static $QuicktimeContentRatingLookup = array();
 		if (empty($QuicktimeContentRatingLookup)) {
 			$QuicktimeContentRatingLookup[0]  = 'None';
+			$QuicktimeContentRatingLookup[1]  = 'Explicit';
 			$QuicktimeContentRatingLookup[2]  = 'Clean';
-			$QuicktimeContentRatingLookup[4]  = 'Explicit';
+			$QuicktimeContentRatingLookup[4]  = 'Explicit (old)';
 		}
 		return (isset($QuicktimeContentRatingLookup[$rtng]) ? $QuicktimeContentRatingLookup[$rtng] : 'invalid');
 	}
