@@ -744,9 +744,6 @@ class getid3_mp3 extends getid3_handler
 							$thisfile_mpeg_audio_lame['integer_version'][$key] = intval($number);
 						}
 						//if ($thisfile_mpeg_audio_lame['short_version'] >= 'LAME3.90') {
-echo '<pre>';
-var_dump($thisfile_mpeg_audio_lame);
-echo '</pre>';
 						if ((($thisfile_mpeg_audio_lame['integer_version'][0] * 1000) + $thisfile_mpeg_audio_lame['integer_version'][1]) >= 3090) { // cannot use string version compare, may have "LAME3.90" or "LAME3.100" -- see https://github.com/JamesHeinrich/getID3/issues/207
 
 							// extra 11 chars are not part of version string when LAMEtag present
