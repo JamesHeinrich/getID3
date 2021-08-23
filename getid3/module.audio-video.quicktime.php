@@ -2093,7 +2093,7 @@ $this->warning('incomplete/incorrect handling of "stsd" with Parrot metadata in 
 	 * @return array|false
 	 */
 	public function QuicktimeParseContainerAtom($atom_data, $baseoffset, &$atomHierarchy, $ParseAllPossibleAtoms) {
-		$atom_structure  = false;
+		$atom_structure = array();
 		$subatomoffset  = 0;
 		$subatomcounter = 0;
 		if ((strlen($atom_data) == 4) && (getid3_lib::BigEndian2Int($atom_data) == 0x00000000)) {
@@ -2111,17 +2111,22 @@ $this->warning('incomplete/incorrect handling of "stsd" with Parrot metadata in 
 					$subatomoffset += 4;
 					continue;
 				}
-				return $atom_structure;
+				break;
 			}
 			if (strlen($subatomdata) < ($subatomsize - 8)) {
 			    // we don't have enough data to decode the subatom.
 			    // this may be because we are refusing to parse large subatoms, or it may be because this atom had its size set too large
 			    // so we passed in the start of a following atom incorrectly?
-			    return $atom_structure;
+			    break;
 			}
 			$atom_structure[$subatomcounter++] = $this->QuicktimeParseAtom($subatomname, $subatomsize, $subatomdata, $baseoffset + $subatomoffset, $atomHierarchy, $ParseAllPossibleAtoms);
 			$subatomoffset += $subatomsize;
 		}
+
+		if (empty($atom_structure)) {
+			return false;
+		}
+
 		return $atom_structure;
 	}
 
