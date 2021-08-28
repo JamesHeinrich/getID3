@@ -1581,9 +1581,18 @@ class getid3_lib
 
 							} elseif (!is_array($value)) {
 
-								$newvaluelength = strlen(trim($value));
+								$newvaluelength   =    strlen(trim($value));
+								$newvaluelengthMB = mb_strlen(trim($value));
 								foreach ($ThisFileInfo['comments'][$tagname] as $existingkey => $existingvalue) {
-									$oldvaluelength = strlen(trim($existingvalue));
+									$oldvaluelength   =    strlen(trim($existingvalue));
+									$oldvaluelengthMB = mb_strlen(trim($existingvalue));
+									if (($newvaluelengthMB == $oldvaluelengthMB) && ($existingvalue == getid3_lib::iconv_fallback('UTF-8', 'ASCII', $value))) {
+										// https://github.com/JamesHeinrich/getID3/issues/338
+										// check for tags containing extended characters that may have been forced into limited-character storage (e.g. UTF8 values into ASCII)
+										// which will usually display unrepresentable characters as "?"
+										$ThisFileInfo['comments'][$tagname][$existingkey] = trim($value);
+										break;
+									}
 									if ((strlen($existingvalue) > 10) && ($newvaluelength > $oldvaluelength) && (substr(trim($value), 0, strlen($existingvalue)) == $existingvalue)) {
 										$ThisFileInfo['comments'][$tagname][$existingkey] = trim($value);
 										break;
