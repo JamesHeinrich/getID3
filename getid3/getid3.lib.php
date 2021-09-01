@@ -1545,12 +1545,21 @@ class getid3_lib
 	public static function CopyTagsToComments(&$ThisFileInfo, $option_tags_html=true) {
 		// Copy all entries from ['tags'] into common ['comments']
 		if (!empty($ThisFileInfo['tags'])) {
-			if (isset($ThisFileInfo['tags']['id3v1'])) {
-				// bubble ID3v1 to the end, if present to aid in detecting bad ID3v1 encodings
-				$ID3v1 = $ThisFileInfo['tags']['id3v1'];
-				unset($ThisFileInfo['tags']['id3v1']);
-				$ThisFileInfo['tags']['id3v1'] = $ID3v1;
-				unset($ID3v1);
+
+			// Some tag types can only support limited character sets and may contain data in non-standard encoding (usually ID3v1)
+			// and/or poorly-transliterated tag values that are also in tag formats that do support full-range character sets
+			// To make the output more user-friendly, process the potentially-problematic tag formats last to enhance the chance that
+			// the first entries in [comments] are the most correct and the "bad" ones (if any) come later.
+			// https://github.com/JamesHeinrich/getID3/issues/338
+			$processLastTagTypes = array('id3v1','riff');
+			foreach ($processLastTagTypes as $processLastTagType) {
+				if (isset($ThisFileInfo['tags'][$processLastTagType])) {
+					// bubble ID3v1 to the end, if present to aid in detecting bad ID3v1 encodings
+					$temp = $ThisFileInfo['tags'][$processLastTagType];
+					unset($ThisFileInfo['tags'][$processLastTagType]);
+					$ThisFileInfo['tags'][$processLastTagType] = $temp;
+					unset($temp);
+				}
 			}
 			foreach ($ThisFileInfo['tags'] as $tagtype => $tagarray) {
 				foreach ($tagarray as $tagname => $tagdata) {
