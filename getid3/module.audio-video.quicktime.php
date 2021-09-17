@@ -29,7 +29,7 @@ class getid3_quicktime extends getid3_handler
 	 *
 	 * @var bool
 	 */
-	public $ReturnAtomData        = true;
+	public $ReturnAtomData        = false;
 
 	/** audio-video.quicktime
 	 * return all parsed data from all atoms if true, otherwise just returned parsed metadata
