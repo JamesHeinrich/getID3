@@ -1497,7 +1497,7 @@ if (!empty($_REQUEST['scan']) || !empty($_REQUEST['newscan']) || !empty($_REQUES
 		} else {
 
 			echo '<a href="'.htmlentities($_SERVER['PHP_SELF'].'?encoderoptionsdistribution=1').'">Show all Encoder Options</a><hr>';
-			echo 'Files with Encoder Options <b>'.$_REQUEST['showtagfiles'].'</b>:<br>';
+			echo 'Files with Encoder Options <b>'.htmlentities($_REQUEST['showtagfiles']).'</b>:<br>';
 			echo '<table border="1" cellspacing="0" cellpadding="3">';
 			while ($row = mysqli_fetch_array($result)) {
 				echo '<tr>';
