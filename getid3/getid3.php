@@ -393,6 +393,9 @@ class getID3
 	const ATTACHMENTS_NONE   = false;
 	const ATTACHMENTS_INLINE = true;
 
+	/**
+	 * @throws getid3_exception
+	 */
 	public function __construct() {
 
 		// Check for PHP version
