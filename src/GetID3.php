@@ -226,7 +226,7 @@ class GetID3
 	 *
 	 * @var bool
 	 */
-	public $options_audiovideo_quicktime_ReturnAtomData        = true;
+	public $options_audiovideo_quicktime_ReturnAtomData  = false;
 
 	/** audio-video.quicktime
 	 * return all parsed data from all atoms if true, otherwise just returned parsed metadata
@@ -319,7 +319,7 @@ class GetID3
 	 */
 	protected $startup_warning = '';
 
-	const VERSION           = '2.0.x-202105131611';
+	const VERSION           = '2.0.x-202109171300';
 	const FREAD_BUFFER_SIZE = 32768;
 
 	const ATTACHMENTS_NONE   = false;

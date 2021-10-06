@@ -18,6 +18,42 @@
 Version History
 ===============
 
+1.9.21: [2021-09-22] James Heinrich :: 1.9.21-202109171300
+	» add support for RIFF.guan
+	¤ add ID3v1 genres 148-191
+	¤ torrent files easy access key
+	* bugfix #342 demo.mysqli.php XSS
+	* bugfix #340 default quicktime.ReturnAtomData=false
+	* bugfix #338 improved transliterated tag merging
+	* bugfix #337 PHP 8.1 compatibility
+	* bugfix #335 PHP 8.1 compatibility
+	* bugfix #330 QuicktimeContentRatingLookup 'rtng'
+	* bugfix #328 throw exception if a resource seek fails
+	* bugfix #326 improved temporary path detection
+	* bugfix #325 INF/NAN constants instead of float/string
+	* bugfix #324 Nikon-specific atoms in QuickTime
+	* bugfix #321 prevent errors on corrupt JPEGs
+	* bugfix #319 prevent error in ZIP contents MIME detect
+	* bugfix #315 ID3v2 USLT check for data length
+	* bugfix #308 silence libxml deprecation warning
+	* bugfix #304 undefined index: comments
+	* bugfix #299 decbin type error in PHP8
+	* bugfix #298 error scanning WAV via file pointer
+	* bugfix #294 replace IMG_JPG with IMAGETYPE_JPEG
+	* bugfix #292 PDFs take long time to parse
+	* bugfix #291 divzero QuickTime with no playable content
+	* bugfix #290 detect ID3v1 on minimal example files
+	* bugfix #289 avoid crash on invalid TIFF
+	* bugfix #287 mp3 CBR detected as VBR
+	* bugfix #286 corrupt mp3 can cause slow scanning
+	* bugfix #284 allow "0" as a value in tags
+	* bugfix #283 array offset on value of type int
+	* bugfix #277 ID3v2 add new Turkish Lira TRY
+	* bugfix #270 demo.mysqli.php LONGBLOB
+	* bugfix #266 fix possible endless loop on PNG
+	* bugfix #257 undefined variables
+	* bugfix #207 improved LAME version string parsing
+
 1.9.20: [2020-06-30] James Heinrich :: 1.9.20-202006061653
 	» add support for DSDIFF audio
 	» add support for TAK lossess audio

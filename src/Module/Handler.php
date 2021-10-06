@@ -180,19 +180,25 @@ abstract class Handler {
 					$this->data_string_position = $this->data_string_length + $bytes;
 					break;
 			}
-			return 0;
-		} else {
-			$pos = $bytes;
-			if ($whence == SEEK_CUR) {
-				$pos = $this->ftell() + $bytes;
-			} elseif ($whence == SEEK_END) {
-				$pos = $this->getid3->info['filesize'] + $bytes;
-			}
-			if (!Utils::intValueSupported($pos)) {
-				throw new Exception('cannot fseek('.$pos.') because beyond PHP filesystem limit', 10);
-			}
+			return 0; // fseek returns 0 on success
 		}
-		return fseek($this->getid3->fp, $bytes, $whence);
+
+		$pos = $bytes;
+		if ($whence == SEEK_CUR) {
+			$pos = $this->ftell() + $bytes;
+		} elseif ($whence == SEEK_END) {
+			$pos = $this->getid3->info['filesize'] + $bytes;
+		}
+		if (!Utils::intValueSupported($pos)) {
+			throw new Exception('cannot fseek('.$pos.') because beyond PHP filesystem limit', 10);
+		}
+
+		// https://github.com/JamesHeinrich/getID3/issues/327
+		$result = fseek($this->getid3->fp, $bytes, $whence);
+		if ($result !== 0) { // fseek returns 0 on success
+			throw new Exception('cannot fseek('.$pos.'). resource/stream does not appear to support seeking', 10);
+		}
+		return $result;
 	}
 
 	/**
