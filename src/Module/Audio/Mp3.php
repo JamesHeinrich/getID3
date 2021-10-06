@@ -58,6 +58,7 @@ class Mp3 extends Handler
 			$info['audio']['bitrate_mode'] = strtolower($info['mpeg']['audio']['bitrate_mode']);
 		}
 
+		$CurrentDataLAMEversionString = null;
 		if (((isset($info['id3v2']['headerlength']) && ($info['avdataoffset'] > $info['id3v2']['headerlength'])) || (!isset($info['id3v2']) && ($info['avdataoffset'] > 0) && ($info['avdataoffset'] != $initialOffset)))) {
 
 			$synchoffsetwarning = 'Unknown data before synch ';
@@ -124,6 +125,12 @@ class Mp3 extends Handler
 				if (substr($PossiblyLongerLAMEversion_String, 0, strlen($CurrentDataLAMEversionString)) == $CurrentDataLAMEversionString) {
 					$PossiblyLongerLAMEversion_NewString = substr($PossiblyLongerLAMEversion_String, 0, strspn($PossiblyLongerLAMEversion_String, 'LAME0123456789., (abcdefghijklmnopqrstuvwxyzJFSOND)')); //"LAME3.90.3"  "LAME3.87 (beta 1, Sep 27 2000)" "LAME3.88 (beta)"
 					if (empty($info['audio']['encoder']) || (strlen($PossiblyLongerLAMEversion_NewString) > strlen($info['audio']['encoder']))) {
+						if (!empty($info['audio']['encoder']) && !empty($info['mpeg']['audio']['LAME']['short_version']) && ($info['audio']['encoder'] == $info['mpeg']['audio']['LAME']['short_version'])) {
+							if (preg_match('#^LAME[0-9\\.]+#', $PossiblyLongerLAMEversion_NewString, $matches)) {
+								// "LAME3.100" -> "LAME3.100.1", but avoid including "(alpha)" and similar
+								$info['mpeg']['audio']['LAME']['short_version'] = $matches[0];
+							}
+						}
 						$info['audio']['encoder'] = $PossiblyLongerLAMEversion_NewString;
 					}
 				}
@@ -725,197 +732,200 @@ class Mp3 extends Handler
 
 					$thisfile_mpeg_audio_lame['long_version']  = substr($headerstring, $VBRidOffset + 120, 20);
 					$thisfile_mpeg_audio_lame['short_version'] = substr($thisfile_mpeg_audio_lame['long_version'], 0, 9);
-					$thisfile_mpeg_audio_lame['numeric_version'] = str_replace('LAME', '', $thisfile_mpeg_audio_lame['short_version']);
-					if (preg_match('#^LAME([0-9\\.a-z]+)#', $thisfile_mpeg_audio_lame['long_version'], $matches)) {
+
+					//$thisfile_mpeg_audio_lame['numeric_version'] = str_replace('LAME', '', $thisfile_mpeg_audio_lame['short_version']);
+					$thisfile_mpeg_audio_lame['numeric_version'] = '';
+					if (preg_match('#^LAME([0-9\\.a-z]*)#', $thisfile_mpeg_audio_lame['long_version'], $matches)) {
 						$thisfile_mpeg_audio_lame['short_version']   = $matches[0];
 						$thisfile_mpeg_audio_lame['numeric_version'] = $matches[1];
 					}
-					foreach (explode('.', $thisfile_mpeg_audio_lame['numeric_version']) as $key => $number) {
-						$thisfile_mpeg_audio_lame['integer_version'][$key] = intval($number);
-					}
-
-					//if ($thisfile_mpeg_audio_lame['short_version'] >= 'LAME3.90') {
-					if ((($thisfile_mpeg_audio_lame['integer_version'][0] * 1000) + $thisfile_mpeg_audio_lame['integer_version'][1]) >= 3090) { // cannot use string version compare, may have "LAME3.90" or "LAME3.100" -- see https://github.com/JamesHeinrich/getID3/issues/207
-
-						// extra 11 chars are not part of version string when LAMEtag present
-						unset($thisfile_mpeg_audio_lame['long_version']);
-
-						// It the LAME tag was only introduced in LAME v3.90
-						// http://www.hydrogenaudio.org/?act=ST&f=15&t=9933
-
-						// Offsets of various bytes in http://gabriel.mp3-tech.org/mp3infotag.html
-						// are assuming a 'Xing' identifier offset of 0x24, which is the case for
-						// MPEG-1 non-mono, but not for other combinations
-						$LAMEtagOffsetContant = $VBRidOffset - 0x24;
-
-						// shortcuts
-						$thisfile_mpeg_audio_lame['RGAD']    = array('track'=>array(), 'album'=>array());
-						$thisfile_mpeg_audio_lame_RGAD       = &$thisfile_mpeg_audio_lame['RGAD'];
-						$thisfile_mpeg_audio_lame_RGAD_track = &$thisfile_mpeg_audio_lame_RGAD['track'];
-						$thisfile_mpeg_audio_lame_RGAD_album = &$thisfile_mpeg_audio_lame_RGAD['album'];
-						$thisfile_mpeg_audio_lame['raw'] = array();
-						$thisfile_mpeg_audio_lame_raw    = &$thisfile_mpeg_audio_lame['raw'];
-
-						// byte $9B  VBR Quality
-						// This field is there to indicate a quality level, although the scale was not precised in the original Xing specifications.
-						// Actually overwrites original Xing bytes
-						unset($thisfile_mpeg_audio['VBR_scale']);
-						$thisfile_mpeg_audio_lame['vbr_quality'] = Utils::BigEndian2Int(substr($headerstring, $LAMEtagOffsetContant + 0x9B, 1));
-
-						// bytes $9C-$A4  Encoder short VersionString
-						$thisfile_mpeg_audio_lame['short_version'] = substr($headerstring, $LAMEtagOffsetContant + 0x9C, 9);
-
-						// byte $A5  Info Tag revision + VBR method
-						$LAMEtagRevisionVBRmethod = Utils::BigEndian2Int(substr($headerstring, $LAMEtagOffsetContant + 0xA5, 1));
-
-						$thisfile_mpeg_audio_lame['tag_revision']   = ($LAMEtagRevisionVBRmethod & 0xF0) >> 4;
-						$thisfile_mpeg_audio_lame_raw['vbr_method'] =  $LAMEtagRevisionVBRmethod & 0x0F;
-						$thisfile_mpeg_audio_lame['vbr_method']     = self::LAMEvbrMethodLookup($thisfile_mpeg_audio_lame_raw['vbr_method']);
-						$thisfile_mpeg_audio['bitrate_mode']        = substr($thisfile_mpeg_audio_lame['vbr_method'], 0, 3); // usually either 'cbr' or 'vbr', but truncates 'vbr-old / vbr-rh' to 'vbr'
-
-						// byte $A6  Lowpass filter value
-						$thisfile_mpeg_audio_lame['lowpass_frequency'] = Utils::BigEndian2Int(substr($headerstring, $LAMEtagOffsetContant + 0xA6, 1)) * 100;
-
-						// bytes $A7-$AE  Replay Gain
-						// http://privatewww.essex.ac.uk/~djmrob/replaygain/rg_data_format.html
-						// bytes $A7-$AA : 32 bit floating point "Peak signal amplitude"
-						if ($thisfile_mpeg_audio_lame['short_version'] >= 'LAME3.94b') {
-							// LAME 3.94a16 and later - 9.23 fixed point
-							// ie 0x0059E2EE / (2^23) = 5890798 / 8388608 = 0.7022378444671630859375
-							$thisfile_mpeg_audio_lame_RGAD['peak_amplitude'] = (float) ((Utils::BigEndian2Int(substr($headerstring, $LAMEtagOffsetContant + 0xA7, 4))) / 8388608);
-						} else {
-							// LAME 3.94a15 and earlier - 32-bit floating point
-							// Actually 3.94a16 will fall in here too and be WRONG, but is hard to detect 3.94a16 vs 3.94a15
-							$thisfile_mpeg_audio_lame_RGAD['peak_amplitude'] = Utils::LittleEndian2Float(substr($headerstring, $LAMEtagOffsetContant + 0xA7, 4));
+					if (strlen($thisfile_mpeg_audio_lame['numeric_version']) > 0) {
+						foreach (explode('.', $thisfile_mpeg_audio_lame['numeric_version']) as $key => $number) {
+							$thisfile_mpeg_audio_lame['integer_version'][$key] = intval($number);
 						}
-						if ($thisfile_mpeg_audio_lame_RGAD['peak_amplitude'] == 0) {
-							unset($thisfile_mpeg_audio_lame_RGAD['peak_amplitude']);
-						} else {
-							$thisfile_mpeg_audio_lame_RGAD['peak_db'] = Utils::RGADamplitude2dB($thisfile_mpeg_audio_lame_RGAD['peak_amplitude']);
-						}
+						//if ($thisfile_mpeg_audio_lame['short_version'] >= 'LAME3.90') {
+						if ((($thisfile_mpeg_audio_lame['integer_version'][0] * 1000) + $thisfile_mpeg_audio_lame['integer_version'][1]) >= 3090) { // cannot use string version compare, may have "LAME3.90" or "LAME3.100" -- see https://github.com/JamesHeinrich/getID3/issues/207
 
-						$thisfile_mpeg_audio_lame_raw['RGAD_track']      =   Utils::BigEndian2Int(substr($headerstring, $LAMEtagOffsetContant + 0xAB, 2));
-						$thisfile_mpeg_audio_lame_raw['RGAD_album']      =   Utils::BigEndian2Int(substr($headerstring, $LAMEtagOffsetContant + 0xAD, 2));
+							// extra 11 chars are not part of version string when LAMEtag present
+							unset($thisfile_mpeg_audio_lame['long_version']);
 
+							// It the LAME tag was only introduced in LAME v3.90
+							// http://www.hydrogenaudio.org/?act=ST&f=15&t=9933
 
-						if ($thisfile_mpeg_audio_lame_raw['RGAD_track'] != 0) {
+							// Offsets of various bytes in http://gabriel.mp3-tech.org/mp3infotag.html
+							// are assuming a 'Xing' identifier offset of 0x24, which is the case for
+							// MPEG-1 non-mono, but not for other combinations
+							$LAMEtagOffsetContant = $VBRidOffset - 0x24;
 
-							$thisfile_mpeg_audio_lame_RGAD_track['raw']['name']        = ($thisfile_mpeg_audio_lame_raw['RGAD_track'] & 0xE000) >> 13;
-							$thisfile_mpeg_audio_lame_RGAD_track['raw']['originator']  = ($thisfile_mpeg_audio_lame_raw['RGAD_track'] & 0x1C00) >> 10;
-							$thisfile_mpeg_audio_lame_RGAD_track['raw']['sign_bit']    = ($thisfile_mpeg_audio_lame_raw['RGAD_track'] & 0x0200) >> 9;
-							$thisfile_mpeg_audio_lame_RGAD_track['raw']['gain_adjust'] =  $thisfile_mpeg_audio_lame_raw['RGAD_track'] & 0x01FF;
-							$thisfile_mpeg_audio_lame_RGAD_track['name']       = Utils::RGADnameLookup($thisfile_mpeg_audio_lame_RGAD_track['raw']['name']);
-							$thisfile_mpeg_audio_lame_RGAD_track['originator'] = Utils::RGADoriginatorLookup($thisfile_mpeg_audio_lame_RGAD_track['raw']['originator']);
-							$thisfile_mpeg_audio_lame_RGAD_track['gain_db']    = Utils::RGADadjustmentLookup($thisfile_mpeg_audio_lame_RGAD_track['raw']['gain_adjust'], $thisfile_mpeg_audio_lame_RGAD_track['raw']['sign_bit']);
+							// shortcuts
+							$thisfile_mpeg_audio_lame['RGAD']    = array('track'=>array(), 'album'=>array());
+							$thisfile_mpeg_audio_lame_RGAD       = &$thisfile_mpeg_audio_lame['RGAD'];
+							$thisfile_mpeg_audio_lame_RGAD_track = &$thisfile_mpeg_audio_lame_RGAD['track'];
+							$thisfile_mpeg_audio_lame_RGAD_album = &$thisfile_mpeg_audio_lame_RGAD['album'];
+							$thisfile_mpeg_audio_lame['raw'] = array();
+							$thisfile_mpeg_audio_lame_raw    = &$thisfile_mpeg_audio_lame['raw'];
 
-							if (!empty($thisfile_mpeg_audio_lame_RGAD['peak_amplitude'])) {
-								$info['replay_gain']['track']['peak']   = $thisfile_mpeg_audio_lame_RGAD['peak_amplitude'];
+							// byte $9B  VBR Quality
+							// This field is there to indicate a quality level, although the scale was not precised in the original Xing specifications.
+							// Actually overwrites original Xing bytes
+							unset($thisfile_mpeg_audio['VBR_scale']);
+							$thisfile_mpeg_audio_lame['vbr_quality'] = Utils::BigEndian2Int(substr($headerstring, $LAMEtagOffsetContant + 0x9B, 1));
+
+							// bytes $9C-$A4  Encoder short VersionString
+							$thisfile_mpeg_audio_lame['short_version'] = substr($headerstring, $LAMEtagOffsetContant + 0x9C, 9);
+
+							// byte $A5  Info Tag revision + VBR method
+							$LAMEtagRevisionVBRmethod = Utils::BigEndian2Int(substr($headerstring, $LAMEtagOffsetContant + 0xA5, 1));
+
+							$thisfile_mpeg_audio_lame['tag_revision']   = ($LAMEtagRevisionVBRmethod & 0xF0) >> 4;
+							$thisfile_mpeg_audio_lame_raw['vbr_method'] =  $LAMEtagRevisionVBRmethod & 0x0F;
+							$thisfile_mpeg_audio_lame['vbr_method']     = self::LAMEvbrMethodLookup($thisfile_mpeg_audio_lame_raw['vbr_method']);
+							$thisfile_mpeg_audio['bitrate_mode']        = substr($thisfile_mpeg_audio_lame['vbr_method'], 0, 3); // usually either 'cbr' or 'vbr', but truncates 'vbr-old / vbr-rh' to 'vbr'
+
+							// byte $A6  Lowpass filter value
+							$thisfile_mpeg_audio_lame['lowpass_frequency'] = Utils::BigEndian2Int(substr($headerstring, $LAMEtagOffsetContant + 0xA6, 1)) * 100;
+
+							// bytes $A7-$AE  Replay Gain
+							// http://privatewww.essex.ac.uk/~djmrob/replaygain/rg_data_format.html
+							// bytes $A7-$AA : 32 bit floating point "Peak signal amplitude"
+							if ($thisfile_mpeg_audio_lame['short_version'] >= 'LAME3.94b') {
+								// LAME 3.94a16 and later - 9.23 fixed point
+								// ie 0x0059E2EE / (2^23) = 5890798 / 8388608 = 0.7022378444671630859375
+								$thisfile_mpeg_audio_lame_RGAD['peak_amplitude'] = (float) ((Utils::BigEndian2Int(substr($headerstring, $LAMEtagOffsetContant + 0xA7, 4))) / 8388608);
+							} else {
+								// LAME 3.94a15 and earlier - 32-bit floating point
+								// Actually 3.94a16 will fall in here too and be WRONG, but is hard to detect 3.94a16 vs 3.94a15
+								$thisfile_mpeg_audio_lame_RGAD['peak_amplitude'] = Utils::LittleEndian2Float(substr($headerstring, $LAMEtagOffsetContant + 0xA7, 4));
 							}
-							$info['replay_gain']['track']['originator'] = $thisfile_mpeg_audio_lame_RGAD_track['originator'];
-							$info['replay_gain']['track']['adjustment'] = $thisfile_mpeg_audio_lame_RGAD_track['gain_db'];
-						} else {
-							unset($thisfile_mpeg_audio_lame_RGAD['track']);
-						}
-						if ($thisfile_mpeg_audio_lame_raw['RGAD_album'] != 0) {
-
-							$thisfile_mpeg_audio_lame_RGAD_album['raw']['name']        = ($thisfile_mpeg_audio_lame_raw['RGAD_album'] & 0xE000) >> 13;
-							$thisfile_mpeg_audio_lame_RGAD_album['raw']['originator']  = ($thisfile_mpeg_audio_lame_raw['RGAD_album'] & 0x1C00) >> 10;
-							$thisfile_mpeg_audio_lame_RGAD_album['raw']['sign_bit']    = ($thisfile_mpeg_audio_lame_raw['RGAD_album'] & 0x0200) >> 9;
-							$thisfile_mpeg_audio_lame_RGAD_album['raw']['gain_adjust'] = $thisfile_mpeg_audio_lame_raw['RGAD_album'] & 0x01FF;
-							$thisfile_mpeg_audio_lame_RGAD_album['name']       = Utils::RGADnameLookup($thisfile_mpeg_audio_lame_RGAD_album['raw']['name']);
-							$thisfile_mpeg_audio_lame_RGAD_album['originator'] = Utils::RGADoriginatorLookup($thisfile_mpeg_audio_lame_RGAD_album['raw']['originator']);
-							$thisfile_mpeg_audio_lame_RGAD_album['gain_db']    = Utils::RGADadjustmentLookup($thisfile_mpeg_audio_lame_RGAD_album['raw']['gain_adjust'], $thisfile_mpeg_audio_lame_RGAD_album['raw']['sign_bit']);
-
-							if (!empty($thisfile_mpeg_audio_lame_RGAD['peak_amplitude'])) {
-								$info['replay_gain']['album']['peak']   = $thisfile_mpeg_audio_lame_RGAD['peak_amplitude'];
+							if ($thisfile_mpeg_audio_lame_RGAD['peak_amplitude'] == 0) {
+								unset($thisfile_mpeg_audio_lame_RGAD['peak_amplitude']);
+							} else {
+								$thisfile_mpeg_audio_lame_RGAD['peak_db'] = Utils::RGADamplitude2dB($thisfile_mpeg_audio_lame_RGAD['peak_amplitude']);
 							}
-							$info['replay_gain']['album']['originator'] = $thisfile_mpeg_audio_lame_RGAD_album['originator'];
-							$info['replay_gain']['album']['adjustment'] = $thisfile_mpeg_audio_lame_RGAD_album['gain_db'];
-						} else {
-							unset($thisfile_mpeg_audio_lame_RGAD['album']);
+
+							$thisfile_mpeg_audio_lame_raw['RGAD_track']      =   Utils::BigEndian2Int(substr($headerstring, $LAMEtagOffsetContant + 0xAB, 2));
+							$thisfile_mpeg_audio_lame_raw['RGAD_album']      =   Utils::BigEndian2Int(substr($headerstring, $LAMEtagOffsetContant + 0xAD, 2));
+
+
+							if ($thisfile_mpeg_audio_lame_raw['RGAD_track'] != 0) {
+
+								$thisfile_mpeg_audio_lame_RGAD_track['raw']['name']        = ($thisfile_mpeg_audio_lame_raw['RGAD_track'] & 0xE000) >> 13;
+								$thisfile_mpeg_audio_lame_RGAD_track['raw']['originator']  = ($thisfile_mpeg_audio_lame_raw['RGAD_track'] & 0x1C00) >> 10;
+								$thisfile_mpeg_audio_lame_RGAD_track['raw']['sign_bit']    = ($thisfile_mpeg_audio_lame_raw['RGAD_track'] & 0x0200) >> 9;
+								$thisfile_mpeg_audio_lame_RGAD_track['raw']['gain_adjust'] =  $thisfile_mpeg_audio_lame_raw['RGAD_track'] & 0x01FF;
+								$thisfile_mpeg_audio_lame_RGAD_track['name']       = Utils::RGADnameLookup($thisfile_mpeg_audio_lame_RGAD_track['raw']['name']);
+								$thisfile_mpeg_audio_lame_RGAD_track['originator'] = Utils::RGADoriginatorLookup($thisfile_mpeg_audio_lame_RGAD_track['raw']['originator']);
+								$thisfile_mpeg_audio_lame_RGAD_track['gain_db']    = Utils::RGADadjustmentLookup($thisfile_mpeg_audio_lame_RGAD_track['raw']['gain_adjust'], $thisfile_mpeg_audio_lame_RGAD_track['raw']['sign_bit']);
+
+								if (!empty($thisfile_mpeg_audio_lame_RGAD['peak_amplitude'])) {
+									$info['replay_gain']['track']['peak']   = $thisfile_mpeg_audio_lame_RGAD['peak_amplitude'];
+								}
+								$info['replay_gain']['track']['originator'] = $thisfile_mpeg_audio_lame_RGAD_track['originator'];
+								$info['replay_gain']['track']['adjustment'] = $thisfile_mpeg_audio_lame_RGAD_track['gain_db'];
+							} else {
+								unset($thisfile_mpeg_audio_lame_RGAD['track']);
+							}
+							if ($thisfile_mpeg_audio_lame_raw['RGAD_album'] != 0) {
+
+								$thisfile_mpeg_audio_lame_RGAD_album['raw']['name']        = ($thisfile_mpeg_audio_lame_raw['RGAD_album'] & 0xE000) >> 13;
+								$thisfile_mpeg_audio_lame_RGAD_album['raw']['originator']  = ($thisfile_mpeg_audio_lame_raw['RGAD_album'] & 0x1C00) >> 10;
+								$thisfile_mpeg_audio_lame_RGAD_album['raw']['sign_bit']    = ($thisfile_mpeg_audio_lame_raw['RGAD_album'] & 0x0200) >> 9;
+								$thisfile_mpeg_audio_lame_RGAD_album['raw']['gain_adjust'] = $thisfile_mpeg_audio_lame_raw['RGAD_album'] & 0x01FF;
+								$thisfile_mpeg_audio_lame_RGAD_album['name']       = Utils::RGADnameLookup($thisfile_mpeg_audio_lame_RGAD_album['raw']['name']);
+								$thisfile_mpeg_audio_lame_RGAD_album['originator'] = Utils::RGADoriginatorLookup($thisfile_mpeg_audio_lame_RGAD_album['raw']['originator']);
+								$thisfile_mpeg_audio_lame_RGAD_album['gain_db']    = Utils::RGADadjustmentLookup($thisfile_mpeg_audio_lame_RGAD_album['raw']['gain_adjust'], $thisfile_mpeg_audio_lame_RGAD_album['raw']['sign_bit']);
+
+								if (!empty($thisfile_mpeg_audio_lame_RGAD['peak_amplitude'])) {
+									$info['replay_gain']['album']['peak']   = $thisfile_mpeg_audio_lame_RGAD['peak_amplitude'];
+								}
+								$info['replay_gain']['album']['originator'] = $thisfile_mpeg_audio_lame_RGAD_album['originator'];
+								$info['replay_gain']['album']['adjustment'] = $thisfile_mpeg_audio_lame_RGAD_album['gain_db'];
+							} else {
+								unset($thisfile_mpeg_audio_lame_RGAD['album']);
+							}
+							if (empty($thisfile_mpeg_audio_lame_RGAD)) {
+								unset($thisfile_mpeg_audio_lame['RGAD']);
+							}
+
+
+							// byte $AF  Encoding flags + ATH Type
+							$EncodingFlagsATHtype = Utils::BigEndian2Int(substr($headerstring, $LAMEtagOffsetContant + 0xAF, 1));
+							$thisfile_mpeg_audio_lame['encoding_flags']['nspsytune']   = (bool) ($EncodingFlagsATHtype & 0x10);
+							$thisfile_mpeg_audio_lame['encoding_flags']['nssafejoint'] = (bool) ($EncodingFlagsATHtype & 0x20);
+							$thisfile_mpeg_audio_lame['encoding_flags']['nogap_next']  = (bool) ($EncodingFlagsATHtype & 0x40);
+							$thisfile_mpeg_audio_lame['encoding_flags']['nogap_prev']  = (bool) ($EncodingFlagsATHtype & 0x80);
+							$thisfile_mpeg_audio_lame['ath_type']                      =         $EncodingFlagsATHtype & 0x0F;
+
+							// byte $B0  if ABR {specified bitrate} else {minimal bitrate}
+							$thisfile_mpeg_audio_lame['raw']['abrbitrate_minbitrate'] = Utils::BigEndian2Int(substr($headerstring, $LAMEtagOffsetContant + 0xB0, 1));
+							if ($thisfile_mpeg_audio_lame_raw['vbr_method'] == 2) { // Average BitRate (ABR)
+								$thisfile_mpeg_audio_lame['bitrate_abr'] = $thisfile_mpeg_audio_lame['raw']['abrbitrate_minbitrate'];
+							} elseif ($thisfile_mpeg_audio_lame_raw['vbr_method'] == 1) { // Constant BitRate (CBR)
+								// ignore
+							} elseif ($thisfile_mpeg_audio_lame['raw']['abrbitrate_minbitrate'] > 0) { // Variable BitRate (VBR) - minimum bitrate
+								$thisfile_mpeg_audio_lame['bitrate_min'] = $thisfile_mpeg_audio_lame['raw']['abrbitrate_minbitrate'];
+							}
+
+							// bytes $B1-$B3  Encoder delays
+							$EncoderDelays = Utils::BigEndian2Int(substr($headerstring, $LAMEtagOffsetContant + 0xB1, 3));
+							$thisfile_mpeg_audio_lame['encoder_delay'] = ($EncoderDelays & 0xFFF000) >> 12;
+							$thisfile_mpeg_audio_lame['end_padding']   =  $EncoderDelays & 0x000FFF;
+
+							// byte $B4  Misc
+							$MiscByte = Utils::BigEndian2Int(substr($headerstring, $LAMEtagOffsetContant + 0xB4, 1));
+							$thisfile_mpeg_audio_lame_raw['noise_shaping']       = ($MiscByte & 0x03);
+							$thisfile_mpeg_audio_lame_raw['stereo_mode']         = ($MiscByte & 0x1C) >> 2;
+							$thisfile_mpeg_audio_lame_raw['not_optimal_quality'] = ($MiscByte & 0x20) >> 5;
+							$thisfile_mpeg_audio_lame_raw['source_sample_freq']  = ($MiscByte & 0xC0) >> 6;
+							$thisfile_mpeg_audio_lame['noise_shaping']       = $thisfile_mpeg_audio_lame_raw['noise_shaping'];
+							$thisfile_mpeg_audio_lame['stereo_mode']         = self::LAMEmiscStereoModeLookup($thisfile_mpeg_audio_lame_raw['stereo_mode']);
+							$thisfile_mpeg_audio_lame['not_optimal_quality'] = (bool) $thisfile_mpeg_audio_lame_raw['not_optimal_quality'];
+							$thisfile_mpeg_audio_lame['source_sample_freq']  = self::LAMEmiscSourceSampleFrequencyLookup($thisfile_mpeg_audio_lame_raw['source_sample_freq']);
+
+							// byte $B5  MP3 Gain
+							$thisfile_mpeg_audio_lame_raw['mp3_gain'] = Utils::BigEndian2Int(substr($headerstring, $LAMEtagOffsetContant + 0xB5, 1), false, true);
+							$thisfile_mpeg_audio_lame['mp3_gain_db']     = (Utils::RGADamplitude2dB(2) / 4) * $thisfile_mpeg_audio_lame_raw['mp3_gain'];
+							$thisfile_mpeg_audio_lame['mp3_gain_factor'] = pow(2, ($thisfile_mpeg_audio_lame['mp3_gain_db'] / 6));
+
+							// bytes $B6-$B7  Preset and surround info
+							$PresetSurroundBytes = Utils::BigEndian2Int(substr($headerstring, $LAMEtagOffsetContant + 0xB6, 2));
+							// Reserved                                                    = ($PresetSurroundBytes & 0xC000);
+							$thisfile_mpeg_audio_lame_raw['surround_info'] = ($PresetSurroundBytes & 0x3800);
+							$thisfile_mpeg_audio_lame['surround_info']     = self::LAMEsurroundInfoLookup($thisfile_mpeg_audio_lame_raw['surround_info']);
+							$thisfile_mpeg_audio_lame['preset_used_id']    = ($PresetSurroundBytes & 0x07FF);
+							$thisfile_mpeg_audio_lame['preset_used']       = self::LAMEpresetUsedLookup($thisfile_mpeg_audio_lame);
+							if (!empty($thisfile_mpeg_audio_lame['preset_used_id']) && empty($thisfile_mpeg_audio_lame['preset_used'])) {
+								$this->warning('Unknown LAME preset used ('.$thisfile_mpeg_audio_lame['preset_used_id'].') - please report to info@getid3.org');
+							}
+							if (($thisfile_mpeg_audio_lame['short_version'] == 'LAME3.90.') && !empty($thisfile_mpeg_audio_lame['preset_used_id'])) {
+								// this may change if 3.90.4 ever comes out
+								$thisfile_mpeg_audio_lame['short_version'] = 'LAME3.90.3';
+							}
+
+							// bytes $B8-$BB  MusicLength
+							$thisfile_mpeg_audio_lame['audio_bytes'] = Utils::BigEndian2Int(substr($headerstring, $LAMEtagOffsetContant + 0xB8, 4));
+							$ExpectedNumberOfAudioBytes = (($thisfile_mpeg_audio_lame['audio_bytes'] > 0) ? $thisfile_mpeg_audio_lame['audio_bytes'] : $thisfile_mpeg_audio['VBR_bytes']);
+
+							// bytes $BC-$BD  MusicCRC
+							$thisfile_mpeg_audio_lame['music_crc']    = Utils::BigEndian2Int(substr($headerstring, $LAMEtagOffsetContant + 0xBC, 2));
+
+							// bytes $BE-$BF  CRC-16 of Info Tag
+							$thisfile_mpeg_audio_lame['lame_tag_crc'] = Utils::BigEndian2Int(substr($headerstring, $LAMEtagOffsetContant + 0xBE, 2));
+
+
+							// LAME CBR
+							if ($thisfile_mpeg_audio_lame_raw['vbr_method'] == 1) {
+
+								$thisfile_mpeg_audio['bitrate_mode'] = 'cbr';
+								$thisfile_mpeg_audio['bitrate'] = self::ClosestStandardMP3Bitrate($thisfile_mpeg_audio['bitrate']);
+								$info['audio']['bitrate'] = $thisfile_mpeg_audio['bitrate'];
+								//if (empty($thisfile_mpeg_audio['bitrate']) || (!empty($thisfile_mpeg_audio_lame['bitrate_min']) && ($thisfile_mpeg_audio_lame['bitrate_min'] != 255))) {
+								//	$thisfile_mpeg_audio['bitrate'] = $thisfile_mpeg_audio_lame['bitrate_min'];
+								//}
+
+							}
+
 						}
-						if (empty($thisfile_mpeg_audio_lame_RGAD)) {
-							unset($thisfile_mpeg_audio_lame['RGAD']);
-						}
-
-
-						// byte $AF  Encoding flags + ATH Type
-						$EncodingFlagsATHtype = Utils::BigEndian2Int(substr($headerstring, $LAMEtagOffsetContant + 0xAF, 1));
-						$thisfile_mpeg_audio_lame['encoding_flags']['nspsytune']   = (bool) ($EncodingFlagsATHtype & 0x10);
-						$thisfile_mpeg_audio_lame['encoding_flags']['nssafejoint'] = (bool) ($EncodingFlagsATHtype & 0x20);
-						$thisfile_mpeg_audio_lame['encoding_flags']['nogap_next']  = (bool) ($EncodingFlagsATHtype & 0x40);
-						$thisfile_mpeg_audio_lame['encoding_flags']['nogap_prev']  = (bool) ($EncodingFlagsATHtype & 0x80);
-						$thisfile_mpeg_audio_lame['ath_type']                      =         $EncodingFlagsATHtype & 0x0F;
-
-						// byte $B0  if ABR {specified bitrate} else {minimal bitrate}
-						$thisfile_mpeg_audio_lame['raw']['abrbitrate_minbitrate'] = Utils::BigEndian2Int(substr($headerstring, $LAMEtagOffsetContant + 0xB0, 1));
-						if ($thisfile_mpeg_audio_lame_raw['vbr_method'] == 2) { // Average BitRate (ABR)
-							$thisfile_mpeg_audio_lame['bitrate_abr'] = $thisfile_mpeg_audio_lame['raw']['abrbitrate_minbitrate'];
-						} elseif ($thisfile_mpeg_audio_lame_raw['vbr_method'] == 1) { // Constant BitRate (CBR)
-							// ignore
-						} elseif ($thisfile_mpeg_audio_lame['raw']['abrbitrate_minbitrate'] > 0) { // Variable BitRate (VBR) - minimum bitrate
-							$thisfile_mpeg_audio_lame['bitrate_min'] = $thisfile_mpeg_audio_lame['raw']['abrbitrate_minbitrate'];
-						}
-
-						// bytes $B1-$B3  Encoder delays
-						$EncoderDelays = Utils::BigEndian2Int(substr($headerstring, $LAMEtagOffsetContant + 0xB1, 3));
-						$thisfile_mpeg_audio_lame['encoder_delay'] = ($EncoderDelays & 0xFFF000) >> 12;
-						$thisfile_mpeg_audio_lame['end_padding']   =  $EncoderDelays & 0x000FFF;
-
-						// byte $B4  Misc
-						$MiscByte = Utils::BigEndian2Int(substr($headerstring, $LAMEtagOffsetContant + 0xB4, 1));
-						$thisfile_mpeg_audio_lame_raw['noise_shaping']       = ($MiscByte & 0x03);
-						$thisfile_mpeg_audio_lame_raw['stereo_mode']         = ($MiscByte & 0x1C) >> 2;
-						$thisfile_mpeg_audio_lame_raw['not_optimal_quality'] = ($MiscByte & 0x20) >> 5;
-						$thisfile_mpeg_audio_lame_raw['source_sample_freq']  = ($MiscByte & 0xC0) >> 6;
-						$thisfile_mpeg_audio_lame['noise_shaping']       = $thisfile_mpeg_audio_lame_raw['noise_shaping'];
-						$thisfile_mpeg_audio_lame['stereo_mode']         = self::LAMEmiscStereoModeLookup($thisfile_mpeg_audio_lame_raw['stereo_mode']);
-						$thisfile_mpeg_audio_lame['not_optimal_quality'] = (bool) $thisfile_mpeg_audio_lame_raw['not_optimal_quality'];
-						$thisfile_mpeg_audio_lame['source_sample_freq']  = self::LAMEmiscSourceSampleFrequencyLookup($thisfile_mpeg_audio_lame_raw['source_sample_freq']);
-
-						// byte $B5  MP3 Gain
-						$thisfile_mpeg_audio_lame_raw['mp3_gain'] = Utils::BigEndian2Int(substr($headerstring, $LAMEtagOffsetContant + 0xB5, 1), false, true);
-						$thisfile_mpeg_audio_lame['mp3_gain_db']     = (Utils::RGADamplitude2dB(2) / 4) * $thisfile_mpeg_audio_lame_raw['mp3_gain'];
-						$thisfile_mpeg_audio_lame['mp3_gain_factor'] = pow(2, ($thisfile_mpeg_audio_lame['mp3_gain_db'] / 6));
-
-						// bytes $B6-$B7  Preset and surround info
-						$PresetSurroundBytes = Utils::BigEndian2Int(substr($headerstring, $LAMEtagOffsetContant + 0xB6, 2));
-						// Reserved                                                    = ($PresetSurroundBytes & 0xC000);
-						$thisfile_mpeg_audio_lame_raw['surround_info'] = ($PresetSurroundBytes & 0x3800);
-						$thisfile_mpeg_audio_lame['surround_info']     = self::LAMEsurroundInfoLookup($thisfile_mpeg_audio_lame_raw['surround_info']);
-						$thisfile_mpeg_audio_lame['preset_used_id']    = ($PresetSurroundBytes & 0x07FF);
-						$thisfile_mpeg_audio_lame['preset_used']       = self::LAMEpresetUsedLookup($thisfile_mpeg_audio_lame);
-						if (!empty($thisfile_mpeg_audio_lame['preset_used_id']) && empty($thisfile_mpeg_audio_lame['preset_used'])) {
-							$this->warning('Unknown LAME preset used ('.$thisfile_mpeg_audio_lame['preset_used_id'].') - please report to info@getid3.org');
-						}
-						if (($thisfile_mpeg_audio_lame['short_version'] == 'LAME3.90.') && !empty($thisfile_mpeg_audio_lame['preset_used_id'])) {
-							// this may change if 3.90.4 ever comes out
-							$thisfile_mpeg_audio_lame['short_version'] = 'LAME3.90.3';
-						}
-
-						// bytes $B8-$BB  MusicLength
-						$thisfile_mpeg_audio_lame['audio_bytes'] = Utils::BigEndian2Int(substr($headerstring, $LAMEtagOffsetContant + 0xB8, 4));
-						$ExpectedNumberOfAudioBytes = (($thisfile_mpeg_audio_lame['audio_bytes'] > 0) ? $thisfile_mpeg_audio_lame['audio_bytes'] : $thisfile_mpeg_audio['VBR_bytes']);
-
-						// bytes $BC-$BD  MusicCRC
-						$thisfile_mpeg_audio_lame['music_crc']    = Utils::BigEndian2Int(substr($headerstring, $LAMEtagOffsetContant + 0xBC, 2));
-
-						// bytes $BE-$BF  CRC-16 of Info Tag
-						$thisfile_mpeg_audio_lame['lame_tag_crc'] = Utils::BigEndian2Int(substr($headerstring, $LAMEtagOffsetContant + 0xBE, 2));
-
-
-						// LAME CBR
-						if ($thisfile_mpeg_audio_lame_raw['vbr_method'] == 1) {
-
-							$thisfile_mpeg_audio['bitrate_mode'] = 'cbr';
-							$thisfile_mpeg_audio['bitrate'] = self::ClosestStandardMP3Bitrate($thisfile_mpeg_audio['bitrate']);
-							$info['audio']['bitrate'] = $thisfile_mpeg_audio['bitrate'];
-							//if (empty($thisfile_mpeg_audio['bitrate']) || (!empty($thisfile_mpeg_audio_lame['bitrate_min']) && ($thisfile_mpeg_audio_lame['bitrate_min'] != 255))) {
-							//	$thisfile_mpeg_audio['bitrate'] = $thisfile_mpeg_audio_lame['bitrate_min'];
-							//}
-
-						}
-
 					}
 				}
 
@@ -1294,6 +1304,7 @@ class Mp3 extends Handler
 		$LongMPEGbitrateLookup        = array();
 		$LongMPEGpaddingLookup        = array();
 		$LongMPEGfrequencyLookup      = array();
+		$Distribution                 = array();
 		$Distribution['bitrate']      = array();
 		$Distribution['frequency']    = array();
 		$Distribution['layer']        = array();
@@ -1456,6 +1467,7 @@ class Mp3 extends Handler
 		$SynchSeekOffset = 0;
 		$SyncSeekAttempts = 0;
 		$SyncSeekAttemptsMax = 1000;
+		$FirstFrameThisfileInfo = null;
 		while ($SynchSeekOffset < $sync_seek_buffer_size) {
 			if ((($avdataoffset + $SynchSeekOffset)  < $info['avdataend']) && !feof($this->getid3->fp)) {
 
@@ -1598,6 +1610,7 @@ class Mp3 extends Handler
 						$pct_data_scanned = 0;
 						for ($current_segment = 0; $current_segment < $max_scan_segments; $current_segment++) {
 							$frames_scanned_this_segment = 0;
+							$scan_start_offset = array();
 							if ($this->ftell() >= $info['avdataend']) {
 								break;
 							}
@@ -1927,6 +1940,7 @@ class Mp3 extends Handler
 			return false;
 		}
 
+		$MPEGrawHeader = array();
 		$MPEGrawHeader['synch']         = (Utils::BigEndian2Int(substr($Header4Bytes, 0, 2)) & 0xFFE0) >> 4;
 		$MPEGrawHeader['version']       = (ord($Header4Bytes[1]) & 0x18) >> 3; //    BB
 		$MPEGrawHeader['layer']         = (ord($Header4Bytes[1]) & 0x06) >> 1; //      CC

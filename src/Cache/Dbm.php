@@ -226,6 +226,7 @@ class Dbm extends GetID3
 	 */
 	public function analyze($filename, $filesize=null, $original_filename='', $fp=null) {
 
+		$key = null;
 		if (file_exists($filename)) {
 
 			// Calc key     filename::mod_time::size    - should be unique

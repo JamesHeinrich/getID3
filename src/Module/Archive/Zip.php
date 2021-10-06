@@ -121,11 +121,11 @@ class Zip extends Handler
 					    !empty($info['zip']['files']['docProps']['core.xml'])) {
 							// http://technet.microsoft.com/en-us/library/cc179224.aspx
 							$info['fileformat'] = 'zip.msoffice';
-							if (!empty($ThisFileInfo['zip']['files']['ppt'])) {
+							if (!empty($info['zip']['files']['ppt'])) {
 								$info['mime_type'] = 'application/vnd.openxmlformats-officedocument.presentationml.presentation';
-							} elseif (!empty($ThisFileInfo['zip']['files']['xl'])) {
+							} elseif (!empty($info['zip']['files']['xl'])) {
 								$info['mime_type'] = 'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet';
-							} elseif (!empty($ThisFileInfo['zip']['files']['word'])) {
+							} elseif (!empty($info['zip']['files']['word'])) {
 								$info['mime_type'] = 'application/vnd.openxmlformats-officedocument.wordprocessingml.document';
 							}
 					}
@@ -231,6 +231,7 @@ class Zip extends Handler
 	 * @return array|false
 	 */
 	public function ZIPparseLocalFileHeader() {
+		$LocalFileHeader = array();
 		$LocalFileHeader['offset'] = $this->ftell();
 
 		$ZIPlocalFileHeader = $this->fread(30);
@@ -329,6 +330,7 @@ class Zip extends Handler
 	 * @return array|false
 	 */
 	public function ZIPparseCentralDirectory() {
+		$CentralDirectory = array();
 		$CentralDirectory['offset'] = $this->ftell();
 
 		$ZIPcentralDirectory = $this->fread(46);
@@ -388,6 +390,7 @@ class Zip extends Handler
 	 * @return array|false
 	 */
 	public function ZIPparseEndOfCentralDirectory() {
+		$EndOfCentralDirectory = array();
 		$EndOfCentralDirectory['offset'] = $this->ftell();
 
 		$ZIPendOfCentralDirectory = $this->fread(22);

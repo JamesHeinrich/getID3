@@ -558,6 +558,7 @@ class WriteTags
 	public function FormatDataForID3v2($id3v2_majorversion) {
 		$tag_data_id3v2 = array();
 
+		$ID3v2_text_encoding_lookup    = array();
 		$ID3v2_text_encoding_lookup[2] = array('ISO-8859-1'=>0, 'UTF-16'=>1);
 		$ID3v2_text_encoding_lookup[3] = array('ISO-8859-1'=>0, 'UTF-16'=>1);
 		$ID3v2_text_encoding_lookup[4] = array('ISO-8859-1'=>0, 'UTF-16'=>1, 'UTF-16BE'=>2, 'UTF-8'=>3);
@@ -736,6 +737,7 @@ class WriteTags
 	 * @return array
 	 */
 	public function FormatDataForReal() {
+		$tag_data_real              = array();
 		$tag_data_real['title']     = Utils::iconv_fallback($this->tag_encoding, 'ISO-8859-1', implode(' ', (isset($this->tag_data['TITLE']    ) ? $this->tag_data['TITLE']     : array())));
 		$tag_data_real['artist']    = Utils::iconv_fallback($this->tag_encoding, 'ISO-8859-1', implode(' ', (isset($this->tag_data['ARTIST']   ) ? $this->tag_data['ARTIST']    : array())));
 		$tag_data_real['copyright'] = Utils::iconv_fallback($this->tag_encoding, 'ISO-8859-1', implode(' ', (isset($this->tag_data['COPYRIGHT']) ? $this->tag_data['COPYRIGHT'] : array())));

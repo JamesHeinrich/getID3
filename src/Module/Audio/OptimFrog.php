@@ -189,6 +189,7 @@ class OptimFrog extends Handler
 				case 'COMP':
 					// unlike other block types, there CAN be multiple COMP blocks
 
+					$COMPdata           = array();
 					$COMPdata['offset'] = $BlockOffset;
 					$COMPdata['size']   = $BlockSize;
 
