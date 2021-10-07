@@ -326,7 +326,7 @@ class GetID3
 	const ATTACHMENTS_INLINE = true;
 
 	/**
-	 * @throws getid3_exception
+	 * @throws Exception
 	 */
 	public function __construct() {
 
