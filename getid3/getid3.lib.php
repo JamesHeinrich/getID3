@@ -303,11 +303,10 @@ class getid3_lib
 			}
 		} elseif (($exponent == 0) && ($fraction == 0)) {
 			if ($signbit == '1') {
-				$floatvalue = -0;
+				$floatvalue = -0.0;
 			} else {
-				$floatvalue = 0;
+				$floatvalue = 0.0;
 			}
-			$floatvalue = ($signbit ? 0 : -0);
 		} elseif (($exponent == 0) && ($fraction != 0)) {
 			// These are 'unnormalized' values
 			$floatvalue = pow(2, (-1 * (pow(2, $exponentbits - 1) - 2))) * self::DecimalBinary2Float($fractionstring);

@@ -11,9 +11,6 @@ parameters:
             message: '#Function mysql_\w+ not found\.#'
             path: getid3/extension.cache.mysql.php
         -
-            message: '#Function rar_\w+ not found\.#'
-            path: getid3/module.archive.rar.php
-        -
             message: '#Unreachable statement - code above always terminates#'
             path: getid3/module.archive.szip.php
         -
