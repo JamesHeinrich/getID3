@@ -108,7 +108,7 @@ class getid3_quicktime extends getid3_handler
 			unset($info['avdataend_tmp']);
 		}
 
-		if (!empty($info['quicktime']['comments']['chapters']) && is_array($info['quicktime']['comments']['chapters']) && (count($info['quicktime']['comments']['chapters']) > 0)) {
+		if (isset($info['quicktime']['comments']['chapters']) && is_array($info['quicktime']['comments']['chapters']) && (count($info['quicktime']['comments']['chapters']) > 0)) {
 			$durations = $this->quicktime_time_to_sample_table($info);
 			for ($i = 0; $i < count($info['quicktime']['comments']['chapters']); $i++) {
 				$bookmark = array();
