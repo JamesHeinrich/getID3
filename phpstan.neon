@@ -8,9 +8,6 @@ parameters:
             message: '#Function mysql_\w+ not found\.#'
             path: src/Cache/Mysql.php
         -
-            message: '#Function rar_\w+ not found\.#'
-            path: src/Module/Archive/Rar.php
-        -
             message: '#Unreachable statement - code above always terminates#'
             path: src/Module/Archive/Szip.php
         -

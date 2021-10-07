@@ -319,6 +319,7 @@ class Asf extends Handler
 
 					// shortcut
 					$thisfile_asf['codec_list_object'] = array();
+					/** @var mixed[] $thisfile_asf_codeclistobject */
 					$thisfile_asf_codeclistobject      = &$thisfile_asf['codec_list_object'];
 
 					$thisfile_asf_codeclistobject['offset']                    = $NextObjectOffset + $offset;
@@ -334,6 +335,9 @@ class Asf extends Handler
 						break;
 					}
 					$thisfile_asf_codeclistobject['codec_entries_count'] = Utils::LittleEndian2Int(substr($ASFHeaderData, $offset, 4));
+					if ($thisfile_asf_codeclistobject['codec_entries_count'] > 0) {
+						$thisfile_asf_codeclistobject['codec_entries'] = array();
+					}
 					$offset += 4;
 					for ($CodecEntryCounter = 0; $CodecEntryCounter < $thisfile_asf_codeclistobject['codec_entries_count']; $CodecEntryCounter++) {
 						// shortcut
@@ -530,7 +534,7 @@ class Asf extends Handler
 					$offset += 16;
 					$thisfile_asf_markerobject['reserved_guid']        = $this->BytestringToGUID($thisfile_asf_markerobject['reserved']);
 					if ($thisfile_asf_markerobject['reserved'] != $this->GUIDtoBytestring('4CFEDB20-75F6-11CF-9C0F-00A0C90349CB')) {
-						$this->warning('marker_object.reserved GUID {'.$this->BytestringToGUID($thisfile_asf_markerobject['reserved_1']).'} does not match expected "GETID3_ASF_Reserved_1" GUID {4CFEDB20-75F6-11CF-9C0F-00A0C90349CB}');
+						$this->warning('marker_object.reserved GUID {'.$this->BytestringToGUID($thisfile_asf_markerobject['reserved']).'} does not match expected "GETID3_ASF_Reserved_1" GUID {4CFEDB20-75F6-11CF-9C0F-00A0C90349CB}');
 						break;
 					}
 					$thisfile_asf_markerobject['markers_count'] = Utils::LittleEndian2Int(substr($ASFHeaderData, $offset, 4));
@@ -650,7 +654,7 @@ class Asf extends Handler
 							break;
 
 						default:
-							$this->warning('error_correction_object.error_correction_type GUID {'.$this->BytestringToGUID($thisfile_asf_errorcorrectionobject['reserved']).'} does not match expected "GETID3_ASF_No_Error_Correction" GUID {'.$this->BytestringToGUID(GETID3_ASF_No_Error_Correction).'} or  "GETID3_ASF_Audio_Spread" GUID {'.$this->BytestringToGUID(GETID3_ASF_Audio_Spread).'}');
+							$this->warning('error_correction_object.error_correction_type GUID {'.$this->BytestringToGUID($thisfile_asf_errorcorrectionobject['error_correction_type']).'} does not match expected "GETID3_ASF_No_Error_Correction" GUID {'.$this->BytestringToGUID(GETID3_ASF_No_Error_Correction).'} or  "GETID3_ASF_Audio_Spread" GUID {'.$this->BytestringToGUID(GETID3_ASF_Audio_Spread).'}');
 							//return false;
 							break;
 					}
@@ -1442,7 +1446,7 @@ class Asf extends Handler
 				}
 			}
 		}
-		$info['bitrate'] = (isset($thisfile_audio['bitrate']) ? $thisfile_audio['bitrate'] : 0) + (isset($thisfile_video['bitrate']) ? $thisfile_video['bitrate'] : 0);
+		$info['bitrate'] = 0 + (isset($thisfile_audio['bitrate']) ? $thisfile_audio['bitrate'] : 0) + (isset($thisfile_video['bitrate']) ? $thisfile_video['bitrate'] : 0);
 
 		if ((!isset($info['playtime_seconds']) || ($info['playtime_seconds'] <= 0)) && ($info['bitrate'] > 0)) {
 			$info['playtime_seconds'] = ($info['filesize'] - $info['avdataoffset']) / ($info['bitrate'] / 8);

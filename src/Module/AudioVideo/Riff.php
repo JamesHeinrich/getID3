@@ -808,6 +808,9 @@ class Riff extends Handler
 								if (isset($thisfile_riff['AVI ']['hdrl']['strl']['strf'][$i]['data'])) {
 									$strfData = $thisfile_riff['AVI ']['hdrl']['strl']['strf'][$i]['data'];
 
+									if (!isset($thisfile_riff_raw['strf'][$strhfccType][$streamindex])) {
+										$thisfile_riff_raw['strf'][$strhfccType][$streamindex] = null;
+									}
 									// shortcut
 									$thisfile_riff_raw_strf_strhfccType_streamindex = &$thisfile_riff_raw['strf'][$strhfccType][$streamindex];
 
@@ -1348,10 +1351,10 @@ class Riff extends Handler
 		if (!isset($info['playtime_seconds'])) {
 			$info['playtime_seconds'] = 0;
 		}
-		if (isset($thisfile_riff_raw['strh'][0]['dwLength']) && isset($thisfile_riff_raw['avih']['dwMicroSecPerFrame'])) {
+		if (isset($thisfile_riff_raw['strh'][0]['dwLength']) && isset($thisfile_riff_raw['avih']['dwMicroSecPerFrame'])) { // @phpstan-ignore-line
 			// needed for >2GB AVIs where 'avih' chunk only lists number of frames in that chunk, not entire movie
 			$info['playtime_seconds'] = $thisfile_riff_raw['strh'][0]['dwLength'] * ($thisfile_riff_raw['avih']['dwMicroSecPerFrame'] / 1000000);
-		} elseif (isset($thisfile_riff_raw['avih']['dwTotalFrames']) && isset($thisfile_riff_raw['avih']['dwMicroSecPerFrame'])) {
+		} elseif (isset($thisfile_riff_raw['avih']['dwTotalFrames']) && isset($thisfile_riff_raw['avih']['dwMicroSecPerFrame'])) { // @phpstan-ignore-line
 			$info['playtime_seconds'] = $thisfile_riff_raw['avih']['dwTotalFrames'] * ($thisfile_riff_raw['avih']['dwMicroSecPerFrame'] / 1000000);
 		}
 
@@ -1573,7 +1576,7 @@ class Riff extends Handler
 	public function ParseRIFF($startoffset, $maxoffset) {
 		$info = &$this->getid3->info;
 
-		$RIFFchunk = false;
+		$RIFFchunk = array();
 		$FoundAllChunksWeNeed = false;
 		$LISTchunkParent = null;
 		$LISTchunkMaxOffset = null;
@@ -1929,7 +1932,7 @@ class Riff extends Handler
 			}
 		}
 
-		return $RIFFchunk;
+		return !empty($RIFFchunk) ? $RIFFchunk : false;
 	}
 
 	/**
