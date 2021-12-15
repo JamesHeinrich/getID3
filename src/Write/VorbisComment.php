@@ -78,14 +78,14 @@ class VorbisComment
 
 				// On top of that, if error messages are not always captured properly under Windows
 				// To at least see if there was a problem, compare file modification timestamps before and after writing
-				clearstatcache();
+				clearstatcache(true, $this->filename);
 				$timestampbeforewriting = filemtime($this->filename);
 
 				$commandline = Utils::getHelperAppDirectory() . 'vorbiscomment.exe -w --raw -c "' . $tempcommentsfilename . '" "' . $this->filename . '" 2>&1';
 				$VorbiscommentError = `$commandline`;
 
 				if (empty($VorbiscommentError)) {
-					clearstatcache();
+					clearstatcache(true, $this->filename);
 					if ($timestampbeforewriting == filemtime($this->filename)) {
 						$VorbiscommentError = 'File modification timestamp has not changed - it looks like the tags were not written';
 					}

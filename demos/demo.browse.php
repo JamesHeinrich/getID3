@@ -33,7 +33,10 @@ $writescriptfilename = 'demo.write.php';
 
 // Initialize getID3 engine
 $getID3 = new GetID3\GetID3;
-$getID3->setOption(array('encoding' => $PageEncoding));
+$getID3->setOption(array(
+	'encoding' => $PageEncoding,
+	'options_audiovideo_quicktime_ReturnAtomData' => true,
+));
 
 $getID3checkColor_Head           = 'CCCCDD';
 $getID3checkColor_DirectoryLight = 'FFCCCC';

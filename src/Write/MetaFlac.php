@@ -104,7 +104,7 @@ class MetaFlac
 
 				// On top of that, if error messages are not always captured properly under Windows
 				// To at least see if there was a problem, compare file modification timestamps before and after writing
-				clearstatcache();
+				clearstatcache(true, $this->filename);
 				$timestampbeforewriting = filemtime($this->filename);
 
 				$commandline  = Utils::getHelperAppDirectory().'metaflac.exe --no-utf8-convert --remove-all-tags --import-tags-from='.escapeshellarg($tempcommentsfilename);
@@ -115,7 +115,7 @@ class MetaFlac
 				$metaflacError = `$commandline`;
 
 				if (empty($metaflacError)) {
-					clearstatcache();
+					clearstatcache(true, $this->filename);
 					if ($timestampbeforewriting == filemtime($this->filename)) {
 						$metaflacError = 'File modification timestamp has not changed - it looks like the tags were not written';
 					}
@@ -162,14 +162,14 @@ class MetaFlac
 
 			if (file_exists(Utils::getHelperAppDirectory() . 'metaflac.exe')) {
 				// To at least see if there was a problem, compare file modification timestamps before and after writing
-				clearstatcache();
+				clearstatcache(true, $this->filename);
 				$timestampbeforewriting = filemtime($this->filename);
 
 				$commandline = Utils::getHelperAppDirectory() . 'metaflac.exe --remove-all-tags "' . $this->filename . '" 2>&1';
 				$metaflacError = `$commandline`;
 
 				if (empty($metaflacError)) {
-					clearstatcache();
+					clearstatcache(true, $this->filename);
 					if ($timestampbeforewriting == filemtime($this->filename)) {
 						$metaflacError = 'File modification timestamp has not changed - it looks like the tags were not deleted';
 					}
