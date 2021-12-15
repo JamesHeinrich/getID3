@@ -130,6 +130,11 @@ abstract class Handler {
 			$this->data_string_position += $bytes;
 			return substr($this->data_string, $this->data_string_position - $bytes, $bytes);
 		}
+		if ($bytes == 0) {
+			return '';
+		} elseif ($bytes < 0) {
+			throw new Exception('cannot fread('.$bytes.' from '.$this->ftell().')', 10);
+		}
 		$pos = $this->ftell() + $bytes;
 		if (!Utils::intValueSupported($pos)) {
 			throw new Exception('cannot fread('.$bytes.' from '.$this->ftell().') because beyond PHP filesystem limit', 10);
