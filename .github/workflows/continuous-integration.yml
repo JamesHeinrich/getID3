@@ -28,7 +28,7 @@ jobs:
           php-version: "${{ matrix.php-version }}"
           ini-values: error_reporting=-1, display_errors=On
           coverage: "none"
-      - uses: "ramsey/composer-install@v1"
+      - uses: "ramsey/composer-install@v2"
       - name: "Run the linter"
         run: "composer lint -- --colors"
 
@@ -42,6 +42,6 @@ jobs:
           php-version: "7.4"
           tools: "phpstan:0.12.99"
           coverage: "none"
-      - uses: "ramsey/composer-install@v1"
+      - uses: "ramsey/composer-install@v2"
       - name: "Run PHPStan"
         run: "phpstan analyse -c phpstan.neon -l 4 getid3"
