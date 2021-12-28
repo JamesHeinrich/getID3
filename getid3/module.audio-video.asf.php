@@ -1809,8 +1809,8 @@ class getid3_asf extends getid3_handler
 					$thisObject['stream_language_id_index']          = getid3_lib::LittleEndian2Int(substr($asf_header_extension_object_data, $offset,  2));
 					$offset += 2;
 
-					$thisObject['average_time_per_frame']            = getid3_lib::LittleEndian2Int(substr($asf_header_extension_object_data, $offset,  4));
-					$offset += 4;
+					$thisObject['average_time_per_frame']            = getid3_lib::LittleEndian2Int(substr($asf_header_extension_object_data, $offset,  8));
+					$offset += 8;
 
 					$thisObject['stream_name_count']                 = getid3_lib::LittleEndian2Int(substr($asf_header_extension_object_data, $offset,  2));
 					$offset += 2;
@@ -1827,7 +1827,7 @@ class getid3_asf extends getid3_handler
 						$streamName['stream_name_length']            = getid3_lib::LittleEndian2Int(substr($asf_header_extension_object_data, $offset,  2));
 						$offset += 2;
 
-						$streamName['stream_name']                   = getid3_lib::LittleEndian2Int(substr($asf_header_extension_object_data, $offset,  $streamName['stream_name_length']));
+						$streamName['stream_name']                   =                              substr($asf_header_extension_object_data, $offset,  $streamName['stream_name_length']);
 						$offset += $streamName['stream_name_length'];
 
 						$thisObject['stream_names'][$i] = $streamName;
@@ -1849,7 +1849,7 @@ class getid3_asf extends getid3_handler
 						$payloadExtensionSystem['extension_system_info_length'] = getid3_lib::LittleEndian2Int(substr($asf_header_extension_object_data, $offset,  4));
 						$offset += 4;
 
-						$payloadExtensionSystem['extension_system_info_length'] = getid3_lib::LittleEndian2Int(substr($asf_header_extension_object_data, $offset,  $payloadExtensionSystem['extension_system_info_length']));
+						$payloadExtensionSystem['extension_system_info'] = substr($asf_header_extension_object_data, $offset,  $payloadExtensionSystem['extension_system_info_length']);
 						$offset += $payloadExtensionSystem['extension_system_info_length'];
 
 						$thisObject['payload_extension_systems'][$i] = $payloadExtensionSystem;
