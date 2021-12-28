@@ -168,7 +168,7 @@ class getid3_gif extends getid3_handler
 					$ExtensionBlock['byte_length']    = getid3_lib::LittleEndian2Int(substr($ExtensionBlockData, 2, 1));
 					$ExtensionBlock['data']           = (($ExtensionBlock['byte_length'] > 0) ? $this->fread($ExtensionBlock['byte_length']) : null);
 
-					if (substr($ExtensionBlock['data'], 0, 11) == 'NETSCAPE2.0') { // Netscape Application Block (NAB)
+					if ($ExtensionBlock['byte_length'] > 0 && substr($ExtensionBlock['data'], 0, 11) == 'NETSCAPE2.0') { // Netscape Application Block (NAB)
 						$ExtensionBlock['data'] .= $this->fread(4);
 						if (substr($ExtensionBlock['data'], 11, 2) == "\x03\x01") {
 							$info['gif']['animation']['animated']   = true;
