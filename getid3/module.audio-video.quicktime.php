@@ -1699,7 +1699,8 @@ $this->warning('incomplete/incorrect handling of "stsd" with Parrot metadata in 
 					$atom_structure['language'] =                           substr($atom_data, 4 + 0, 2);
 					$atom_structure['unknown']  = getid3_lib::BigEndian2Int(substr($atom_data, 4 + 2, 2));
 					$atom_structure['data']     =                           substr($atom_data, 4 + 4);
-					$atom_structure['key_name'] = @$info['quicktime']['temp_meta_key_names'][$metaDATAkey++];
+					$atom_structure['key_name'] = (isset($info['quicktime']['temp_meta_key_names'][$metaDATAkey]) ? $info['quicktime']['temp_meta_key_names'][$metaDATAkey] : '');
+					$metaDATAkey++;
 
 					if ($atom_structure['key_name'] && $atom_structure['data']) {
 						@$info['quicktime']['comments'][str_replace('com.apple.quicktime.', '', $atom_structure['key_name'])][] = $atom_structure['data'];
