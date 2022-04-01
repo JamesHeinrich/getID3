@@ -258,7 +258,9 @@ class getid3_quicktime extends getid3_handler
 		} else {
 			switch ($atomname) {
 				case 'moov': // MOVie container atom
+				case 'moof': // MOvie Fragment box
 				case 'trak': // TRAcK container atom
+				case 'traf': // TRAck Fragment box
 				case 'clip': // CLIPping container atom
 				case 'matt': // track MATTe container atom
 				case 'edts': // EDiTS container atom
@@ -2097,6 +2099,21 @@ $this->warning('incomplete/incorrect handling of "stsd" with Parrot metadata in 
 				case 'iinf': // Item INFo
 				case 'iref': // Image REFerence
 				case 'iprp': // Image PRoPerties
+$this->error('AVIF files not currently supported');
+					$atom_structure['data'] = $atom_data;
+					break;
+
+				case 'tfdt': // Track Fragment base media Decode Time box
+				case 'tfhd': // Track Fragment HeaDer box
+				case 'mfhd': // Movie Fragment HeaDer box
+				case 'trun': // Track fragment RUN box
+$this->error('fragmented mp4 files not currently supported');
+					$atom_structure['data'] = $atom_data;
+					break;
+
+				case 'mvex': // MoVie EXtends box
+				case 'pssh': // Protection System Specific Header box
+				case 'sidx': // Segment InDeX box
 				default:
 					$this->warning('Unknown QuickTime atom type: "'.preg_replace('#[^a-zA-Z0-9 _\\-]#', '?', $atomname).'" ('.trim(getid3_lib::PrintHexBytes($atomname)).'), '.$atomsize.' bytes at offset '.$baseoffset);
 					$atom_structure['data'] = $atom_data;
