@@ -29,7 +29,7 @@
         "ext-zlib": "Zlib extension is required for archive modules and compressed metadata."
     },
     "scripts": {
-        "lint": "parallel-lint --exclude vendor --exclude .git .",
+        "lint": "parallel-lint --show-deprecated --exclude vendor --exclude .git .",
         "test": [
             "composer lint"
         ]
