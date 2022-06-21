@@ -61,12 +61,16 @@ class getid3_quicktime extends getid3_handler
 			$this->fseek($offset);
 			$AtomHeader = $this->fread(8);
 
+			// https://github.com/JamesHeinrich/getID3/issues/382
+			// Atom sizes are stored as 32-bit number in most cases, but sometimes (notably for "mdat")
+			// a 64-bit value is required, in which case the normal 32-bit size field is set to 0x00000001
+			// and the 64-bit "real" size value is the next 8 bytes.
+			$atom_size_extended_bytes = 0;
 			$atomsize = getid3_lib::BigEndian2Int(substr($AtomHeader, 0, 4));
 			$atomname = substr($AtomHeader, 4, 4);
-
-			// 64-bit MOV patch by jlegateØktnc*com
 			if ($atomsize == 1) {
-				$atomsize = getid3_lib::BigEndian2Int($this->fread(8));
+				$atom_size_extended_bytes = 8;
+				$atomsize = getid3_lib::BigEndian2Int($this->fread($atom_size_extended_bytes));
 			}
 
 			if (($offset + $atomsize) > $info['avdataend']) {
@@ -85,12 +89,14 @@ class getid3_quicktime extends getid3_handler
 				$info['quicktime'][$atomname]['offset'] = $offset;
 				break;
 			}
-
 			$atomHierarchy = array();
-			$parsedAtomData = $this->QuicktimeParseAtom($atomname, $atomsize, $this->fread(min($atomsize, $atom_data_read_buffer_size)), $offset, $atomHierarchy, $this->ParseAllPossibleAtoms);
+			$parsedAtomData = $this->QuicktimeParseAtom($atomname, $atomsize, $this->fread(min($atomsize - $atom_size_extended_bytes, $atom_data_read_buffer_size)), $offset, $atomHierarchy, $this->ParseAllPossibleAtoms);
 			$parsedAtomData['name']   = $atomname;
 			$parsedAtomData['size']   = $atomsize;
 			$parsedAtomData['offset'] = $offset;
+			if ($atom_size_extended_bytes) {
+				$parsedAtomData['xsize_bytes'] = $atom_size_extended_bytes;
+			}
 			if (in_array($atomname, array('uuid'))) {
 				@$info['quicktime'][$atomname][] = $parsedAtomData;
 			} else {
