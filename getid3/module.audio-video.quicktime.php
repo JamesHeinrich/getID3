@@ -850,6 +850,7 @@ $this->warning('incomplete/incorrect handling of "stsd" with Parrot metadata in 
 									case 'dvcp':
 									case 'gif ':
 									case 'h263':
+									case 'hvc1':
 									case 'jpeg':
 									case 'kpcd':
 									case 'mjpa':
@@ -2368,6 +2369,7 @@ $this->error('fragmented mp4 files not currently supported');
 			$QuicktimeVideoCodecLookup['gif '] = 'GIF';
 			$QuicktimeVideoCodecLookup['h261'] = 'H261';
 			$QuicktimeVideoCodecLookup['h263'] = 'H263';
+			$QuicktimeVideoCodecLookup['hvc1'] = 'H.265/HEVC';
 			$QuicktimeVideoCodecLookup['IV41'] = 'Indeo4';
 			$QuicktimeVideoCodecLookup['jpeg'] = 'JPEG';
 			$QuicktimeVideoCodecLookup['kpcd'] = 'PhotoCD';
