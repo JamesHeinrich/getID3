@@ -871,10 +871,6 @@ class getid3_lib
 	 * @return string
 	 */
 	public static function iconv_fallback_iso88591_utf8($string, $bom=false) {
-		if (function_exists('utf8_encode')) {
-			return utf8_encode($string);
-		}
-		// utf8_encode() unavailable, use getID3()'s iconv_fallback() conversions (possibly PHP is compiled without XML support)
 		$newcharstring = '';
 		if ($bom) {
 			$newcharstring .= "\xEF\xBB\xBF";
@@ -943,10 +939,6 @@ class getid3_lib
 	 * @return string
 	 */
 	public static function iconv_fallback_utf8_iso88591($string) {
-		if (function_exists('utf8_decode')) {
-			return utf8_decode($string);
-		}
-		// utf8_decode() unavailable, use getID3()'s iconv_fallback() conversions (possibly PHP is compiled without XML support)
 		$newcharstring = '';
 		$offset = 0;
 		$stringlength = strlen($string);
