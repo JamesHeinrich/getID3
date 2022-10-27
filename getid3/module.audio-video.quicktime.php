@@ -151,7 +151,7 @@ class getid3_quicktime extends getid3_handler
 					} elseif (strlen($lat_deg) == 4) {  // [+-]DDMM.M
 						$ISO6709parsed['latitude'] = (($lat_sign == '-') ? -1 : 1) * floatval(ltrim(substr($lat_deg, 0, 2), '0')) + floatval(ltrim(substr($lat_deg, 2, 2), '0').$lat_deg_dec / 60);
 					} elseif (strlen($lat_deg) == 6) {  // [+-]DDMMSS.S
-						$ISO6709parsed['latitude'] = (($lat_sign == '-') ? -1 : 1) * floatval(ltrim(substr($lat_deg, 0, 2), '0')) + floatval(ltrim(substr($lat_deg, 2, 2), '0') / 60) + floatval(ltrim(substr($lat_deg, 4, 2), '0').$lat_deg_dec / 3600);
+						$ISO6709parsed['latitude'] = (($lat_sign == '-') ? -1 : 1) * floatval(ltrim(substr($lat_deg, 0, 2), '0')) + floatval((int) ltrim(substr($lat_deg, 2, 2), '0') / 60) + floatval(ltrim(substr($lat_deg, 4, 2), '0').$lat_deg_dec / 3600);
 					}
 
 					if (strlen($lon_deg) == 3) {        // [+-]DDD.D
@@ -159,7 +159,7 @@ class getid3_quicktime extends getid3_handler
 					} elseif (strlen($lon_deg) == 5) {  // [+-]DDDMM.M
 						$ISO6709parsed['longitude'] = (($lon_sign == '-') ? -1 : 1) * floatval(ltrim(substr($lon_deg, 0, 2), '0')) + floatval(ltrim(substr($lon_deg, 2, 2), '0').$lon_deg_dec / 60);
 					} elseif (strlen($lon_deg) == 7) {  // [+-]DDDMMSS.S
-						$ISO6709parsed['longitude'] = (($lon_sign == '-') ? -1 : 1) * floatval(ltrim(substr($lon_deg, 0, 2), '0')) + floatval(ltrim(substr($lon_deg, 2, 2), '0') / 60) + floatval(ltrim(substr($lon_deg, 4, 2), '0').$lon_deg_dec / 3600);
+						$ISO6709parsed['longitude'] = (($lon_sign == '-') ? -1 : 1) * floatval(ltrim(substr($lon_deg, 0, 2), '0')) + floatval((int) ltrim(substr($lon_deg, 2, 2), '0') / 60) + floatval(ltrim(substr($lon_deg, 4, 2), '0').$lon_deg_dec / 3600);
 					}
 
 					if (strlen($alt_deg) == 3) {        // [+-]DDD.D
@@ -167,7 +167,7 @@ class getid3_quicktime extends getid3_handler
 					} elseif (strlen($alt_deg) == 5) {  // [+-]DDDMM.M
 						$ISO6709parsed['altitude'] = (($alt_sign == '-') ? -1 : 1) * floatval(ltrim(substr($alt_deg, 0, 2), '0')) + floatval(ltrim(substr($alt_deg, 2, 2), '0').$alt_deg_dec / 60);
 					} elseif (strlen($alt_deg) == 7) {  // [+-]DDDMMSS.S
-						$ISO6709parsed['altitude'] = (($alt_sign == '-') ? -1 : 1) * floatval(ltrim(substr($alt_deg, 0, 2), '0')) + floatval(ltrim(substr($alt_deg, 2, 2), '0') / 60) + floatval(ltrim(substr($alt_deg, 4, 2), '0').$alt_deg_dec / 3600);
+						$ISO6709parsed['altitude'] = (($alt_sign == '-') ? -1 : 1) * floatval(ltrim(substr($alt_deg, 0, 2), '0')) + floatval((int) ltrim(substr($alt_deg, 2, 2), '0') / 60) + floatval(ltrim(substr($alt_deg, 4, 2), '0').$alt_deg_dec / 3600);
 					}
 
 					foreach (array('latitude', 'longitude', 'altitude') as $key) {
@@ -1665,7 +1665,7 @@ $this->warning('incomplete/incorrect handling of "stsd" with Parrot metadata in 
 						);
 						$atom_structure['data'] = $atom_data;
 						$atom_structure['image_mime'] = 'image/jpeg';
-						$atom_structure['description'] = isset($descriptions[$atomname]) ? $descriptions[$atomname] : 'Nikon preview image';
+						$atom_structure['description'] = $descriptions[$atomname];
 						$info['quicktime']['comments']['picture'][] = array(
 							'image_mime' => $atom_structure['image_mime'],
 							'data' => $atom_data,
@@ -1682,7 +1682,7 @@ $this->warning('incomplete/incorrect handling of "stsd" with Parrot metadata in 
 				case 'NCHD': // Nikon:MakerNoteVersion  - https://exiftool.org/TagNames/Nikon.html
 					$makerNoteVersion = '';
 					for ($i = 0, $iMax = strlen($atom_data); $i < $iMax; ++$i) {
-						if (ord($atom_data[$i]) >= 0x00 && ord($atom_data[$i]) <= 0x1F) {
+						if (ord($atom_data[$i]) <= 0x1F) {
 							$makerNoteVersion .= ' '.ord($atom_data[$i]);
 						} else {
 							$makerNoteVersion .= $atom_data[$i];

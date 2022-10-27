@@ -1475,7 +1475,7 @@ class getid3_mp3 extends getid3_handler
 		$SyncSeekAttemptsMax = 1000;
 		$FirstFrameThisfileInfo = null;
 		while ($SynchSeekOffset < $sync_seek_buffer_size) {
-			if ((($avdataoffset + $SynchSeekOffset)  < $info['avdataend']) && !feof($this->getid3->fp)) {
+			if ((($avdataoffset + $SynchSeekOffset)  < $info['avdataend']) && !$this->feof()) {
 
 				if ($SynchSeekOffset > $sync_seek_buffer_size) {
 					// if a synch's not found within the first 128k bytes, then give up
@@ -1487,20 +1487,6 @@ class getid3_mp3 extends getid3_handler
 						unset($info['mpeg']['audio']);
 					}
 					if (empty($info['mpeg'])) {
-						unset($info['mpeg']);
-					}
-					return false;
-
-				} elseif (feof($this->getid3->fp)) {
-
-					$this->error('Could not find valid MPEG audio synch before end of file');
-					if (isset($info['audio']['bitrate'])) {
-						unset($info['audio']['bitrate']);
-					}
-					if (isset($info['mpeg']['audio'])) {
-						unset($info['mpeg']['audio']);
-					}
-					if (isset($info['mpeg']) && (!is_array($info['mpeg']) || (count($info['mpeg']) == 0))) {
 						unset($info['mpeg']);
 					}
 					return false;

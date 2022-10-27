@@ -5,6 +5,7 @@ parameters:
         - GETID3_OS_ISWINDOWS
     ignoreErrors:
         - '#Call to an undefined method COM::GetFile\(\)\.#'
+        - '#Constant GETID3_TEMP_DIR not found#'
         - '#Constant GETID3_HELPERAPPSDIR not found#'
         - '#Constant GETID3_ASF_(\w+) not found#'
         -

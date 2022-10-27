@@ -440,11 +440,11 @@ class getid3_riff extends getid3_handler
 						$thisfile_riff_WAVE['iXML'][0]['parsed'] = $parsedXML;
 						if (isset($parsedXML['SPEED']['MASTER_SPEED'])) {
 							@list($numerator, $denominator) = explode('/', $parsedXML['SPEED']['MASTER_SPEED']);
-							$thisfile_riff_WAVE['iXML'][0]['master_speed'] = $numerator / ($denominator ? $denominator : 1000);
+							$thisfile_riff_WAVE['iXML'][0]['master_speed'] = (int) $numerator / ($denominator ? $denominator : 1000);
 						}
 						if (isset($parsedXML['SPEED']['TIMECODE_RATE'])) {
 							@list($numerator, $denominator) = explode('/', $parsedXML['SPEED']['TIMECODE_RATE']);
-							$thisfile_riff_WAVE['iXML'][0]['timecode_rate'] = $numerator / ($denominator ? $denominator : 1000);
+							$thisfile_riff_WAVE['iXML'][0]['timecode_rate'] = (int) $numerator / ($denominator ? $denominator : 1000);
 						}
 						if (isset($parsedXML['SPEED']['TIMESTAMP_SAMPLES_SINCE_MIDNIGHT_LO']) && !empty($parsedXML['SPEED']['TIMESTAMP_SAMPLE_RATE']) && !empty($thisfile_riff_WAVE['iXML'][0]['timecode_rate'])) {
 							$samples_since_midnight = floatval(ltrim($parsedXML['SPEED']['TIMESTAMP_SAMPLES_SINCE_MIDNIGHT_HI'].$parsedXML['SPEED']['TIMESTAMP_SAMPLES_SINCE_MIDNIGHT_LO'], '0'));
@@ -632,7 +632,7 @@ class getid3_riff extends getid3_handler
 					}
 				}
 				if ($info['avdataend'] > $info['filesize']) {
-					switch (!empty($thisfile_audio_dataformat) ? $thisfile_audio_dataformat : '') {
+					switch ($thisfile_audio_dataformat) {
 						case 'wavpack': // WavPack
 						case 'lpac':    // LPAC
 						case 'ofr':     // OptimFROG
@@ -672,7 +672,7 @@ class getid3_riff extends getid3_handler
 						$this->warning('Extra null byte at end of MP3 data assumed to be RIFF padding and therefore ignored');
 					}
 				}
-				if (isset($thisfile_audio_dataformat) && ($thisfile_audio_dataformat == 'ac3')) {
+				if ($thisfile_audio_dataformat == 'ac3') {
 					unset($thisfile_audio['bits_per_sample']);
 					if (!empty($info['ac3']['bitrate']) && ($info['ac3']['bitrate'] != $thisfile_audio['bitrate'])) {
 						$thisfile_audio['bitrate'] = $info['ac3']['bitrate'];
@@ -781,15 +781,15 @@ class getid3_riff extends getid3_handler
 					/** @var array $thisfile_riff_video_current */
 					$thisfile_riff_video_current = &$thisfile_riff_video[$streamindex];
 
-					if ($thisfile_riff_raw_avih['dwWidth'] > 0) {
+					if ($thisfile_riff_raw_avih['dwWidth'] > 0) { // @phpstan-ignore-line
 						$thisfile_riff_video_current['frame_width'] = $thisfile_riff_raw_avih['dwWidth'];
 						$thisfile_video['resolution_x']             = $thisfile_riff_video_current['frame_width'];
 					}
-					if ($thisfile_riff_raw_avih['dwHeight'] > 0) {
+					if ($thisfile_riff_raw_avih['dwHeight'] > 0) { // @phpstan-ignore-line
 						$thisfile_riff_video_current['frame_height'] = $thisfile_riff_raw_avih['dwHeight'];
 						$thisfile_video['resolution_y']              = $thisfile_riff_video_current['frame_height'];
 					}
-					if ($thisfile_riff_raw_avih['dwTotalFrames'] > 0) {
+					if ($thisfile_riff_raw_avih['dwTotalFrames'] > 0) { // @phpstan-ignore-line
 						$thisfile_riff_video_current['total_frames'] = $thisfile_riff_raw_avih['dwTotalFrames'];
 						$thisfile_video['total_frames']              = $thisfile_riff_video_current['total_frames'];
 					}
@@ -1913,7 +1913,7 @@ class getid3_riff extends getid3_handler
 									if (isset($RIFFchunk[$chunkname][$thisindex]) && empty($RIFFchunk[$chunkname][$thisindex])) {
 										unset($RIFFchunk[$chunkname][$thisindex]);
 									}
-									if (isset($RIFFchunk[$chunkname]) && empty($RIFFchunk[$chunkname])) {
+									if (count($RIFFchunk[$chunkname]) === 0) {
 										unset($RIFFchunk[$chunkname]);
 									}
 									$RIFFchunk[$LISTchunkParent][$chunkname][$thisindex]['data'] = $this->fread($chunksize);

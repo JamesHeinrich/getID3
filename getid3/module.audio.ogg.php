@@ -534,12 +534,12 @@ $this->warning('Ogg Theora (v3) not fully supported in this version of getID3 ['
 
 		$filedata = $this->fread($this->getid3->fread_buffer_size());
 		$filedataoffset = 0;
-		while ((substr($filedata, $filedataoffset++, 4) != 'OggS')) {
+		while (substr($filedata, $filedataoffset++, 4) != 'OggS') {
 			if (($this->ftell() - $oggheader['page_start_offset']) >= $this->getid3->fread_buffer_size()) {
 				// should be found before here
 				return false;
 			}
-			if ((($filedataoffset + 28) > strlen($filedata)) || (strlen($filedata) < 28)) {
+			if (($filedataoffset + 28) > strlen($filedata)) {
 				if ($this->feof() || (($filedata .= $this->fread($this->getid3->fread_buffer_size())) === '')) {
 					// get some more data, unless eof, in which case fail
 					return false;
