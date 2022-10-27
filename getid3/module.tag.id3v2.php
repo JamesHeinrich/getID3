@@ -1494,7 +1494,7 @@ class getid3_id3v2 extends getid3_handler
 							unset($comments_picture_data);
 						}
 					}
-				} while (false);
+				} while (false); // @phpstan-ignore-line
 			}
 
 		} elseif ((($id3v2_majorversion >= 3) && ($parsedFrame['frame_name'] == 'GEOB')) || // 4.15  GEOB General encapsulated object

@@ -42,7 +42,7 @@ class getid3_wavpack extends getid3_handler
 
 			if ($this->ftell() >= $info['avdataend']) {
 				break;
-			} elseif (feof($this->getid3->fp)) {
+			} elseif ($this->feof()) {
 				break;
 			} elseif (
 				isset($info['wavpack']['blockheader']['total_samples']) &&
@@ -157,11 +157,11 @@ class getid3_wavpack extends getid3_handler
 				$info['audio']['lossless'] = !$info['wavpack']['blockheader']['flags']['hybrid'];
 			}
 
-			while (!feof($this->getid3->fp) && ($this->ftell() < ($blockheader_offset + $blockheader_size + 8))) {
+			while (!$this->feof() && ($this->ftell() < ($blockheader_offset + $blockheader_size + 8))) {
 
 				$metablock = array('offset'=>$this->ftell());
 				$metablockheader = $this->fread(2);
-				if (feof($this->getid3->fp)) {
+				if ($this->feof()) {
 					break;
 				}
 				$metablock['id'] = ord($metablockheader[0]);
