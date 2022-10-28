@@ -41,7 +41,7 @@
         "php-parallel-lint/php-parallel-lint": "^1.0"
     },
     "scripts": {
-        "lint": "parallel-lint --exclude vendor --exclude .git .",
+        "lint": "parallel-lint --show-deprecated --exclude vendor --exclude .git .",
         "test": [
             "composer lint"
         ]
