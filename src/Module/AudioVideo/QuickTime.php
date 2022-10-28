@@ -1517,7 +1517,7 @@ $this->warning('incomplete/incorrect handling of "stsd" with Parrot metadata in 
 						$OldAVDataEnd         = $info['avdataend'];
 						$info['avdataend']    = $atom_structure['offset'] + $atom_structure['size']; // $info['quicktime'][$atomname]['offset'] + $info['quicktime'][$atomname]['size'];
 
-						$getid3_temp = new getID3();
+						$getid3_temp = new GetID3();
 						$getid3_temp->openfile($this->getid3->filename, $this->getid3->info['filesize'], $this->getid3->fp);
 						$getid3_temp->info['avdataoffset'] = $info['avdataoffset'];
 						$getid3_temp->info['avdataend']    = $info['avdataend'];
@@ -1552,7 +1552,7 @@ $this->warning('incomplete/incorrect handling of "stsd" with Parrot metadata in 
 					break;
 
 				case 'ID32': // ID3v2
-					$getid3_temp = new getID3();
+					$getid3_temp = new GetID3();
 					$getid3_temp->openfile($this->getid3->filename, $this->getid3->info['filesize'], $this->getid3->fp);
 					$getid3_id3v2 = new ID3v2($getid3_temp);
 					$getid3_id3v2->StartingOffset = $atom_structure['offset'] + 14; // framelength(4)+framename(4)+flags(4)+??(2)
