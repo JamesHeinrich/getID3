@@ -188,8 +188,8 @@ if ($fp_remote = fopen($remotefilename, 'rb')) {
 		$remote_headers = array_change_key_case(get_headers($remotefilename, 1), CASE_LOWER);
 		$remote_filesize = (isset($remote_headers['content-length']) ? (is_array($remote_headers['content-length']) ? $remote_headers['content-length'][count($remote_headers['content-length']) - 1] : $remote_headers['content-length']) : null);
 
-		// Initialize getID3 engine
-		$getID3 = new getID3;
+		// Initialize GetID3 engine
+		$getID3 = new GetID3;
 
 		$ThisFileInfo = $getID3->analyze($localtempfilename, $remote_filesize, basename($remotefilename));
 

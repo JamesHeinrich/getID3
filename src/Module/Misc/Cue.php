@@ -70,7 +70,7 @@ class Cue extends Handler
 	public function readCueSheet(&$filedata)
 	{
 		$cue_lines = array();
-		foreach (explode("\n", str_replace("\r", null, $filedata)) as $line)
+		foreach (explode("\n", str_replace("\r", '', $filedata)) as $line)
 		{
 			if ( (strlen($line) > 0) && ($line[0] != '#'))
 			{

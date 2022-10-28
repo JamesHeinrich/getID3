@@ -2158,7 +2158,7 @@ class Riff extends Handler
 		$parsed['biYPelsPerMeter'] = substr($BITMAPINFOHEADER, 28, 4); // vertical resolution, in pixels per metre, of the target device
 		$parsed['biClrUsed']       = substr($BITMAPINFOHEADER, 32, 4); // actual number of color indices in the color table used by the bitmap. If this value is zero, the bitmap uses the maximum number of colors corresponding to the value of the biBitCount member for the compression mode specified by biCompression
 		$parsed['biClrImportant']  = substr($BITMAPINFOHEADER, 36, 4); // number of color indices that are considered important for displaying the bitmap. If this value is zero, all colors are important
-		$parsed = array_map('Utils::'.($littleEndian ? 'Little' : 'Big').'Endian2Int', $parsed);
+		$parsed = array_map('JamesHeinrich\\GetID3\\Utils::'.($littleEndian ? 'Little' : 'Big').'Endian2Int', $parsed);
 
 		$parsed['fourcc']          = substr($BITMAPINFOHEADER, 16, 4);  // compression identifier
 

@@ -21,6 +21,7 @@ use JamesHeinrich\GetID3\Utils;
 /**
  * @link https://www.w3.org/Graphics/GIF/spec-gif89a.txt
  * @link http://www.matthewflickinger.com/lab/whatsinagif/bits_and_bytes.asp
+ * @link http://www.vurdalakov.net/misc/gif/netscape-looping-application-extension
  */
 class Gif extends Handler
 {
@@ -167,14 +168,31 @@ class Gif extends Handler
 					$ExtensionBlock['byte_length']    = Utils::LittleEndian2Int(substr($ExtensionBlockData, 2, 1));
 					$ExtensionBlock['data']           = (($ExtensionBlock['byte_length'] > 0) ? $this->fread($ExtensionBlock['byte_length']) : null);
 
-					if (substr($ExtensionBlock['data'], 0, 11) == 'NETSCAPE2.0') { // Netscape Application Block (NAB)
-						$ExtensionBlock['data'] .= $this->fread(4);
-						if (substr($ExtensionBlock['data'], 11, 2) == "\x03\x01") {
-							$info['gif']['animation']['animated']   = true;
-							$info['gif']['animation']['loop_count'] = Utils::LittleEndian2Int(substr($ExtensionBlock['data'], 13, 2));
-						} else {
-							$this->warning('Expecting 03 01 at offset '.($this->ftell() - 4).', found "'.Utils::PrintHexBytes(substr($ExtensionBlock['data'], 11, 2)).'"');
-						}
+					switch ($ExtensionBlock['function_code']) {
+						case 0xFF:
+							// Application Extension
+							if ($ExtensionBlock['byte_length'] != 11) {
+								$this->warning('Expected block size of the Application Extension is 11 bytes, found '.$ExtensionBlock['byte_length'].' at offset '.$this->ftell());
+								break;
+							}
+
+							if (substr($ExtensionBlock['data'], 0, 11) !== 'NETSCAPE2.0'
+								&& substr($ExtensionBlock['data'], 0, 11) !== 'ANIMEXTS1.0'
+							) {
+								$this->warning('Ignoring unsupported Application Extension '.substr($ExtensionBlock['data'], 0, 11));
+								break;
+							}
+
+							// Netscape Application Block (NAB)
+							$ExtensionBlock['data'] .= $this->fread(4);
+							if (substr($ExtensionBlock['data'], 11, 2) == "\x03\x01") {
+								$info['gif']['animation']['animated']   = true;
+								$info['gif']['animation']['loop_count'] = Utils::LittleEndian2Int(substr($ExtensionBlock['data'], 13, 2));
+							} else {
+								$this->warning('Expecting 03 01 at offset '.($this->ftell() - 4).', found "'.Utils::PrintHexBytes(substr($ExtensionBlock['data'], 11, 2)).'"');
+							}
+
+							break;
 					}
 
 					if ($this->getid3->option_extra_info) {

@@ -400,7 +400,7 @@ class Aac extends Handler
 			if (!isset($BitrateCache[$FrameLength])) {
 				$BitrateCache[$FrameLength] = ($info['aac']['header']['sample_frequency'] / 1024) * $FrameLength * 8;
 			}
-			Utils::safe_inc($info['aac']['bitrate_distribution'][$BitrateCache[$FrameLength]], 1);
+			Utils::safe_inc($info['aac']['bitrate_distribution'][(string)$BitrateCache[$FrameLength]], 1);
 
 			$info['aac'][$framenumber]['aac_frame_length']     = $FrameLength;
 
