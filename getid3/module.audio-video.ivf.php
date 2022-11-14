@@ -45,7 +45,7 @@ class getid3_ivf extends getid3_handler
 			$info['ivf']['header']['frame_count']          = getid3_lib::LittleEndian2Int(substr($IVFheader, 24, 4));
 			//$info['ivf']['header']['reserved']             =                              substr($IVFheader, 28, 4);
 
-			$info['ivf']['header']['frame_rate'] = (float)getid3_lib::SafeDiv($info['ivf']['header']['timebase_denominator'], $info['ivf']['header']['timebase_denominator']);
+			$info['ivf']['header']['frame_rate'] = (float)getid3_lib::SafeDiv($info['ivf']['header']['timebase_numerator'], $info['ivf']['header']['timebase_denominator']);
 
 			if ($info['ivf']['header']['version'] > 0) {
 				$this->warning('Expecting IVF header version 0, found version '.$info['ivf']['header']['version'].', results may not be accurate');
