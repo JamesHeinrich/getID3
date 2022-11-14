@@ -128,6 +128,18 @@ class getid3_lib
 	}
 
 	/**
+	 * Perform a division, guarding against division by zero
+	 *
+	 * @param float|int $numerator
+	 * @param float|int $denominator
+	 * @param float|int $fallback
+	 * @return float|int
+	 */
+	public static function SafeDiv($numerator, $denominator, $fallback = 0) {
+		return $denominator ? $numerator / $denominator : $fallback;
+	}
+
+	/**
 	 * @param string $fraction
 	 *
 	 * @return float

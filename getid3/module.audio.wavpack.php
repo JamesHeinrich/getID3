@@ -243,7 +243,7 @@ class getid3_wavpack extends getid3_handler
 
 							$metablock['riff']['original_filesize'] = $original_wav_filesize;
 							$info['wavpack']['riff_trailer_size'] = $original_wav_filesize - $metablock['riff']['WAVE']['data'][0]['size'] - $metablock['riff']['header_size'];
-							$info['playtime_seconds'] = $info['wavpack']['blockheader']['total_samples'] / $info['audio']['sample_rate'];
+							$info['playtime_seconds'] = getid3_lib::SafeDiv($info['wavpack']['blockheader']['total_samples'], $info['audio']['sample_rate']);
 
 							// Safe RIFF header in case there's a RIFF footer later
 							$metablockRIFFheader = $metablock['data'];

@@ -214,7 +214,7 @@ class getid3_riff extends getid3_handler
 					$thisfile_audio['bitrate'] = $thisfile_riff_audio[$streamindex]['bitrate'];
 
 					if (empty($info['playtime_seconds'])) { // may already be set (e.g. DTS-WAV)
-						$info['playtime_seconds'] = (float) ((($info['avdataend'] - $info['avdataoffset']) * 8) / $thisfile_audio['bitrate']);
+						$info['playtime_seconds'] =  (float)getid3_lib::SafeDiv(($info['avdataend'] - $info['avdataoffset']) * 8, $thisfile_audio['bitrate']);
 					}
 
 					$thisfile_audio['lossless'] = false;
@@ -521,7 +521,7 @@ class getid3_riff extends getid3_handler
 
 				if (!isset($thisfile_audio['bitrate']) && isset($thisfile_riff_audio[$streamindex]['bitrate'])) {
 					$thisfile_audio['bitrate'] = $thisfile_riff_audio[$streamindex]['bitrate'];
-					$info['playtime_seconds'] = (float) ((($info['avdataend'] - $info['avdataoffset']) * 8) / $thisfile_audio['bitrate']);
+					$info['playtime_seconds'] = (float)getid3_lib::SafeDiv((($info['avdataend'] - $info['avdataoffset']) * 8), $thisfile_audio['bitrate']);
 				}
 
 				if (!empty($info['wavpack'])) {
@@ -531,7 +531,7 @@ class getid3_riff extends getid3_handler
 
 					// Reset to the way it was - RIFF parsing will have messed this up
 					$info['avdataend']        = $Original['avdataend'];
-					$thisfile_audio['bitrate'] = (($info['avdataend'] - $info['avdataoffset']) * 8) / $info['playtime_seconds'];
+					$thisfile_audio['bitrate'] = getid3_lib::SafeDiv(($info['avdataend'] - $info['avdataoffset']) * 8, $info['playtime_seconds']);
 
 					$this->fseek($info['avdataoffset'] - 44);
 					$RIFFdata = $this->fread(44);
