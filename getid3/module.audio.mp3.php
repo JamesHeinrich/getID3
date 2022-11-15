@@ -1380,11 +1380,11 @@ class getid3_mp3 extends getid3_handler
 							$Distribution['padding'][intval($LongMPEGpaddingLookup[$head4])] = isset($Distribution['padding'][intval($LongMPEGpaddingLookup[$head4])]) ? ++$Distribution['padding'][intval($LongMPEGpaddingLookup[$head4])] : 1;
 							$Distribution['frequency'][$LongMPEGfrequencyLookup[$head4]] = isset($Distribution['frequency'][$LongMPEGfrequencyLookup[$head4]]) ? ++$Distribution['frequency'][$LongMPEGfrequencyLookup[$head4]] : 1;
 							if (++$frames_scanned >= $max_frames_scan) {
-								$pct_data_scanned = ($this->ftell() - $info['avdataoffset']) / ($info['avdataend'] - $info['avdataoffset']);
+								$pct_data_scanned = getid3_lib::SafeDiv($this->ftell() - $info['avdataoffset'], $info['avdataend'] - $info['avdataoffset']);
 								$this->warning('too many MPEG audio frames to scan, only scanned first '.$max_frames_scan.' frames ('.number_format($pct_data_scanned * 100, 1).'% of file) and extrapolated distribution, playtime and bitrate may be incorrect.');
 								foreach ($Distribution as $key1 => $value1) {
 									foreach ($value1 as $key2 => $value2) {
-										$Distribution[$key1][$key2] = round($value2 / $pct_data_scanned);
+										$Distribution[$key1][$key2] = $pct_data_scanned ? round($value2 / $pct_data_scanned) : 1;
 									}
 								}
 								break;
@@ -1638,7 +1638,7 @@ class getid3_mp3 extends getid3_handler
 								}
 								$frames_scanned++;
 								if ($frames_scan_per_segment && (++$frames_scanned_this_segment >= $frames_scan_per_segment)) {
-									$this_pct_scanned = ($this->ftell() - $scan_start_offset[$current_segment]) / ($info['avdataend'] - $info['avdataoffset']);
+									$this_pct_scanned = getid3_lib::SafeDiv($this->ftell() - $scan_start_offset[$current_segment], $info['avdataend'] - $info['avdataoffset']);
 									if (($current_segment == 0) && (($this_pct_scanned * $max_scan_segments) >= 1)) {
 										// file likely contains < $max_frames_scan, just scan as one segment
 										$max_scan_segments = 1;
@@ -1729,6 +1729,10 @@ class getid3_mp3 extends getid3_handler
 
 		}
 		$info['audio']['channels']        = $info['mpeg']['audio']['channels'];
+		if ($info['audio']['channels'] < 1) {
+			$this->error('Corrupt MP3 file: no channels');
+			return false;
+		}
 		$info['audio']['channelmode']     = $info['mpeg']['audio']['channelmode'];
 		$info['audio']['sample_rate']     = $info['mpeg']['audio']['sample_rate'];
 		return true;

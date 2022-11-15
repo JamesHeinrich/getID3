@@ -505,9 +505,9 @@ echo 'average_File_bitrate = '.number_format(array_sum($vbr_bitrates) / count($v
 			$last_GOP_id = max(array_keys($FramesByGOP));
 			$frames_in_last_GOP = count($FramesByGOP[$last_GOP_id]);
 			$gopdata = &$info['mpeg']['group_of_pictures'][$last_GOP_id];
-			$info['playtime_seconds'] = ($gopdata['time_code_hours'] * 3600) + ($gopdata['time_code_minutes'] * 60) + $gopdata['time_code_seconds'] + (($gopdata['time_code_pictures'] + $frames_in_last_GOP + 1) / $info['mpeg']['video']['frame_rate']);
+			$info['playtime_seconds'] = ($gopdata['time_code_hours'] * 3600) + ($gopdata['time_code_minutes'] * 60) + $gopdata['time_code_seconds'] + getid3_lib::SafeDiv($gopdata['time_code_pictures'] + $frames_in_last_GOP + 1, $info['mpeg']['video']['frame_rate']);
 			if (!isset($info['video']['bitrate'])) {
-				$overall_bitrate = ($info['avdataend'] - $info['avdataoffset']) * 8 / $info['playtime_seconds'];
+				$overall_bitrate = getid3_lib::SafeDiv($info['avdataend'] - $info['avdataoffset'] * 8, $info['playtime_seconds']);
 				$info['video']['bitrate'] = $overall_bitrate - (isset($info['audio']['bitrate']) ? $info['audio']['bitrate'] : 0);
 			}
 			unset($info['mpeg']['group_of_pictures']);

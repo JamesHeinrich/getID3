@@ -1977,7 +1977,7 @@ class getID3
 		}
 		$BitrateUncompressed = $this->info['video']['resolution_x'] * $this->info['video']['resolution_y'] * $this->info['video']['bits_per_sample'] * $FrameRate;
 
-		$this->info['video']['compression_ratio'] = $BitrateCompressed / $BitrateUncompressed;
+		$this->info['video']['compression_ratio'] = getid3_lib::SafeDiv($BitrateCompressed, $BitrateUncompressed, 1);
 		return true;
 	}
 

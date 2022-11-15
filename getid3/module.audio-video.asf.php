@@ -193,7 +193,7 @@ class getid3_asf extends getid3_handler
 						$info['playtime_seconds'] = ($thisfile_asf_filepropertiesobject['play_duration'] / 10000000) - ($thisfile_asf_filepropertiesobject['preroll'] / 1000);
 
 						//$info['bitrate'] = $thisfile_asf_filepropertiesobject['max_bitrate'];
-						$info['bitrate'] = ($thisfile_asf_filepropertiesobject['filesize'] * 8) / $info['playtime_seconds'];
+						$info['bitrate'] = getid3_lib::SafeDiv($thisfile_asf_filepropertiesobject['filesize'] * 8, $info['playtime_seconds']);
 					}
 					break;
 
