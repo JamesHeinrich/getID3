@@ -98,7 +98,7 @@ class getid3_jpg extends getid3_handler
 		$cast_as_appropriate_keys = array('EXIF', 'IFD0', 'THUMBNAIL');
 		foreach ($cast_as_appropriate_keys as $exif_key) {
 			if (isset($info['jpg']['exif'][$exif_key])) {
-				foreach ($info['jpg']['exif'][$exif_key] as $key => $value) {
+				foreach (array_filter($info['jpg']['exif'][$exif_key]) as $key => $value) {
 					$info['jpg']['exif'][$exif_key][$key] = $this->CastAsAppropriate($value);
 				}
 			}
