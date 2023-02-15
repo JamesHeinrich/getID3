@@ -610,8 +610,11 @@ echo 'average_File_bitrate = '.number_format(array_sum($vbr_bitrates) / count($v
 	 * @return float
 	 */
 	public static function videoAspectRatioLookup($rawaspectratio, $mpeg_version=1, $width=0, $height=0) {
+		// Per http://forum.doom9.org/archive/index.php/t-84400.html
+		// 0.9157 is commonly accepted to mean 11/12 or .9166, the reciprocal of 12/11 (1.091) and,
+		// 1.0950 is commonly accepted to mean 11/10 or 1.1, the reciprocal of 10/11 (0.909)
 		$lookup = array(
-			1 => array(0, 1, 0.6735, 0.7031, 0.7615, 0.8055, 0.8437, 0.8935, 0.9157, 0.9815, 1.0255, 1.0695, 1.0950, 1.1575, 1.2015, 0),
+			1 => array(0, 1, 0.6735, 0.7031, 0.7615, 0.8055, 0.8437, 0.8935, 11/12, 0.9815, 1.0255, 1.0695, 11/10, 1.1575, 1.2015, 0),
 			2 => array(0, 1, 1.3333, 1.7778, 2.2100, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0),
 		);
 		$ratio = (float) (isset($lookup[$mpeg_version][$rawaspectratio]) ? $lookup[$mpeg_version][$rawaspectratio] : 0);
