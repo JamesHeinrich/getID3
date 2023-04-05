@@ -2107,7 +2107,6 @@ $this->warning('incomplete/incorrect handling of "stsd" with Parrot metadata in 
 					// https://github.com/JamesHeinrich/getID3/issues/414
 					// https://chromium.googlesource.com/chromium/src/media/+/refs/heads/main/formats/mp4/es_descriptor.cc
 					// https://chromium.googlesource.com/chromium/src/media/+/refs/heads/main/formats/mp4/es_descriptor.h
-					$bytesread = 0; // for quicktime_readESsize
 					$atom_structure['version']   = getid3_lib::BigEndian2Int(substr($atom_data,  0, 1)); // hardcoded: 0x00
 					$atom_structure['flags_raw'] = getid3_lib::BigEndian2Int(substr($atom_data,  1, 3)); // hardcoded: 0x000000
 					$esds_offset = 4;
@@ -2118,8 +2117,8 @@ $this->warning('incomplete/incorrect handling of "stsd" with Parrot metadata in 
 						$this->warning('expecting esds.ES_DescrTag = 0x03, found 0x'.getid3_lib::PrintHexBytes($atom_structure['ES_DescrTag']).'), at offset '.$atom_structure['offset']);
 						break;
 					}
-					$atom_structure['ES_DescrSize'] = $this->quicktime_readESsize(substr($atom_data, $esds_offset, 4), $bytesread);
-					$esds_offset += $bytesread;
+					$atom_structure['ES_DescrSize'] = $this->quicktime_read_mp4_descr_length($atom_data, $esds_offset);
+
 					$atom_structure['ES_ID'] = getid3_lib::BigEndian2Int(substr($atom_data, $esds_offset, 2));
 					$esds_offset += 2;
 					$atom_structure['ES_flagsraw'] = getid3_lib::BigEndian2Int(substr($atom_data, $esds_offset, 1));
@@ -2147,8 +2146,7 @@ $this->warning('incomplete/incorrect handling of "stsd" with Parrot metadata in 
 						$this->warning('expecting esds.ES_DecoderConfigDescrTag = 0x04, found 0x'.getid3_lib::PrintHexBytes($atom_structure['ES_DecoderConfigDescrTag']).'), at offset '.$atom_structure['offset']);
 						break;
 					}
-					$atom_structure['ES_DecoderConfigDescrTagSize'] = $this->quicktime_readESsize(substr($atom_data, $esds_offset, 4), $bytesread);
-					$esds_offset += $bytesread;
+					$atom_structure['ES_DecoderConfigDescrTagSize'] = $this->quicktime_read_mp4_descr_length($atom_data, $esds_offset);
 
 					$atom_structure['ES_objectTypeIndication'] = getid3_lib::BigEndian2Int(substr($atom_data, $esds_offset, 1));
 					$esds_offset += 1;
@@ -2179,8 +2177,8 @@ $this->warning('incomplete/incorrect handling of "stsd" with Parrot metadata in 
 						$this->warning('expecting esds.ES_DecSpecificInfoTag = 0x05, found 0x'.getid3_lib::PrintHexBytes($atom_structure['ES_DecSpecificInfoTag']).'), at offset '.$atom_structure['offset']);
 						break;
 					}
-					$atom_structure['ES_DecSpecificInfoTagSize'] = $this->quicktime_readESsize(substr($atom_data, $esds_offset, 4), $bytesread);
-					$esds_offset += $bytesread;
+					$atom_structure['ES_DecSpecificInfoTagSize'] = $this->quicktime_read_mp4_descr_length($atom_data, $esds_offset);
+
 					$atom_structure['ES_DecSpecificInfo'] = getid3_lib::BigEndian2Int(substr($atom_data, $esds_offset, $atom_structure['ES_DecSpecificInfoTagSize']));
 					$esds_offset += $atom_structure['ES_DecSpecificInfoTagSize'];
 
@@ -2190,8 +2188,8 @@ $this->warning('incomplete/incorrect handling of "stsd" with Parrot metadata in 
 						$this->warning('expecting esds.ES_SLConfigDescrTag = 0x05, found 0x'.getid3_lib::PrintHexBytes($atom_structure['ES_SLConfigDescrTag']).'), at offset '.$atom_structure['offset']);
 						break;
 					}
-					$atom_structure['ES_SLConfigDescrTagSize'] = $this->quicktime_readESsize(substr($atom_data, $esds_offset, 4), $bytesread);
-					$esds_offset += $bytesread;
+					$atom_structure['ES_SLConfigDescrTagSize'] = $this->quicktime_read_mp4_descr_length($atom_data, $esds_offset);
+
 					$atom_structure['ES_SLConfigDescr'] = getid3_lib::BigEndian2Int(substr($atom_data, $esds_offset, $atom_structure['ES_SLConfigDescrTagSize']));
 					$esds_offset += $atom_structure['ES_SLConfigDescrTagSize'];
 					break;
@@ -3084,28 +3082,6 @@ $this->error('fragmented mp4 files not currently supported');
 			}
 		}
 		return array();
-	}
-
-	/**
-	 * @param string $data
-	 * @param int    $bytesread
-	 *
-	 * @return int
-	 */
-	public function quicktime_readESsize($data, &$bytesread) {
-		// https://chromium.googlesource.com/chromium/src/media/+/refs/heads/main/formats/mp4/es_descriptor.cc
-		// The elementary stream size is specific by up to 4 bytes.
-		// The MSB of a byte indicates if there are more bytes for the size.
-		$esds_entry_size = 0;
-		for ($bytesread = 1; $bytesread <= 4; $bytesread++) {
-			$byteval = ord(substr($data, ($bytesread - 1), 1));
-			$esds_entry_size = ($esds_entry_size << 7) + ($byteval & 0x7F);
-			$thisMSB = ($byteval & 0x80) >> 7;
-			if (!$thisMSB) {
-				break;
-			}
-		}
-		return $esds_entry_size;
 	}
 
 
