@@ -3748,23 +3748,16 @@ class getid3_id3v2 extends getid3_handler
 	/**
 	 * @param string $numberstring
 	 * @param bool   $allowdecimal
-	 * @param bool   $allownegative
 	 *
 	 * @return bool
 	 */
-	public static function IsANumber($numberstring, $allowdecimal=false, $allownegative=false) {
-		for ($i = 0; $i < strlen($numberstring); $i++) {
-			if ((chr($numberstring[$i]) < chr('0')) || (chr($numberstring[$i]) > chr('9'))) {
-				if (($numberstring[$i] == '.') && $allowdecimal) {
-					// allowed
-				} elseif (($numberstring[$i] == '-') && $allownegative && ($i == 0)) {
-					// allowed
-				} else {
-					return false;
-				}
-			}
+	public static function IsANumber($numberstring, $allowdecimal=false) {
+		if ($allowdecimal) {
+			$pattern = '/^[0-9.]*$/';
+		} else {
+			$pattern = '/^[0-9]*$/';
 		}
-		return true;
+		return preg_match($pattern, $numberstring) === 1;
 	}
 
 	/**
@@ -3773,7 +3766,7 @@ class getid3_id3v2 extends getid3_handler
 	 * @return bool
 	 */
 	public static function IsValidDateStampString($datestamp) {
-		if (strlen($datestamp) != 8) {
+		if (strlen($datestamp) !== 8) {
 			return false;
 		}
 		if (!self::IsANumber($datestamp, false)) {
