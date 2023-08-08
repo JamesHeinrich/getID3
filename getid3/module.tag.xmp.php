@@ -146,7 +146,16 @@ class Image_XMP
 				$segdatastart = ftell($filehnd);
 
 				// Read the segment data with length indicated by the previously read size
-				$segdata = fread($filehnd, $decodedsize['size'] - 2);
+				// fread will complain about trying to read zero bytes: "fread(): Argument #2 ($length) must be greater than 0" -- https://github.com/JamesHeinrich/getID3/issues/418
+				if ($decodedsize['size'] > 2) {
+					$segdata = fread($filehnd, $decodedsize['size'] - 2);
+				} elseif ($decodedsize['size'] == 2) {
+					$segdata = '';
+				} else {
+					// invalid length
+					fclose($filehnd);
+					return false;
+				}
 
 				// Store the segment information in the output array
 				$headerdata[] = array(
