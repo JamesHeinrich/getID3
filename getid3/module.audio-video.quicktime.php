@@ -331,7 +331,7 @@ class getid3_quicktime extends getid3_handler
 							}
 						} elseif (isset($value_array['time_to_sample_table'])) {
 							foreach ($value_array['time_to_sample_table'] as $key2 => $value_array2) {
-								if (isset($value_array2['sample_count']) && isset($value_array2['sample_duration']) && ($value_array2['sample_duration'] > 0)) {
+								if (isset($value_array2['sample_count']) && isset($value_array2['sample_duration']) && ($value_array2['sample_duration'] > 0) && !empty($info['quicktime']['time_scale'])) {
 									$framerate  = round($info['quicktime']['time_scale'] / $value_array2['sample_duration'], 3);
 									$framecount = $value_array2['sample_count'];
 								}
