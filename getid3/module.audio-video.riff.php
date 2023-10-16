@@ -2034,7 +2034,7 @@ class getid3_riff extends getid3_handler
 		foreach ($RIFFinfoKeyLookup as $key => $value) {
 			if (isset($RIFFinfoArray[$key])) {
 				foreach ($RIFFinfoArray[$key] as $commentid => $commentdata) {
-					if (trim($commentdata['data']) != '') {
+					if (!empty($commentdata['data']) && trim($commentdata['data']) != '') {
 						if (isset($CommentsTargetArray[$value])) {
 							$CommentsTargetArray[$value][] =     trim($commentdata['data']);
 						} else {
