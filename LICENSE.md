@@ -24,4 +24,4 @@ Mozilla MPL
 
 getID3 Commercial License
 -------------------------
-* [gCL](http://getid3.org/#gCL) (payment required)
+* [gCL](http://getid3.org/#gCL) (no longer available, existing licenses remain valid)

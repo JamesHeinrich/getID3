@@ -59,7 +59,7 @@ class Tta extends Handler
 				$info['tta']['samples_per_channel'] = Utils::LittleEndian2Int(substr($ttaheader, 12,  4));
 
 				$info['audio']['encoder_options']   = '-e'.$info['tta']['compression_level'];
-				$info['playtime_seconds']           = $info['tta']['samples_per_channel'] / $info['tta']['sample_rate'];
+				$info['playtime_seconds']           = Utils::SafeDiv($info['tta']['samples_per_channel'], $info['tta']['sample_rate']);
 				break;
 
 			case '2': // TTA v2.x
@@ -75,7 +75,7 @@ class Tta extends Handler
 				$info['tta']['data_length']         = Utils::LittleEndian2Int(substr($ttaheader, 16,  4));
 
 				$info['audio']['encoder_options']   = '-e'.$info['tta']['compression_level'];
-				$info['playtime_seconds']           = $info['tta']['data_length'] / $info['tta']['sample_rate'];
+				$info['playtime_seconds']           = Utils::SafeDiv($info['tta']['data_length'], $info['tta']['sample_rate']);
 				break;
 
 			case '1': // TTA v3.x
@@ -91,7 +91,7 @@ class Tta extends Handler
 				$info['tta']['crc32_footer']        =                              substr($ttaheader, 18,  4);
 				$info['tta']['seek_point']          = Utils::LittleEndian2Int(substr($ttaheader, 22,  4));
 
-				$info['playtime_seconds']           = $info['tta']['data_length'] / $info['tta']['sample_rate'];
+				$info['playtime_seconds']           = Utils::SafeDiv($info['tta']['data_length'], $info['tta']['sample_rate']);
 				break;
 
 			default:
@@ -103,7 +103,7 @@ class Tta extends Handler
 		$info['audio']['bits_per_sample'] = $info['tta']['bits_per_sample'];
 		$info['audio']['sample_rate']     = $info['tta']['sample_rate'];
 		$info['audio']['channels']        = $info['tta']['channels'];
-		$info['audio']['bitrate']         = (($info['avdataend'] - $info['avdataoffset']) * 8) / $info['playtime_seconds'];
+		$info['audio']['bitrate']         = Utils::SafeDiv(($info['avdataend'] - $info['avdataoffset']) * 8, $info['playtime_seconds']);
 
 		return true;
 	}

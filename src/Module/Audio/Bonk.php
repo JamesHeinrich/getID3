@@ -156,7 +156,7 @@ class Bonk extends Handler
 				$info['audio']['lossless']        = $thisfile_bonk_BONK['lossless'];
 				$info['audio']['codec']           = 'bonk';
 
-				$info['playtime_seconds'] = $thisfile_bonk_BONK['number_samples'] / ($thisfile_bonk_BONK['sample_rate'] * $thisfile_bonk_BONK['channels']);
+				$info['playtime_seconds'] = Utils::SafeDiv($thisfile_bonk_BONK['number_samples'], $thisfile_bonk_BONK['sample_rate'] * $thisfile_bonk_BONK['channels']);
 				if ($info['playtime_seconds'] > 0) {
 					$info['audio']['bitrate'] = (($info['bonk']['dataend'] - $info['bonk']['dataoffset']) * 8) / $info['playtime_seconds'];
 				}

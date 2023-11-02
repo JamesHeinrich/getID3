@@ -184,7 +184,7 @@ class Jpg extends Handler
 	 * @return mixed
 	 */
 	public function CastAsAppropriate($value) {
-		if (is_array($value)) {
+		if (is_array($value) || is_null($value)) {
 			return $value;
 		} elseif (preg_match('#^[0-9]+/[0-9]+$#', $value)) {
 			return Utils::DecimalizeFraction($value);

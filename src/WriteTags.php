@@ -661,7 +661,7 @@ class WriteTags
 										$tag_data_id3v2[$ID3v2_framename][$key]['encodingid'] = 0;
 										$tag_data_id3v2[$ID3v2_framename][$key]['data']       = $value;
 										$ID3v2_tag_data_converted = true;
-									} while (false);
+									} while (false); // @phpstan-ignore-line
 								}
 								if (!$ID3v2_tag_data_converted) {
 									$tag_data_id3v2[$ID3v2_framename][$key]['encodingid'] = 1;

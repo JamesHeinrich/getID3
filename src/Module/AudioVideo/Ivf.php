@@ -47,7 +47,7 @@ class Ivf extends Handler
 			$info['ivf']['header']['frame_count']          = Utils::LittleEndian2Int(substr($IVFheader, 24, 4));
 			//$info['ivf']['header']['reserved']             =                         substr($IVFheader, 28, 4);
 
-			$info['ivf']['header']['frame_rate'] = (float) $info['ivf']['header']['timebase_numerator'] / $info['ivf']['header']['timebase_denominator'];
+			$info['ivf']['header']['frame_rate'] = (float)Utils::SafeDiv($info['ivf']['header']['timebase_numerator'], $info['ivf']['header']['timebase_denominator']);
 
 			if ($info['ivf']['header']['version'] > 0) {
 				$this->warning('Expecting IVF header version 0, found version '.$info['ivf']['header']['version'].', results may not be accurate');
@@ -67,7 +67,7 @@ class Ivf extends Handler
 					$info['ivf']['frame_count']++;
 				}
 			}
-			if ($info['ivf']['frame_count']) {
+			if ($info['ivf']['frame_count'] && $info['playtime_seconds']) {
 				$info['playtime_seconds']    = $timestamp / 100000;
 				$info['video']['frame_rate'] = (float) $info['ivf']['frame_count'] / $info['playtime_seconds'];
 			}

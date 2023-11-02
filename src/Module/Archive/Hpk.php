@@ -44,7 +44,7 @@ class Hpk extends Handler
 			$info['hpk']['header']['fragmented_filesystem_offset'] = Utils::LittleEndian2Int(substr($HPKheader, 28, 4));
 			$info['hpk']['header']['fragmented_filesystem_length'] = Utils::LittleEndian2Int(substr($HPKheader, 32, 4));
 
-			$info['hpk']['header']['filesystem_entries'] = $info['hpk']['header']['fragmented_filesystem_length'] / ($info['hpk']['header']['fragments_per_file'] * 8);
+			$info['hpk']['header']['filesystem_entries'] = Utils::SafeDiv($info['hpk']['header']['fragmented_filesystem_length'], $info['hpk']['header']['fragments_per_file'] * 8);
 			$this->fseek($info['hpk']['header']['fragmented_filesystem_offset']);
 			for ($i = 0; $i < $info['hpk']['header']['filesystem_entries']; $i++) {
 				$offset = Utils::LittleEndian2Int($this->fread(4));
