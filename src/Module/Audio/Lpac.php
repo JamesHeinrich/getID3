@@ -127,8 +127,8 @@ class Lpac extends Handler
 			}
 		}
 
-		$info['playtime_seconds'] = $info['lpac']['total_samples'] / $info['audio']['sample_rate'];
-		$info['audio']['bitrate'] = (($info['avdataend'] - $info['avdataoffset']) * 8) / $info['playtime_seconds'];
+		$info['playtime_seconds'] = Utils::SafeDiv($info['lpac']['total_samples'], $info['audio']['sample_rate']);
+		$info['audio']['bitrate'] = Utils::SafeDiv(($info['avdataend'] - $info['avdataoffset']) * 8, $info['playtime_seconds']);
 
 		return true;
 	}

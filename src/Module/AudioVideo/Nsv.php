@@ -215,7 +215,7 @@ class Nsv extends Handler
 		}
 
 		$info['playtime_seconds'] = $info['nsv']['NSVf']['playtime_ms'] / 1000;
-		$info['bitrate']          = ($info['nsv']['NSVf']['file_size'] * 8) / $info['playtime_seconds'];
+		$info['bitrate']          = Utils::SafeDiv($info['nsv']['NSVf']['file_size'] * 8, $info['playtime_seconds']);
 
 		return true;
 	}

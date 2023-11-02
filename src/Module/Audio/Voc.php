@@ -140,7 +140,7 @@ class Voc extends Handler
 
 					$thisfile_audio['sample_rate']     = $ThisBlock['sample_rate'];
 					$thisfile_audio['bits_per_sample'] = $ThisBlock['bits_per_sample'];
-					$thisfile_audio['channels']        = $ThisBlock['channels'];
+					$thisfile_audio['channels']        = $ThisBlock['channels'] ?: 1;
 					break;
 
 				default:
@@ -164,8 +164,8 @@ class Voc extends Handler
 		ksort($thisfile_voc['blocktypes']);
 
 		if (!empty($thisfile_voc['compressed_bits_per_sample'])) {
-			$info['playtime_seconds'] = (($info['avdataend'] - $info['avdataoffset']) * 8) / ($thisfile_voc['compressed_bits_per_sample'] * $thisfile_audio['channels'] * $thisfile_audio['sample_rate']);
-			$thisfile_audio['bitrate'] = (($info['avdataend'] - $info['avdataoffset']) * 8) / $info['playtime_seconds'];
+			$info['playtime_seconds'] = Utils::SafeDiv(($info['avdataend'] - $info['avdataoffset']) * 8, $thisfile_voc['compressed_bits_per_sample'] * $thisfile_audio['channels'] * $thisfile_audio['sample_rate']);
+			$thisfile_audio['bitrate'] = Utils::SafeDiv(($info['avdataend'] - $info['avdataoffset']) * 8, $info['playtime_seconds']);
 		}
 
 		return true;

@@ -156,7 +156,7 @@ class Shorten extends Handler
 
 			if (substr($output, 20 + $fmt_size, 4) == 'data') {
 
-				$info['playtime_seconds'] = Utils::LittleEndian2Int(substr($output, 20 + 4 + $fmt_size, 4)) / $DecodedWAVFORMATEX['raw']['nAvgBytesPerSec'];
+				$info['playtime_seconds'] = Utils::SafeDiv(Utils::LittleEndian2Int(substr($output, 20 + 4 + $fmt_size, 4)), $DecodedWAVFORMATEX['raw']['nAvgBytesPerSec']);
 
 			} else {
 
@@ -165,7 +165,7 @@ class Shorten extends Handler
 
 			}
 
-			$info['audio']['bitrate'] = (($info['avdataend'] - $info['avdataoffset']) / $info['playtime_seconds']) * 8;
+			$info['audio']['bitrate'] = Utils::SafeDiv($info['avdataend'] - $info['avdataoffset'], $info['playtime_seconds']) * 8;
 
 		} else {
 

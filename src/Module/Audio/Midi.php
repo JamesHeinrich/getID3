@@ -106,7 +106,6 @@ class Midi extends Handler
 			$thisfile_midi['totalticks']      = 0;
 			$info['playtime_seconds'] = 0;
 			$CurrentMicroSecondsPerBeat       = 500000; // 120 beats per minute;  60,000,000 microseconds per minute -> 500,000 microseconds per beat
-			$CurrentBeatsPerMinute            = 120;    // 120 beats per minute;  60,000,000 microseconds per minute -> 500,000 microseconds per beat
 			$MicroSecondsPerQuarterNoteAfter  = array ();
 			$MIDIevents                       = array();
 
@@ -251,7 +250,6 @@ class Midi extends Handler
 									return false;
 								}
 								$thisfile_midi_raw['events'][$tracknumber][$CumulativeDeltaTime]['us_qnote'] = $CurrentMicroSecondsPerBeat;
-								$CurrentBeatsPerMinute = (1000000 / $CurrentMicroSecondsPerBeat) * 60;
 								$MicroSecondsPerQuarterNoteAfter[$CumulativeDeltaTime] = $CurrentMicroSecondsPerBeat;
 								$TicksAtCurrentBPM = 0;
 								break;

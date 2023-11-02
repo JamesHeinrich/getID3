@@ -118,7 +118,7 @@ class Dsf extends Handler
 		$info['audio']['sample_rate']       = $info['dsf']['fmt']['sample_rate'];
 		$info['audio']['channels']          = $info['dsf']['fmt']['channels'];
 		$info['audio']['bitrate']           = $info['audio']['bits_per_sample'] * $info['audio']['sample_rate'] * $info['audio']['channels'];
-		$info['playtime_seconds']           = ($info['dsf']['data']['data_chunk_size'] * 8) / $info['audio']['bitrate'];
+		$info['playtime_seconds']           = Utils::SafeDiv($info['dsf']['data']['data_chunk_size'] * 8, $info['audio']['bitrate']);
 
 		return true;
 	}

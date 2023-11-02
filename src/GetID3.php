@@ -319,7 +319,7 @@ class GetID3
 	 */
 	protected $startup_warning = '';
 
-	const VERSION           = '2.0.x-202207161647';
+	const VERSION           = '2.0.x-202310190849';
 	const FREAD_BUFFER_SIZE = 32768;
 
 	const ATTACHMENTS_NONE   = false;
@@ -1253,6 +1253,15 @@ class GetID3
 							'fail_ape'  => 'ERROR',
 						),
 
+				// XZ   - data         - XZ compressed data
+				'7zip'  => array(
+							'pattern'   => '^7z\\xBC\\xAF\\x27\\x1C',
+							'module'    => 'Archive\\SevenZip',
+							'mime_type' => 'application/x-7z-compressed',
+							'fail_id3'  => 'ERROR',
+							'fail_ape'  => 'ERROR',
+						),
+
 
 				// Misc other formats
 
@@ -1750,7 +1759,7 @@ class GetID3
 		}
 		$BitrateUncompressed = $this->info['video']['resolution_x'] * $this->info['video']['resolution_y'] * $this->info['video']['bits_per_sample'] * $FrameRate;
 
-		$this->info['video']['compression_ratio'] = $BitrateCompressed / $BitrateUncompressed;
+		$this->info['video']['compression_ratio'] = Utils::SafeDiv($BitrateCompressed, $BitrateUncompressed, 1);
 		return true;
 	}
 

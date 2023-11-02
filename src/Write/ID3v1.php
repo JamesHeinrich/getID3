@@ -77,7 +77,8 @@ class ID3v1
 														(isset($this->tag_data['year']        ) ? $this->tag_data['year']         : ''),
 														(isset($this->tag_data['genreid']     ) ? $this->tag_data['genreid']      : ''),
 														(isset($this->tag_data['comment']     ) ? $this->tag_data['comment']      : ''),
-														(isset($this->tag_data['track_number']) ? $this->tag_data['track_number'] : ''));
+														$this->tag_data['track_number']
+				);
 				fwrite($fp_source, $new_id3v1_tag_data, 128);
 				fclose($fp_source);
 				return true;

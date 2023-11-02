@@ -46,8 +46,13 @@ class Real extends Handler
 					$info['audio']['bits_per_sample'] = $info['real']['old_ra_header']['bits_per_sample'];
 					$info['audio']['channels']        = $info['real']['old_ra_header']['channels'];
 
-					$info['playtime_seconds']         = 60 * ($info['real']['old_ra_header']['audio_bytes'] / $info['real']['old_ra_header']['bytes_per_minute']);
-					$info['audio']['bitrate']         =  8 * ($info['real']['old_ra_header']['audio_bytes'] / $info['playtime_seconds']);
+					if ($info['real']['old_ra_header']['bytes_per_minute']) {
+						$info['playtime_seconds']     = 60 * ($info['real']['old_ra_header']['audio_bytes'] / $info['real']['old_ra_header']['bytes_per_minute']);
+						$info['audio']['bitrate']     = 8 * ($info['real']['old_ra_header']['audio_bytes'] / $info['playtime_seconds']);
+					} else {
+						$info['playtime_seconds']     = 0;
+						$info['audio']['bitrate']     = 0;
+					}
 					$info['audio']['codec']           = $this->RealAudioCodecFourCClookup($info['real']['old_ra_header']['fourcc'], $info['audio']['bitrate']);
 
 					foreach ($info['real']['old_ra_header']['comments'] as $key => $valuearray) {
