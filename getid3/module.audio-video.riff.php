@@ -306,7 +306,8 @@ class getid3_riff extends getid3_handler
 						// Keep only string as far as first null byte, discard rest of fixed-width data
 						// https://github.com/JamesHeinrich/getID3/issues/263
 						// https://github.com/JamesHeinrich/getID3/issues/430
-						$thisfile_riff_WAVE_bext_0[$bext_key] = explode("\x00", $thisfile_riff_WAVE_bext_0[$bext_key])[0];
+						$null_terminator_rows = explode("\x00", $thisfile_riff_WAVE_bext_0[$bext_key]);
+						$thisfile_riff_WAVE_bext_0[$bext_key] = $null_terminator_rows[0];
 					}
 
 					$thisfile_riff_WAVE_bext_0['origin_date']    =                              substr($thisfile_riff_WAVE_bext_0['data'], 320,  10);
@@ -1133,7 +1134,8 @@ class getid3_riff extends getid3_handler
 				foreach ($CommentsChunkNames as $key => $value) {
 					if (isset($thisfile_riff[$RIFFsubtype][$key][0]['data'])) {
 						// https://github.com/JamesHeinrich/getID3/issues/430
-						$thisfile_riff['comments'][$value][] = explode("\x00", $thisfile_riff[$RIFFsubtype][$key][0]['data'])[0];
+						$null_terminator_rows = explode("\x00", $thisfile_riff[$RIFFsubtype][$key][0]['data']);
+						$thisfile_riff['comments'][$value][] = $null_terminator_rows[0];
 					}
 				}
 /*
@@ -1226,7 +1228,8 @@ class getid3_riff extends getid3_handler
 				foreach ($CommentsChunkNames as $key => $value) {
 					if (isset($thisfile_riff[$RIFFsubtype][$key][0]['data'])) {
 						// https://github.com/JamesHeinrich/getID3/issues/430
-						$thisfile_riff['comments'][$value][] = explode("\x00", $thisfile_riff[$RIFFsubtype][$key][0]['data'])[0];
+						$null_terminator_rows = explode("\x00", $thisfile_riff[$RIFFsubtype][$key][0]['data']);
+						$thisfile_riff['comments'][$value][] = $null_terminator_rows[0];
 					}
 				}
 
