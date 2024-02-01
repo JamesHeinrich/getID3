@@ -79,12 +79,12 @@ class getid3_dss extends getid3_handler
 	 * @return int|false
 	 */
 	public function DSSdateStringToUnixDate($datestring) {
-		$y = substr($datestring,  0, 2);
-		$m = substr($datestring,  2, 2);
-		$d = substr($datestring,  4, 2);
-		$h = substr($datestring,  6, 2);
-		$i = substr($datestring,  8, 2);
-		$s = substr($datestring, 10, 2);
+		$y = intval(substr($datestring,  0, 2));
+		$m = intval(substr($datestring,  2, 2));
+		$d = intval(substr($datestring,  4, 2));
+		$h = intval(substr($datestring,  6, 2));
+		$i = intval(substr($datestring,  8, 2));
+		$s = intval(substr($datestring, 10, 2));
 		$y += (($y < 95) ? 2000 : 1900);
 		return mktime($h, $i, $s, $m, $d, $y);
 	}
