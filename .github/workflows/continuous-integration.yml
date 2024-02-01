@@ -6,6 +6,7 @@ jobs:
   lint:
     name: "Lint"
     runs-on: "ubuntu-latest"
+    continue-on-error: ${{ matrix.experimental }}
     strategy:
       fail-fast: false
       matrix:
@@ -23,14 +24,22 @@ jobs:
           - "8.1"
           - "8.2"
           - "8.3"
+        experimental:
+          - false
+        include:
+          - php-version: "8.4"
+            experimental: true
+            composer-options: "--ignore-platform-reqs"
     steps:
-      - uses: "actions/checkout@v3"
+      - uses: "actions/checkout@v4"
       - uses: "shivammathur/setup-php@v2"
         with:
           php-version: "${{ matrix.php-version }}"
           ini-values: error_reporting=-1, display_errors=On
           coverage: "none"
       - uses: "ramsey/composer-install@v2"
+        with:
+          composer-options: "${{ matrix.composer-options }}"
       - name: "Run the linter"
         run: "composer lint -- --colors"
 
@@ -38,7 +47,7 @@ jobs:
     name: "Static Analysis"
     runs-on: "ubuntu-latest"
     steps:
-      - uses: "actions/checkout@v3"
+      - uses: "actions/checkout@v4"
       - uses: "shivammathur/setup-php@v2"
         with:
           php-version: "7.4"
