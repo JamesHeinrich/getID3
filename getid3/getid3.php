@@ -409,10 +409,10 @@ class getID3
 		$memoryLimit = ini_get('memory_limit');
 		if (preg_match('#([0-9]+) ?M#i', $memoryLimit, $matches)) {
 			// could be stored as "16M" rather than 16777216 for example
-			$memoryLimit = $matches[1] * 1048576;
+			$memoryLimit = (int) $matches[1] * 1048576;
 		} elseif (preg_match('#([0-9]+) ?G#i', $memoryLimit, $matches)) { // The 'G' modifier is available since PHP 5.1.0
 			// could be stored as "2G" rather than 2147483648 for example
-			$memoryLimit = $matches[1] * 1073741824;
+			$memoryLimit = (int) $matches[1] * 1073741824;
 		}
 		$this->memory_limit = $memoryLimit;
 
@@ -446,7 +446,7 @@ class getID3
 			}
 			// Check for magic_quotes_gpc
 			if (function_exists('get_magic_quotes_gpc')) {
-				if (get_magic_quotes_gpc()) { // @phpstan-ignore-line
+				if (get_magic_quotes_gpc()) {
 					$this->startup_error .= 'magic_quotes_gpc must be disabled before running getID3(). Surround getid3 block by set_magic_quotes_gpc(0) and set_magic_quotes_gpc(1).'."\n";
 				}
 			}

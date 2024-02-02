@@ -272,7 +272,7 @@ class getid3_lyrics3 extends getid3_handler
 	 */
 	public function Lyrics3Timestamp2Seconds($rawtimestamp) {
 		if (preg_match('#^\\[([0-9]{2}):([0-9]{2})\\]$#', $rawtimestamp, $regs)) {
-			return (int) (($regs[1] * 60) + $regs[2]);
+			return (int) (((int) $regs[1] * 60) + (int) $regs[2]);
 		}
 		return false;
 	}
