@@ -115,7 +115,9 @@ class getid3_lib
 		// check if integers are 64-bit
 		static $hasINT64 = null;
 		if ($hasINT64 === null) { // 10x faster than is_null()
-			$hasINT64 = is_int(pow(2, 31)); // 32-bit int are limited to (2^31)-1
+			/** @var int|float|false $bigInt */
+			$bigInt = pow(2, 31);
+			$hasINT64 = is_int($bigInt); // 32-bit int are limited to (2^31)-1
 			if (!$hasINT64 && !defined('PHP_INT_MIN')) {
 				define('PHP_INT_MIN', ~PHP_INT_MAX);
 			}
@@ -1517,7 +1519,7 @@ class getid3_lib
 	public static function GetDataImageSize($imgData, &$imageinfo=array()) {
 		if (PHP_VERSION_ID >= 50400) {
 			$GetDataImageSize = @getimagesizefromstring($imgData, $imageinfo);
-			if ($GetDataImageSize === false || !isset($GetDataImageSize[0], $GetDataImageSize[1])) {
+			if ($GetDataImageSize === false) {
 				return false;
 			}
 			$GetDataImageSize['height'] = $GetDataImageSize[0];
@@ -1545,7 +1547,7 @@ class getid3_lib
 				fwrite($tmp, $imgData);
 				fclose($tmp);
 				$GetDataImageSize = @getimagesize($tempfilename, $imageinfo);
-				if (($GetDataImageSize === false) || !isset($GetDataImageSize[0]) || !isset($GetDataImageSize[1])) {
+				if ($GetDataImageSize === false) {
 					return false;
 				}
 				$GetDataImageSize['height'] = $GetDataImageSize[0];

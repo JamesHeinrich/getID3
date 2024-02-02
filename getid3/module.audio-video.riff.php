@@ -1369,19 +1369,19 @@ class getid3_riff extends getid3_handler
 		}
 
 		if ($info['playtime_seconds'] > 0) {
-			if (isset($thisfile_riff_audio) && isset($thisfile_riff_video)) {
+			if ($thisfile_riff_audio !== null && $thisfile_riff_video !== null) {
 
 				if (!isset($info['bitrate'])) {
 					$info['bitrate'] = ((($info['avdataend'] - $info['avdataoffset']) / $info['playtime_seconds']) * 8);
 				}
 
-			} elseif (isset($thisfile_riff_audio) && !isset($thisfile_riff_video)) {
+			} elseif ($thisfile_riff_audio !== null && $thisfile_riff_video === null) {
 
 				if (!isset($thisfile_audio['bitrate'])) {
 					$thisfile_audio['bitrate'] = ((($info['avdataend'] - $info['avdataoffset']) / $info['playtime_seconds']) * 8);
 				}
 
-			} elseif (!isset($thisfile_riff_audio) && isset($thisfile_riff_video)) {
+			} elseif ($thisfile_riff_audio === null && $thisfile_riff_video !== null) {
 
 				if (!isset($thisfile_video['bitrate'])) {
 					$thisfile_video['bitrate'] = ((($info['avdataend'] - $info['avdataoffset']) / $info['playtime_seconds']) * 8);
@@ -1698,7 +1698,7 @@ class getid3_riff extends getid3_handler
 							break;
 						}
 						$thisindex = 0;
-						if (isset($RIFFchunk[$chunkname]) && is_array($RIFFchunk[$chunkname])) {
+						if (isset($RIFFchunk[$chunkname])) {
 							$thisindex = count($RIFFchunk[$chunkname]);
 						}
 						$RIFFchunk[$chunkname][$thisindex]['offset'] = $this->ftell() - 8;

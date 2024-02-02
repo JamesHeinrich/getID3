@@ -1304,7 +1304,7 @@ class getid3_id3v2 extends getid3_handler
 			// Adjustment            $xx (xx ...)
 
 			$frame_offset = 0;
-			$parsedFrame['adjustmentbits'] = substr($parsedFrame['data'], $frame_offset++, 1);
+			$parsedFrame['adjustmentbits'] = ord(substr($parsedFrame['data'], $frame_offset++, 1));
 			$frame_adjustmentbytes = ceil($parsedFrame['adjustmentbits'] / 8);
 
 			$frame_remainingdata = (string) substr($parsedFrame['data'], $frame_offset);
