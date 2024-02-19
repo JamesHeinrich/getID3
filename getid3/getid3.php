@@ -387,7 +387,7 @@ class getID3
 	 */
 	protected $startup_warning = '';
 
-	const VERSION           = '1.9.23-202312292105';
+	const VERSION           = '1.9.23-202402191012';
 	const FREAD_BUFFER_SIZE = 32768;
 
 	const ATTACHMENTS_NONE   = false;
@@ -1476,6 +1476,16 @@ class getID3
 
 
 				// Misc other formats
+
+				// GPX - data         - GPS Exchange Format
+				'gpx' => array (
+							'pattern'   => '^<\\?xml [^>]+>[\s]*<gpx ',
+							'group'     => 'misc',
+							'module'    => 'gpx',
+							'mime_type' => 'application/gpx+xml',
+							'fail_id3'  => 'ERROR',
+							'fail_ape'  => 'ERROR',
+						),
 
 				// PAR2 - data        - Parity Volume Set Specification 2.0
 				'par2' => array (
