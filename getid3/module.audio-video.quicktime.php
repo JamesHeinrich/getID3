@@ -2122,7 +2122,7 @@ $this->warning('incomplete/incorrect handling of "stsd" with Parrot metadata in 
 					$atom_structure['ES_DescrTag'] = getid3_lib::BigEndian2Int(substr($atom_data, $esds_offset, 1));
 					$esds_offset += 1;
 					if ($atom_structure['ES_DescrTag'] != 0x03) {
-						$this->warning('expecting esds.ES_DescrTag = 0x03, found 0x'.getid3_lib::PrintHexBytes($atom_structure['ES_DescrTag']).'), at offset '.$atom_structure['offset']);
+						$this->warning('expecting esds.ES_DescrTag = 0x03, found 0x'.sprintf('%02X', $atom_structure['ES_DescrTag']).', at offset '.$atom_structure['offset']);
 						break;
 					}
 					$atom_structure['ES_DescrSize'] = $this->quicktime_read_mp4_descr_length($atom_data, $esds_offset);
@@ -2151,7 +2151,7 @@ $this->warning('incomplete/incorrect handling of "stsd" with Parrot metadata in 
 					$atom_structure['ES_DecoderConfigDescrTag'] = getid3_lib::BigEndian2Int(substr($atom_data, $esds_offset, 1));
 					$esds_offset += 1;
 					if ($atom_structure['ES_DecoderConfigDescrTag'] != 0x04) {
-						$this->warning('expecting esds.ES_DecoderConfigDescrTag = 0x04, found 0x'.getid3_lib::PrintHexBytes($atom_structure['ES_DecoderConfigDescrTag']).'), at offset '.$atom_structure['offset']);
+						$this->warning('expecting esds.ES_DecoderConfigDescrTag = 0x04, found 0x'.sprintf('%02X', $atom_structure['ES_DecoderConfigDescrTag']).', at offset '.$atom_structure['offset']);
 						break;
 					}
 					$atom_structure['ES_DecoderConfigDescrTagSize'] = $this->quicktime_read_mp4_descr_length($atom_data, $esds_offset);
@@ -2182,7 +2182,7 @@ $this->warning('incomplete/incorrect handling of "stsd" with Parrot metadata in 
 					$atom_structure['ES_DecSpecificInfoTag'] = getid3_lib::BigEndian2Int(substr($atom_data, $esds_offset, 1));
 					$esds_offset += 1;
 					if ($atom_structure['ES_DecSpecificInfoTag'] != 0x05) {
-						$this->warning('expecting esds.ES_DecSpecificInfoTag = 0x05, found 0x'.getid3_lib::PrintHexBytes($atom_structure['ES_DecSpecificInfoTag']).'), at offset '.$atom_structure['offset']);
+						$this->warning('expecting esds.ES_DecSpecificInfoTag = 0x05, found 0x'.sprintf('%02X', $atom_structure['ES_DecSpecificInfoTag']).', at offset '.$atom_structure['offset']);
 						break;
 					}
 					$atom_structure['ES_DecSpecificInfoTagSize'] = $this->quicktime_read_mp4_descr_length($atom_data, $esds_offset);
@@ -2193,7 +2193,7 @@ $this->warning('incomplete/incorrect handling of "stsd" with Parrot metadata in 
 					$atom_structure['ES_SLConfigDescrTag'] = getid3_lib::BigEndian2Int(substr($atom_data, $esds_offset, 1));
 					$esds_offset += 1;
 					if ($atom_structure['ES_SLConfigDescrTag'] != 0x06) {
-						$this->warning('expecting esds.ES_SLConfigDescrTag = 0x05, found 0x'.getid3_lib::PrintHexBytes($atom_structure['ES_SLConfigDescrTag']).'), at offset '.$atom_structure['offset']);
+						$this->warning('expecting esds.ES_SLConfigDescrTag = 0x05, found 0x'.sprintf('%02X', $atom_structure['ES_SLConfigDescrTag']).', at offset '.$atom_structure['offset']);
 						break;
 					}
 					$atom_structure['ES_SLConfigDescrTagSize'] = $this->quicktime_read_mp4_descr_length($atom_data, $esds_offset);
