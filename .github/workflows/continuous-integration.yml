@@ -75,14 +75,15 @@ jobs:
           - "8.0"
           - "8.1"
           - "8.2"
+          - "8.3"
         experimental:
           - false
         include:
-          - php-version: "8.3"
+          - php-version: "8.4"
             experimental: true
             composer-options: "--ignore-platform-reqs"
     steps:
-      - uses: "actions/checkout@v3"
+      - uses: "actions/checkout@v4"
       - uses: "shivammathur/setup-php@v2"
         with:
           php-version: "${{ matrix.php-version }}"
