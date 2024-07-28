@@ -319,7 +319,7 @@ class GetID3
 	 */
 	protected $startup_warning = '';
 
-	const VERSION           = '2.0.x-202310190849';
+	const VERSION           = '2.0.x-202405201327';
 	const FREAD_BUFFER_SIZE = 32768;
 
 	const ATTACHMENTS_NONE   = false;
@@ -341,10 +341,10 @@ class GetID3
 		$memoryLimit = ini_get('memory_limit');
 		if (preg_match('#([0-9]+) ?M#i', $memoryLimit, $matches)) {
 			// could be stored as "16M" rather than 16777216 for example
-			$memoryLimit = $matches[1] * 1048576;
+			$memoryLimit = (int) $matches[1] * 1048576;
 		} elseif (preg_match('#([0-9]+) ?G#i', $memoryLimit, $matches)) { // The 'G' modifier is available since PHP 5.1.0
 			// could be stored as "2G" rather than 2147483648 for example
-			$memoryLimit = $matches[1] * 1073741824;
+			$memoryLimit = (int) $matches[1] * 1073741824;
 		}
 		$this->memory_limit = $memoryLimit;
 
@@ -1264,6 +1264,15 @@ class GetID3
 
 
 				// Misc other formats
+
+				// GPX - data         - GPS Exchange Format
+				'gpx' => array (
+							'pattern'   => '^<\\?xml [^>]+>[\s]*<gpx ',
+							'module'    => 'Misc\\Gpx',
+							'mime_type' => 'application/gpx+xml',
+							'fail_id3'  => 'ERROR',
+							'fail_ape'  => 'ERROR',
+						),
 
 				// PAR2 - data        - Parity Volume Set Specification 2.0
 				'par2' => array (

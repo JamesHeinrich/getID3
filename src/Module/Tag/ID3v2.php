@@ -1067,13 +1067,15 @@ class ID3v2 extends Handler
 					$parsedFrame['lyrics'][$timestampindex]['data'] = substr($frame_remainingdata, $frame_offset, $frame_terminatorpos - $frame_offset);
 
 					$frame_remainingdata = substr($frame_remainingdata, $frame_terminatorpos + strlen($frame_textencoding_terminator));
-					if (($timestampindex == 0) && (ord($frame_remainingdata[0]) != 0)) {
-						// timestamp probably omitted for first data item
-					} else {
-						$parsedFrame['lyrics'][$timestampindex]['timestamp'] = Utils::BigEndian2Int(substr($frame_remainingdata, 0, 4));
-						$frame_remainingdata = substr($frame_remainingdata, 4);
+					if (strlen($frame_remainingdata)) { // https://github.com/JamesHeinrich/getID3/issues/444
+						if (($timestampindex == 0) && (ord($frame_remainingdata[0]) != 0)) {
+							// timestamp probably omitted for first data item
+						} else {
+							$parsedFrame['lyrics'][$timestampindex]['timestamp'] = Utils::BigEndian2Int(substr($frame_remainingdata, 0, 4));
+							$frame_remainingdata = substr($frame_remainingdata, 4);
+						}
+						$timestampindex++;
 					}
-					$timestampindex++;
 				}
 			}
 			unset($parsedFrame['data']);
@@ -1303,7 +1305,7 @@ class ID3v2 extends Handler
 			// Adjustment            $xx (xx ...)
 
 			$frame_offset = 0;
-			$parsedFrame['adjustmentbits'] = substr($parsedFrame['data'], $frame_offset++, 1);
+			$parsedFrame['adjustmentbits'] = ord(substr($parsedFrame['data'], $frame_offset++, 1));
 			$frame_adjustmentbytes = ceil($parsedFrame['adjustmentbits'] / 8);
 
 			$frame_remainingdata = (string) substr($parsedFrame['data'], $frame_offset);

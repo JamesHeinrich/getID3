@@ -118,7 +118,7 @@ class Midi extends Handler
 				$TicksAtCurrentBPM = 0;
 				while ($eventsoffset < strlen($trackdata)) {
 					$eventid = 0;
-					if (isset($MIDIevents[$tracknumber]) && is_array($MIDIevents[$tracknumber])) {
+					if (isset($MIDIevents[$tracknumber])) {
 						$eventid = count($MIDIevents[$tracknumber]);
 					}
 					$deltatime = 0;
