@@ -305,8 +305,9 @@ class Riff extends Handler
 						// assigned for text fields, resulting in a null-terminated string (or possibly just a single null) followed by garbage
 						// Keep only string as far as first null byte, discard rest of fixed-width data
 						// https://github.com/JamesHeinrich/getID3/issues/263
-						$null_terminator_offset = strpos($thisfile_riff_WAVE_bext_0[$bext_key], "\x00");
-						$thisfile_riff_WAVE_bext_0[$bext_key] = substr($thisfile_riff_WAVE_bext_0[$bext_key], 0, $null_terminator_offset);
+						// https://github.com/JamesHeinrich/getID3/issues/430
+						$null_terminator_rows = explode("\x00", $thisfile_riff_WAVE_bext_0[$bext_key]);
+						$thisfile_riff_WAVE_bext_0[$bext_key] = $null_terminator_rows[0];
 					}
 
 					$thisfile_riff_WAVE_bext_0['origin_date']    =                              substr($thisfile_riff_WAVE_bext_0['data'], 320,  10);
@@ -1132,7 +1133,9 @@ class Riff extends Handler
 				$CommentsChunkNames = array('NAME'=>'title', 'author'=>'artist', '(c) '=>'copyright', 'ANNO'=>'comment');
 				foreach ($CommentsChunkNames as $key => $value) {
 					if (isset($thisfile_riff[$RIFFsubtype][$key][0]['data'])) {
-						$thisfile_riff['comments'][$value][] = $thisfile_riff[$RIFFsubtype][$key][0]['data'];
+						// https://github.com/JamesHeinrich/getID3/issues/430
+						$null_terminator_rows = explode("\x00", $thisfile_riff[$RIFFsubtype][$key][0]['data']);
+						$thisfile_riff['comments'][$value][] = $null_terminator_rows[0];
 					}
 				}
 /*
@@ -1223,7 +1226,9 @@ class Riff extends Handler
 				$CommentsChunkNames = array('NAME'=>'title', 'author'=>'artist', '(c) '=>'copyright', 'ANNO'=>'comment');
 				foreach ($CommentsChunkNames as $key => $value) {
 					if (isset($thisfile_riff[$RIFFsubtype][$key][0]['data'])) {
-						$thisfile_riff['comments'][$value][] = $thisfile_riff[$RIFFsubtype][$key][0]['data'];
+						// https://github.com/JamesHeinrich/getID3/issues/430
+						$null_terminator_rows = explode("\x00", $thisfile_riff[$RIFFsubtype][$key][0]['data']);
+						$thisfile_riff['comments'][$value][] = $null_terminator_rows[0];
 					}
 				}
 
@@ -1359,19 +1364,19 @@ class Riff extends Handler
 		}
 
 		if ($info['playtime_seconds'] > 0) {
-			if (isset($thisfile_riff_audio) && isset($thisfile_riff_video)) {
+			if ($thisfile_riff_audio !== null && $thisfile_riff_video !== null) {
 
 				if (!isset($info['bitrate'])) {
 					$info['bitrate'] = ((($info['avdataend'] - $info['avdataoffset']) / $info['playtime_seconds']) * 8);
 				}
 
-			} elseif (isset($thisfile_riff_audio) && !isset($thisfile_riff_video)) {
+			} elseif ($thisfile_riff_audio !== null && $thisfile_riff_video === null) {
 
 				if (!isset($thisfile_audio['bitrate'])) {
 					$thisfile_audio['bitrate'] = ((($info['avdataend'] - $info['avdataoffset']) / $info['playtime_seconds']) * 8);
 				}
 
-			} elseif (!isset($thisfile_riff_audio) && isset($thisfile_riff_video)) {
+			} elseif ($thisfile_riff_audio === null && $thisfile_riff_video !== null) {
 
 				if (!isset($thisfile_video['bitrate'])) {
 					$thisfile_video['bitrate'] = ((($info['avdataend'] - $info['avdataoffset']) / $info['playtime_seconds']) * 8);
@@ -1688,7 +1693,7 @@ class Riff extends Handler
 							break;
 						}
 						$thisindex = 0;
-						if (isset($RIFFchunk[$chunkname]) && is_array($RIFFchunk[$chunkname])) {
+						if (isset($RIFFchunk[$chunkname])) {
 							$thisindex = count($RIFFchunk[$chunkname]);
 						}
 						$RIFFchunk[$chunkname][$thisindex]['offset'] = $this->ftell() - 8;

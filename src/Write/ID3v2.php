@@ -247,7 +247,7 @@ class ID3v2
 						fwrite($fp_temp, $buffer, strlen($buffer));
 					}
 					fclose($fp_source);
-					if (Utils::isWritable($this->filename) && ($fp_source = fopen($this->filename, 'wb'))) {
+					if ($fp_source = fopen($this->filename, 'wb')) {
 						rewind($fp_temp);
 						while ($buffer = fread($fp_temp, $this->fread_buffer_size)) {
 							fwrite($fp_source, $buffer, strlen($buffer));
