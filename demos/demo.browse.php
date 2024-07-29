@@ -88,7 +88,7 @@ if (isset($_REQUEST['deletefile']) && GETID3_DEMO_BROWSE_ALLOW_DELETE_LINK) {
 if (isset($_REQUEST['filename'])) {
 
 	if (!file_exists($_REQUEST['filename']) || !is_file($_REQUEST['filename'])) {
-		die(getid3_lib::iconv_fallback($FileSystemEncoding, $PageEncoding, $_REQUEST['filename'].' does not exist'));
+		die(htmlentities(getid3_lib::iconv_fallback($FileSystemEncoding, $PageEncoding, $_REQUEST['filename'].' does not exist')));
 	}
 	$starttime = microtime(true);
 
@@ -116,7 +116,7 @@ if (isset($_REQUEST['filename'])) {
 		$listdirectory = str_replace(DIRECTORY_SEPARATOR, '/', $listdirectory.'/');
 	}
 
-	if (preg_match('#^(ht|f)tp://#', $_REQUEST['filename'])) {
+	if (preg_match('#^(ht|f)tps?://#', $_REQUEST['filename'])) {
 		echo '<i>Cannot browse remote filesystems</i><br>';
 	} else {
 		echo 'Browse: <a href="'.htmlentities($_SERVER['PHP_SELF'].'?listdirectory='.urlencode($listdirectory), ENT_QUOTES | ENT_SUBSTITUTE, $PageEncoding).'">'.getid3_lib::iconv_fallback($FileSystemEncoding, $PageEncoding, $listdirectory).'</a><br>';
