@@ -98,7 +98,7 @@ class getid3_riff extends getid3_handler
 					$info['avdataend'] = $info['filesize'];
 				}
 
-				$nextRIFFoffset = $Original['avdataoffset'] + 8 + $thisfile_riff['header_size']; // 8 = "RIFF" + 32-bit offset
+				$nextRIFFoffset = (int) $Original['avdataoffset'] + 8 + (int) $thisfile_riff['header_size']; // 8 = "RIFF" + 32-bit offset
 				while ($nextRIFFoffset < min($info['filesize'], $info['avdataend'])) {
 					try {
 						$this->fseek($nextRIFFoffset);
