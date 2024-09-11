@@ -51,8 +51,8 @@ jobs:
       - uses: "shivammathur/setup-php@v2"
         with:
           php-version: "8.2"
-          tools: "phpstan:1.10.57"
+          tools: "phpstan:1.12.3"
           coverage: "none"
       - uses: "ramsey/composer-install@v3"
       - name: "Run PHPStan"
-        run: "phpstan analyse -c phpstan.neon -l 4 getid3"
+        run: "phpstan"
