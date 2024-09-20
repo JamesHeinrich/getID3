@@ -37,7 +37,7 @@ jobs:
           php-version: "${{ matrix.php-version }}"
           ini-values: error_reporting=-1, display_errors=On
           coverage: "none"
-      - uses: "ramsey/composer-install@v2"
+      - uses: "ramsey/composer-install@v3"
         with:
           composer-options: "${{ matrix.composer-options }}"
       - name: "Run the linter"
@@ -51,8 +51,8 @@ jobs:
       - uses: "shivammathur/setup-php@v2"
         with:
           php-version: "8.2"
-          tools: "phpstan:1.10.57"
+          tools: "phpstan:1.12.3"
           coverage: "none"
-      - uses: "ramsey/composer-install@v2"
+      - uses: "ramsey/composer-install@v3"
       - name: "Run PHPStan"
-        run: "phpstan analyse -c phpstan.neon -l 4 getid3"
+        run: "phpstan"
