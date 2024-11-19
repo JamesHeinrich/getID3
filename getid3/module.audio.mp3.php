@@ -305,7 +305,11 @@ class getid3_mp3 extends getid3_handler
 		} elseif (!empty($info['audio']['bitrate'])) {
 
 			if ($info['audio']['bitrate_mode'] == 'cbr') {
-				$encoder_options = strtoupper($info['audio']['bitrate_mode']).round($info['audio']['bitrate'] / 1000);
+				if ($info['audio']['bitrate'] == 'free') {
+					$encoder_options = strtoupper($info['audio']['bitrate_mode']);
+				} else {
+					$encoder_options = strtoupper($info['audio']['bitrate_mode']).round($info['audio']['bitrate'] / 1000);
+				}
 			} else {
 				$encoder_options = strtoupper($info['audio']['bitrate_mode']);
 			}
@@ -315,7 +319,7 @@ class getid3_mp3 extends getid3_handler
 			$encoder_options .= ' -b'.$thisfile_mpeg_audio_lame['bitrate_min'];
 		}
 
-		if (isset($thisfile_mpeg_audio['bitrate']) && $thisfile_mpeg_audio['bitrate'] === 'free') {
+		if (isset($thisfile_mpeg_audio['bitrate']) && ($thisfile_mpeg_audio['bitrate'] === 'free')) {
 			$encoder_options .= ' --freeformat';
 		}
 
@@ -919,7 +923,7 @@ class getid3_mp3 extends getid3_handler
 
 
 							// LAME CBR
-							if ($thisfile_mpeg_audio_lame_raw['vbr_method'] == 1 && $thisfile_mpeg_audio['bitrate'] !== 'free') {
+							if (($thisfile_mpeg_audio_lame_raw['vbr_method'] == 1) && ($thisfile_mpeg_audio['bitrate'] !== 'free')) {
 
 								$thisfile_mpeg_audio['bitrate_mode'] = 'cbr';
 								$thisfile_mpeg_audio['bitrate'] = self::ClosestStandardMP3Bitrate($thisfile_mpeg_audio['bitrate']);
@@ -1761,14 +1765,15 @@ class getid3_mp3 extends getid3_handler
 		static $MPEGaudioBitrate;
 		if (empty($MPEGaudioBitrate)) {
 			$MPEGaudioBitrate = array (
-				'1'  =>  array (1 => array('free', 32000, 64000, 96000, 128000, 160000, 192000, 224000, 256000, 288000, 320000, 352000, 384000, 416000, 448000),
-								2 => array('free', 32000, 48000, 56000,  64000,  80000,  96000, 112000, 128000, 160000, 192000, 224000, 256000, 320000, 384000),
-								3 => array('free', 32000, 40000, 48000,  56000,  64000,  80000,  96000, 112000, 128000, 160000, 192000, 224000, 256000, 320000)
-							   ),
-
-				'2'  =>  array (1 => array('free', 32000, 48000, 56000,  64000,  80000,  96000, 112000, 128000, 144000, 160000, 176000, 192000, 224000, 256000),
-								2 => array('free',  8000, 16000, 24000,  32000,  40000,  48000,  56000,  64000,  80000,  96000, 112000, 128000, 144000, 160000),
-							   )
+				'1' => array(
+					1 => array('free', 32000, 64000, 96000, 128000, 160000, 192000, 224000, 256000, 288000, 320000, 352000, 384000, 416000, 448000),
+					2 => array('free', 32000, 48000, 56000,  64000,  80000,  96000, 112000, 128000, 160000, 192000, 224000, 256000, 320000, 384000),
+					3 => array('free', 32000, 40000, 48000,  56000,  64000,  80000,  96000, 112000, 128000, 160000, 192000, 224000, 256000, 320000)
+				),
+				'2' => array(
+					1 => array('free', 32000, 48000, 56000,  64000,  80000,  96000, 112000, 128000, 144000, 160000, 176000, 192000, 224000, 256000),
+					2 => array('free',  8000, 16000, 24000,  32000,  40000,  48000,  56000,  64000,  80000,  96000, 112000, 128000, 144000, 160000),
+				),
 			);
 			$MPEGaudioBitrate['2'][3] = $MPEGaudioBitrate['2'][2];
 			$MPEGaudioBitrate['2.5']  = $MPEGaudioBitrate['2'];
