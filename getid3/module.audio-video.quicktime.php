@@ -224,6 +224,26 @@ class getid3_quicktime extends getid3_handler
 				$info['mime_type']  = 'video/mp4';
 			}
 		}
+		if (!empty($info['quicktime']['ftyp']['signature']) && in_array($info['quicktime']['ftyp']['signature'], array('heic','heix','hevc','hevx','heim','heis','hevm','hevs'))) {
+			if ($info['mime_type'] == 'video/quicktime') { // default value, as we
+				// https://en.wikipedia.org/wiki/High_Efficiency_Image_File_Format
+$this->error('HEIF files not currently supported');
+				switch ($info['quicktime']['ftyp']['signature']) {
+					// https://github.com/strukturag/libheif/issues/83 (comment by Dirk Farin 2018-09-14)
+					case 'heic': // the usual HEIF images
+					case 'heix': // 10bit images, or anything that uses h265 with range extension
+					case 'hevc': // brands for image sequences
+					case 'hevx': // brands for image sequences
+					case 'heim': // multiview
+					case 'heis': // scalable
+					case 'hevm': // multiview sequence
+					case 'hevs': // scalable sequence
+						$info['fileformat'] = 'heif';
+						$info['mime_type'] = 'image/heif';
+						break;
+				}
+			}
+		}
 
 		if (!$this->ReturnAtomData) {
 			unset($info['quicktime']['moov']);
