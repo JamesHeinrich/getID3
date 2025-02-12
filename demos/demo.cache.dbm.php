@@ -16,6 +16,7 @@ die('For security reasons, this demo has been disabled. It can be enabled by rem
 
 
 require_once('../getid3/getid3.php');
+require_once('../getid3/getid3.lib.php');
 getid3_lib::IncludeDependency(GETID3_INCLUDEPATH.'extension.cache.dbm.php', __FILE__, true);
 
 $getID3 = new getID3_cached_dbm('db3', '/zimweb/test/test.dbm', '/zimweb/test/test.lock');
