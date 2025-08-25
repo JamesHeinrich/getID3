@@ -231,7 +231,7 @@ class getid3_lyrics3 extends getid3_handler
 						foreach ($imagestrings as $key => $imagestring) {
 							if (strpos($imagestring, '||') !== false) {
 								$imagearray = explode('||', $imagestring);
-								$ParsedLyrics3['images'][$key]['filename']     =                                (isset($imagearray[0]) ? $imagearray[0] : '');
+								$ParsedLyrics3['images'][$key]['filename']     =                                $imagearray[0];
 								$ParsedLyrics3['images'][$key]['description']  =                                (isset($imagearray[1]) ? $imagearray[1] : '');
 								$ParsedLyrics3['images'][$key]['timestamp']    = $this->Lyrics3Timestamp2Seconds(isset($imagearray[2]) ? $imagearray[2] : '');
 							}
@@ -291,13 +291,13 @@ class getid3_lyrics3 extends getid3_handler
 		$notimestamplyricsarray = array();
 		foreach ($lyricsarray as $key => $lyricline) {
 			$regs = array();
-			unset($thislinetimestamps);
+			$thislinetimestamps = array();
 			while (preg_match('#^(\\[[0-9]{2}:[0-9]{2}\\])#', $lyricline, $regs)) {
 				$thislinetimestamps[] = $this->Lyrics3Timestamp2Seconds($regs[0]);
 				$lyricline = str_replace($regs[0], '', $lyricline);
 			}
 			$notimestamplyricsarray[$key] = $lyricline;
-			if (isset($thislinetimestamps) && is_array($thislinetimestamps)) {
+			if (count($thislinetimestamps) > 0) {
 				sort($thislinetimestamps);
 				foreach ($thislinetimestamps as $timestampkey => $timestamp) {
 					if (isset($Lyrics3data['comments']['synchedlyrics'][$timestamp])) {

@@ -73,12 +73,12 @@
 class getID3_cached_dbm extends getID3
 {
     /**
-     * @var resource
+     * @var null|resource|Dba\Connection
      */
-    private $dba;
+    private $dba; // @phpstan-ignore-line
 
     /**
-     * @var resource|bool
+     * @var resource|bool|null
      */
     private $lock;
 

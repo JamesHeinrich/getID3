@@ -473,7 +473,7 @@ class getid3_riff extends getid3_handler
 								@list($key, $value) = explode(':', $line, 2);
 								if (substr($value, 0, 3) == '[{"') {
 									if ($decoded = @json_decode($value, true)) {
-										if (!empty($decoded) && (count($decoded) == 1)) {
+										if (count($decoded) === 1) {
 											$value = $decoded[0];
 										} else {
 											$value = $decoded;
@@ -1375,7 +1375,7 @@ class getid3_riff extends getid3_handler
 					$info['bitrate'] = ((($info['avdataend'] - $info['avdataoffset']) / $info['playtime_seconds']) * 8);
 				}
 
-			} elseif ($thisfile_riff_audio !== null && $thisfile_riff_video === null) {
+			} elseif ($thisfile_riff_audio !== null && $thisfile_riff_video === null) { // @phpstan-ignore-line
 
 				if (!isset($thisfile_audio['bitrate'])) {
 					$thisfile_audio['bitrate'] = ((($info['avdataend'] - $info['avdataoffset']) / $info['playtime_seconds']) * 8);

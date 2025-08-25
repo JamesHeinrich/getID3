@@ -529,7 +529,7 @@ class getID3
 	 * @return bool
 	 */
 	public function setOption($optArray) {
-		if (!is_array($optArray) || empty($optArray)) {
+		if (empty($optArray)) {
 			return false;
 		}
 		foreach ($optArray as $opt => $val) {

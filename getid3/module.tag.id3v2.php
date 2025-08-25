@@ -659,7 +659,7 @@ class getid3_id3v2 extends getid3_handler
 			// Owner identifier        <text string> $00
 			// Identifier              <up to 64 bytes binary data>
 			$exploded = explode("\x00", $parsedFrame['data'], 2);
-			$parsedFrame['ownerid'] = (isset($exploded[0]) ? $exploded[0] : '');
+			$parsedFrame['ownerid'] = $exploded[0];
 			$parsedFrame['data']    = (isset($exploded[1]) ? $exploded[1] : '');
 
 		} elseif ((($id3v2_majorversion >= 3) && ($parsedFrame['frame_name'] == 'TXXX')) || // 4.2.2 TXXX User defined text information frame
