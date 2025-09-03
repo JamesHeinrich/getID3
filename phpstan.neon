@@ -2,7 +2,6 @@ parameters:
     level: 4
     paths:
         - getid3
-    excludes_analyse:
     polluteScopeWithLoopInitialAssignments: true
     dynamicConstantNames:
         - GETID3_OS_ISWINDOWS

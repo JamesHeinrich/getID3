@@ -716,7 +716,7 @@ class getid3_mp3 extends getid3_handler
 						//$info['audio']['bitrate'] = (($framelengthfloat - intval($thisfile_mpeg_audio['padding'])) * $thisfile_mpeg_audio['sample_rate']) / 144;
 						$info['audio']['bitrate'] = $framelengthfloat * $thisfile_mpeg_audio['sample_rate'] * (2 / $info['audio']['channels']) / 144;
 					}
-					$thisfile_mpeg_audio['framelength'] = floor($framelengthfloat);
+					$thisfile_mpeg_audio['framelength'] = (int) floor($framelengthfloat);
 				}
 
 				if ($thisfile_mpeg_audio['xing_flags']['toc']) {
@@ -1178,7 +1178,6 @@ class getid3_mp3 extends getid3_handler
 
 			$nextframetestarray = array('error' => array(), 'warning' => array(), 'avdataend' => $info['avdataend'], 'avdataoffset'=>$info['avdataoffset']);
 			if ($this->decodeMPEGaudioHeader($nextframetestoffset, $nextframetestarray, false)) {
-				/** @phpstan-ignore-next-line */
 				getid3_lib::safe_inc($info['mp3_validity_check_bitrates'][$nextframetestarray['mpeg']['audio']['bitrate']]);
 				if ($ScanAsCBR) {
 					// force CBR mode, used for trying to pick out invalid audio streams with valid(?) VBR headers, or VBR streams with no VBR header
@@ -1190,7 +1189,7 @@ class getid3_mp3 extends getid3_handler
 
 				// next frame is OK, get ready to check the one after that
 				if (isset($nextframetestarray['mpeg']['audio']['framelength']) && ($nextframetestarray['mpeg']['audio']['framelength'] > 0)) {
-					$nextframetestoffset += $nextframetestarray['mpeg']['audio']['framelength'];
+					$nextframetestoffset += (int) $nextframetestarray['mpeg']['audio']['framelength'];
 				} else {
 					$this->error('Frame at offset ('.$offset.') is has an invalid frame length.');
 					return false;

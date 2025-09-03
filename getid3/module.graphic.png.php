@@ -160,7 +160,7 @@ class getid3_png extends getid3_handler
 							break;
 
 						default:
-							$this->warning('Unhandled color_type in tRNS chunk: '.$thisfile_png['IHDR']['raw']['color_type']); // @phpstan-ignore-line
+							$this->warning('Unhandled color_type in tRNS chunk: '.$thisfile_png['IHDR']['raw']['color_type']);
 							break;
 					}
 					break;

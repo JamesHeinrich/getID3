@@ -481,7 +481,7 @@ class getID3
 					if (strpos($value, ' ') !== false) {
 						if (!empty($path_so_far)) {
 							$commandline = 'dir /x '.escapeshellarg(implode(DIRECTORY_SEPARATOR, $path_so_far));
-							$dir_listing = `$commandline`;
+							$dir_listing = shell_exec($commandline);
 							$lines = explode("\n", $dir_listing);
 							foreach ($lines as $line) {
 								$line = trim($line);
@@ -529,7 +529,7 @@ class getID3
 	 * @return bool
 	 */
 	public function setOption($optArray) {
-		if (!is_array($optArray) || empty($optArray)) {
+		if (empty($optArray)) {
 			return false;
 		}
 		foreach ($optArray as $opt => $val) {
@@ -1821,7 +1821,7 @@ class getID3
 					if (file_exists(GETID3_HELPERAPPSDIR.'vorbiscomment.exe')) {
 
 						$commandline = '"'.GETID3_HELPERAPPSDIR.'vorbiscomment.exe" -w -c "'.$empty.'" "'.$file.'" "'.$temp.'"';
-						$VorbisCommentError = `$commandline`;
+						$VorbisCommentError = shell_exec($commandline);
 
 					} else {
 
@@ -1832,7 +1832,7 @@ class getID3
 				} else {
 
 					$commandline = 'vorbiscomment -w -c '.escapeshellarg($empty).' '.escapeshellarg($file).' '.escapeshellarg($temp).' 2>&1';
-					$VorbisCommentError = `$commandline`;
+					$VorbisCommentError = shell_exec($commandline);
 
 				}
 

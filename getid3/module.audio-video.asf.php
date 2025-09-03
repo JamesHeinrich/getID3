@@ -336,7 +336,7 @@ class getid3_asf extends getid3_handler
 					// shortcut
 					$thisfile_asf['codec_list_object'] = array();
 					/** @var mixed[] $thisfile_asf_codeclistobject */
-					$thisfile_asf_codeclistobject      = &$thisfile_asf['codec_list_object'];
+					$thisfile_asf_codeclistobject      = &$thisfile_asf['codec_list_object']; // @phpstan-ignore-line
 
 					$thisfile_asf_codeclistobject['offset']                    = $NextObjectOffset + $offset;
 					$thisfile_asf_codeclistobject['objectid']                  = $NextObjectGUID;
