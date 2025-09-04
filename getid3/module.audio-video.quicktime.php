@@ -1760,8 +1760,14 @@ $this->warning('incomplete/incorrect handling of "stsd" with Parrot metadata in 
 					$atom_structure['key_name'] = (isset($info['quicktime']['temp_meta_key_names'][$this->metaDATAkey]) ? $info['quicktime']['temp_meta_key_names'][$this->metaDATAkey] : '');
 					$this->metaDATAkey++;
 
+					switch ($atom_structure['key_name']) {
+						case 'com.android.capture.fps':
+							$atom_structure['data'] = getid3_lib::BigEndian2Float($atom_structure['data']);
+							break;
+					}
+
 					if ($atom_structure['key_name'] && $atom_structure['data']) {
-						@$info['quicktime']['comments'][str_replace('com.apple.quicktime.', '', $atom_structure['key_name'])][] = $atom_structure['data'];
+						@$info['quicktime']['comments'][str_replace('com.android.', '', str_replace('com.apple.quicktime.', '', $atom_structure['key_name']))][] = $atom_structure['data'];
 					}
 					break;
 
