@@ -2234,6 +2234,34 @@ $this->warning('incomplete/incorrect handling of "stsd" with Parrot metadata in 
 					$esds_offset += $atom_structure['ES_SLConfigDescrTagSize'];
 					break;
 
+				case 'sgpd': // https://developer.apple.com/documentation/quicktime-file-format/sample_group_description_atom
+					$atom_structure['version']   = getid3_lib::BigEndian2Int(substr($atom_data,  0, 1)); // hardcoded: 0x00
+					$atom_structure['flags_raw'] = getid3_lib::BigEndian2Int(substr($atom_data,  1, 3)); // hardcoded: 0x000000
+					$sgpd_offset = 4;
+
+					$atom_structure['grouping_type'] = getid3_lib::BigEndian2Int(substr($atom_data, $sgpd_offset, 4));
+					$sgpd_offset += 4;
+					$atom_structure['default_length'] = getid3_lib::BigEndian2Int(substr($atom_data, $sgpd_offset, 4));
+					$sgpd_offset += 4;
+					$atom_structure['entry_count'] = getid3_lib::BigEndian2Int(substr($atom_data, $sgpd_offset, 4));
+					$sgpd_offset += 4;
+					$atom_structure['payload_data_raw'] = substr($atom_data, $sgpd_offset);
+					break;
+
+				case 'sbgp': // https://developer.apple.com/documentation/quicktime-file-format/sample-to-group_atom
+					$atom_structure['version']   = getid3_lib::BigEndian2Int(substr($atom_data,  0, 1)); // hardcoded: 0x00
+					$atom_structure['flags_raw'] = getid3_lib::BigEndian2Int(substr($atom_data,  1, 3)); // hardcoded: 0x000000
+					$sbgp_offset = 4;
+
+					$atom_structure['grouping_type'] = getid3_lib::BigEndian2Int(substr($atom_data, $sbgp_offset, 4));
+					$sbgp_offset += 4;
+					$atom_structure['default_length'] = getid3_lib::BigEndian2Int(substr($atom_data, $sbgp_offset, 4));
+					$sbgp_offset += 4;
+					$atom_structure['entry_count'] = getid3_lib::BigEndian2Int(substr($atom_data, $sbgp_offset, 4));
+					$sbgp_offset += 4;
+					$atom_structure['table_data_raw'] = substr($atom_data, $sbgp_offset);
+					break;
+
 // AVIF-related - https://docs.rs/avif-parse/0.13.2/src/avif_parse/boxes.rs.html
 				case 'pitm': // Primary ITeM
 				case 'iloc': // Item LOCation
