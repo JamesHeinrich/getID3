@@ -190,6 +190,7 @@ class getid3_quicktime extends getid3_handler
 				}
 				if ($ISO6709parsed['latitude'] === false) {
 					$this->warning('location.ISO6709 string not parsed correctly: "'.$ISO6709string.'", please submit as a bug');
+					unset($info['quicktime']['comments']['location.ISO6709']);
 				}
 				break;
 			}
@@ -1753,7 +1754,7 @@ $this->warning('incomplete/incorrect handling of "stsd" with Parrot metadata in 
 					break;
 
 				case 'data': // metaDATA atom
-					// seems to be 2 bytes language code (ASCII), 2 bytes unknown (set to 0x10B5 in sample I have), remainder is useful data
+					// seems to be 2 bytes language code (ASCII), 2 bytes unknown (set to 0x10B5 in one sample I have; 0x15C7 in another), remainder is useful data
 					$atom_structure['language'] =                           substr($atom_data, 4 + 0, 2);
 					$atom_structure['unknown']  = getid3_lib::BigEndian2Int(substr($atom_data, 4 + 2, 2));
 					$atom_structure['data']     =                           substr($atom_data, 4 + 4);
@@ -1779,13 +1780,15 @@ $this->warning('incomplete/incorrect handling of "stsd" with Parrot metadata in 
 					$atom_structure['flags_raw']     = getid3_lib::BigEndian2Int(substr($atom_data,  1, 3));
 					$atom_structure['entry_count']   = getid3_lib::BigEndian2Int(substr($atom_data,  4, 4));
 					$keys_atom_offset = 8;
-					for ($i = 1; $i <= $atom_structure['entry_count']; $i++) {
-						$atom_structure['keys'][$i]['key_size']      = getid3_lib::BigEndian2Int(substr($atom_data, $keys_atom_offset + 0, 4));
-						$atom_structure['keys'][$i]['key_namespace'] =                           substr($atom_data, $keys_atom_offset + 4, 4);
-						$atom_structure['keys'][$i]['key_value']     =                           substr($atom_data, $keys_atom_offset + 8, $atom_structure['keys'][$i]['key_size'] - 8);
-						$keys_atom_offset += $atom_structure['keys'][$i]['key_size']; // key_size includes the 4+4 bytes for key_size and key_namespace
 
-						$info['quicktime']['temp_meta_key_names'][$i] = $atom_structure['keys'][$i]['key_value'];
+					$keys_index_base = (!empty($info['quicktime']['temp_meta_key_names']) ? count($info['quicktime']['temp_meta_key_names']) : 0); // file may contain multiple "keys" entries, starting index should be culmulative not reset to 1 on each set; https://github.com/JamesHeinrich/getID3/issues/452
+					for ($i = 1; $i <= $atom_structure['entry_count']; $i++) {
+						$atom_structure['keys'][($keys_index_base + $i)]['key_size']      = getid3_lib::BigEndian2Int(substr($atom_data, $keys_atom_offset + 0, 4));
+						$atom_structure['keys'][($keys_index_base + $i)]['key_namespace'] =                           substr($atom_data, $keys_atom_offset + 4, 4);
+						$atom_structure['keys'][($keys_index_base + $i)]['key_value']     =                           substr($atom_data, $keys_atom_offset + 8, $atom_structure['keys'][($keys_index_base + $i)]['key_size'] - 8);
+						$keys_atom_offset += $atom_structure['keys'][($keys_index_base + $i)]['key_size']; // key_size includes the 4+4 bytes for key_size and key_namespace
+
+						$info['quicktime']['temp_meta_key_names'][($keys_index_base + $i)] = $atom_structure['keys'][($keys_index_base + $i)]['key_value'];
 					}
 					break;
 
