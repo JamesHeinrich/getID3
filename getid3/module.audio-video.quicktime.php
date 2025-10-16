@@ -473,6 +473,9 @@ $this->error('HEIF files not currently supported');
 					} else {
 						// Apple item list box atom handler
 						$atomoffset = 0;
+// todo (2025-10-16): 0x10B5 is probably Packed ISO639-2/T language code so this code block is likely incorrect
+// need to locate sample file to figure out what is going on here and why this code was written as such
+// https://developer.apple.com/documentation/quicktime-file-format/language_code_values
 						if (substr($atom_data, 2, 2) == "\x10\xB5") {
 							// not sure what it means, but observed on iPhone4 data.
 							// Each $atom_data has 2 bytes of datasize, plus 0x10B5, then data
@@ -1754,16 +1757,19 @@ $this->warning('incomplete/incorrect handling of "stsd" with Parrot metadata in 
 					break;
 
 				case 'data': // metaDATA atom
-					// seems to be 2 bytes language code (ASCII), 2 bytes unknown (set to 0x10B5 in one sample I have; 0x15C7 in another), remainder is useful data
-					$atom_structure['language'] =                           substr($atom_data, 4 + 0, 2);
-					$atom_structure['unknown']  = getid3_lib::BigEndian2Int(substr($atom_data, 4 + 2, 2));
-					$atom_structure['data']     =                           substr($atom_data, 4 + 4);
+					// seems to be 2 bytes language code (ASCII), 2 bytes language code (probably packed ISO639-2/T), remainder is useful data
+					$atom_structure['lang2']    =                                                          substr($atom_data, 4 + 0, 2);
+					$atom_structure['lang3']    = $this->QuicktimeLanguageLookup(getid3_lib::BigEndian2Int(substr($atom_data, 4 + 2, 2)));
+					$atom_structure['data']     =                                                          substr($atom_data, 4 + 4);
 					$atom_structure['key_name'] = (isset($info['quicktime']['temp_meta_key_names'][$this->metaDATAkey]) ? $info['quicktime']['temp_meta_key_names'][$this->metaDATAkey] : '');
 					$this->metaDATAkey++;
 
 					switch ($atom_structure['key_name']) {
 						case 'com.android.capture.fps':
 							$atom_structure['data'] = getid3_lib::BigEndian2Float($atom_structure['data']);
+							break;
+						case 'com.apple.quicktime.camera.focal_length.35mm_equivalent':
+							$atom_structure['data'] = getid3_lib::BigEndian2Int($atom_structure['data']);
 							break;
 					}
 
@@ -2363,6 +2369,7 @@ $this->error('fragmented mp4 files not currently supported');
 	 */
 	public function QuicktimeLanguageLookup($languageid) {
 		// http://developer.apple.com/library/mac/#documentation/QuickTime/QTFF/QTFFChap4/qtff4.html#//apple_ref/doc/uid/TP40000939-CH206-34353
+		// https://developer.apple.com/documentation/quicktime-file-format/language_code_values
 		static $QuicktimeLanguageLookup = array();
 		if (empty($QuicktimeLanguageLookup)) {
 			$QuicktimeLanguageLookup[0]     = 'English';
