@@ -908,7 +908,7 @@ $this->warning('incomplete/incorrect handling of "stsd" with Parrot metadata in 
 										$info['fileformat'] = 'mp4';
 										$info['video']['fourcc'] = $atom_structure['sample_description_table'][$i]['data_format'];
 										if ($this->QuicktimeVideoCodecLookup($info['video']['fourcc'])) {
-											$info['video']['fourcc_lookup'] = $this->QuicktimeVideoCodecLookup($info['video']['fourcc']);
+											$info['video']['codec'] = $this->QuicktimeVideoCodecLookup($info['video']['fourcc']);
 										}
 
 										// https://www.getid3.org/phpBB3/viewtopic.php?t=1550
@@ -958,6 +958,11 @@ $this->warning('incomplete/incorrect handling of "stsd" with Parrot metadata in 
 									default:
 										break;
 								}
+								break;
+
+							case 'keys':
+								// 2025-Oct-17 probably something to do with this but I haven't found clear documentation explaining what I'm seeing, ignoring for now
+								// https://developer.apple.com/documentation/quicktime-file-format/metadata_key_declaration_atom/
 								break;
 
 							default:
@@ -1766,10 +1771,18 @@ $this->warning('incomplete/incorrect handling of "stsd" with Parrot metadata in 
 
 					switch ($atom_structure['key_name']) {
 						case 'com.android.capture.fps':
+						case 'com.apple.quicktime.live-photo.vitality-score':
 							$atom_structure['data'] = getid3_lib::BigEndian2Float($atom_structure['data']);
 							break;
 						case 'com.apple.quicktime.camera.focal_length.35mm_equivalent':
+						case 'com.apple.quicktime.live-photo.auto':
+						case 'com.apple.quicktime.live-photo.vitality-scoring-version':
+						case 'com.apple.quicktime.full-frame-rate-playback-intent':
 							$atom_structure['data'] = getid3_lib::BigEndian2Int($atom_structure['data']);
+							break;
+
+						case 'com.apple.quicktime.location.accuracy.horizontal':
+							$atom_structure['data'] = (float) $atom_structure['data']; // string representing float value e.g. "14.989691"
 							break;
 					}
 
