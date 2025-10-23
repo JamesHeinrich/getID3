@@ -2825,6 +2825,10 @@ class getid3_riff extends getid3_handler
 			VLV1	VideoLogic/PURE Digital Videologic Capture
 			VP30	On2 VP3.0
 			VP31	On2 VP3.1
+			VP50	On2 VP5
+			VP60	On2 VP6
+			VP70	On2 VP7
+			VP80	On2 VP8
 			VP6F	On2 TrueMotion VP6
 			VX1K	Lucent VX1000S Video Codec
 			VX2K	Lucent VX2000S Video Codec
