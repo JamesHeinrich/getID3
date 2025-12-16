@@ -3098,11 +3098,13 @@ $this->error('fragmented mp4 files not currently supported');
 	public function MaybePascal2String($pascalstring) {
 		// Pascal strings have 1 unsigned byte at the beginning saying how many chars (1-255) are in the string
 		// Check if string actually is in this format or written incorrectly, straight string, or null-terminated string
-		if (ord(substr($pascalstring, 0, 1)) == (strlen($pascalstring) - 1)) {
-			return substr($pascalstring, 1);
-		} elseif (substr($pascalstring, -1, 1) == "\x00") {
-			// appears to be null-terminated instead of Pascal-style
-			return substr($pascalstring, 0, -1);
+		if (strlen($pascalstring) > 0) {
+			if (ord(substr($pascalstring, 0, 1)) == (strlen($pascalstring) - 1)) {
+				return substr($pascalstring, 1);
+			} elseif (substr($pascalstring, -1, 1) == "\x00") {
+				// appears to be null-terminated instead of Pascal-style
+				return substr($pascalstring, 0, -1);
+			}
 		}
 		return $pascalstring;
 	}
