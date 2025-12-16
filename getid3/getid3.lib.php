@@ -113,21 +113,7 @@ class getid3_lib
 	 * @return bool
 	 */
 	public static function intValueSupported($num) {
-		// check if integers are 64-bit
-		static $hasINT64 = null;
-		if ($hasINT64 === null) { // 10x faster than is_null()
-			/** @var int|float|object $bigInt */
-			$bigInt = pow(2, 31);
-			$hasINT64 = is_int($bigInt); // 32-bit int are limited to (2^31)-1
-			if (!$hasINT64 && !defined('PHP_INT_MIN')) {
-				define('PHP_INT_MIN', ~PHP_INT_MAX);
-			}
-		}
-		// if integers are 64-bit - no other check required
-		if ($hasINT64 || (($num <= PHP_INT_MAX) && ($num >= PHP_INT_MIN))) {
-			return true;
-		}
-		return false;
+		return (($num <= PHP_INT_MAX) && ($num >= PHP_INT_MIN));
 	}
 
 	/**
