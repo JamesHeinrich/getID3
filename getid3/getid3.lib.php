@@ -19,9 +19,9 @@ if (!defined('GETID3_LIBXML_OPTIONS') && defined('LIBXML_VERSION')) {
 	}
 }
 
-// Available since PHP 5.6
+// Available since PHP 7.0 (2015-Dec-03 https://www.php.net/ChangeLog-7.php)
 if (!defined('PHP_INT_MIN')) {
-    define('PHP_INT_MIN', ~PHP_INT_MAX);
+	define('PHP_INT_MIN', ~PHP_INT_MAX);
 }
 
 class getid3_lib
@@ -79,7 +79,7 @@ class getid3_lib
 	/**
 	 * @param int|null $variable
 	 * @param-out int  $variable
-     * @param int      $increment
+	 * @param int      $increment
 	 *
 	 * @return bool
 	 */
