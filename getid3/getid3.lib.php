@@ -19,6 +19,11 @@ if (!defined('GETID3_LIBXML_OPTIONS') && defined('LIBXML_VERSION')) {
 	}
 }
 
+// Available since PHP 5.6
+if (!defined('PHP_INT_MIN')) {
+    define('PHP_INT_MIN', ~PHP_INT_MAX);
+}
+
 class getid3_lib
 {
 	/**
