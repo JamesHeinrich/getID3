@@ -139,7 +139,7 @@ class dirscan {
 				break;
 			default: // scan 4 directories deep
 				if (!is_dir($root)) {
-    				return null;
+					return null;
 				}
 				$dirs = array_merge(glob($root.'/*', GLOB_ONLYDIR), glob($root.'/*/*', GLOB_ONLYDIR), glob($root.'/*/*/*', GLOB_ONLYDIR), glob($root.'/*/*/*/*', GLOB_ONLYDIR), glob($root.'/*/*/*/*/*', GLOB_ONLYDIR), glob($root.'/*/*/*/*/*/*', GLOB_ONLYDIR), glob($root.'/*/*/*/*/*/*/*', GLOB_ONLYDIR));
 				break;
@@ -216,7 +216,7 @@ class dirscan {
 				echo ' Scanning: '.$d."\n";
 				$search = self::type_brace($d, $match);
 				if ($search !== null) {
-    				$files = self::file_check($search);
+					$files = self::file_check($search);
 					if ($files !== null) {
 						foreach ($files as $f) {
 							echo ' * Analyzing '.$f.' '."\n";

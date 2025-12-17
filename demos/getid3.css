@@ -126,22 +126,22 @@ td.dump_boolean {
 */
 
 .tooltip {
-    font: 9pt sans-serif;
-    background: #ffffe1;
-    color: 	black;
-    border: 	black 1px solid;
-    margin: 	2px;
-    padding: 	7px;
-    position: 	absolute;
-    top: 	10px;
-    left: 	10px;
-    z-index: 	10000;
-    visibility: hidden;
+	font: 9pt sans-serif;
+	background: #ffffe1;
+	color: 	black;
+	border: 	black 1px solid;
+	margin: 	2px;
+	padding: 	7px;
+	position: 	absolute;
+	top: 	10px;
+	left: 	10px;
+	z-index: 	10000;
+	visibility: hidden;
 }
 
 .tooltip p {
-     margin-top:   -2px;
-     margin-bottom: 4px;
+	 margin-top:   -2px;
+	 margin-bottom: 4px;
 }
 
 
