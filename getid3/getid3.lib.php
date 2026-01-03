@@ -118,7 +118,8 @@ class getid3_lib
 	 * @return bool
 	 */
 	public static function intValueSupported($num) {
-		return (($num <= PHP_INT_MAX) && ($num >= PHP_INT_MIN));
+		// really should be <= and >= but trying "(int)9.2233720368548E+18" results in PHP warning "The float 9.2233720368548E+18 is not representable as an int, cast occurred"
+		return (($num < PHP_INT_MAX) && ($num > PHP_INT_MIN));
 	}
 
 	/**
