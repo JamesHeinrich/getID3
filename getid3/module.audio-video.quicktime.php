@@ -647,7 +647,9 @@ $this->error('HEIF files not currently supported');
 							}
 						}
 					}
-					$this->CopyToAppropriateCommentsSection($atomname, $atom_structure['data'], $atom_structure['name']);
+					if (!empty($atom_structure['data'])) { // https://github.com/JamesHeinrich/getID3/issues/477#issuecomment-3723356688
+						$this->CopyToAppropriateCommentsSection($atomname, $atom_structure['data'], $atom_structure['name']);
+					}
 					break;
 
 
