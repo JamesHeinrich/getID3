@@ -330,6 +330,15 @@ class getid3_midi extends getid3_handler
 			}
 		}
 
+		// Fallback: If playtime_seconds is still empty/zero, estimate using default tempo
+		// 120 BPM = 0.5 per quarter note = 480 quarternote ticks
+		if (empty($info['playtime_seconds']) && !empty($thisfile_midi['totalticks'])) {
+			$ticksPerQuarterNote = isset($thisfile_midi_raw['ticksperqnote']) ? $thisfile_midi_raw['ticksperqnote'] : 480;
+			if ($ticksPerQuarterNote > 0) {
+				$totalQuarterNotes = $thisfile_midi['totalticks'] / $ticksPerQuarterNote;
+				$info['playtime_seconds'] = $totalQuarterNotes * 0.5;
+			}
+		}
 
 		if (!empty($info['playtime_seconds'])) {
 			$info['bitrate'] = (($info['avdataend'] - $info['avdataoffset']) * 8) / $info['playtime_seconds'];
