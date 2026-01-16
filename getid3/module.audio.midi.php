@@ -46,6 +46,15 @@ class getid3_midi extends getid3_handler
 
 		$this->fseek($info['avdataoffset']);
 		$MIDIdata = $this->fread($this->getid3->fread_buffer_size());
+
+		$minHeaderSize = 14; // MIDI header (4+4+2+2+2)
+		$minTrackHeaderSize = 8; // Track header (4+4)
+		$minTotalSize = $minHeaderSize + $minTrackHeaderSize;
+		if ($info['filesize'] < $minTotalSize || strlen($MIDIdata) < $minTotalSize) {
+			$this->error('File too small to be a valid MIDI file.');
+			return false;
+		}
+
 		$offset = 0;
 		$MIDIheaderID = substr($MIDIdata, $offset, 4); // 'MThd'
 		if ($MIDIheaderID != GETID3_MIDI_MAGIC_MTHD) {
