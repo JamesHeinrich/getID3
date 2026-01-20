@@ -211,6 +211,11 @@ define('EBML_ID_CLUSTERREFERENCEVIRTUAL',         0x7D); //             [FD] -- 
 
 
 /**
+ * Matroska constants
+ */
+define('MATROSKA_DEFAULT_TIMECODESCALE', 1000000);
+
+/**
 * @tutorial http://www.matroska.org/technical/specs/index.html
 *
 * @todo Rewrite EBML parser to reduce it's size and honor default element values
@@ -241,6 +246,7 @@ class getid3_matroska extends getid3_handler
 	private $EBMLbuffer_length = 0;
 	private $current_offset    = 0;
 	private $unuseful_elements = array(EBML_ID_CRC32, EBML_ID_VOID);
+	private $parse_first_cluster = false;
 
 	/**
 	 * @return bool
@@ -256,14 +262,25 @@ class getid3_matroska extends getid3_handler
 			$this->error('EBML parser: '.$e->getMessage());
 		}
 
-		// calculate playtime
-		if (isset($info['matroska']['info']) && is_array($info['matroska']['info'])) {
-			foreach ($info['matroska']['info'] as $key => $infoarray) {
-				if (isset($infoarray['Duration'])) {
-					// TimecodeScale is how many nanoseconds each Duration unit is
-					$info['playtime_seconds'] = $infoarray['Duration'] * ((isset($infoarray['TimecodeScale']) ? $infoarray['TimecodeScale'] : 1000000) / 1000000000);
-					break;
-				}
+		$this->calculatePlaytimeFromMetadata($info);
+
+		// If there was no duration metadata, this might be an incomplete file or a streaming file
+		// We need Cluster information so we can use their timecodes to estimate playtime.
+		if (!isset($info['playtime_seconds']) && !$this->parse_whole_file) {
+			// If we have not yet scanned the entire file, scan the start and end for Clusters,
+			$this->scanStartEndForClusters($info);
+		}
+
+		if (isset($info['matroska']['cluster']) && is_array($info['matroska']['cluster'])) {
+			if (!isset($info['playtime_seconds']) && !empty($info['matroska']['cluster'])) {
+				// estimate playtime using clusters if not yet known
+				$this->calculatePlaytimeFromClusters($info);
+			}
+
+			// Remove cluster information from output if hide_clusters is true
+			// These could have been set during scanStartEndForClusters()
+			if ($this->hide_clusters) {
+				unset($info['matroska']['cluster']);
 			}
 		}
 
@@ -1246,8 +1263,13 @@ class getid3_matroska extends getid3_handler
 									}
 									$this->current_offset = $subelement['end'];
 								}
-								if (!$this->hide_clusters) {
-									$info['matroska']['cluster'][] = $cluster_entry;
+								// Always store clusters internally (for duration calculation)
+								// They will be removed from output later if hide_clusters is true
+								$info['matroska']['cluster'][] = $cluster_entry;
+
+								// Stop parsing after finding first cluster
+								if ($this->parse_first_cluster) {
+									return;
 								}
 
 								// check to see if all the data we need exists already, if so, break out of the loop
@@ -1919,4 +1941,114 @@ class getid3_matroska extends getid3_handler
 		return $info;
 	}
 
+	/**
+	 * @param array $info
+	 *
+	 * @return bool True if duration was set from metadata
+	 */
+	private function calculatePlaytimeFromMetadata(&$info) {
+		if (isset($info['matroska']['info']) && is_array($info['matroska']['info'])) {
+			foreach ($info['matroska']['info'] as $infoarray) {
+				if (isset($infoarray['Duration'])) {
+					// TimecodeScale is how many nanoseconds each Duration unit is
+					$info['playtime_seconds'] = $infoarray['Duration'] * ((isset($infoarray['TimecodeScale']) ? $infoarray['TimecodeScale'] : MATROSKA_DEFAULT_TIMECODESCALE) / 1000000000);
+					return true;
+				}
+			}
+		}
+		return false;
+	}
+
+	/**
+	 * @param int $offset New starting offset for the buffer
+	 *
+	 * @return void
+	 */
+	private function resetParserBuffer($offset) {
+		$this->current_offset = $offset;
+		$this->EBMLbuffer = '';
+		$this->EBMLbuffer_offset = 0;
+		$this->EBMLbuffer_length = 0;
+	}
+
+	/**
+	 * Scan start and end of file for cluster information when Duration is missing
+	 * Only use this if no Duration was found in the Info element and we are not in parse_whole_file mode
+	 *
+	 * @param array $info
+	 *
+	 * @return void
+	 */
+	private function scanStartEndForClusters(&$info) {
+		$this->resetParserBuffer($info['avdataoffset']);
+
+		// we need to temporarily override parse_whole_file to be able to scan clusters
+		$this->parse_whole_file = true;
+		$this->parse_first_cluster = true;
+		try {
+			$this->parseEBML($info);
+		} catch (Exception $e) {
+			$this->error('EBML parser (start of file): '.$e->getMessage());
+		}
+		$this->parse_first_cluster = false;
+
+		// Scan end of file for last cluster
+		if (is_array($info['matroska']['cluster']) && !empty($info['matroska']['cluster'])) {
+			// maximum 1MB scan window before EOF
+			$this->resetParserBuffer(max(0, $info['avdataend'] - (1024 * 1024)));
+			try {
+				$this->parseEBML($info);
+			} catch (Exception $e) {
+				$this->error('EBML parser (end of file): '.$e->getMessage());
+			}
+		}
+		$this->parse_whole_file = false;
+	}
+
+	/**
+	 * Fetch TimecodeScale from Info element
+	 *
+	 * @param array $info
+	 *
+	 * @return int TimecodeScale value
+	 */
+	private function getTimecodeScale(&$info) {
+		$timecodeScale = MATROSKA_DEFAULT_TIMECODESCALE;
+		if (isset($info['matroska']['info']) && is_array($info['matroska']['info'])) {
+			foreach ($info['matroska']['info'] as $infoarray) {
+				if (isset($infoarray['TimecodeScale'])) {
+					$timecodeScale = $infoarray['TimecodeScale'];
+					break;
+				}
+			}
+		}
+		return $timecodeScale;
+	}
+
+	/**
+	 * Calculate duration from scanned cluster timecodes
+	 *
+	 * @param array $info
+	 *
+	 * @return void
+	 */
+	private function calculatePlaytimeFromClusters(&$info) {
+		$minTimecode = null;
+		$maxTimecode = null;
+		if (isset($info['matroska']['cluster']) && is_array($info['matroska']['cluster'])) {
+			foreach ($info['matroska']['cluster'] as $cluster) {
+				if (isset($cluster['ClusterTimecode'])) {
+					if ($minTimecode === null || $cluster['ClusterTimecode'] < $minTimecode) {
+						$minTimecode = $cluster['ClusterTimecode'];
+					}
+					if ($maxTimecode === null || $cluster['ClusterTimecode'] > $maxTimecode) {
+						$maxTimecode = $cluster['ClusterTimecode'];
+					}
+				}
+			}
+		}
+		if ($maxTimecode !== null && $minTimecode !== null && $maxTimecode > $minTimecode) {
+			$info['playtime_seconds'] = ($maxTimecode - $minTimecode) * ($this->getTimecodeScale($info) / 1000000000);
+		}
+	}
 }
