@@ -332,7 +332,11 @@ class getid3_matroska extends getid3_handler
 								break;*/
 						}
 
-						$info['video']['streams'][$trackarray['TrackUID']] = $track_info;
+						if (isset($trackarray['TrackUID'])) {
+							$info['video']['streams'][$trackarray['TrackUID']] = $track_info;
+						} else {
+							$this->warning('Missing mandatory TrackUID for video track');
+						}
 						break;
 
 					case 2: // Audio
@@ -480,8 +484,11 @@ class getid3_matroska extends getid3_handler
 								$this->warning('Unhandled audio type "'.(isset($trackarray['CodecID']) ? $trackarray['CodecID'] : '').'"');
 								break;
 						}
-
-						$info['audio']['streams'][$trackarray['TrackUID']] = $track_info;
+						if (isset($trackarray['TrackUID'])) {
+							$info['audio']['streams'][$trackarray['TrackUID']] = $track_info;
+						} else {
+							$this->warning('Missing mandatory TrackUID for audio track');
+						}
 						break;
 				}
 			}
