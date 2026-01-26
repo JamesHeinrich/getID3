@@ -216,6 +216,14 @@ define('EBML_ID_CLUSTERREFERENCEVIRTUAL',         0x7D); //             [FD] -- 
 define('MATROSKA_DEFAULT_TIMECODESCALE', 1000000);
 
 /**
+ * Matroska scan modes are internal state flags for how much of the file we are scanning
+ */
+define('MATROSKA_SCAN_HEADER', 0);
+define('MATROSKA_SCAN_WHOLE_FILE', 1);
+define('MATROSKA_SCAN_FIRST_CLUSTER', 2);
+define('MATROSKA_SCAN_LAST_CLUSTER', 3);
+
+/**
 * @tutorial http://www.matroska.org/technical/specs/index.html
 *
 * @todo Rewrite EBML parser to reduce it's size and honor default element values
@@ -246,7 +254,7 @@ class getid3_matroska extends getid3_handler
 	private $EBMLbuffer_length = 0;
 	private $current_offset    = 0;
 	private $unuseful_elements = array(EBML_ID_CRC32, EBML_ID_VOID);
-	private $parse_first_cluster = false;
+	private $scan_mode = MATROSKA_SCAN_HEADER;
 
 	/**
 	 * @return bool
@@ -254,6 +262,7 @@ class getid3_matroska extends getid3_handler
 	public function Analyze()
 	{
 		$info = &$this->getid3->info;
+		$this->scan_mode = $this->parse_whole_file ? MATROSKA_SCAN_WHOLE_FILE : MATROSKA_SCAN_HEADER;
 
 		// parse container
 		try {
@@ -262,12 +271,12 @@ class getid3_matroska extends getid3_handler
 			$this->error('EBML parser: '.$e->getMessage());
 		}
 
-		$this->calculatePlaytimeFromMetadata($info);
+		$this->playtimeFromMetadata($info);
 
 		// If there was no duration metadata, this might be an incomplete file or a streaming file
 		// We need Cluster information so we can use their timecodes to estimate playtime.
 		if (!isset($info['playtime_seconds']) && !$this->parse_whole_file) {
-			// If we have not yet scanned the entire file, scan the start and end for Clusters,
+			// Scan the start and end of file for Clusters to estimate duration
 			$this->scanStartEndForClusters($info);
 		}
 
@@ -1263,17 +1272,17 @@ class getid3_matroska extends getid3_handler
 									}
 									$this->current_offset = $subelement['end'];
 								}
-								// Always store clusters internally (for duration calculation)
-								// They will be removed from output later if hide_clusters is true
-								$info['matroska']['cluster'][] = $cluster_entry;
 
-								// Stop parsing after finding first cluster
-								if ($this->parse_first_cluster) {
+								if (!$this->hide_clusters || $this->playtimeFromMetadata($info) === false) {
+									$info['matroska']['cluster'][] = $cluster_entry;
+								}
+								if ($this->scan_mode === MATROSKA_SCAN_FIRST_CLUSTER) {
+									// Stop parsing after finding first cluster
 									return;
 								}
 
 								// check to see if all the data we need exists already, if so, break out of the loop
-								if (!$this->parse_whole_file) {
+								if ($this->scan_mode === MATROSKA_SCAN_HEADER) {
 									if (isset($info['matroska']['info']) && is_array($info['matroska']['info'])) {
 										if (isset($info['matroska']['tracks']['tracks']) && is_array($info['matroska']['tracks']['tracks'])) {
 											if (count($info['matroska']['track_data_offsets']) == count($info['matroska']['tracks']['tracks'])) {
@@ -1944,15 +1953,15 @@ class getid3_matroska extends getid3_handler
 	/**
 	 * @param array $info
 	 *
-	 * @return bool True if duration was set from metadata
+	 * @return float|bool Duration when present in metadata or false
 	 */
-	private function calculatePlaytimeFromMetadata(&$info) {
+	private function playtimeFromMetadata(&$info) {
 		if (isset($info['matroska']['info']) && is_array($info['matroska']['info'])) {
 			foreach ($info['matroska']['info'] as $infoarray) {
 				if (isset($infoarray['Duration'])) {
 					// TimecodeScale is how many nanoseconds each Duration unit is
 					$info['playtime_seconds'] = $infoarray['Duration'] * ((isset($infoarray['TimecodeScale']) ? $infoarray['TimecodeScale'] : MATROSKA_DEFAULT_TIMECODESCALE) / 1000000000);
-					return true;
+					return $info['playtime_seconds'];
 				}
 			}
 		}
@@ -1980,29 +1989,31 @@ class getid3_matroska extends getid3_handler
 	 * @return void
 	 */
 	private function scanStartEndForClusters(&$info) {
+		// Scan beginning of file for first cluster
 		$this->resetParserBuffer($info['avdataoffset']);
+		$this->scan_mode = MATROSKA_SCAN_FIRST_CLUSTER;
 
-		// we need to temporarily override parse_whole_file to be able to scan clusters
-		$this->parse_whole_file = true;
-		$this->parse_first_cluster = true;
 		try {
 			$this->parseEBML($info);
 		} catch (Exception $e) {
 			$this->error('EBML parser (start of file): '.$e->getMessage());
 		}
-		$this->parse_first_cluster = false;
 
 		// Scan end of file for last cluster
 		if (is_array($info['matroska']['cluster']) && !empty($info['matroska']['cluster'])) {
-			// maximum 1MB scan window before EOF
+			// Scan maximum 1MB window before EOF
 			$this->resetParserBuffer(max(0, $info['avdataend'] - (1024 * 1024)));
+			$this->scan_mode = MATROSKA_SCAN_LAST_CLUSTER;
+
 			try {
 				$this->parseEBML($info);
 			} catch (Exception $e) {
 				$this->error('EBML parser (end of file): '.$e->getMessage());
 			}
 		}
-		$this->parse_whole_file = false;
+
+		// Reset to header parsing mode (this method is only called during header-only parsing)
+		$this->scan_mode = MATROSKA_SCAN_HEADER;
 	}
 
 	/**
