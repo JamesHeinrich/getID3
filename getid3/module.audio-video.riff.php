@@ -1736,7 +1736,7 @@ class getid3_riff extends getid3_handler
 										$getid3_temp->info['avdataend']    = $info['avdataend'];
 										$getid3_mp3 = new getid3_mp3($getid3_temp, __CLASS__);
 										$getid3_mp3->getOnlyMPEGaudioInfo($info['avdataoffset'], false);
-										if (($getid3_temp->info['mpeg']['audio']['bitrate'] ?? '') != 'free') { // if it detects as "free" bitrate then it's almost certainly a false-match MP3 sync, ignore
+										if (!empty($getid3_temp->info['mpeg']['audio']['bitrate']) && ($getid3_temp->info['mpeg']['audio']['bitrate'] != 'free')) { // if it detects as "free" bitrate then it's almost certainly a false-match MP3 sync, ignore
 											if (empty($getid3_temp->info['error'])) {
 												$info['audio'] = $getid3_temp->info['audio'];
 												$info['mpeg']  = $getid3_temp->info['mpeg'];
