@@ -1684,7 +1684,7 @@ $this->warning('incomplete/incorrect handling of "stsd" with Parrot metadata in 
 						list($all, $latitude, $longitude, $altitude) = array_pad($matches, 4, '');
 						$info['quicktime']['comments']['gps_latitude'][]  = floatval($latitude);
 						$info['quicktime']['comments']['gps_longitude'][] = floatval($longitude);
-						if (!empty($altitude)) { // @phpstan-ignore-line
+						if (!empty($altitude)) {
 							$info['quicktime']['comments']['gps_altitude'][] = floatval($altitude);
 						}
 					} else {
