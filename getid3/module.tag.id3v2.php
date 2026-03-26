@@ -1998,7 +1998,7 @@ class getid3_id3v2 extends getid3_handler
 			// <Optional embedded sub-frames>
 
 			$frame_offset = 0;
-			@list($parsedFrame['element_id']) = explode("\x00", $parsedFrame['data'], 2);
+			list($parsedFrame['element_id']) = explode("\x00", $parsedFrame['data'], 2);
 			$frame_offset += strlen($parsedFrame['element_id']."\x00");
 			$parsedFrame['time_begin'] = getid3_lib::BigEndian2Int(substr($parsedFrame['data'], $frame_offset, 4));
 			$frame_offset += 4;
@@ -2066,7 +2066,7 @@ class getid3_id3v2 extends getid3_handler
 							$parsedFrame['subframes'][] = $subframe;
 							break;
 						case 'WXXX':
-							@list($subframe['chapter_url_description'], $subframe['chapter_url']) = explode("\x00", $encoding_converted_text, 2);
+							list($subframe['chapter_url_description'], $subframe['chapter_url']) = array_pad(explode("\x00", $encoding_converted_text, 2), 2, '');
 							$parsedFrame['chapter_url'][$subframe['chapter_url_description']] = $subframe['chapter_url'];
 							$parsedFrame['subframes'][] = $subframe;
 							break;
@@ -2122,7 +2122,7 @@ class getid3_id3v2 extends getid3_handler
 			// <Optional embedded sub-frames>
 
 			$frame_offset = 0;
-			@list($parsedFrame['element_id']) = explode("\x00", $parsedFrame['data'], 2);
+			list($parsedFrame['element_id']) = explode("\x00", $parsedFrame['data'], 2);
 			$frame_offset += strlen($parsedFrame['element_id']."\x00");
 			$ctoc_flags_raw = ord(substr($parsedFrame['data'], $frame_offset, 1));
 			$frame_offset += 1;
