@@ -38,7 +38,7 @@ jobs:
           php-version: "${{ matrix.php-version }}"
           ini-values: error_reporting=-1, display_errors=On
           coverage: "none"
-      - uses: "ramsey/composer-install@v3"
+      - uses: "ramsey/composer-install@v4"
         with:
           composer-options: "${{ matrix.composer-options }}"
       - name: "Run the linter"
@@ -54,6 +54,6 @@ jobs:
           php-version: "8.4"
           tools: "phpstan:2.1.22"
           coverage: "none"
-      - uses: "ramsey/composer-install@v3"
+      - uses: "ramsey/composer-install@v4"
       - name: "Run PHPStan"
         run: "phpstan"
