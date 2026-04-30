@@ -2371,6 +2371,9 @@ $this->error('fragmented mp4 files not currently supported');
 		$num_bytes = 0;
 		$length    = 0;
 		do {
+			if ($offset >= strlen($data)) { // https://github.com/JamesHeinrich/getID3/issues/477#issuecomment-4351311805
+				break;
+			}
 			$b = ord(substr($data, $offset++, 1));
 			$length = ($length << 7) | ($b & 0x7F);
 		} while (($b & 0x80) && ($num_bytes++ < 4));
