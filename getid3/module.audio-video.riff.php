@@ -2048,6 +2048,7 @@ class getid3_riff extends getid3_handler
 			'ISTD'=>'productionstudio',
 			'ISTR'=>'starring',
 			'ITCH'=>'encoded_by',
+			'ITRK'=>'track_number',
 			'IWEB'=>'url',
 			'IWRI'=>'writer',
 			'____'=>'comment',
