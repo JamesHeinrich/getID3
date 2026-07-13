@@ -1,5 +1,7 @@
 parameters:
-    excludes_analyse:
+    level: 4
+    paths:
+        - getid3
     polluteScopeWithLoopInitialAssignments: true
     ignoreErrors:
         - '#Call to an undefined method COM::GetFile\(\)\.#'

@@ -71,7 +71,9 @@ class Dss extends Handler
 				$this->getid3->warning('playtime_ms ('.number_format($info['dss']['playtime_ms'] / 1000, 3).') does not match playtime_sec ('.number_format($info['dss']['playtime_sec']).') - using playtime_sec value');
 			}
 		}
-		$info['audio']['bitrate'] = ($info['filesize'] * 8) / $info['playtime_seconds'];
+		if ($info['playtime_seconds'] > 0) {
+			$info['audio']['bitrate'] = ($info['filesize'] * 8) / $info['playtime_seconds'];
+		}
 
 		return true;
 	}

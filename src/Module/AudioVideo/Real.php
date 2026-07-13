@@ -491,8 +491,8 @@ class Real extends Handler
 			$ParsedArray['fourcc'] = $ParsedArray['fourcc3'];
 
 		}
-		/** @var string[]|false[] $value */
-		foreach ($ParsedArray['comments'] as $key => $value) {
+		/** @var array<string|false> $value */
+		foreach ($ParsedArray['comments'] as $key => $value) { // @phpstan-ignore-line
 			if ($value[0] === false) {
 				$ParsedArray['comments'][$key][0] = '';
 			}

@@ -99,7 +99,7 @@ class Tar extends Handler
 			if ($name == '') {
 				break;
 			}
-			$info['tar']['file_details'][$name] = array (
+			$info['tar']['file_details'][] = array (
 				'name'     => $name,
 				'mode_raw' => $mode,
 				'mode'     => self::display_perms($mode),
@@ -117,7 +117,7 @@ class Tar extends Handler
 				'devmajor' => $devmaj,
 				'devminor' => $devmin
 			);
-			$info['tar']['files'] = Utils::array_merge_clobber($info['tar']['files'], Utils::CreateDeepArray($info['tar']['file_details'][$name]['name'], '/', $size));
+			$info['tar']['files'] = Utils::array_merge_clobber($info['tar']['files'], Utils::CreateDeepArray($name, '/', $size));
 		}
 		return true;
 	}

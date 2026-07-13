@@ -95,7 +95,7 @@ class Midi extends Handler
 			}
 		}
 
-		if (!is_array($trackdataarray) || count($trackdataarray) === 0) {
+		if (count($trackdataarray) === 0) {
 			$this->error('Cannot find MIDI track information');
 			unset($thisfile_midi);
 			unset($info['fileformat']);

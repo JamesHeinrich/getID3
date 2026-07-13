@@ -13,6 +13,19 @@ namespace JamesHeinrich\GetID3;
 //                                                            ///
 /////////////////////////////////////////////////////////////////
 
+if (!defined('GETID3_LIBXML_OPTIONS') && defined('LIBXML_VERSION')) {
+	if (LIBXML_VERSION >= 20621) {
+		define('GETID3_LIBXML_OPTIONS', LIBXML_NONET | LIBXML_NOWARNING | LIBXML_COMPACT);
+	} else {
+		define('GETID3_LIBXML_OPTIONS', LIBXML_NONET | LIBXML_NOWARNING);
+	}
+}
+
+// Available since PHP 7.0 (2015-Dec-03 https://www.php.net/ChangeLog-7.php)
+if (!defined('PHP_INT_MIN')) {
+	define('PHP_INT_MIN', ~PHP_INT_MAX);
+}
+
 class Utils
 {
 	/**
@@ -223,7 +236,8 @@ class Utils
 
 	/**
 	 * @param int|null $variable
-	 * @param int      $increment
+	 * @param-out int  $variable
+     * @param int      $increment
 	 *
 	 * @return bool
 	 */
@@ -592,7 +606,7 @@ class Utils
 	}
 
 	/**
-	 * @param int $number
+	 * @param int|string $number
 	 *
 	 * @return string
 	 */
@@ -904,7 +918,7 @@ class Utils
 					// This function has been deprecated in PHP 8.0 because in libxml 2.9.0, external entity loading is
 					// disabled by default, but is still needed when LIBXML_NOENT is used.
 					$loader = @libxml_disable_entity_loader(true);
-					$XMLobject = simplexml_load_string($XMLstring, 'SimpleXMLElement', LIBXML_NOENT | LIBXML_NONET | LIBXML_NOWARNING | LIBXML_COMPACT);
+					$XMLobject = simplexml_load_string($XMLstring, 'SimpleXMLElement', GETID3_LIBXML_OPTIONS);
 					$return = self::SimpleXMLelement2array($XMLobject);
 					@libxml_disable_entity_loader($loader);
 					return $return;
@@ -921,7 +935,7 @@ class Utils
 					$allow = true;
 				}
 				if ($allow) {
-					$XMLobject = simplexml_load_string($XMLstring, 'SimpleXMLElement', LIBXML_NOENT | LIBXML_NONET | LIBXML_NOWARNING | LIBXML_COMPACT);
+					$XMLobject = simplexml_load_string($XMLstring, 'SimpleXMLElement', GETID3_LIBXML_OPTIONS);
 					$return = self::SimpleXMLelement2array($XMLobject);
 					return $return;
 				}
@@ -1859,7 +1873,7 @@ class Utils
 			// METHOD B: cache all keys in this lookup - more memory but faster on next lookup of not-previously-looked-up key
 			//$cache[$file][$name][substr($line, 0, $keylength)] = trim(substr($line, $keylength + 1));
 			$explodedLine = explode("\t", $line, 2);
-			$ThisKey   = (isset($explodedLine[0]) ? $explodedLine[0] : '');
+			$ThisKey   = $explodedLine[0];
 			$ThisValue = (isset($explodedLine[1]) ? $explodedLine[1] : '');
 			$cache[$file][$name][$ThisKey] = trim($ThisValue);
 		}
@@ -1900,7 +1914,7 @@ class Utils
 			$commandline = 'ls -l '.escapeshellarg($path).' | awk \'{print $5}\'';
 		}
 		if (isset($commandline)) {
-			$output = trim(`$commandline`);
+			$output = trim(shell_exec($commandline));
 			if (ctype_digit($output)) {
 				$filesize = (float) $output;
 			}

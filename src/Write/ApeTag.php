@@ -26,7 +26,7 @@ class ApeTag
 	public $filename;
 
 	/**
-	 * @var array
+	 * @var array|null
 	 */
 	public $tag_data;
 
