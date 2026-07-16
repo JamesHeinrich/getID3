@@ -1328,6 +1328,16 @@ class getID3
 							'fail_ape'  => 'ERROR',
 						),
 
+				// JXL  - still image - JPEG XL (bare codestream)
+				'jpegxl'  => array(
+							'pattern'   => '^\\xFF\\x0A',
+							'group'     => 'graphic',
+							'module'    => 'jpegxl',
+							'mime_type' => 'image/jxl',
+							'fail_id3'  => 'ERROR',
+							'fail_ape'  => 'ERROR',
+						),
+
 				// PCD  - still image - Kodak Photo CD
 				'pcd'  => array(
 							'pattern'   => '^.{2048}PCD_IPI\\x00',
