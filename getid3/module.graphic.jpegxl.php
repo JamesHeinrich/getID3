@@ -11,7 +11,9 @@
 // module.graphic.jpegxl.php                                   //
 // module for analyzing JPEG XL (JXL) Image files              //
 // codestream spec: ISO/IEC 18181-1  https://jpeg.org/jpegxl/  //
-// dependencies: NONE                                          //
+// container/file format: ISO/IEC 18181-2                      //
+// dependencies: module.audio-video.isobmff.php (containers)   //
+//               PHP compiled with --enable-exif (optional)    //
 //                                                            ///
 /////////////////////////////////////////////////////////////////
 
@@ -27,11 +29,24 @@ class getid3_jpegxl extends getid3_handler
 	const SIG_CODESTREAM = "\xFF\x0A";
 
 	/**
+	 * JXL ISO BMFF container signature (the mandatory 12-byte "JXL " signature box).
+	 */
+	const SIG_CONTAINER = "\x00\x00\x00\x0CJXL \x0D\x0A\x87\x0A";
+
+	/**
 	 * Number of bytes to read when parsing the codestream header.
 	 * Real-world headers are at most a few hundred bytes;
 	 * a header larger than this fails with a parse error.
 	 */
 	const HEADER_READ_BYTES = 8192;
+
+	/**
+	 * Maximum number of bytes to read from a container metadata box (XMP/Exif).
+	 * Default 1 MiB.
+	 *
+	 * @var int
+	 */
+	public $max_metadata_bytes = 1048576;
 
 	/**
 	 * Bit-reader state: buffer of bytes to read bits from.
@@ -62,13 +77,16 @@ class getid3_jpegxl extends getid3_handler
 		$info = &$this->getid3->info;
 
 		$this->fseek($info['avdataoffset']);
-		$header = $this->fread(2);
+		$header = $this->fread(12);
 
 		if (strpos($header, self::SIG_CODESTREAM) === 0) {
 			return $this->AnalyzeCodestream();
 		}
+		if (strpos($header, self::SIG_CONTAINER) === 0) {
+			return $this->AnalyzeContainer();
+		}
 
-		$this->error('Expecting "FF 0A" JPEG XL codestream signature at offset '.$info['avdataoffset'].', found "'.getid3_lib::PrintHexBytes($header).'"');
+		$this->error('Expecting "FF 0A" or JXL container signature at offset '.$info['avdataoffset'].', found "'.getid3_lib::PrintHexBytes(substr($header, 0, 12)).'"');
 		return false;
 	}
 
@@ -97,6 +115,195 @@ class getid3_jpegxl extends getid3_handler
 		}
 
 		return true;
+	}
+
+	/**
+	 * Analyze a JXL ISO BMFF container: walk the boxes, parse the codestream
+	 * header from the jxlc (or first jxlp) box, and capture XMP/Exif metadata.
+	 *
+	 * @return bool
+	 */
+	private function AnalyzeContainer() {
+		$info = &$this->getid3->info;
+
+		$info['fileformat']          = 'jpegxl';
+		$info['video']['dataformat'] = 'jpegxl';
+		$info['jpegxl']['container'] = true;
+
+		// Walk the boxes into a local list (rather than $isobmff->Analyze())
+		// a JPEG XL result exposes only $info['jpegxl'], not $info['isobmff'] tree
+		getid3_lib::IncludeDependency(GETID3_INCLUDEPATH.'module.audio-video.isobmff.php', __FILE__, true);
+		$isobmff = new getid3_isobmff($this->getid3);
+		$isobmff->container_boxes = array('jumb');
+		$boxes   = $isobmff->ParseBoxList((int) $info['avdataoffset'], (int) $info['avdataend'], 0);
+
+		// The codestream lives in a single jxlc box, or is split across jxlp
+		// (partial) boxes whose first chunk carries the header.
+		$codestreamBox = $isobmff->GetSubBox($boxes, 'jxlc');
+		if ($codestreamBox === false) {
+			$codestreamBox = $isobmff->GetSubBox($boxes, 'jxlp');
+		}
+
+		$parsed = false;
+		if ($codestreamBox !== false) {
+			$codestream = $isobmff->ReadBoxData($codestreamBox, self::HEADER_READ_BYTES);
+			if ($codestreamBox['name'] === 'jxlp') {
+				$codestream = substr($codestream, 4); // strip 4-byte jxlp sequence index
+			}
+			if (strpos($codestream, self::SIG_CODESTREAM) === 0) {
+				$parsed = $this->ParseCodestreamHeader($codestream, 2);
+			}
+		}
+
+		if (!$parsed) {
+			$this->error('Failed to locate or parse JPEG XL codestream in container');
+			unset($info['fileformat'], $info['jpegxl'], $info['video']['dataformat']);
+			if (empty($info['video'])) {
+				unset($info['video']);
+			}
+			return false;
+		}
+
+		// Codestream conformance level from the optional jxll box; a JXL container
+		// that omits it is level 5
+		$info['jpegxl']['level'] = 5;
+		if (($levelBox = $isobmff->GetSubBox($boxes, 'jxll')) !== false) {
+			$leveldata = $isobmff->ReadBoxData($levelBox, 1);
+			if ($leveldata !== '') {
+				$info['jpegxl']['level'] = ord($leveldata[0]);
+			}
+		}
+
+		// Exif is parsed with PHP's exif extension (see ParseExifBox())
+		// XMP is exposed as the raw XML packet, with the 'xmp' key reserved for parsed
+		// output as a possible future improvement.
+		//
+		// Important JPEG XL quirk: everything needed to display the image lives in the
+		// codestream, not in metadata.
+		// For ANY field the codestream defines, the value getID3 reports from
+		// the codestream in $info['jpegxl'] is authoritative and any equivalent in this
+		// Exif/XMP must be IGNORED.
+		if (($xmpBox = $isobmff->GetSubBox($boxes, 'xml ')) !== false) {
+			$info['jpegxl']['xmp_raw'] = $isobmff->ReadBoxData($xmpBox, $this->max_metadata_bytes);
+		}
+		if (($exifBox = $isobmff->GetSubBox($boxes, 'Exif')) !== false) {
+			$this->ParseExifBox($isobmff->ReadBoxData($exifBox, $this->max_metadata_bytes));
+		}
+
+		// Brotli-compressed metadata ("brob") boxes are not decompressed because getID3 has no Brotli yet.
+		foreach ($boxes as $box) {
+			if ($box['name'] === 'brob') {
+				$wrapped = substr($isobmff->ReadBoxData($box, 4), 0, 4);
+				$this->warning('JPEG XL Brotli-compressed metadata box ("brob" wrapping "'.$isobmff->printableType($wrapped).'") is not decompressed');
+			}
+		}
+
+		return true;
+	}
+
+	/**
+	 * Parse an Exif box payload: a 4-byte offset to the TIFF header, followed by
+	 * the Exif/TIFF data. When PHP's exif extension can parse it, the decoded
+	 * sections are stored at $info['jpegxl']['exif'] (the same shape getid3_jpg
+	 * produces for JPEG files);
+	 *
+	 * Note: any field the codestream also defines (size, bit depth, orientation,
+	 * color, ...), the codestream value wins and the Exif copy must be ignored.
+	 *
+	 * @param string $data
+	 *
+	 * @return void
+	 */
+	private function ParseExifBox($data) {
+		$info = &$this->getid3->info;
+
+		if (strlen($data) <= 4) {
+			return;
+		}
+		$tiff_offset = getid3_lib::BigEndian2Int(substr($data, 0, 4));
+		if (($tiff_offset < 0) || ((4 + $tiff_offset) >= strlen($data))) {
+			return; // offset points outside the payload
+		}
+		$tiff = substr($data, 4 + (int) $tiff_offset);
+
+		if (($exif = $this->ParseTiffExifData($tiff)) !== false) {
+			$info['jpegxl']['exif'] = $exif;
+		}
+	}
+
+	/**
+	 * Parse a TIFF/Exif stream with PHP's exif extension, the way getid3_jpg
+	 * does for JPEG files.
+	 *
+	 * PHP 7.2 is required as exif_read_data() only accepts a stream since that version.
+	 *
+	 * @param string $tiff
+	 *
+	 * @return array|false Parsed sections as returned by exif_read_data(), or false.
+	 */
+	private function ParseTiffExifData($tiff) {
+		if (!function_exists('exif_read_data')) {
+			$this->warning('EXIF parsing only available when '.(GETID3_OS_ISWINDOWS ? 'php_exif.dll enabled' : 'compiled with --enable-exif'));
+			return false;
+		}
+		if (PHP_VERSION_ID < 70200) {
+			$this->warning('EXIF parsing of JPEG XL containers requires PHP 7.2+');
+			return false;
+		}
+		if (($fp = fopen('php://memory', 'r+b')) === false) {
+			return false;
+		}
+		fwrite($fp, $tiff);
+		rewind($fp);
+		// Surface problems in malformed Exif as getID3 warnings instead of PHP
+		// warnings, like getid3_jpg (https://github.com/JamesHeinrich/getID3/issues/275).
+		set_error_handler(function($errno, $errstr) {
+			if (!(error_reporting() & $errno)) {
+				// error is not specified in the error_reporting setting, so we ignore it
+				return false;
+			}
+			$this->warning('Error parsing EXIF data ('.$errstr.')');
+		});
+		$exif = exif_read_data($fp, null, true, false);
+		restore_error_handler();
+		fclose($fp);
+		if (!is_array($exif)) {
+			return false;
+		}
+
+		// The FILE section describes the temporary stream, not the JXL file; drop it.
+		unset($exif['FILE']);
+		$cast_as_appropriate_keys = array('EXIF', 'IFD0', 'THUMBNAIL');
+		foreach ($cast_as_appropriate_keys as $exif_key) {
+			if (isset($exif[$exif_key])) {
+				foreach ($exif[$exif_key] as $key => $value) {
+					$exif[$exif_key][$key] = $this->CastAsAppropriate($value);
+				}
+			}
+		}
+		return $exif;
+	}
+
+	/**
+	 * Mirrors getid3_jpg::CastAsAppropriate(): turn exif_read_data()'s string
+	 * values into numbers where they clearly are numbers ("10/50" fractions,
+	 * integers, floats).
+	 *
+	 * @param mixed $value
+	 *
+	 * @return mixed
+	 */
+	private function CastAsAppropriate($value) {
+		if (is_array($value) || is_null($value)) {
+			return $value;
+		} elseif (preg_match('#^[0-9]+/[0-9]+$#', $value)) {
+			return getid3_lib::DecimalizeFraction($value);
+		} elseif (preg_match('#^[0-9]+$#', $value)) {
+			return getid3_lib::CastAsInt($value);
+		} elseif (preg_match('#^[0-9\\.]+$#', $value)) {
+			return (float) $value;
+		}
+		return $value;
 	}
 
 	/**
