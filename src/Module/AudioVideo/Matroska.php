@@ -405,7 +405,7 @@ class Matroska extends Handler
 								}
 
 								// analyze
-								$class = ucfirst($module_dataformat);
+								$class = 'JamesHeinrich\\GetID3\\Module\\Audio\\'.ucfirst($module_dataformat);
 								$header_data_key = $track_info['dataformat'][0] == 'm' ? 'mpeg' : $track_info['dataformat'];
 								$getid3_audio = new $class($getid3_temp, __CLASS__);
 								if ($track_info['dataformat'] == 'flac') {
