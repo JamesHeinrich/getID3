@@ -319,7 +319,7 @@ class GetID3
 	 */
 	protected $startup_warning = '';
 
-	const VERSION           = '2.0.0.0-p1.9.24-202509040923';
+	const VERSION           = '2.0.0.0-p1.9.25-202603060942';
 	const FREAD_BUFFER_SIZE = 32768;
 
 	const ATTACHMENTS_NONE   = false;
