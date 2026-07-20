@@ -1393,7 +1393,6 @@ class Riff extends Handler
 
 
 		if (isset($thisfile_riff_video) && isset($thisfile_audio['bitrate']) && ($thisfile_audio['bitrate'] > 0) && ($info['playtime_seconds'] > 0)) {
-
 			$info['bitrate'] = ((($info['avdataend'] - $info['avdataoffset']) / $info['playtime_seconds']) * 8);
 			$thisfile_audio['bitrate'] = 0;
 			$thisfile_video['bitrate'] = $info['bitrate'];
@@ -1732,9 +1731,11 @@ class Riff extends Handler
 										$getid3_temp->info['avdataend']    = $info['avdataend'];
 										$getid3_mp3 = new Mp3($getid3_temp, __CLASS__);
 										$getid3_mp3->getOnlyMPEGaudioInfo($info['avdataoffset'], false);
-										if (empty($getid3_temp->info['error'])) {
-											$info['audio'] = $getid3_temp->info['audio'];
-											$info['mpeg']  = $getid3_temp->info['mpeg'];
+										if (!empty($getid3_temp->info['mpeg']['audio']['bitrate']) && ($getid3_temp->info['mpeg']['audio']['bitrate'] != 'free')) { // if it detects as "free" bitrate then it's almost certainly a false-match MP3 sync, ignore
+											if (empty($getid3_temp->info['error'])) {
+												$info['audio'] = $getid3_temp->info['audio'];
+												$info['mpeg']  = $getid3_temp->info['mpeg'];
+											}
 										}
 										unset($getid3_temp, $getid3_mp3);
 									}
@@ -2820,6 +2821,10 @@ class Riff extends Handler
 			VLV1	VideoLogic/PURE Digital Videologic Capture
 			VP30	On2 VP3.0
 			VP31	On2 VP3.1
+			VP50	On2 VP5
+			VP60	On2 VP6
+			VP70	On2 VP7
+			VP80	On2 VP8
 			VP6F	On2 TrueMotion VP6
 			VX1K	Lucent VX1000S Video Codec
 			VX2K	Lucent VX2000S Video Codec

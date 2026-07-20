@@ -1179,7 +1179,7 @@ class Mp3 extends Handler
 			$nextframetestarray = array('error' => array(), 'warning' => array(), 'avdataend' => $info['avdataend'], 'avdataoffset'=>$info['avdataoffset']);
 			if ($this->decodeMPEGaudioHeader($nextframetestoffset, $nextframetestarray, false)) {
 				/** @phpstan-ignore-next-line */
-				Utils::safe_inc($info['mp3_validity_check_bitrates'][$nextframetestarray['mpeg']['audio']['bitrate']]);
+				Utils::safe_inc($info['mp3_validity_check_bitrates'][intval($nextframetestarray['mpeg']['audio']['bitrate'])]);
 				if ($ScanAsCBR) {
 					// force CBR mode, used for trying to pick out invalid audio streams with valid(?) VBR headers, or VBR streams with no VBR header
 					if (!isset($nextframetestarray['mpeg']['audio']['bitrate']) || !isset($firstframetestarray['mpeg']['audio']['bitrate']) || ($nextframetestarray['mpeg']['audio']['bitrate'] != $firstframetestarray['mpeg']['audio']['bitrate'])) {

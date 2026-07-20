@@ -53,6 +53,15 @@ class Midi extends Handler
 
 		$this->fseek($info['avdataoffset']);
 		$MIDIdata = $this->fread($this->getid3->fread_buffer_size());
+
+		$minHeaderSize = 14; // MIDI header (4+4+2+2+2)
+		$minTrackHeaderSize = 8; // Track header (4+4)
+		$minTotalSize = $minHeaderSize + $minTrackHeaderSize;
+		if ($info['filesize'] < $minTotalSize || strlen($MIDIdata) < $minTotalSize) {
+			$this->error('File too small to be a valid MIDI file.');
+			return false;
+		}
+
 		$offset = 0;
 		$MIDIheaderID = substr($MIDIdata, $offset, 4); // 'MThd'
 		if ($MIDIheaderID !== self::MAGIC_MTHD) {
@@ -337,6 +346,15 @@ class Midi extends Handler
 			}
 		}
 
+		// Fallback: If playtime_seconds is still empty/zero, estimate using default tempo
+		// 120 BPM = 0.5 per quarter note = 480 quarternote ticks
+		if (empty($info['playtime_seconds']) && !empty($thisfile_midi['totalticks'])) {
+			$ticksPerQuarterNote = isset($thisfile_midi_raw['ticksperqnote']) ? $thisfile_midi_raw['ticksperqnote'] : 480;
+			if ($ticksPerQuarterNote > 0) {
+				$totalQuarterNotes = $thisfile_midi['totalticks'] / $ticksPerQuarterNote;
+				$info['playtime_seconds'] = $totalQuarterNotes * 0.5;
+			}
+		}
 
 		if (!empty($info['playtime_seconds'])) {
 			$info['bitrate'] = (($info['avdataend'] - $info['avdataoffset']) * 8) / $info['playtime_seconds'];

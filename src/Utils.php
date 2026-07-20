@@ -44,11 +44,6 @@ class Utils
 	protected static $helpers;
 
 	/**
-	 * @var boolean $hasINT64 Whether the current system suports 64bit integers
-	 */
-	protected static $hasINT64;
-
-	/**
 	 * Check if the current os is windows.
 	 *
 	 * @return boolean
@@ -237,7 +232,7 @@ class Utils
 	/**
 	 * @param int|null $variable
 	 * @param-out int  $variable
-     * @param int      $increment
+	 * @param int      $increment
 	 *
 	 * @return bool
 	 */
@@ -277,20 +272,8 @@ class Utils
 	 */
 	public static function intValueSupported($num)
 	{
-		// check if integers are 64-bit
-		if (static::$hasINT64 === null) {
-			/** @var int|float|false $bigInt */
-			$bigInt = pow(2, 31);
-			static::$hasINT64 = is_int($bigInt); // 32-bit int are limited to (2^31)-1
-		}
-		// if integers are 64-bit - no other check required
-		if (static::$hasINT64) {
-			return true;
-		}
-		if ($num <= PHP_INT_MAX && $num >= ~PHP_INT_MAX) {
-			return true;
-		}
-		return false;
+		// really should be <= and >= but trying "(int)9.2233720368548E+18" results in PHP warning "The float 9.2233720368548E+18 is not representable as an int, cast occurred"
+		return (($num < PHP_INT_MAX) && ($num > PHP_INT_MIN));
 	}
 
 	/**

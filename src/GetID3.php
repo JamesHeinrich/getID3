@@ -1722,6 +1722,11 @@ class GetID3
 		if (!empty($this->info['playtime_seconds']) && empty($this->info['playtime_string'])) {
 			$this->info['playtime_string'] = Utils::PlaytimeString($this->info['playtime_seconds']);
 		}
+
+		// Look up codec name if fourcc is set but codec is not
+		if (!empty($this->info['video']['fourcc']) && !isset($this->info['video']['codec'])) {
+			$this->info['video']['codec'] = Module\AudioVideo\Riff::fourccLookup($this->info['video']['fourcc']);
+		}
 	}
 
 	/**
