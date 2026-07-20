@@ -1593,7 +1593,7 @@ class GetID3
 				if (file_exists(Utils::getHelperAppDirectory() . 'vorbiscomment.exe')) {
 
 					$commandline = '"' . Utils::getHelperAppDirectory() . 'vorbiscomment.exe" -w -c "'.$empty.'" "'.$file.'" "'.$temp.'"';
-					$VorbisCommentError = `$commandline`;
+					$VorbisCommentError = shell_exec($commandline);
 
 				} else {
 
@@ -1604,7 +1604,7 @@ class GetID3
 			} else {
 
 				$commandline = 'vorbiscomment -w -c '.escapeshellarg($empty).' '.escapeshellarg($file).' '.escapeshellarg($temp).' 2>&1';
-				$VorbisCommentError = `$commandline`;
+				$VorbisCommentError = shell_exec($commandline);
 
 			}
 

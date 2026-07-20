@@ -158,7 +158,7 @@ class Utils
 			if (strpos($value, ' ') !== false) {
 				if (!empty($pathParts)) {
 					$commandline = 'dir /x ' . escapeshellarg(implode(\DIRECTORY_SEPARATOR, $pathParts));
-					$dir_listing = `$commandline`;
+					$dir_listing = shell_exec($commandline);
 					$lines = explode("\n", $dir_listing);
 					foreach ($lines as $line) {
 						$line = trim($line);
