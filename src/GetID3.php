@@ -1068,7 +1068,7 @@ class GetID3
 				'riff' => array(
 							'pattern'   => '^(RIFF|SDSS|FORM)',
 							'module'    => 'AudioVideo\\Riff',
-							'mime_type' => 'audio/x-wav',
+							'mime_type' => 'audio/wav',
 							'fail_ape'  => 'WARNING',
 						),
 
