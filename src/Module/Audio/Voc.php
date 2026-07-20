@@ -69,7 +69,6 @@ class Voc extends Handler
 			$BlockSize      = Utils::LittleEndian2Int(substr($BlockData, 1, 3));
 			$ThisBlock      = array();
 
-			/** @phpstan-ignore-next-line */
 			Utils::safe_inc($thisfile_voc['blocktypes'][$BlockType], 1);
 			switch ($BlockType) {
 				case 0:  // Terminator

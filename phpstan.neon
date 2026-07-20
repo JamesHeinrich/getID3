@@ -1,11 +1,14 @@
 parameters:
     level: 4
     paths:
-        - getid3
+        - src
     polluteScopeWithLoopInitialAssignments: true
     ignoreErrors:
         - '#Call to an undefined method COM::GetFile\(\)\.#'
         - '#Constant GETID3_ASF_(\w+) not found#'
+        -
+            message: '#If condition is always false\.#'
+            path: src/GetID3.php
         -
             message: '#Function mysql_\w+ not found\.#'
             path: src/Cache/Mysql.php
