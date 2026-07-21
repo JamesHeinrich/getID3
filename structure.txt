@@ -752,6 +752,7 @@ array() {
         ['orientation']=>integer()                // EXIF-style orientation 1-8 (1 = stored upright)
         ['alpha']=>boolean()                      // true if the image has an alpha (transparency) channel
         ['container']=>boolean()                  // false = bare codestream; true = ISO base media (.jxl box) file
+        ['level']=>integer()                      // codestream conformance level from the jxll box (containers); default 5
         ['lossless']=>boolean()                   // true if losslessly encoded (equals !['xyb_encoded'])
         ['xyb_encoded']=>boolean()                // true = stored in the lossy XYB color space (never lossless)
         ['animated']=>boolean()                   // true if the file is an animation (more than one frame)
@@ -795,6 +796,8 @@ array() {
             ['gamma']=>double()                   // gamma exponent; present only when ['transfer'] is 'gamma'
             ['rendering_intent']=>string()        // 'Perceptual', 'Relative', 'Saturation' or 'Absolute'
         }
+        ['exif']=>array()                         // Exif parsed with exif_read_data() as for JPEG (containers only; needs PHP 7.2+ with the exif extension); for any field the codestream defines it takes precedence - ignore the Exif copy
+        ['xmp_raw']=>string()                     // raw XMP packet, XML (containers only); for any field the codestream defines it takes precedence - ignore the XMP copy
     }
 
 
