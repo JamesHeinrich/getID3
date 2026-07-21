@@ -745,6 +745,59 @@ array() {
     }                                                            //
 
 
+    ['jpegxl']=>array() {                         // JPEG XL (JXL) - still image or animation (ISO/IEC 18181)
+        ['width']=>integer()                      // image width in pixels
+        ['height']=>integer()                     // image height in pixels
+        ['bits_per_sample']=>integer()            // bit depth per color channel (e.g. 8, 10, 12, 16)
+        ['orientation']=>integer()                // EXIF-style orientation 1-8 (1 = stored upright)
+        ['alpha']=>boolean()                      // true if the image has an alpha (transparency) channel
+        ['container']=>boolean()                  // false = bare codestream; true = ISO base media (.jxl box) file
+        ['lossless']=>boolean()                   // true if losslessly encoded (equals !['xyb_encoded'])
+        ['xyb_encoded']=>boolean()                // true = stored in the lossy XYB color space (never lossless)
+        ['animated']=>boolean()                   // true if the file is an animation (more than one frame)
+        ['animation']=>array() {                  // present only when ['animated'] is true
+            ['tps_numerator']=>integer()          // frame clock: ticks per second = numerator / denominator
+            ['tps_denominator']=>integer()
+            ['num_loops']=>integer()              // times the animation repeats; 0 = loop forever
+            ['has_timecodes']=>boolean()          // true if each frame carries an explicit timecode
+        }
+        ['extra_channels']=>array() {             // extra non-color channels (alpha, depth, spot color, ...)
+            [<x>]=>array() {                      // one entry per extra channel
+                ['type']=>integer()               // channel type id (0 = Alpha)
+                ['type_name']=>string()           // readable type: 'Alpha', 'Depth', 'Spot color', 'Thermal', ...
+                ['name']=>string()                // channel name stored in the file (omitted when empty)
+            }
+        }
+        ['color']=>array() {                      // color encoding; always present - when ['icc_profile'] is true only ['color_space'] is also known (the profile defines the rest)
+            ['icc_profile']=>boolean()            // true = color is defined by an embedded ICC profile, not the fields below
+            ['color_space']=>string()             // 'RGB', 'Grayscale', 'XYB' or 'Unknown'
+            ['white_point']=>string()             // 'D65', 'E', 'DCI' or 'Custom'
+            ['white_point_xy']=>array() {         // present only when ['white_point'] is 'Custom'
+                ['x']=>double()                   // CIE 1931 x chromaticity coordinate
+                ['y']=>double()                   // CIE 1931 y chromaticity coordinate
+            }
+            ['primaries']=>string()               // 'sRGB', 'P3', 'BT.2100' or 'Custom'
+            ['primaries_xy']=>array() {           // present only when ['primaries'] is 'Custom'
+                ['red']=>array() {                // CIE 1931 xy chromaticity of the red primary
+                    ['x']=>double()
+                    ['y']=>double()
+                }
+                ['green']=>array() {              // green primary
+                    ['x']=>double()
+                    ['y']=>double()
+                }
+                ['blue']=>array() {               // blue primary
+                    ['x']=>double()
+                    ['y']=>double()
+                }
+            }
+            ['transfer']=>string()                // 'sRGB', 'Linear', 'BT.709', 'PQ', 'HLG', 'DCI' or 'gamma'
+            ['gamma']=>double()                   // gamma exponent; present only when ['transfer'] is 'gamma'
+            ['rendering_intent']=>string()        // 'Perceptual', 'Relative', 'Saturation' or 'Absolute'
+        }
+    }
+
+
     ['jpg']=>array() {    // JPEG - still image
         ['exif']=>array() // data returned from PHP's exif_read_data() function
     }                     //
