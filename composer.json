@@ -1,14 +1,10 @@
 {
-    "name": "sempia/getid3",
+    "name": "james-heinrich/getid3",
     "type": "library",
-    "description": "Stable, namespaced and PSR-4 compliant version of the library getID3, that extracts and writes useful information to/from popular multimedia file formats.",
+    "description": "Extract and write useful information to/from popular multimedia file formats",
     "keywords": ["id3", "tags", "codecs", "audio", "video", "metadata"],
     "homepage": "https://www.getid3.org/",
     "license": ["GPL-1.0-or-later", "LGPL-3.0-only", "MPL-2.0"],
-    "support": {
-        "issues": "https://gitlab.com/Sempia/getID3/-/issues",
-        "source": "https://gitlab.com/Sempia/getID3"
-    },
     "authors": [{
         "name": "James Heinrich",
         "email": "info@getid3.org",
@@ -26,9 +22,6 @@
     }],
     "require": {
         "php": ">=5.4.0"
-    },
-    "replace": {
-        "james-heinrich/getid3": "self.version"
     },
     "suggest": {
         "ext-com_dotnet": "COM extension is required when loading files larger than 2GB on Windows.",
@@ -65,7 +58,7 @@
     },
     "extra": {
         "branch-alias": {
-            "dev-2.0-sempia": "2.0.x-dev"
+            "dev-master": "2.0.x-dev"
         }
     }
 }
