@@ -58,7 +58,7 @@ class Svg extends Handler
 					$keyvaluepair = trim($keyvaluepair);
 					if ($keyvaluepair) {
 						$keyvalueexploded = explode('=', $keyvaluepair);
-						$key   = (isset($keyvalueexploded[0]) ? $keyvalueexploded[0] : '');
+						$key   = $keyvalueexploded[0];
 						$value = (isset($keyvalueexploded[1]) ? $keyvalueexploded[1] : '');
 						$info['svg'][$section_to_fix]['sections'][$key] = trim($value, '"');
 					}

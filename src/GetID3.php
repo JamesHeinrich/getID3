@@ -319,7 +319,7 @@ class GetID3
 	 */
 	protected $startup_warning = '';
 
-	const VERSION           = '2.0.x-202405201327';
+	const VERSION           = '2.0.0.0-p1.9.25-202603060942';
 	const FREAD_BUFFER_SIZE = 32768;
 
 	const ATTACHMENTS_NONE   = false;
@@ -393,7 +393,7 @@ class GetID3
 	 * @return bool
 	 */
 	public function setOption($optArray) {
-		if (!is_array($optArray) || empty($optArray)) {
+		if (empty($optArray)) {
 			return false;
 		}
 		foreach ($optArray as $opt => $val) {
@@ -543,6 +543,8 @@ class GetID3
 					catch (Exception $e) {
 						throw $e;
 					}
+				} else {
+					$this->warning('skipping check for '.$tag_name.' tags since option_tag_'.$tag_name.'=FALSE');
 				}
 			}
 			if (isset($this->info['id3v2']['tag_offset_start'])) {
@@ -1066,7 +1068,7 @@ class GetID3
 				'riff' => array(
 							'pattern'   => '^(RIFF|SDSS|FORM)',
 							'module'    => 'AudioVideo\\Riff',
-							'mime_type' => 'audio/x-wav',
+							'mime_type' => 'audio/wav',
 							'fail_ape'  => 'WARNING',
 						),
 
@@ -1591,7 +1593,7 @@ class GetID3
 				if (file_exists(Utils::getHelperAppDirectory() . 'vorbiscomment.exe')) {
 
 					$commandline = '"' . Utils::getHelperAppDirectory() . 'vorbiscomment.exe" -w -c "'.$empty.'" "'.$file.'" "'.$temp.'"';
-					$VorbisCommentError = `$commandline`;
+					$VorbisCommentError = shell_exec($commandline);
 
 				} else {
 
@@ -1602,7 +1604,7 @@ class GetID3
 			} else {
 
 				$commandline = 'vorbiscomment -w -c '.escapeshellarg($empty).' '.escapeshellarg($file).' '.escapeshellarg($temp).' 2>&1';
-				$VorbisCommentError = `$commandline`;
+				$VorbisCommentError = shell_exec($commandline);
 
 			}
 
@@ -1671,8 +1673,8 @@ class GetID3
 
 		// Calculate combined bitrate - audio + video
 		$CombinedBitrate  = 0;
-		$CombinedBitrate += (isset($this->info['audio']['bitrate']) ? $this->info['audio']['bitrate'] : 0);
-		$CombinedBitrate += (isset($this->info['video']['bitrate']) ? $this->info['video']['bitrate'] : 0);
+		$CombinedBitrate += (isset($this->info['audio']['bitrate']) && ($this->info['audio']['bitrate'] != 'free') ? $this->info['audio']['bitrate'] : 0);
+		$CombinedBitrate += (isset($this->info['video']['bitrate'])                                                ? $this->info['video']['bitrate'] : 0);
 		if (($CombinedBitrate > 0) && empty($this->info['bitrate'])) {
 			$this->info['bitrate'] = $CombinedBitrate;
 		}
@@ -1719,6 +1721,11 @@ class GetID3
 		// Set playtime string
 		if (!empty($this->info['playtime_seconds']) && empty($this->info['playtime_string'])) {
 			$this->info['playtime_string'] = Utils::PlaytimeString($this->info['playtime_seconds']);
+		}
+
+		// Look up codec name if fourcc is set but codec is not
+		if (!empty($this->info['video']['fourcc']) && !isset($this->info['video']['codec'])) {
+			$this->info['video']['codec'] = Module\AudioVideo\Riff::fourccLookup($this->info['video']['fourcc']);
 		}
 	}
 
@@ -1779,7 +1786,9 @@ class GetID3
 		if (empty($this->info['audio']['bitrate']) || empty($this->info['audio']['channels']) || empty($this->info['audio']['sample_rate']) || !is_numeric($this->info['audio']['sample_rate'])) {
 			return false;
 		}
-		$this->info['audio']['compression_ratio'] = $this->info['audio']['bitrate'] / ($this->info['audio']['channels'] * $this->info['audio']['sample_rate'] * (!empty($this->info['audio']['bits_per_sample']) ? $this->info['audio']['bits_per_sample'] : 16));
+		if ($this->info['audio']['bitrate'] != 'free') {
+			$this->info['audio']['compression_ratio'] = $this->info['audio']['bitrate'] / ($this->info['audio']['channels'] * $this->info['audio']['sample_rate'] * (!empty($this->info['audio']['bits_per_sample']) ? $this->info['audio']['bits_per_sample'] : 16));
+		}
 
 		if (!empty($this->info['audio']['streams'])) {
 			foreach ($this->info['audio']['streams'] as $streamnumber => $streamdata) {

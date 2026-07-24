@@ -82,7 +82,7 @@ class VorbisComment
 				$timestampbeforewriting = filemtime($this->filename);
 
 				$commandline = Utils::getHelperAppDirectory() . 'vorbiscomment.exe -w --raw -c "' . $tempcommentsfilename . '" "' . $this->filename . '" 2>&1';
-				$VorbiscommentError = `$commandline`;
+				$VorbiscommentError = shell_exec($commandline);
 
 				if (empty($VorbiscommentError)) {
 					clearstatcache(true, $this->filename);
@@ -97,7 +97,7 @@ class VorbisComment
 		} else {
 
 			$commandline = 'vorbiscomment -w --raw -c "'.$tempcommentsfilename.'" "'.$this->filename.'" 2>&1';
-			$VorbiscommentError = `$commandline`;
+			$VorbiscommentError = shell_exec($commandline);
 
 		}
 

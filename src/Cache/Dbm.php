@@ -75,12 +75,12 @@ use JamesHeinrich\GetID3\GetID3;
 class Dbm extends GetID3
 {
 	/**
-	 * @var resource
+	 * @var null|resource|\Dba\Connection
 	 */
-	private $dba;
+	private $dba; // @phpstan-ignore-line
 
 	/**
-	 * @var resource|bool
+	 * @var resource|bool|null
 	 */
 	private $lock;
 
@@ -95,13 +95,17 @@ class Dbm extends GetID3
 	private $dbm_filename;
 
 	/**
+	 * @var string
+	 */
+	private $lock_filename;
+
+	/**
 	 * constructor - see top of this file for cache type and cache_options
 	 *
 	 * @param string $cache_type
 	 * @param string $dbm_filename
 	 * @param string $lock_filename
 	 *
-	 * @throws \Exception
 	 * @throws Exception
 	 */
 	public function __construct($cache_type, $dbm_filename, $lock_filename) {
@@ -116,91 +120,103 @@ class Dbm extends GetID3
 			throw new Exception('PHP is not compiled --with '.$cache_type.' support, required to use DBM style cache.');
 		}
 
+		// Store lock filename for cleanup operations
+		$this->lock_filename = $lock_filename;
+
 		// Create lock file if needed
-		if (!file_exists($lock_filename)) {
-			if (!touch($lock_filename)) {
-				throw new Exception('failed to create lock file: '.$lock_filename);
+		if (!file_exists($this->lock_filename)) {
+			if (!touch($this->lock_filename)) {
+				throw new Exception('failed to create lock file: '.$this->lock_filename);
 			}
 		}
 
-		// Open lock file for writing
-		if (!is_writeable($lock_filename)) {
-			throw new Exception('lock file: '.$lock_filename.' is not writable');
+		// Open lock file for writing with read/write mode (w+) to prevent truncation on BSD systems
+		$this->lock = fopen($this->lock_filename, 'w+');
+		if (!$this->lock) {
+			throw new Exception('Cannot open lock file: '.$this->lock_filename);
 		}
-		$this->lock = fopen($lock_filename, 'w');
 
 		// Acquire exclusive write lock to lock file
-		flock($this->lock, LOCK_EX);
-
-		// Create dbm-file if needed
-		if (!file_exists($dbm_filename)) {
-			if (!touch($dbm_filename)) {
-				throw new Exception('failed to create dbm file: '.$dbm_filename);
-			}
+		if (!flock($this->lock, LOCK_EX)) {
+			fclose($this->lock);
+			throw new Exception('Cannot acquire lock: '.$this->lock_filename);
 		}
 
-		// Try to open dbm file for writing
-		$this->dba = dba_open($dbm_filename, 'w', $cache_type);
-		if (!$this->dba) {
-
-			// Failed - create new dbm file
-			$this->dba = dba_open($dbm_filename, 'n', $cache_type);
-
-			if (!$this->dba) {
-				throw new Exception('failed to create dbm file: '.$dbm_filename);
-			}
-
-			// Insert getID3 version number
-			dba_insert(GetID3::VERSION, GetID3::VERSION, $this->dba);
-		}
-
-		// Init misc values
-		$this->cache_type   = $cache_type;
+		// Store connection parameters
+		$this->cache_type = $cache_type;
 		$this->dbm_filename = $dbm_filename;
+
+		try {
+			// Try to open existing DBM file
+			$this->dba = dba_open($this->dbm_filename, 'w', $this->cache_type);
+
+			// Create new DBM file if it didn't exist
+			if (!$this->dba) {
+				$this->dba = dba_open($this->dbm_filename, 'n', $this->cache_type);
+				if (!$this->dba) {
+					throw new Exception('failed to create dbm file: '.$this->dbm_filename);
+				}
+
+				// Insert getID3 version number
+				dba_insert(GetID3::VERSION, GetID3::VERSION, $this->dba);
+			}
+
+			// Check version number and clear cache if changed
+			if (dba_fetch(GetID3::VERSION, $this->dba) != GetID3::VERSION) {
+				$this->clear_cache();
+			}
+
+		} catch (\Exception $e) {
+			$this->safe_close();
+			throw $e;
+		}
 
 		// Register destructor
 		register_shutdown_function(array($this, '__destruct'));
 
-		// Check version number and clear cache if changed
-		if (dba_fetch(GetID3::VERSION, $this->dba) != GetID3::VERSION) {
-			$this->clear_cache();
-		}
-
 		parent::__construct();
 	}
 
-
-
 	/**
-	 * destructor
+	 * Destructor - ensure proper cleanup of resources
 	 */
 	public function __destruct() {
-
-		// Close dbm file
-		dba_close($this->dba);
-
-		// Release exclusive lock
-		flock($this->lock, LOCK_UN);
-
-		// Close lock file
-		fclose($this->lock);
+		$this->safe_close();
 	}
 
+	/**
+	 * Safely close all resources with error handling
+	 */
+	private function safe_close() {
+		try {
+			// Close DBM connection if open. Since PHP 8.4 dba_open() returns a
+			// Dba\Connection object instead of a resource.
+			if ($this->dba) {
+				dba_close($this->dba);
+				$this->dba = null;
+			}
 
+			// Release lock if acquired
+			if (is_resource($this->lock)) {
+				flock($this->lock, LOCK_UN);
+				fclose($this->lock);
+				$this->lock = null;
+			}
+		} catch (\Exception $e) {
+			error_log('getID3_cached_dbm cleanup error: ' . $e->getMessage());
+		}
+	}
 
 	/**
-	 * clear cache
+	 * Clear cache and recreate DBM file
 	 *
 	 * @throws Exception
 	 */
 	public function clear_cache() {
-
-		// Close dbm file
-		dba_close($this->dba);
+		$this->safe_close();
 
 		// Create new dbm file
 		$this->dba = dba_open($this->dbm_filename, 'n', $this->cache_type);
-
 		if (!$this->dba) {
 			throw new Exception('failed to clear cache/recreate dbm file: '.$this->dbm_filename);
 		}
@@ -212,44 +228,45 @@ class Dbm extends GetID3
 		register_shutdown_function(array($this, '__destruct'));
 	}
 
-
-
 	/**
-	 * clear cache
+	 * Analyze file and cache results
 	 *
-	 * @param string   $filename
-	 * @param int      $filesize
-	 * @param string   $original_filename
+	 * @param string $filename
+	 * @param int $filesize
+	 * @param string $original_filename
 	 * @param resource $fp
 	 *
 	 * @return mixed
 	 */
 	public function analyze($filename, $filesize=null, $original_filename='', $fp=null) {
+		try {
+			$key = null;
+			if (file_exists($filename)) {
+				// Calc key: filename::mod_time::size - should be unique
+				$key = $filename.'::'.filemtime($filename).'::'.filesize($filename);
 
-		$key = null;
-		if (file_exists($filename)) {
+				// Lookup key in cache
+				$result = dba_fetch($key, $this->dba);
 
-			// Calc key     filename::mod_time::size    - should be unique
-			$key = $filename.'::'.filemtime($filename).'::'.filesize($filename);
-
-			// Loopup key
-			$result = dba_fetch($key, $this->dba);
-
-			// Hit
-			if ($result !== false) {
-				return unserialize($result);
+				// Cache hit
+				if ($result !== false) {
+					return unserialize($result);
+				}
 			}
+
+			// Cache miss - perform actual analysis
+			$result = parent::analyze($filename, $filesize, $original_filename, $fp);
+
+			// Store result in cache if key was generated
+			if ($key !== null) {
+				dba_replace($key, serialize($result), $this->dba);
+			}
+
+			return $result;
+
+		} catch (\Exception $e) {
+			$this->safe_close();
+			throw $e;
 		}
-
-		// Miss
-		$result = parent::analyze($filename, $filesize, $original_filename, $fp);
-
-		// Save result
-		if ($key !== null) {
-			dba_insert($key, serialize($result), $this->dba);
-		}
-
-		return $result;
 	}
-
 }

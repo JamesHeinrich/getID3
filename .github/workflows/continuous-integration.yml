@@ -23,20 +23,21 @@ jobs:
           - "8.1"
           - "8.2"
           - "8.3"
+          - "8.4"
         experimental:
           - false
         include:
-          - php-version: "8.4"
+          - php-version: "8.5"
             experimental: true
             composer-options: "--ignore-platform-reqs"
     steps:
-      - uses: "actions/checkout@v4"
+      - uses: "actions/checkout@v6"
       - uses: "shivammathur/setup-php@v2"
         with:
           php-version: "${{ matrix.php-version }}"
           ini-values: error_reporting=-1, display_errors=On
           coverage: "none"
-      - uses: "ramsey/composer-install@v2"
+      - uses: "ramsey/composer-install@v3"
         with:
           composer-options: "${{ matrix.composer-options }}"
       - name: "Run the linter"
@@ -46,15 +47,15 @@ jobs:
     name: "Static Analysis"
     runs-on: "ubuntu-latest"
     steps:
-      - uses: "actions/checkout@v4"
+      - uses: "actions/checkout@v6"
       - uses: "shivammathur/setup-php@v2"
         with:
-          php-version: "8.2"
-          tools: "phpstan:1.10.57"
+          php-version: "8.4"
+          tools: "phpstan:2.1.22"
           coverage: "none"
-      - uses: "ramsey/composer-install@v2"
+      - uses: "ramsey/composer-install@v3"
       - name: "Run PHPStan"
-        run: "phpstan analyse -c phpstan.neon -l 4 src tests"
+        run: "phpstan"
 
   unit-tests:
     name: "Unit Tests"
@@ -92,4 +93,4 @@ jobs:
         with:
           composer-options: "${{ matrix.composer-options }}"
       - name: "Run unit tests"
-        run: "./vendor/bin/phpunit --verbose --colors=always"
+        run: "./vendor/bin/phpunit --colors=always"

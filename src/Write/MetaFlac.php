@@ -65,7 +65,7 @@ class MetaFlac
 					$picture_typeid = (!empty($picturedetails['picturetypeid']) ? $this->ID3v2toFLACpictureTypes($picturedetails['picturetypeid']) : 3); // default to "3:Cover (front)"
 					$picture_mimetype = (!empty($picturedetails['mime']) ? $picturedetails['mime'] : ''); // should be auto-detected
 					$picture_width_height_depth = '';
-					$this->pictures[] = $picture_typeid.'|'.$picture_mimetype.'|'.preg_replace('#[^\x20-\x7B\x7D-\x7F]#', '', $picturedetails['description']).'|'.$picture_width_height_depth.'|'.$temppicturefilename;
+					$this->pictures[] = $picture_typeid.'|'.$picture_mimetype.'|'.preg_replace('#[^\x20-\x7B\x7D-\x7F]#', '', (string) $picturedetails['description']).'|'.$picture_width_height_depth.'|'.$temppicturefilename;
 				} else {
 					$this->errors[] = 'failed to open temporary tags file, tags not written - fopen("'.$temppicturefilename.'", "wb")';
 					return false;
@@ -112,12 +112,17 @@ class MetaFlac
 					$commandline .= ' --import-picture-from='.escapeshellarg($picturecommand);
 				}
 				$commandline .= ' '.escapeshellarg($this->filename).' 2>&1';
-				$metaflacError = `$commandline`;
+				$metaflacError = shell_exec($commandline);
 
 				if (empty($metaflacError)) {
-					clearstatcache(true, $this->filename);
-					if ($timestampbeforewriting == filemtime($this->filename)) {
-						$metaflacError = 'File modification timestamp has not changed - it looks like the tags were not written';
+					if (abs(time() - $timestampbeforewriting) < 5) {
+						// https://github.com/JamesHeinrich/getID3/issues/474
+						// probably working on a temporary (or otherwise newly-created) file so hack-check file-modification-date will always fail
+					} else {
+						clearstatcache(true, $this->filename);
+						if ($timestampbeforewriting == filemtime($this->filename)) {
+							$metaflacError = 'File modification timestamp has not changed - it looks like the tags were not written';
+						}
 					}
 				}
 			} else {
@@ -132,7 +137,7 @@ class MetaFlac
 				$commandline .= ' --import-picture-from='.escapeshellarg($picturecommand);
 			}
 			$commandline .= ' '.escapeshellarg($this->filename).' 2>&1';
-			$metaflacError = `$commandline`;
+			$metaflacError = shell_exec($commandline);
 
 		}
 
@@ -166,7 +171,7 @@ class MetaFlac
 				$timestampbeforewriting = filemtime($this->filename);
 
 				$commandline = Utils::getHelperAppDirectory() . 'metaflac.exe --remove-all-tags "' . $this->filename . '" 2>&1';
-				$metaflacError = `$commandline`;
+				$metaflacError = shell_exec($commandline);
 
 				if (empty($metaflacError)) {
 					clearstatcache(true, $this->filename);
@@ -182,7 +187,7 @@ class MetaFlac
 
 			// It's simpler on *nix
 			$commandline = 'metaflac --remove-all-tags "'.$this->filename.'" 2>&1';
-			$metaflacError = `$commandline`;
+			$metaflacError = shell_exec($commandline);
 
 		}
 
