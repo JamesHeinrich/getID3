@@ -136,6 +136,7 @@ class getid3_id3v2 extends getid3_handler
 		if (!empty($thisfile_id3v2_flags['isfooter'])) {
 			$sizeofframes -= 10; // footer takes last 10 bytes of ID3v2 header, after frame data, before audio
 		}
+		$sizeofframes = min($sizeofframes, $this->getid3->info['filesize'] - $this->ftell());
 		if ($sizeofframes > 0) {
 
 			$framedata = $this->fread($sizeofframes); // read all frames from file into $framedata variable
