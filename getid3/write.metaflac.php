@@ -101,7 +101,7 @@ class getid3_write_metaflac
 		if (GETID3_OS_ISWINDOWS) {
 
 			if (file_exists(GETID3_HELPERAPPSDIR.'metaflac.exe')) {
-				//$commandline = '"'.GETID3_HELPERAPPSDIR.'metaflac.exe" --no-utf8-convert --remove-all-tags --import-tags-from="'.$tempcommentsfilename.'" "'.str_replace('/', '\\', $this->filename).'"';
+				//$commandline = '"'.GETID3_HELPERAPPSDIR.'metaflac.exe" --no-utf8-convert --remove-all-tags --import-tags-from='.escapeshellarg($tempcommentsfilename).' '.escapeshellarg(str_replace('/', DIRECTORY_SEPARATOR, $this->filename)).'"';
 				//  metaflac works fine if you copy-paste the above commandline into a command prompt,
 				//  but refuses to work with `backtick` if there are "doublequotes" present around BOTH
 				//  the metaflac pathname and the target filename. For whatever reason...??
@@ -181,7 +181,7 @@ class getid3_write_metaflac
 				clearstatcache(true, $this->filename);
 				$timestampbeforewriting = filemtime($this->filename);
 
-				$commandline = GETID3_HELPERAPPSDIR.'metaflac.exe --remove-all-tags "'.$this->filename.'" 2>&1';
+				$commandline = GETID3_HELPERAPPSDIR.'metaflac.exe --remove-all-tags '.escapeshellarg($this->filename).'" 2>&1';
 				$metaflacError = shell_exec($commandline);
 
 				if (empty($metaflacError)) {
@@ -197,7 +197,7 @@ class getid3_write_metaflac
 		} else {
 
 			// It's simpler on *nix
-			$commandline = 'metaflac --remove-all-tags "'.$this->filename.'" 2>&1';
+			$commandline = 'metaflac --remove-all-tags '.escapeshellarg($this->filename).'" 2>&1';
 			$metaflacError = shell_exec($commandline);
 
 		}

@@ -132,8 +132,8 @@ class getid3_shorten extends getid3_handler
 					return false;
 				}
 			}
-			$commandline = GETID3_HELPERAPPSDIR.'shorten.exe -x "'.$info['filenamepath'].'" - | '.GETID3_HELPERAPPSDIR.'head.exe -c 64';
-			$commandline = str_replace('/', '\\', $commandline);
+			$commandline = GETID3_HELPERAPPSDIR.'shorten.exe -x '.escapeshellarg($info['filenamepath']).' - | '.GETID3_HELPERAPPSDIR.'head.exe -c 64';
+			$commandline = str_replace('/', DIRECTORY_SEPARATOR, $commandline);
 
 		} else {
 

@@ -157,7 +157,7 @@ if (!empty($_REQUEST['renamefilefrom']) && !empty($_REQUEST['renamefileto'])) {
 
 function WindowsShareSlashTranslate($filename) {
 	if (substr($filename, 0, 2) == '//') {
-		return str_replace('/', '\\', $filename);
+		return str_replace('/', DIRECTORY_SEPARATOR, $filename);
 	}
 	return $filename;
 }
@@ -2072,8 +2072,8 @@ if (!empty($_REQUEST['scan']) || !empty($_REQUEST['newscan']) || !empty($_REQUES
 		set_time_limit(30);
 		$CleanedFilename = CleanUpFileName($row['filename']);
 		if ($row['filename'] != $CleanedFilename) {
-			if (strtolower($lastdir) != strtolower(str_replace('/', '\\', dirname($row['filename'])))) {
-				$lastdir = str_replace('/', '\\', dirname($row['filename']));
+			if (strtolower($lastdir) != strtolower(str_replace('/', DIRECTORY_SEPARATOR, dirname($row['filename'])))) {
+				$lastdir = str_replace('/', DIRECTORY_SEPARATOR, dirname($row['filename']));
 				echo 'cd "'.$lastdir.'"'."\n";
 			}
 			echo 'ren "'.basename($row['filename']).'" "'.basename(CleanUpFileName($row['filename'])).'"'."\n";
