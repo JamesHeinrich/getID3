@@ -387,7 +387,7 @@ class getID3
 	 */
 	protected $startup_warning = '';
 
-	const VERSION           = '1.9.25-202604300735';
+	const VERSION           = '1.9.25-202609042051';
 	const FREAD_BUFFER_SIZE = 32768;
 
 	const ATTACHMENTS_NONE   = false;
@@ -1820,7 +1820,7 @@ class getID3
 
 					if (file_exists(GETID3_HELPERAPPSDIR.'vorbiscomment.exe')) {
 
-						$commandline = '"'.GETID3_HELPERAPPSDIR.'vorbiscomment.exe" -w -c "'.$empty.'" "'.$file.'" "'.$temp.'"';
+						$commandline = '"'.GETID3_HELPERAPPSDIR.'vorbiscomment.exe" -w -c '.escapeshellarg($empty).' '.escapeshellarg($file).' '.escapeshellarg($temp);
 						$VorbisCommentError = shell_exec($commandline);
 
 					} else {
