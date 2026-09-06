@@ -18,6 +18,17 @@
 Version History
 ===============
 
+1.9.26: [2026-09-06] James Heinrich :: 1.9.26-202609042051
+	» #499 add JPEG XL ISO BMFF container support
+	» #497 add generic ISO Base Media File Format box walker (getid3_isobmff)
+	» #496 add JPEG XL (bare codestream) support
+	* #503 unescaped command paths (Windows)
+	* #502 clamp ID3v2 read to filesize
+	* #498 prevent APE/Lyrics3 negative seeks on small files
+	* #494 map RIFF INFO ITRK to track_number
+	* #491 use is_int() insead of is_integer()
+	* PHP8.5 warnings
+
 1.9.25: [2026-03-10] James Heinrich :: 1.9.25-202603060942
 	* #452 better handle some Quicktime metadata
 	* #452 handle ISO639-2/T Quicktime language code
