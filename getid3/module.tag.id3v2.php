@@ -622,8 +622,7 @@ class getid3_id3v2 extends getid3_handler
 				if (!function_exists('gzuncompress')) {
 					$this->warning('gzuncompress() support required to decompress ID3v2 frame "'.$parsedFrame['frame_name'].'"');
 				} else {
-					// cap decompression to 25% of the PHP memory limit: a compressed frame can inflate to gigabytes and exhaust memory
-					$decompression_limit = ($this->getid3->memory_limit > 0) ? (int) round($this->getid3->memory_limit / 4) : 0;
+					$decompression_limit = ($this->getid3->memory_limit > 0) ? (int) round($this->getid3->memory_limit / 4) : 32*1024*1024; // set a limit of 1/4 of PHP memory limit (if known), or default hard cap of 32MB if unknown
 					if ($decompresseddata = @gzuncompress(substr($parsedFrame['data'], 4), $decompression_limit)) {
 					//if ($decompresseddata = @gzuncompress($parsedFrame['data'])) {
 						$parsedFrame['data'] = $decompresseddata;
