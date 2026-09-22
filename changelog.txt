@@ -18,6 +18,12 @@
 Version History
 ===============
 
+1.9.27: [2026-09-22] James Heinrich :: 1.9.27-202609221015
+	* GHSA-c2xw-vp6w-gpph compressed ID3v2 frames max length
+	* GHSA-j649-xr34-mmmh remove LIBXML_NOENT
+	* #508 embedded picture in WMA files is corrupt
+	* #505 silent failure of @libxml_disable_entity_loader() enables XXE
+
 1.9.26: [2026-09-06] James Heinrich :: 1.9.26-202609042051
 	» #499 add JPEG XL ISO BMFF container support
 	» #497 add generic ISO Base Media File Format box walker (getid3_isobmff)
