@@ -879,7 +879,7 @@ class getid3_id3v2 extends getid3_handler
 			$parsedFrame['data'] = $IPLS_parts;
 
 			if (!empty($parsedFrame['framenameshort']) && !empty($parsedFrame['data'])) {
-				$info['id3v2']['comments'][$parsedFrame['framenameshort']][] = $parsedFrame['data'];
+				$info['id3v2']['comments'][$parsedFrame['framenameshort']] = $parsedFrame['data'];
 			}
 
 
