@@ -495,6 +495,11 @@ class getid3_id3v2 extends getid3_handler
 							$info['replay_gain']['album']['adjustment'] = floatval(trim(str_replace('dB', '', $txxx_array['data'])));
 						}
 						break;
+					case 'replaygain_album_peak':
+						if (empty($info['replay_gain']['album']['peak']) && !empty($txxx_array['data'])) {
+							$info['replay_gain']['album']['peak'] = floatval($txxx_array['data']);
+						}
+						break;
 				}
 			}
 		}
