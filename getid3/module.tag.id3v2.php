@@ -745,13 +745,13 @@ class getid3_id3v2 extends getid3_handler
 			} else {
 				// ISO-8859-1 or UTF-8 or other single-byte-null character set
 				$IPLS_parts_unsorted = explode("\x00", $parsedFrame['data_raw']);
-				if (!empty($IPLS_parts_unsorted) && end($IPLS_parts_unsorted) === '') {
+				if (end($IPLS_parts_unsorted) === '') {
 					// there was a terminating null after the last part and explode appended an empty string; drop it
 					array_pop($IPLS_parts_unsorted);
 				}
 			}
 
-			$IPLS_parts = [];
+			$IPLS_parts = array();
 			if (count($IPLS_parts_unsorted) == 1) {
 				// Just a list of names, e.g. "Dino Baptiste, Jimmy Copley, John Gordon, Bernie Marsden, Sharon Watson".
 				// Use the normal output format but with empty roles.
