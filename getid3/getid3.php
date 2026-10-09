@@ -387,7 +387,7 @@ class getID3
 	 */
 	protected $startup_warning = '';
 
-	const VERSION           = '1.9.27-202609271935';
+	const VERSION           = '1.9.27-202610082237';
 	const FREAD_BUFFER_SIZE = 32768;
 
 	const ATTACHMENTS_NONE   = false;
@@ -1008,7 +1008,7 @@ class getID3
 							'mime_type' => 'audio/dsd',
 						),
 
-				// DTS  - audio       - Dolby Theatre System
+				// DTS  - audio       - Digital Theater Systems
 				'dts'  => array(
 							'pattern'   => '^\\x7F\\xFE\\x80\\x01',
 							'group'     => 'audio',
