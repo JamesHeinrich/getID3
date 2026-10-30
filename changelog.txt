@@ -18,6 +18,13 @@
 Version History
 ===============
 
+1.9.28: [2026-09-22] James Heinrich :: 1.9.28-202610301738
+	* GHSA-4pp3-6hmx-mfmg memory exhaustion in Quicktime
+	* #515 DTS typo
+	* #514 keep composer.json in dist archives
+	* #512 copy replaygain_album_peak
+	* #510 TIPL/TMCL/IPL/IPLS ID3v2 consistency
+
 1.9.27: [2026-09-22] James Heinrich :: 1.9.27-202609221015
 	* GHSA-c2xw-vp6w-gpph compressed ID3v2 frames max length
 	* GHSA-j649-xr34-mmmh remove LIBXML_NOENT
