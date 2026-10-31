@@ -46,7 +46,7 @@ Support
 
 **Q:** I have a question, or I found a bug. What do I do?
 
-**A:** The preferred method of support requests and/or bug reports is the forum at <http://support.getid3.org/>
+**A:** The preferred method of support requests and/or bug reports is <https://github.com/JamesHeinrich/getID3/issues>
 
 
 
