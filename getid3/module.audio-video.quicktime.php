@@ -1261,12 +1261,14 @@ $this->warning('incomplete/incorrect handling of "stsd" with Parrot metadata in 
 				case 'mdhd': // MeDia HeaDer atom
 					$atom_structure['version']               = getid3_lib::BigEndian2Int(substr($atom_data,  0, 1));
 					$atom_structure['flags_raw']             = getid3_lib::BigEndian2Int(substr($atom_data,  1, 3)); // hardcoded: 0x0000
-					$atom_structure['creation_time']         = getid3_lib::BigEndian2Int(substr($atom_data,  4, 4));
-					$atom_structure['modify_time']           = getid3_lib::BigEndian2Int(substr($atom_data,  8, 4));
-					$atom_structure['time_scale']            = getid3_lib::BigEndian2Int(substr($atom_data, 12, 4));
-					$atom_structure['duration']              = getid3_lib::BigEndian2Int(substr($atom_data, 16, 4));
-					$atom_structure['language_id']           = getid3_lib::BigEndian2Int(substr($atom_data, 20, 2));
-					$atom_structure['quality']               = getid3_lib::BigEndian2Int(substr($atom_data, 22, 2));
+					$timeLength   = (($atom_structure['version'] == 1) ? 8 : 4); // version 1 uses 64-bit creation_time, modify_time and duration
+					$versionShift = (($atom_structure['version'] == 1) ? 12 : 0);
+					$atom_structure['creation_time']         = getid3_lib::BigEndian2Int(substr($atom_data,  4, $timeLength));
+					$atom_structure['modify_time']           = getid3_lib::BigEndian2Int(substr($atom_data,  4 + $timeLength, $timeLength));
+					$atom_structure['time_scale']            = getid3_lib::BigEndian2Int(substr($atom_data,  4 + ($timeLength * 2), 4));
+					$atom_structure['duration']              = getid3_lib::BigEndian2Int(substr($atom_data,  8 + ($timeLength * 2), $timeLength));
+					$atom_structure['language_id']           = getid3_lib::BigEndian2Int(substr($atom_data, 20 + $versionShift, 2));
+					$atom_structure['quality']               = getid3_lib::BigEndian2Int(substr($atom_data, 22 + $versionShift, 2));
 
 					if ($atom_structure['time_scale'] == 0) {
 						$this->error('Corrupt Quicktime file: mdhd.time_scale == zero');
@@ -1367,29 +1369,31 @@ $this->warning('incomplete/incorrect handling of "stsd" with Parrot metadata in 
 				case 'mvhd': // MoVie HeaDer atom
 					$atom_structure['version']            =   getid3_lib::BigEndian2Int(substr($atom_data,  0, 1));
 					$atom_structure['flags_raw']          =   getid3_lib::BigEndian2Int(substr($atom_data,  1, 3));
-					$atom_structure['creation_time']      =   getid3_lib::BigEndian2Int(substr($atom_data,  4, 4));
-					$atom_structure['modify_time']        =   getid3_lib::BigEndian2Int(substr($atom_data,  8, 4));
-					$atom_structure['time_scale']         =   getid3_lib::BigEndian2Int(substr($atom_data, 12, 4));
-					$atom_structure['duration']           =   getid3_lib::BigEndian2Int(substr($atom_data, 16, 4));
-					$atom_structure['preferred_rate']     = getid3_lib::FixedPoint16_16(substr($atom_data, 20, 4));
-					$atom_structure['preferred_volume']   =   getid3_lib::FixedPoint8_8(substr($atom_data, 24, 2));
-					$atom_structure['reserved']           =                             substr($atom_data, 26, 10);
-					$atom_structure['matrix_a']           = getid3_lib::FixedPoint16_16(substr($atom_data, 36, 4));
-					$atom_structure['matrix_b']           = getid3_lib::FixedPoint16_16(substr($atom_data, 40, 4));
-					$atom_structure['matrix_u']           =  getid3_lib::FixedPoint2_30(substr($atom_data, 44, 4));
-					$atom_structure['matrix_c']           = getid3_lib::FixedPoint16_16(substr($atom_data, 48, 4));
-					$atom_structure['matrix_d']           = getid3_lib::FixedPoint16_16(substr($atom_data, 52, 4));
-					$atom_structure['matrix_v']           =  getid3_lib::FixedPoint2_30(substr($atom_data, 56, 4));
-					$atom_structure['matrix_x']           = getid3_lib::FixedPoint16_16(substr($atom_data, 60, 4));
-					$atom_structure['matrix_y']           = getid3_lib::FixedPoint16_16(substr($atom_data, 64, 4));
-					$atom_structure['matrix_w']           =  getid3_lib::FixedPoint2_30(substr($atom_data, 68, 4));
-					$atom_structure['preview_time']       =   getid3_lib::BigEndian2Int(substr($atom_data, 72, 4));
-					$atom_structure['preview_duration']   =   getid3_lib::BigEndian2Int(substr($atom_data, 76, 4));
-					$atom_structure['poster_time']        =   getid3_lib::BigEndian2Int(substr($atom_data, 80, 4));
-					$atom_structure['selection_time']     =   getid3_lib::BigEndian2Int(substr($atom_data, 84, 4));
-					$atom_structure['selection_duration'] =   getid3_lib::BigEndian2Int(substr($atom_data, 88, 4));
-					$atom_structure['current_time']       =   getid3_lib::BigEndian2Int(substr($atom_data, 92, 4));
-					$atom_structure['next_track_id']      =   getid3_lib::BigEndian2Int(substr($atom_data, 96, 4));
+					$timeLength   = (($atom_structure['version'] == 1) ? 8 : 4); // version 1 uses 64-bit creation_time, modify_time and duration
+					$versionShift = (($atom_structure['version'] == 1) ? 12 : 0);
+					$atom_structure['creation_time']      =   getid3_lib::BigEndian2Int(substr($atom_data,  4, $timeLength));
+					$atom_structure['modify_time']        =   getid3_lib::BigEndian2Int(substr($atom_data,  4 + $timeLength, $timeLength));
+					$atom_structure['time_scale']         =   getid3_lib::BigEndian2Int(substr($atom_data,  4 + ($timeLength * 2), 4));
+					$atom_structure['duration']           =   getid3_lib::BigEndian2Int(substr($atom_data,  8 + ($timeLength * 2), $timeLength));
+					$atom_structure['preferred_rate']     = getid3_lib::FixedPoint16_16(substr($atom_data, 20 + $versionShift, 4));
+					$atom_structure['preferred_volume']   =   getid3_lib::FixedPoint8_8(substr($atom_data, 24 + $versionShift, 2));
+					$atom_structure['reserved']           =                             substr($atom_data, 26 + $versionShift, 10);
+					$atom_structure['matrix_a']           = getid3_lib::FixedPoint16_16(substr($atom_data, 36 + $versionShift, 4));
+					$atom_structure['matrix_b']           = getid3_lib::FixedPoint16_16(substr($atom_data, 40 + $versionShift, 4));
+					$atom_structure['matrix_u']           =  getid3_lib::FixedPoint2_30(substr($atom_data, 44 + $versionShift, 4));
+					$atom_structure['matrix_c']           = getid3_lib::FixedPoint16_16(substr($atom_data, 48 + $versionShift, 4));
+					$atom_structure['matrix_d']           = getid3_lib::FixedPoint16_16(substr($atom_data, 52 + $versionShift, 4));
+					$atom_structure['matrix_v']           =  getid3_lib::FixedPoint2_30(substr($atom_data, 56 + $versionShift, 4));
+					$atom_structure['matrix_x']           = getid3_lib::FixedPoint16_16(substr($atom_data, 60 + $versionShift, 4));
+					$atom_structure['matrix_y']           = getid3_lib::FixedPoint16_16(substr($atom_data, 64 + $versionShift, 4));
+					$atom_structure['matrix_w']           =  getid3_lib::FixedPoint2_30(substr($atom_data, 68 + $versionShift, 4));
+					$atom_structure['preview_time']       =   getid3_lib::BigEndian2Int(substr($atom_data, 72 + $versionShift, 4));
+					$atom_structure['preview_duration']   =   getid3_lib::BigEndian2Int(substr($atom_data, 76 + $versionShift, 4));
+					$atom_structure['poster_time']        =   getid3_lib::BigEndian2Int(substr($atom_data, 80 + $versionShift, 4));
+					$atom_structure['selection_time']     =   getid3_lib::BigEndian2Int(substr($atom_data, 84 + $versionShift, 4));
+					$atom_structure['selection_duration'] =   getid3_lib::BigEndian2Int(substr($atom_data, 88 + $versionShift, 4));
+					$atom_structure['current_time']       =   getid3_lib::BigEndian2Int(substr($atom_data, 92 + $versionShift, 4));
+					$atom_structure['next_track_id']      =   getid3_lib::BigEndian2Int(substr($atom_data, 96 + $versionShift, 4));
 
 					if ($atom_structure['time_scale'] == 0) {
 						$this->error('Corrupt Quicktime file: mvhd.time_scale == zero');
@@ -1408,29 +1412,31 @@ $this->warning('incomplete/incorrect handling of "stsd" with Parrot metadata in 
 				case 'tkhd': // TracK HeaDer atom
 					$atom_structure['version']             =   getid3_lib::BigEndian2Int(substr($atom_data,  0, 1));
 					$atom_structure['flags_raw']           =   getid3_lib::BigEndian2Int(substr($atom_data,  1, 3));
-					$atom_structure['creation_time']       =   getid3_lib::BigEndian2Int(substr($atom_data,  4, 4));
-					$atom_structure['modify_time']         =   getid3_lib::BigEndian2Int(substr($atom_data,  8, 4));
-					$atom_structure['trackid']             =   getid3_lib::BigEndian2Int(substr($atom_data, 12, 4));
-					$atom_structure['reserved1']           =   getid3_lib::BigEndian2Int(substr($atom_data, 16, 4));
-					$atom_structure['duration']            =   getid3_lib::BigEndian2Int(substr($atom_data, 20, 4));
-					$atom_structure['reserved2']           =   getid3_lib::BigEndian2Int(substr($atom_data, 24, 8));
-					$atom_structure['layer']               =   getid3_lib::BigEndian2Int(substr($atom_data, 32, 2));
-					$atom_structure['alternate_group']     =   getid3_lib::BigEndian2Int(substr($atom_data, 34, 2));
-					$atom_structure['volume']              =   getid3_lib::FixedPoint8_8(substr($atom_data, 36, 2));
-					$atom_structure['reserved3']           =   getid3_lib::BigEndian2Int(substr($atom_data, 38, 2));
+					$timeLength   = (($atom_structure['version'] == 1) ? 8 : 4); // version 1 uses 64-bit creation_time, modify_time and duration
+					$versionShift = (($atom_structure['version'] == 1) ? 12 : 0);
+					$atom_structure['creation_time']       =   getid3_lib::BigEndian2Int(substr($atom_data,  4, $timeLength));
+					$atom_structure['modify_time']         =   getid3_lib::BigEndian2Int(substr($atom_data,  4 + $timeLength, $timeLength));
+					$atom_structure['trackid']             =   getid3_lib::BigEndian2Int(substr($atom_data, 4 + ($timeLength * 2), 4));
+					$atom_structure['reserved1']           =   getid3_lib::BigEndian2Int(substr($atom_data, 8 + ($timeLength * 2), 4));
+					$atom_structure['duration']            =   getid3_lib::BigEndian2Int(substr($atom_data, 12 + ($timeLength * 2), $timeLength));
+					$atom_structure['reserved2']           =   getid3_lib::BigEndian2Int(substr($atom_data, 24 + $versionShift, 8));
+					$atom_structure['layer']               =   getid3_lib::BigEndian2Int(substr($atom_data, 32 + $versionShift, 2));
+					$atom_structure['alternate_group']     =   getid3_lib::BigEndian2Int(substr($atom_data, 34 + $versionShift, 2));
+					$atom_structure['volume']              =   getid3_lib::FixedPoint8_8(substr($atom_data, 36 + $versionShift, 2));
+					$atom_structure['reserved3']           =   getid3_lib::BigEndian2Int(substr($atom_data, 38 + $versionShift, 2));
 					// http://developer.apple.com/library/mac/#documentation/QuickTime/RM/MovieBasics/MTEditing/K-Chapter/11MatrixFunctions.html
 					// http://developer.apple.com/library/mac/#documentation/QuickTime/qtff/QTFFChap4/qtff4.html#//apple_ref/doc/uid/TP40000939-CH206-18737
-					$atom_structure['matrix_a']            = getid3_lib::FixedPoint16_16(substr($atom_data, 40, 4));
-					$atom_structure['matrix_b']            = getid3_lib::FixedPoint16_16(substr($atom_data, 44, 4));
-					$atom_structure['matrix_u']            =  getid3_lib::FixedPoint2_30(substr($atom_data, 48, 4));
-					$atom_structure['matrix_c']            = getid3_lib::FixedPoint16_16(substr($atom_data, 52, 4));
-					$atom_structure['matrix_d']            = getid3_lib::FixedPoint16_16(substr($atom_data, 56, 4));
-					$atom_structure['matrix_v']            =  getid3_lib::FixedPoint2_30(substr($atom_data, 60, 4));
-					$atom_structure['matrix_x']            = getid3_lib::FixedPoint16_16(substr($atom_data, 64, 4));
-					$atom_structure['matrix_y']            = getid3_lib::FixedPoint16_16(substr($atom_data, 68, 4));
-					$atom_structure['matrix_w']            =  getid3_lib::FixedPoint2_30(substr($atom_data, 72, 4));
-					$atom_structure['width']               = getid3_lib::FixedPoint16_16(substr($atom_data, 76, 4));
-					$atom_structure['height']              = getid3_lib::FixedPoint16_16(substr($atom_data, 80, 4));
+					$atom_structure['matrix_a']            = getid3_lib::FixedPoint16_16(substr($atom_data, 40 + $versionShift, 4));
+					$atom_structure['matrix_b']            = getid3_lib::FixedPoint16_16(substr($atom_data, 44 + $versionShift, 4));
+					$atom_structure['matrix_u']            =  getid3_lib::FixedPoint2_30(substr($atom_data, 48 + $versionShift, 4));
+					$atom_structure['matrix_c']            = getid3_lib::FixedPoint16_16(substr($atom_data, 52 + $versionShift, 4));
+					$atom_structure['matrix_d']            = getid3_lib::FixedPoint16_16(substr($atom_data, 56 + $versionShift, 4));
+					$atom_structure['matrix_v']            =  getid3_lib::FixedPoint2_30(substr($atom_data, 60 + $versionShift, 4));
+					$atom_structure['matrix_x']            = getid3_lib::FixedPoint16_16(substr($atom_data, 64 + $versionShift, 4));
+					$atom_structure['matrix_y']            = getid3_lib::FixedPoint16_16(substr($atom_data, 68 + $versionShift, 4));
+					$atom_structure['matrix_w']            =  getid3_lib::FixedPoint2_30(substr($atom_data, 72 + $versionShift, 4));
+					$atom_structure['width']               = getid3_lib::FixedPoint16_16(substr($atom_data, 76 + $versionShift, 4));
+					$atom_structure['height']              = getid3_lib::FixedPoint16_16(substr($atom_data, 80 + $versionShift, 4));
 					$atom_structure['flags']['enabled']    = (bool) ($atom_structure['flags_raw'] & 0x0001);
 					$atom_structure['flags']['in_movie']   = (bool) ($atom_structure['flags_raw'] & 0x0002);
 					$atom_structure['flags']['in_preview'] = (bool) ($atom_structure['flags_raw'] & 0x0004);
