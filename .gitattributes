@@ -26,7 +26,6 @@
 /.github/ export-ignore
 .gitignore export-ignore
 /.phpcs.xml export-ignore
-/composer.json export-ignore
 Doxyfile export-ignore
 /phpstan.neon export-ignore
 /phpunit.xml.dist export-ignore
