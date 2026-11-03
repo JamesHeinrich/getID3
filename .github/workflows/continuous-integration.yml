@@ -31,13 +31,13 @@ jobs:
             experimental: true
             composer-options: "--ignore-platform-reqs"
     steps:
-      - uses: "actions/checkout@v6"
+      - uses: "actions/checkout@v7"
       - uses: "shivammathur/setup-php@v2"
         with:
           php-version: "${{ matrix.php-version }}"
           ini-values: error_reporting=-1, display_errors=On
           coverage: "none"
-      - uses: "ramsey/composer-install@v3"
+      - uses: "ramsey/composer-install@v4"
         with:
           composer-options: "${{ matrix.composer-options }}"
       - name: "Run the linter"
@@ -47,13 +47,13 @@ jobs:
     name: "Static Analysis"
     runs-on: "ubuntu-latest"
     steps:
-      - uses: "actions/checkout@v6"
+      - uses: "actions/checkout@v7"
       - uses: "shivammathur/setup-php@v2"
         with:
           php-version: "8.4"
           tools: "phpstan:2.1.22"
           coverage: "none"
-      - uses: "ramsey/composer-install@v3"
+      - uses: "ramsey/composer-install@v4"
       - name: "Run PHPStan"
         run: "phpstan"
 
@@ -77,10 +77,11 @@ jobs:
           - "8.1"
           - "8.2"
           - "8.3"
+          - "8.4"
         experimental:
           - false
         include:
-          - php-version: "8.4"
+          - php-version: "8.5"
             experimental: true
             composer-options: "--ignore-platform-reqs"
     steps:

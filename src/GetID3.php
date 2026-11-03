@@ -319,7 +319,7 @@ class GetID3
 	 */
 	protected $startup_warning = '';
 
-	const VERSION           = '2.0.0.0-p1.9.25-202603060942';
+	const VERSION           = '2.0.0.0-p1.9.28-202610301738';
 	const FREAD_BUFFER_SIZE = 32768;
 
 	const ATTACHMENTS_NONE   = false;
@@ -847,7 +847,7 @@ class GetID3
 							'mime_type' => 'audio/dsd',
 						),
 
-				// DTS  - audio       - Dolby Theatre System
+				// DTS  - audio       - Digital Theater Systems
 				'dts'  => array(
 							'pattern'   => '^\\x7F\\xFE\\x80\\x01',
 							'module'    => 'Audio\\Dts',
@@ -1130,6 +1130,24 @@ class GetID3
 							'fail_ape'  => 'ERROR',
 						),
 
+				// JXL  - still image - JPEG XL (bare codestream)
+				'jpegxl'  => array(
+							'pattern'   => '^\\xFF\\x0A',
+							'module'    => 'Graphic\\JpegXl',
+							'mime_type' => 'image/jxl',
+							'fail_id3'  => 'ERROR',
+							'fail_ape'  => 'ERROR',
+						),
+
+				// JXL  - still image - JPEG XL (ISO BMFF container)
+				'jpegxlbmff'  => array(
+							'pattern'   => '^\\x00\\x00\\x00\\x0CJXL\\x20\\x0D\\x0A\\x87\\x0A',
+							'module'    => 'Graphic\\JpegXl',
+							'mime_type' => 'image/jxl',
+							'fail_id3'  => 'ERROR',
+							'fail_ape'  => 'ERROR',
+						),
+
 				// PCD  - still image - Kodak Photo CD
 				'pcd'  => array(
 							'pattern'   => '^.{2048}PCD_IPI\\x00',
@@ -1358,7 +1376,6 @@ class GetID3
 			// only enable this pattern check if the filename ends in .mpc/mpp/mp+
 			$GetFileFormatArray = $this->GetFileFormatArray();
 			$info = $GetFileFormatArray['mpc'];
-			$info['include'] = 'module.'.$info['group'].'.'.$info['module'].'.php';
 			return $info;
 		} elseif (preg_match('#\\.cue$#i', $filename) && preg_match('#FILE "[^"]+" (BINARY|MOTOROLA|AIFF|WAVE|MP3)#', $filedata)) {
 			// there's not really a useful consistent "magic" at the beginning of .cue files to identify them
@@ -1388,14 +1405,21 @@ class GetID3
 		// loop thru array
 		foreach ($array as $key => $value) {
 
-			// go recursive
-			if (is_array($value)) {
-				$this->CharConvert($array[$key], $encoding);
-			}
+			if ($key == 'picture') { // https://github.com/JamesHeinrich/getID3/issues/508
 
-			// convert string
-			elseif (is_string($value)) {
+				// pictures are binary data and should not be altered
+				continue;
+
+			} elseif (is_array($value)) {
+
+				// convert arrays recursively
+				$this->CharConvert($array[$key], $encoding);
+
+			} elseif (is_string($value)) {
+
+				// actually convert only strings
 				$array[$key] = trim(Utils::iconv_fallback($encoding, $this->encoding, $value));
+
 			}
 		}
 	}
@@ -1449,7 +1473,7 @@ class GetID3
 						if (is_string($value)) {
 							$value = trim($value, " \r\n\t"); // do not trim nulls from $value!! Unicode characters will get mangled if trailing nulls are removed!
 						}
-						if (isset($value) && $value !== "") {
+						if (isset($value) && ($value !== '')) {
 							if (!is_numeric($key)) {
 								$this->info['tags'][trim($tag_name)][trim($tag_key)][$key] = $value;
 							} else {
@@ -1592,8 +1616,8 @@ class GetID3
 
 				if (file_exists(Utils::getHelperAppDirectory() . 'vorbiscomment.exe')) {
 
-					$commandline = '"' . Utils::getHelperAppDirectory() . 'vorbiscomment.exe" -w -c "'.$empty.'" "'.$file.'" "'.$temp.'"';
-					$VorbisCommentError = shell_exec($commandline);
+						$commandline = '"' . Utils::getHelperAppDirectory() . 'vorbiscomment.exe" -w -c '.escapeshellarg($empty).' '.escapeshellarg($file).' '.escapeshellarg($temp);
+						$VorbisCommentError = shell_exec($commandline);
 
 				} else {
 

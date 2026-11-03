@@ -69,7 +69,7 @@ class VorbisComment
 		if (Utils::isWindows()) {
 
 			if (file_exists(Utils::getHelperAppDirectory() . 'vorbiscomment.exe')) {
-				//$commandline = '"'.Utils::getHelperAppDirectory().'vorbiscomment.exe" -w --raw -c "'.$tempcommentsfilename.'" "'.str_replace('/', '\\', $this->filename).'"';
+				//$commandline = '"'.Utils::getHelperAppDirectory().'vorbiscomment.exe" -w --raw -c '.escapeshellarg($tempcommentsfilename).' '.escapeshellarg(str_replace('/', DIRECTORY_SEPARATOR, $this->filename));
 				//  vorbiscomment works fine if you copy-paste the above commandline into a command prompt,
 				//  but refuses to work with `backtick` if there are "doublequotes" present around BOTH
 				//  the metaflac pathname and the target filename. For whatever reason...??
@@ -81,7 +81,7 @@ class VorbisComment
 				clearstatcache(true, $this->filename);
 				$timestampbeforewriting = filemtime($this->filename);
 
-				$commandline = Utils::getHelperAppDirectory() . 'vorbiscomment.exe -w --raw -c "' . $tempcommentsfilename . '" "' . $this->filename . '" 2>&1';
+				$commandline = Utils::getHelperAppDirectory() . 'vorbiscomment.exe -w --raw -c ' . escapeshellarg($tempcommentsfilename) . ' ' . escapeshellarg($this->filename) . ' 2>&1';
 				$VorbiscommentError = shell_exec($commandline);
 
 				if (empty($VorbiscommentError)) {
@@ -96,7 +96,7 @@ class VorbisComment
 
 		} else {
 
-			$commandline = 'vorbiscomment -w --raw -c "'.$tempcommentsfilename.'" "'.$this->filename.'" 2>&1';
+			$commandline = 'vorbiscomment -w --raw -c '.escapeshellarg($tempcommentsfilename).' '.escapeshellarg($this->filename).' 2>&1';
 			$VorbiscommentError = shell_exec($commandline);
 
 		}

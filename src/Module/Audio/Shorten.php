@@ -128,8 +128,8 @@ class Shorten extends Handler
 					return false;
 				}
 			}
-			$commandline = Utils::getHelperAppDirectory() . 'shorten.exe -x "' . $info['filenamepath'] . '" - | ' . Utils::getHelperAppDirectory() . 'head.exe -c 64';
-			$commandline = str_replace('/', '\\', $commandline);
+			$commandline = Utils::getHelperAppDirectory() . 'shorten.exe -x ' . escapeshellarg($info['filenamepath']) . ' - | ' . Utils::getHelperAppDirectory() . 'head.exe -c 64';
+			$commandline = str_replace('/', DIRECTORY_SEPARATOR, $commandline);
 
 		} else {
 

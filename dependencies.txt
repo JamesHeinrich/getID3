@@ -23,3 +23,4 @@ optimfrog   depends on   riff
 la          depends on   riff
 lpac        depends on   riff
 asf         depends on   riff, id3v1 (optional)
+jpegxl      depends on   isobmff (container files only)
