@@ -25,10 +25,11 @@ jobs:
           - "8.2"
           - "8.3"
           - "8.4"
+          - "8.5"
         experimental:
           - false
         include:
-          - php-version: "8.5"
+          - php-version: "8.6"
             experimental: true
             composer-options: "--ignore-platform-reqs"
     steps:
@@ -51,7 +52,7 @@ jobs:
       - uses: "actions/checkout@v7"
       - uses: "shivammathur/setup-php@v2"
         with:
-          php-version: "8.4"
+          php-version: "8.5"
           tools: "phpstan:2.1.22"
           coverage: "none"
       - uses: "ramsey/composer-install@v4"
