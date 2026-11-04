@@ -179,7 +179,7 @@ if (!empty($Filename)) {
 			}
 		}
 		if (strstr($TrackNumber, '/')) {
-			list($TrackNumber, $TracksTotal) = explode('/', $TrackNumber);
+			[$TrackNumber, $TracksTotal] = explode('/', $TrackNumber);
 		}
 		echo '<tr><td align="right"><b>Track</b></td><td><input type="text" size="2" name="Track" value="'.htmlentities($TrackNumber, ENT_QUOTES).'"> of <input type="text" size="2" name="TracksTotal" value="'.htmlentities($TracksTotal, ENT_QUOTES).'"></TD></TR>';
 

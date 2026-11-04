@@ -227,7 +227,7 @@ if (!function_exists('CastAsInt')) {
 
 if (!function_exists('getmicrotime')) {
 	function getmicrotime() {
-		list($usec, $sec) = explode(' ', microtime());
+		[$usec, $sec] = explode(' ', microtime());
 		return ((float) $usec + (float) $sec);
 	}
 }

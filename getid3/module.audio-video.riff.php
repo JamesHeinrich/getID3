@@ -325,8 +325,8 @@ class getid3_riff extends getid3_handler
 					if (preg_match('#^([0-9]{4}).([0-9]{2}).([0-9]{2})$#', $thisfile_riff_WAVE_bext_0['origin_date'], $matches_bext_date)) {
 						if (preg_match('#^([0-9]{2}).([0-9]{2}).([0-9]{2})$#', $thisfile_riff_WAVE_bext_0['origin_time'], $matches_bext_time)) {
 							$bext_timestamp = array();
-							list($dummy, $bext_timestamp['year'], $bext_timestamp['month'],  $bext_timestamp['day'])    = $matches_bext_date;
-							list($dummy, $bext_timestamp['hour'], $bext_timestamp['minute'], $bext_timestamp['second']) = $matches_bext_time;
+							[$dummy, $bext_timestamp['year'], $bext_timestamp['month'],  $bext_timestamp['day']]    = $matches_bext_date;
+							[$dummy, $bext_timestamp['hour'], $bext_timestamp['minute'], $bext_timestamp['second']] = $matches_bext_time;
 							$thisfile_riff_WAVE_bext_0['origin_date_unix'] = gmmktime($bext_timestamp['hour'], $bext_timestamp['minute'], $bext_timestamp['second'], $bext_timestamp['month'], $bext_timestamp['day'], $bext_timestamp['year']);
 						} else {
 							$this->warning('RIFF.WAVE.BEXT.origin_time is invalid');
@@ -446,11 +446,11 @@ class getid3_riff extends getid3_handler
 					if ($parsedXML = getid3_lib::XML2array($thisfile_riff_WAVE['iXML'][0]['data'])) {
 						$thisfile_riff_WAVE['iXML'][0]['parsed'] = $parsedXML;
 						if (isset($parsedXML['SPEED']['MASTER_SPEED'])) {
-							list($numerator, $denominator) = array_pad(explode('/', $parsedXML['SPEED']['MASTER_SPEED']), 2, '');
+							[$numerator, $denominator] = array_pad(explode('/', $parsedXML['SPEED']['MASTER_SPEED']), 2, '');
 							$thisfile_riff_WAVE['iXML'][0]['master_speed'] = (int) $numerator / ($denominator ? $denominator : 1000);
 						}
 						if (isset($parsedXML['SPEED']['TIMECODE_RATE'])) {
-							list($numerator, $denominator) = array_pad(explode('/', $parsedXML['SPEED']['TIMECODE_RATE']), 2, '');
+							[$numerator, $denominator] = array_pad(explode('/', $parsedXML['SPEED']['TIMECODE_RATE']), 2, '');
 							$thisfile_riff_WAVE['iXML'][0]['timecode_rate'] = (int) $numerator / ($denominator ? $denominator : 1000);
 						}
 						if (isset($parsedXML['SPEED']['TIMESTAMP_SAMPLES_SINCE_MIDNIGHT_LO']) && !empty($parsedXML['SPEED']['TIMESTAMP_SAMPLE_RATE']) && !empty($thisfile_riff_WAVE['iXML'][0]['timecode_rate'])) {
@@ -476,7 +476,7 @@ class getid3_riff extends getid3_handler
 						$thisfile_riff['guano'] = array();
 						foreach (explode("\n", $thisfile_riff_WAVE_guan_0['data']) as $line) {
 							if ($line) {
-								list($key, $value) = array_pad(explode(':', $line, 2), 2, '');
+								[$key, $value] = array_pad(explode(':', $line, 2), 2, '');
 								if (substr($value, 0, 3) == '[{"') {
 									if ($decoded = @json_decode($value, true)) {
 										if (count($decoded) === 1) {
@@ -495,7 +495,7 @@ class getid3_riff extends getid3_handler
 							switch ($key) {
 								case 'Loc Position':
 									if (preg_match('#^([\\+\\-]?[0-9]+\\.[0-9]+) ([\\+\\-]?[0-9]+\\.[0-9]+)$#', $value, $matches)) {
-										list($dummy, $latitude, $longitude) = $matches;
+										[$dummy, $latitude, $longitude] = $matches;
 										$thisfile_riff['comments']['gps_latitude'][0]  = floatval($latitude);
 										$thisfile_riff['comments']['gps_longitude'][0] = floatval($longitude);
 										$thisfile_riff['guano'][$key] = floatval($latitude).' '.floatval($longitude);

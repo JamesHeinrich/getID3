@@ -1749,7 +1749,7 @@ if (!empty($_REQUEST['scan']) || !empty($_REQUEST['newscan']) || !empty($_REQUES
 
 } elseif (!empty($_REQUEST['filetypelist'])) {
 
-	list($fileformat, $audioformat) = explode('|', $_REQUEST['filetypelist']);
+	[$fileformat, $audioformat] = explode('|', $_REQUEST['filetypelist']);
 	$SQLquery  = 'SELECT `filename`, `fileformat`, `audio_dataformat`';
 	$SQLquery .= ' FROM `'.mysqli_real_escape_string($con, GETID3_DB_TABLE).'`';
 	$SQLquery .= ' WHERE (`fileformat` = "'.mysqli_real_escape_string($con, $fileformat).'")';

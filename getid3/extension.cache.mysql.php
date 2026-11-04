@@ -134,7 +134,7 @@ class getID3_cached_mysql extends getID3
 		$SQLquery .= ' AND (`filetime` = -1)';
 		$SQLquery .= ' AND (`analyzetime` = -1)';
 		if ($this->cursor = mysql_query($SQLquery, $this->connection)) {
-			list($version) = mysql_fetch_array($this->cursor);
+			[$version] = mysql_fetch_array($this->cursor);
 		}
 		if ($version != getID3::VERSION) {
 			$this->clear_cache();
@@ -184,7 +184,7 @@ class getID3_cached_mysql extends getID3
 			$this->cursor = mysql_query($SQLquery, $this->connection);
 			if (mysql_num_rows($this->cursor) > 0) {
 				// Hit
-				list($result) = mysql_fetch_array($this->cursor);
+				[$result] = mysql_fetch_array($this->cursor);
 				return unserialize(base64_decode($result));
 			}
 		}

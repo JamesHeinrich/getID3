@@ -139,7 +139,7 @@ class getID3_cached_mysqli extends getID3
 		$SQLquery .= ' WHERE (`filename` = \''.$this->mysqli->real_escape_string(getID3::VERSION).'\')';
 		$SQLquery .= ' AND (`hash` = \'getID3::VERSION\')';
 		if ($this->cursor = $this->mysqli->query($SQLquery)) {
-			list($version) = $this->cursor->fetch_array();
+			[$version] = $this->cursor->fetch_array();
 		}
 		if ($version != getID3::VERSION) {
 			$this->clear_cache();
@@ -215,7 +215,7 @@ class getID3_cached_mysqli extends getID3
 			$this->cursor = $this->mysqli->query($SQLquery);
 			if ($this->cursor->num_rows > 0) {
 				// Hit
-				list($result) = $this->cursor->fetch_array();
+				[$result] = $this->cursor->fetch_array();
 				return unserialize(base64_decode($result));
 			}
 		}

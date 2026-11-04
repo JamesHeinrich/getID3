@@ -213,7 +213,7 @@ class getid3_apetag extends getid3_handler
 
 				case 'mp3gain_undo':
 					if (preg_match('#^[\\-\\+][0-9]{3},[\\-\\+][0-9]{3},[NW]$#', $thisfile_ape_items_current['data'][0])) {
-						list($mp3gain_undo_left, $mp3gain_undo_right, $mp3gain_undo_wrap) = explode(',', $thisfile_ape_items_current['data'][0]);
+						[$mp3gain_undo_left, $mp3gain_undo_right, $mp3gain_undo_wrap] = explode(',', $thisfile_ape_items_current['data'][0]);
 						$thisfile_replaygain['mp3gain']['undo_left']  = intval($mp3gain_undo_left);
 						$thisfile_replaygain['mp3gain']['undo_right'] = intval($mp3gain_undo_right);
 						$thisfile_replaygain['mp3gain']['undo_wrap']  = (($mp3gain_undo_wrap == 'Y') ? true : false);
@@ -224,7 +224,7 @@ class getid3_apetag extends getid3_handler
 
 				case 'mp3gain_minmax':
 					if (preg_match('#^[0-9]{3},[0-9]{3}$#', $thisfile_ape_items_current['data'][0])) {
-						list($mp3gain_globalgain_min, $mp3gain_globalgain_max) = explode(',', $thisfile_ape_items_current['data'][0]);
+						[$mp3gain_globalgain_min, $mp3gain_globalgain_max] = explode(',', $thisfile_ape_items_current['data'][0]);
 						$thisfile_replaygain['mp3gain']['globalgain_track_min'] = intval($mp3gain_globalgain_min);
 						$thisfile_replaygain['mp3gain']['globalgain_track_max'] = intval($mp3gain_globalgain_max);
 					} else {
@@ -234,7 +234,7 @@ class getid3_apetag extends getid3_handler
 
 				case 'mp3gain_album_minmax':
 					if (preg_match('#^[0-9]{3},[0-9]{3}$#', $thisfile_ape_items_current['data'][0])) {
-						list($mp3gain_globalgain_album_min, $mp3gain_globalgain_album_max) = explode(',', $thisfile_ape_items_current['data'][0]);
+						[$mp3gain_globalgain_album_min, $mp3gain_globalgain_album_max] = explode(',', $thisfile_ape_items_current['data'][0]);
 						$thisfile_replaygain['mp3gain']['globalgain_album_min'] = intval($mp3gain_globalgain_album_min);
 						$thisfile_replaygain['mp3gain']['globalgain_album_max'] = intval($mp3gain_globalgain_album_max);
 					} else {
@@ -276,7 +276,7 @@ class getid3_apetag extends getid3_handler
 						$this->warning('APEtag "'.$item_key.'" should be flagged as Binary data, but was incorrectly flagged as UTF-8');
 						$thisfile_ape_items_current['data'] = implode("\x00", $thisfile_ape_items_current['data']);
 					}
-					list($thisfile_ape_items_current['filename'], $thisfile_ape_items_current['data']) = array_pad(explode("\x00", $thisfile_ape_items_current['data'], 2), 2, '');
+					[$thisfile_ape_items_current['filename'], $thisfile_ape_items_current['data']] = array_pad(explode("\x00", $thisfile_ape_items_current['data'], 2), 2, '');
 					$thisfile_ape_items_current['data_offset'] = $thisfile_ape_items_current['offset'] + strlen($thisfile_ape_items_current['filename']."\x00");
 					$thisfile_ape_items_current['data_length'] = strlen($thisfile_ape_items_current['data']);
 

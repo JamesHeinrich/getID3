@@ -90,7 +90,7 @@ class getid3_pdf extends getid3_handler
 							$this->fseek($offset);
 							$objBlob = $this->fread($maxObjLengths[$objectNumber]);
 							if (preg_match('#^'.$objectNumber.'[\\x00 \\r\\n\\t]*([0-9]+)[\\x00 \\r\\n\\t]*obj[\\x00 \\r\\n\\t]*(.*)(endobj)?[\\x00 \\r\\n\\t]*$#s', $objBlob, $matches)) {
-								list($dummy, $generation, $objectData) = $matches;
+								[$dummy, $generation, $objectData] = $matches;
 								if (preg_match('#^<<[\r\n\s]*(/Type|/Pages|/Parent [0-9]+ [0-9]+ [A-Z]|/Count [0-9]+|/Kids *\\[[0-9A-Z ]+\\]|[\r\n\s])+[\r\n\s]*>>#', $objectData, $matches)) {
 									if (preg_match('#/Count ([0-9]+)#', $objectData, $matches)) {
 										$info['pdf']['pages'] = (int) $matches[1];
@@ -132,7 +132,7 @@ class getid3_pdf extends getid3_handler
 		if (rtrim($this->fgets()) == 'xref') {
 
 			$info['pdf']['xref']['xref_offsets'][$XREFoffset] = $XREFoffset;
-			list($firstObjectNumber, $XREFcount) = explode(' ', rtrim($this->fgets()));
+			[$firstObjectNumber, $XREFcount] = explode(' ', rtrim($this->fgets()));
 			$firstObjectNumber = (int) $firstObjectNumber;
 			$XREFcount = (int) $XREFcount;
 			$info['pdf']['xref']['count'] = $XREFcount + (!empty($info['pdf']['xref']['count']) ? $info['pdf']['xref']['count'] : 0);

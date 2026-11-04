@@ -153,7 +153,7 @@ class getid3_quicktime extends getid3_handler
 			foreach ($info['quicktime']['comments']['location.ISO6709'] as $ISO6709string) {
 				$ISO6709parsed = array('latitude'=>false, 'longitude'=>false, 'altitude'=>false);
 				if (preg_match('#^([\\+\\-])([0-9]{2}|[0-9]{4}|[0-9]{6})(\\.[0-9]+)?([\\+\\-])([0-9]{3}|[0-9]{5}|[0-9]{7})(\\.[0-9]+)?(([\\+\\-])([0-9]{3}|[0-9]{5}|[0-9]{7})(\\.[0-9]+)?)?/$#', $ISO6709string, $matches)) {
-					list($dummy, $lat_sign, $lat_deg, $lat_deg_dec, $lon_sign, $lon_deg, $lon_deg_dec, $dummy, $alt_sign, $alt_deg, $alt_deg_dec) = array_pad($matches, 11, '');
+					[$dummy, $lat_sign, $lat_deg, $lat_deg_dec, $lon_sign, $lon_deg, $lon_deg_dec, $dummy, $alt_sign, $alt_deg, $alt_deg_dec] = array_pad($matches, 11, '');
 
 					if (strlen($lat_deg) == 2) {        // [+-]DD.D
 						$ISO6709parsed['latitude'] = (($lat_sign == '-') ? -1 : 1) * (float) (ltrim($lat_deg, '0').$lat_deg_dec);
@@ -1569,7 +1569,7 @@ $this->warning('incomplete/incorrect handling of "stsd" with Parrot metadata in 
 						&& ($chapter_string_length < 1000)
 						&& ($chapter_string_length <= (strlen($atom_data) - $mdat_offset - 2))
 						&& preg_match('#^([\x00-\xFF]{2})([\x20-\xFF]+)$#', substr($atom_data, $mdat_offset, $chapter_string_length + 2), $chapter_matches)) {
-							list($dummy, $chapter_string_length_hex, $chapter_string) = $chapter_matches;
+							[$dummy, $chapter_string_length_hex, $chapter_string] = $chapter_matches;
 							$mdat_offset += (2 + $chapter_string_length);
 							@$info['quicktime']['comments']['chapters'][] = $chapter_string;
 
@@ -1705,7 +1705,7 @@ $this->warning('incomplete/incorrect handling of "stsd" with Parrot metadata in 
 				case "\xA9".'xyz':  // GPS latitude+longitude+altitude
 					$atom_structure['data'] = $atom_data;
 					if (preg_match('#([\\+\\-][0-9\\.]+)([\\+\\-][0-9\\.]+)([\\+\\-][0-9\\.]+)?/$#i', $atom_data, $matches)) {
-						list($all, $latitude, $longitude, $altitude) = array_pad($matches, 4, '');
+						[$all, $latitude, $longitude, $altitude] = array_pad($matches, 4, '');
 						$info['quicktime']['comments']['gps_latitude'][]  = floatval($latitude);
 						$info['quicktime']['comments']['gps_longitude'][] = floatval($longitude);
 						if (!empty($altitude)) {
@@ -2029,7 +2029,7 @@ $this->warning('incomplete/incorrect handling of "stsd" with Parrot metadata in 
 								if (preg_match('#\\$GPRMC,([0-9\\.]*),([AV]),([0-9\\.]*),([NS]),([0-9\\.]*),([EW]),([0-9\\.]*),([0-9\\.]*),([0-9]*),([0-9\\.]*),([EW]?)(,[A])?(\\*[0-9A-F]{2})#', $GPS_free_data, $matches)) {
 									$GPS_this_GPRMC = array();
 									$GPS_this_GPRMC_raw = array();
-									list(
+									[
 										$GPS_this_GPRMC_raw['gprmc'],
 										$GPS_this_GPRMC_raw['timestamp'],
 										$GPS_this_GPRMC_raw['status'],
@@ -2044,7 +2044,7 @@ $this->warning('incomplete/incorrect handling of "stsd" with Parrot metadata in 
 										$GPS_this_GPRMC_raw['variation_direction'],
 										$dummy,
 										$GPS_this_GPRMC_raw['checksum'],
-									) = $matches;
+									] = $matches;
 									$GPS_this_GPRMC['raw'] = $GPS_this_GPRMC_raw;
 
 									$hour   = substr($GPS_this_GPRMC['raw']['timestamp'], 0, 2);
@@ -2061,7 +2061,7 @@ $this->warning('incomplete/incorrect handling of "stsd" with Parrot metadata in 
 
 									foreach (array('latitude','longitude') as $latlon) {
 										preg_match('#^([0-9]{1,3})([0-9]{2}\\.[0-9]+)$#', $GPS_this_GPRMC['raw'][$latlon], $matches);
-										list($dummy, $deg, $min) = $matches;
+										[$dummy, $deg, $min] = $matches;
 										$GPS_this_GPRMC[$latlon] = (int) $deg + ((float) $min / 60);
 									}
 									$GPS_this_GPRMC['latitude']  *= (($GPS_this_GPRMC['raw']['latitude_direction']  == 'S') ? -1 : 1);

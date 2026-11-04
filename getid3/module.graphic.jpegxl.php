@@ -819,7 +819,7 @@ class getid3_jpegxl extends getid3_handler
 		if ($sel === null) {
 			return null;
 		}
-		list($offset, $bits) = $distributions[$sel];
+		[$offset, $bits] = $distributions[$sel];
 		if ($bits === 0) {
 			return $offset;
 		}

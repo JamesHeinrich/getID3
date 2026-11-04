@@ -62,7 +62,7 @@ class getid3_pcd extends getid3_handler
 			//$PCD_levels[5] = array(3072, 2048,    ??); // BASE*16 - encrypted with Kodak-proprietary compression/encryption
 			//$PCD_levels[6] = array(6144, 4096,    ??); // BASE*64 - encrypted with Kodak-proprietary compression/encryption; PhotoCD-Pro only
 
-			list($PCD_width, $PCD_height, $PCD_dataOffset) = $PCD_levels[3];
+			[$PCD_width, $PCD_height, $PCD_dataOffset] = $PCD_levels[3];
 
 			$this->fseek($info['avdataoffset'] + $PCD_dataOffset);
 

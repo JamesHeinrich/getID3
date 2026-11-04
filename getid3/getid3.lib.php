@@ -140,7 +140,7 @@ class getid3_lib
 	 * @return float
 	 */
 	public static function DecimalizeFraction($fraction) {
-		list($numerator, $denominator) = explode('/', $fraction);
+		[$numerator, $denominator] = explode('/', $fraction);
 		return (int) $numerator / ($denominator ? $denominator : 1);
 	}
 

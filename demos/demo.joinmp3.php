@@ -62,7 +62,7 @@ function CombineMultipleMP3sTo($FilenameOut, $FilenamesIn) {
 			$startoffset = 0;
 			$length_seconds      = 0;
 			if (is_array($nextinputfilename)) {
-				@list($nextinputfilename, $startoffset, $length_seconds)  = $nextinputfilename;
+				[$nextinputfilename, $startoffset, $length_seconds] = $nextinputfilename;
 			}
 			$CurrentFileInfo = $getID3->analyze($nextinputfilename);
 			if ($CurrentFileInfo['fileformat'] == 'mp3') {

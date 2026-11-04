@@ -137,7 +137,7 @@ class getID3_cached_sqlite3 extends getID3
 		$stmt = $db->prepare($sql);
 		$stmt->bindValue(':filename', getID3::VERSION, SQLITE3_TEXT);
 		$result = $stmt->execute();
-		list($version) = $result->fetchArray();
+		[$version] = $result->fetchArray();
 		if ($version != getID3::VERSION) { // Check version number and clear cache if changed
 			$this->clear_cache();
 		}
@@ -197,8 +197,8 @@ class getID3_cached_sqlite3 extends getID3
 		$stmt->bindValue(':filesize', $filesize_real, SQLITE3_INTEGER);
 		$stmt->bindValue(':filetime', $filetime,      SQLITE3_INTEGER);
 		$res = $stmt->execute();
-		list($result) = $res->fetchArray();
-		if (count($result) > 0 ) {
+		[$result] = $res->fetchArray();
+		if (count($result) > 0) {
 			return unserialize(base64_decode($result));
 		}
 		// if it hasn't been analyzed before, then do it now

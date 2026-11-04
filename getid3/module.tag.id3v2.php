@@ -466,7 +466,7 @@ class getid3_id3v2 extends getid3_handler
 		if (isset($thisfile_id3v2['comments']['track_number'])) {
 			foreach ($thisfile_id3v2['comments']['track_number'] as $key => $value) {
 				if (strstr($value, '/')) {
-					list($thisfile_id3v2['comments']['track_number'][$key], $thisfile_id3v2['comments']['totaltracks'][$key]) = explode('/', $thisfile_id3v2['comments']['track_number'][$key]);
+					[$thisfile_id3v2['comments']['track_number'][$key], $thisfile_id3v2['comments']['totaltracks'][$key]] = explode('/', $thisfile_id3v2['comments']['track_number'][$key]);
 				}
 			}
 		}
@@ -2007,7 +2007,7 @@ class getid3_id3v2 extends getid3_handler
 			// <Optional embedded sub-frames>
 
 			$frame_offset = 0;
-			list($parsedFrame['element_id']) = explode("\x00", $parsedFrame['data'], 2);
+			[$parsedFrame['element_id']] = explode("\x00", $parsedFrame['data'], 2);
 			$frame_offset += strlen($parsedFrame['element_id']."\x00");
 			$parsedFrame['time_begin'] = getid3_lib::BigEndian2Int(substr($parsedFrame['data'], $frame_offset, 4));
 			$frame_offset += 4;
@@ -2075,13 +2075,13 @@ class getid3_id3v2 extends getid3_handler
 							$parsedFrame['subframes'][] = $subframe;
 							break;
 						case 'WXXX':
-							list($subframe['chapter_url_description'], $subframe['chapter_url']) = array_pad(explode("\x00", $encoding_converted_text, 2), 2, '');
+							[$subframe['chapter_url_description'], $subframe['chapter_url']] = array_pad(explode("\x00", $encoding_converted_text, 2), 2, '');
 							$parsedFrame['chapter_url'][$subframe['chapter_url_description']] = $subframe['chapter_url'];
 							$parsedFrame['subframes'][] = $subframe;
 							break;
 						case 'APIC':
 							if (preg_match('#^([^\\x00]+)*\\x00(.)([^\\x00]+)*\\x00(.+)$#s', $subframe['text'], $matches)) {
-								list($dummy, $subframe_apic_mime, $subframe_apic_picturetype, $subframe_apic_description, $subframe_apic_picturedata) = $matches;
+								[$dummy, $subframe_apic_mime, $subframe_apic_picturetype, $subframe_apic_description, $subframe_apic_picturedata] = $matches;
 								$subframe['image_mime']   = trim(getid3_lib::iconv_fallback($subframe['encoding'], $info['encoding'], $subframe_apic_mime));
 								$subframe['picture_type'] = $this->APICPictureTypeLookup($subframe_apic_picturetype);
 								$subframe['description']  = trim(getid3_lib::iconv_fallback($subframe['encoding'], $info['encoding'], $subframe_apic_description));
@@ -2131,7 +2131,7 @@ class getid3_id3v2 extends getid3_handler
 			// <Optional embedded sub-frames>
 
 			$frame_offset = 0;
-			list($parsedFrame['element_id']) = explode("\x00", $parsedFrame['data'], 2);
+			[$parsedFrame['element_id']] = explode("\x00", $parsedFrame['data'], 2);
 			$frame_offset += strlen($parsedFrame['element_id']."\x00");
 			$ctoc_flags_raw = ord(substr($parsedFrame['data'], $frame_offset, 1));
 			$frame_offset += 1;

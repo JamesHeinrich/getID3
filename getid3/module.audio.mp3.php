@@ -1035,7 +1035,7 @@ class getid3_mp3 extends getid3_handler
 			if (!empty($this->getid3->info['mp3_validity_check_bitrates']) && !empty($thisfile_mpeg_audio['bitrate_mode']) && ($thisfile_mpeg_audio['bitrate_mode'] == 'vbr') && !empty($thisfile_mpeg_audio['VBR_bitrate'])) {
 				// https://github.com/JamesHeinrich/getID3/issues/287
 				if (count(array_keys($this->getid3->info['mp3_validity_check_bitrates'])) == 1) {
-					list($cbr_bitrate_in_short_scan) = array_keys($this->getid3->info['mp3_validity_check_bitrates']);
+					[$cbr_bitrate_in_short_scan] = array_keys($this->getid3->info['mp3_validity_check_bitrates']);
 					$deviation_cbr_from_header_bitrate = abs($thisfile_mpeg_audio['VBR_bitrate'] - $cbr_bitrate_in_short_scan) / $cbr_bitrate_in_short_scan;
 					if ($deviation_cbr_from_header_bitrate < 0.01) {
 						// VBR header bitrate may differ slightly from true bitrate of frames, perhaps accounting for overhead of VBR header frame itself?

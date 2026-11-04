@@ -385,7 +385,7 @@ class getid3_asf extends getid3_handler
 								$this->warning('[asf][codec_list_object][codec_entries]['.$CodecEntryCounter.'][description] expected to contain comma-separated list of parameters: "'.$thisfile_asf_codeclistobject_codecentries_current['description'].'"');
 							} else {
 
-								list($AudioCodecBitrate, $AudioCodecFrequency, $AudioCodecChannels) = explode(',', $this->TrimConvert($thisfile_asf_codeclistobject_codecentries_current['description']));
+								[$AudioCodecBitrate, $AudioCodecFrequency, $AudioCodecChannels] = explode(',', $this->TrimConvert($thisfile_asf_codeclistobject_codecentries_current['description']));
 								$thisfile_audio['codec'] = $this->TrimConvert($thisfile_asf_codeclistobject_codecentries_current['name']);
 
 								if (!isset($thisfile_audio['bitrate']) && strstr($AudioCodecBitrate, 'kbps')) {

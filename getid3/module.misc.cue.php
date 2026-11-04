@@ -97,7 +97,7 @@ class getid3_cue extends getid3_handler
 		$currentFile = null;
 
 		foreach ($file as $line) {
-			list($key) = explode(' ', strtolower($line), 2);
+			[$key] = explode(' ', strtolower($line), 2);
 			switch ($key)
 			{
 				case 'catalog':
