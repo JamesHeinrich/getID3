@@ -1593,7 +1593,7 @@ class getid3_lib
 			foreach ($ThisFileInfo['tags'] as $tagtype => $tagarray) {
 				foreach ($tagarray as $tagname => $tagdata) {
 					foreach ($tagdata as $key => $value) {
-						if (!empty($value)) {
+						if (strlen($value) > 0) { // comments may include falsey values like "0"
 							if (empty($ThisFileInfo['comments'][$tagname])) {
 
 								// fall through and append value

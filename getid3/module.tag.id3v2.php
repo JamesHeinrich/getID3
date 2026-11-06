@@ -836,7 +836,7 @@ class getid3_id3v2 extends getid3_handler
 				$Txxx_elements[] = substr($parsedFrame['data'], $Txxx_elements_start_offset, $i - $Txxx_elements_start_offset);
 				foreach ($Txxx_elements as $Txxx_element) {
 					$string = getid3_lib::iconv_fallback($parsedFrame['encoding'], $info['id3v2']['encoding'], $Txxx_element);
-					if (!empty($string)) {
+					if (strlen($string) > 0) { // comments may include falsey values like "0"
 						$info['id3v2']['comments'][$parsedFrame['framenameshort']][] = $string;
 					}
 				}
