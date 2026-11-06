@@ -1259,7 +1259,7 @@ class getid3_lib
 					return '';
 				}
 			}
-			if ($converted_string = @mb_convert_encoding($string, $out_charset, $in_charset)) {
+			if (($converted_string = @mb_convert_encoding($string, $out_charset, $in_charset)) !== false) {
 				switch ($out_charset) {
 					case 'ISO-8859-1':
 						$converted_string = rtrim($converted_string, "\x00");
@@ -1271,7 +1271,7 @@ class getid3_lib
 
 		// iconv() available
 		} elseif (function_exists('iconv')) {
-			if ($converted_string = @iconv($in_charset, $out_charset.'//TRANSLIT', $string)) {
+			if (($converted_string = @iconv($in_charset, $out_charset.'//TRANSLIT', $string)) !== false) {
 				switch ($out_charset) {
 					case 'ISO-8859-1':
 						$converted_string = rtrim($converted_string, "\x00");
