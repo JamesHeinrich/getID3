@@ -584,6 +584,7 @@ $this->error('HEIF files not currently supported');
 
 													case 'covr':
 														$atom_structure['data'] = substr($boxdata, 8);
+														$atom_structure['image_mime'] = 'image/unknown'; // provide default MIME type to ensure array keys exist
 														// not a foolproof check, but better than nothing
 														if (preg_match('#^\\xFF\\xD8\\xFF#', $atom_structure['data'])) {
 															$atom_structure['image_mime'] = 'image/jpeg';
