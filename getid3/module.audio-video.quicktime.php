@@ -1517,6 +1517,12 @@ $this->warning('incomplete/incorrect handling of "stsd" with Parrot metadata in 
 					$offset += 1;
 
 					$atom_structure['num_iods_tracks'] = ($atom_structure['length'] - 7) / 6; // 6 bytes would only be right if all tracks use 1-byte length fields
+					// prevent memory exhaustion from crafted files: each track entry is at least 6 bytes (1 ES_ID_IncTag + 1 length + 4 track_id)
+					$max_iods_tracks = (int) floor(max(0, strlen($atom_data) - $offset) / 6);
+					if ($atom_structure['num_iods_tracks'] > $max_iods_tracks) {
+						$this->warning('QuickTime atom "iods" claims '.(int) ceil($atom_structure['num_iods_tracks']).' tracks but only has data for '.$max_iods_tracks.', truncating');
+						$atom_structure['num_iods_tracks'] = $max_iods_tracks;
+					}
 					for ($i = 0; $i < $atom_structure['num_iods_tracks']; $i++) {
 						$atom_structure['track'][$i]['ES_ID_IncTag'] =       getid3_lib::BigEndian2Int(substr($atom_data, $offset, 1));
 						$offset += 1;
