@@ -387,7 +387,7 @@ class getID3
 	 */
 	protected $startup_warning = '';
 
-	const VERSION           = '1.9.28-202611131155';
+	const VERSION           = '1.9.28-202611141012';
 	const FREAD_BUFFER_SIZE = 32768;
 
 	const ATTACHMENTS_NONE   = false;
@@ -2486,7 +2486,20 @@ abstract class getid3_handler
 				if (!is_dir($dir) || !getID3::is_writable($dir)) { // check supplied directory
 					throw new Exception('supplied path ('.$dir.') does not exist, or is not writable');
 				}
-				$dest = $dir.DIRECTORY_SEPARATOR.$name.($image_mime ? '.'.getid3_lib::ImageExtFromMime($image_mime) : '');
+				// $name and $image_mime may come from the analyzed file: never let them form a path
+				$name = preg_replace('#[^A-Za-z0-9._-]#', '_', basename(str_replace('\\', '/', $name)));
+				if (trim($name, '.') === '') {
+					$name = 'attachment_'.$offset;
+				}
+				$ext = '';
+				if ($image_mime) {
+					$ext = strtolower(getid3_lib::ImageExtFromMime($image_mime));
+					if (!in_array($ext, array('jpg', 'png', 'gif', 'bmp', 'webp', 'tiff', 'avif', 'heic'), true)) {
+						$ext = 'bin';
+					}
+					$ext = '.'.$ext;
+				}
+				$dest = $dir.DIRECTORY_SEPARATOR.$name.$ext;
 
 				// create dest file
 				if (($fp_dest = fopen($dest, 'wb')) == false) {
