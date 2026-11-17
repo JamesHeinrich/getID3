@@ -2080,21 +2080,24 @@ class getid3_id3v2 extends getid3_handler
 							$parsedFrame['subframes'][] = $subframe;
 							break;
 						case 'APIC':
-							if (preg_match('#^([^\\x00]+)*\\x00(.)([^\\x00]+)*\\x00(.+)$#s', $subframe['text'], $matches)) {
-								[$dummy, $subframe_apic_mime, $subframe_apic_picturetype, $subframe_apic_description, $subframe_apic_picturedata] = $matches;
-								$subframe['image_mime']   = trim(getid3_lib::iconv_fallback($subframe['encoding'], $info['encoding'], $subframe_apic_mime));
-								$subframe['picture_type'] = $this->APICPictureTypeLookup($subframe_apic_picturetype);
-								$subframe['description']  = trim(getid3_lib::iconv_fallback($subframe['encoding'], $info['encoding'], $subframe_apic_description));
-								if (strlen($this->TextEncodingTerminatorLookup($subframe['encoding'])) == 2) {
-									// the null terminator between "description" and "picture data" could be either 1 byte (ISO-8859-1, UTF-8) or two bytes (UTF-16)
-									// the above regex assumes one byte, if it's actually two then strip the second one here
-									$subframe_apic_picturedata = substr($subframe_apic_picturedata, 1);
+							$p1 = strpos($subframe['text'], "\x00");
+							if (($p1 !== false) && (($p1 + 1) < strlen($subframe['text']))) {
+								$subframe_apic_mime        = substr($subframe['text'], 0,      $p1);
+								$subframe_apic_picturetype = substr($subframe['text'], $p1 + 1,  1);
+								$p2                        = strpos($subframe['text'], "\x00", $p1 + 2);
+								if ($p2 !== false) {
+									$subframe_apic_description = substr($subframe['text'], $p1 + 2, $p2 - $p1 - 2);
+									$subframe['data']          = substr($subframe['text'], $p2 + strlen($this->TextEncodingTerminatorLookup($subframe['encoding']))); // the null terminator between "description" and "picture data" could be either 1 byte (ISO-8859-1, UTF-8) or two bytes (UTF-16)
+									$subframe['image_mime']   = trim(getid3_lib::iconv_fallback($subframe['encoding'], $info['encoding'], $subframe_apic_mime));
+									$subframe['picture_type'] = $this->APICPictureTypeLookup($subframe_apic_picturetype);
+									$subframe['description']  = trim(getid3_lib::iconv_fallback($subframe['encoding'], $info['encoding'], $subframe_apic_description));
+									unset($subframe_apic_mime, $subframe_apic_picturetype, $subframe_apic_description);
+									unset($subframe['text'], $parsedFrame['text']);
+									$parsedFrame['subframes'][] = $subframe;
+									$parsedFrame['picture_present'] = true;
+								} else {
+									$this->warning('ID3v2.CHAP subframe #'.(count($parsedFrame['subframes']) + 1).' "'.$subframe['name'].'" not in expected format');
 								}
-								$subframe['data'] = $subframe_apic_picturedata;
-								unset($dummy, $subframe_apic_mime, $subframe_apic_picturetype, $subframe_apic_description, $subframe_apic_picturedata);
-								unset($subframe['text'], $parsedFrame['text']);
-								$parsedFrame['subframes'][] = $subframe;
-								$parsedFrame['picture_present'] = true;
 							} else {
 								$this->warning('ID3v2.CHAP subframe #'.(count($parsedFrame['subframes']) + 1).' "'.$subframe['name'].'" not in expected format');
 							}
