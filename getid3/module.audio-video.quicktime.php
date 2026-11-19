@@ -936,7 +936,16 @@ $this->warning('incomplete/incorrect handling of "stsd" with Parrot metadata in 
 										break;
 
 									case 'mp4a':
+									case 'alac':
 										$atom_structure['sample_description_table'][$i]['subatoms'] = $this->QuicktimeParseContainerAtom(substr($atom_structure['sample_description_table'][$i]['data'], 20), $baseoffset + $stsdEntriesDataOffset - 20 - 16, $atomHierarchy, $ParseAllPossibleAtoms);
+										if (($atom_structure['sample_description_table'][$i]['data_format'] == 'alac') && empty($atom_structure['sample_description_table'][$i]['audio_sample_rate'])) {
+											// rates above 65535 Hz do not fit the 16.16 field; the ALACSpecificConfig cookie ends with the 32-bit sample rate
+											foreach ((array) $atom_structure['sample_description_table'][$i]['subatoms'] as $subatom) {
+												if (isset($subatom['name'], $subatom['data']) && ($subatom['name'] == 'alac') && (strlen($subatom['data']) >= 28)) {
+													$atom_structure['sample_description_table'][$i]['audio_sample_rate'] = getid3_lib::BigEndian2Int(substr($subatom['data'], -4));
+												}
+											}
+										}
 
 										$info['quicktime']['audio']['codec']       = $this->QuicktimeAudioCodecLookup($atom_structure['sample_description_table'][$i]['data_format']);
 										$info['quicktime']['audio']['sample_rate'] = $atom_structure['sample_description_table'][$i]['audio_sample_rate'];
@@ -1018,6 +1027,10 @@ $this->warning('incomplete/incorrect handling of "stsd" with Parrot metadata in 
 							case 'mp4a':
 								$info['audio']['dataformat']         = 'mp4';
 								$info['quicktime']['audio']['codec'] = 'mp4';
+								break;
+
+							case 'alac':
+								$info['audio']['dataformat'] = 'mp4';
 								break;
 
 							case '3ivx':
