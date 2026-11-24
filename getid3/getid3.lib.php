@@ -1404,7 +1404,7 @@ class getid3_lib
 				for ($i = 0; $i < strlen($string); $i += 2) {
 					$charval = self::LittleEndian2Int(substr($string, $i, 2));
 					if (($charval >= 32) && ($charval <= 127)) {
-						$HTMLstring .= chr($charval);
+						$HTMLstring .= htmlentities(chr($charval));
 					} else {
 						$HTMLstring .= '&#'.$charval.';';
 					}
@@ -1415,7 +1415,7 @@ class getid3_lib
 				for ($i = 0; $i < strlen($string); $i += 2) {
 					$charval = self::BigEndian2Int(substr($string, $i, 2));
 					if (($charval >= 32) && ($charval <= 127)) {
-						$HTMLstring .= chr($charval);
+						$HTMLstring .= htmlentities(chr($charval));
 					} else {
 						$HTMLstring .= '&#'.$charval.';';
 					}
